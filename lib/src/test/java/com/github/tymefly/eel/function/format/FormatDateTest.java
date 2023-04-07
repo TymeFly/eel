@@ -1,0 +1,81 @@
+package com.github.tymefly.eel.function.format;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import com.github.tymefly.eel.function.date.DateFactory;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Unit test for {@link FormatDate}
+ */
+public class FormatDateTest {
+    private FormatDate formatDate;
+
+
+    @Before
+    public void setUp() {
+        DateFactory dateFactory = mock(DateFactory.class);
+
+        when(dateFactory.utc(any(String[].class)))
+            .thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("UTC")));
+        when(dateFactory.local(any(String[].class)))
+            .thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("+1")));
+        when(dateFactory.at(anyString(), any(String[].class)))
+            .thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("America/New_York")));
+
+        formatDate = new FormatDate(dateFactory);
+    }
+
+
+
+    /**
+     * Unit test {@link FormatDate#formatDate(String, ZonedDateTime)}
+     */
+    @Test
+    public void test_FormatDate() {
+        ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("America/New_York"));
+
+        Assert.assertEquals("US Format",
+            "12/03/2007 12:15 p.m. GMT-05:00",
+            formatDate.formatDate("MM/dd/yyy h:mm a z", date));
+    }
+
+    /**
+     * Unit test {@link FormatDate#formatUtc(String, String...)}
+     */
+    @Test
+    public void test_FormatUtc() {
+        Assert.assertEquals("UTC Format",
+            "12/03/2007 5:15 p.m. UTC",
+            formatDate.formatUtc("MM/dd/yyy h:mm a z"));
+    }
+
+    /**
+     * Unit test {@link FormatDate#formatLocal(String, String...)}
+     */
+    @Test
+    public void test_FormatLocal() {
+        Assert.assertEquals("Local Format",
+            "12/03/2007 6:15 p.m. +01:00",
+            formatDate.formatLocal("MM/dd/yyy h:mm a z"));
+    }
+
+    /**
+     * Unit test {@link FormatDate#formatAt(String, String, String...)}
+     */
+    @Test
+    public void test_FormatAt() {
+        Assert.assertEquals("Custom TimeZone Format",
+            "12/03/2007 12:15 p.m. GMT-05:00",
+            formatDate.formatAt("America/New_York", "MM/dd/yyy h:mm a z"));
+    }
+}
