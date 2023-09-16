@@ -1,9 +1,9 @@
 package com.github.tymefly.eel.function.date;
 
+import java.time.DateTimeException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,10 +56,10 @@ public class ModifyDateTest {
      */
     @Test
     public void test_set_unsupportedSpec() {
-        Assert.assertThrows("Unsupported Unit", EelFunctionException.class, () -> new ModifyDate().set(date, "1w"));
-        Assert.assertThrows("Bad Unit", EelFunctionException.class, () -> new ModifyDate().set(date, "1x"));
-        Assert.assertThrows("Only Unit", EelFunctionException.class, () -> new ModifyDate().set(date, "h"));
-        Assert.assertThrows("Only Offset", EelFunctionException.class, () -> new ModifyDate().set(date, "1"));
+        Assert.assertThrows("Unsupported Unit", DateTimeException.class, () -> new ModifyDate().set(date, "1w"));
+        Assert.assertThrows("Bad Unit", DateTimeException.class, () -> new ModifyDate().set(date, "1x"));
+        Assert.assertThrows("Only Unit", DateTimeException.class, () -> new ModifyDate().set(date, "h"));
+        Assert.assertThrows("Only Offset", DateTimeException.class, () -> new ModifyDate().set(date, "1"));
     }
 
     /**
@@ -67,8 +67,8 @@ public class ModifyDateTest {
      */
     @Test
     public void test_set_outOfRange() {
-        Assert.assertThrows("negative Offset", EelFunctionException.class, () -> new ModifyDate().set(date, "-1h"));
-        Assert.assertThrows("25 hour day", EelFunctionException.class, () -> new ModifyDate().set(date, "25h"));
+        Assert.assertThrows("negative Offset", DateTimeException.class, () -> new ModifyDate().set(date, "-1h"));
+        Assert.assertThrows("25 hour day", DateTimeException.class, () -> new ModifyDate().set(date, "25h"));
     }
 
 
@@ -87,10 +87,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_moveZone_badZone() {
-        EelFunctionException actual =
-            Assert.assertThrows(EelFunctionException.class, () -> new ModifyDate().moveZone(date, "???"));
-
-        Assert.assertEquals("Unexpected message", "Invalid Zone '???'", actual.getMessage());
+        Assert.assertThrows(DateTimeException.class, () -> new ModifyDate().moveZone(date, "???"));
     }
 
 
@@ -109,10 +106,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_setZone_badZone() {
-        EelFunctionException actual =
-            Assert.assertThrows(EelFunctionException.class, () -> new ModifyDate().setZone(date, "???"));
-
-        Assert.assertEquals("Unexpected message", "Invalid Zone '???'", actual.getMessage());
+        Assert.assertThrows(DateTimeException.class, () -> new ModifyDate().setZone(date, "???"));
     }
 
 
@@ -146,7 +140,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_truncate_unsupported() {
-        Assert.assertThrows("w", EelFunctionException.class, () -> new ModifyDate().truncate(date, "w"));
-        Assert.assertThrows("?", EelFunctionException.class, () -> new ModifyDate().truncate(date, "?"));
+        Assert.assertThrows("w", DateTimeException.class, () -> new ModifyDate().truncate(date, "w"));
+        Assert.assertThrows("?", DateTimeException.class, () -> new ModifyDate().truncate(date, "?"));
     }
 }

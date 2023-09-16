@@ -9,6 +9,30 @@ import org.junit.Test;
 public class StringUtilsTest {
 
     /**
+     * Unit test {@link StringUtils#toTitleCase(String)}
+     */
+    @Test
+    public void test_toTitleCase() {
+        Assert.assertEquals("empty String", "", StringUtils.toTitleCase(""));
+        Assert.assertEquals("lower first", "X", StringUtils.toTitleCase("x"));
+        Assert.assertEquals("upper first", "X", StringUtils.toTitleCase("X"));
+        Assert.assertEquals("All lower", "Xy", StringUtils.toTitleCase("xy"));
+        Assert.assertEquals("All upper", "Xy", StringUtils.toTitleCase("XY"));
+        Assert.assertEquals("mixed", "Abcd", StringUtils.toTitleCase("aBcD"));
+        Assert.assertEquals("multiple words", "Ab Cd", StringUtils.toTitleCase("aB cD"));
+        Assert.assertEquals("multiple spaces", " Ab  Cd ", StringUtils.toTitleCase(" aB  cD "));
+        Assert.assertEquals("multiple tabs", "\tAb\t\tCd\t", StringUtils.toTitleCase("\taB\t\tcD\t"));
+        Assert.assertEquals("Numbers", "123 456 7890", StringUtils.toTitleCase("123 456 7890"));
+        Assert.assertEquals("ASCII Specials", "!? >~", StringUtils.toTitleCase("!? >~"));
+        Assert.assertEquals("Other Specials",
+            "\u00a9\u00df \u2022\u2070 \u00c0\u00f1",
+            StringUtils.toTitleCase("\u00a9\u00df \u2022\u2070 \u00e0\u00d1")); // Map 00e0 => 00c0 and 00d1 => 00f1
+        Assert.assertEquals("Multi-character support",
+            "\ud83d\udc00 \ud83d\ude00",                                        // Rat and a happy face
+            StringUtils.toTitleCase("\ud83d\udc00 \ud83d\ude00"));
+    }
+
+    /**
      * Unit test {@link StringUtils#upperFirst(String)}
      */
     @Test

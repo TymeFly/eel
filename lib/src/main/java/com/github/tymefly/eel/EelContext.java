@@ -1,6 +1,8 @@
 package com.github.tymefly.eel;
 
 import java.math.MathContext;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
@@ -11,6 +13,14 @@ import com.github.tymefly.eel.builder.EelContextBuilder;
  * Context in which EEL expressions are compiled and executed.
  */
 public interface EelContext {
+    /**
+     * A date which can be converted to the logic value {@literal false}.
+     * Other dates with a {@literal 0} second offset in the current epoch but with a different ZoneOffset can
+     * also be converted to the logic value {@literal false}.
+     */
+    ZonedDateTime FALSE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneOffset.UTC);
+
+
     /**
      * The default precision used in calculations on fractional numbers.
      * @see EelContextBuilder#withPrecision(int)

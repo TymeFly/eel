@@ -1,5 +1,7 @@
 package com.github.tymefly.eel;
 
+import java.time.Duration;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +24,9 @@ public class CounterIntegrationTest {
      */
     @Test
     public void test_singleContext_OneCount() {
-        EelContext context = EelContext.factory().build();
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
         Eel expression = Eel.compile(context, "$( '_' ~> count() ~> '_' )");
 
         Assert.assertEquals("Iteration 1", "_1_", expression.evaluate().asText());
@@ -36,7 +40,9 @@ public class CounterIntegrationTest {
      */
     @Test
     public void test_singleContext_MultipleCounts() {
-        EelContext context = EelContext.factory().build();
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
         Eel expression = Eel.compile(context, "$( '_' ~> count() ~> '_' ~> count() )");
 
         Assert.assertEquals("Iteration 1", "_1_2", expression.evaluate().asText());
@@ -50,8 +56,12 @@ public class CounterIntegrationTest {
      */
     @Test
     public void test_MultipleContext_MultipleCounts() {
-        EelContext context1 = EelContext.factory().build();
-        EelContext context2 = EelContext.factory().build();
+        EelContext context1 = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
+        EelContext context2 = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
         Eel expression1 = Eel.compile(context1, "$( '_' ~> count() ~> '_' ~> count() )");
         Eel expression2 = Eel.compile(context2, "$( '_' ~> count() ~> '_' ~> count() )");
 
@@ -72,8 +82,12 @@ public class CounterIntegrationTest {
      */
     @Test
     public void test_MultipleImplicitContext_MultipleCounts() {
-        Eel expression1 = Eel.factory().compile("$( '_' ~> count() ~> '_' ~> count() )");
-        Eel expression2 = Eel.factory().compile("$( '_' ~> count() ~> '_' ~> count() )");
+        Eel expression1 = Eel.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .compile("$( '_' ~> count() ~> '_' ~> count() )");
+        Eel expression2 = Eel.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .compile("$( '_' ~> count() ~> '_' ~> count() )");
 
         Assert.assertEquals("Iteration 1", "_1_2", expression1.evaluate().asText());
         Assert.assertEquals("Iteration 2", "_3_4", expression1.evaluate().asText());

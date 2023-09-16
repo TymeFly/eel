@@ -38,7 +38,7 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.fileSeparator} function that returns the Operating System path separator
+     * Entry point for the {@code system.fileSeparator} function, which returns the Operating System path separator
      * <br>
      * The EEL syntax for this function is <code>system.fileSeparator()</code>
      * @return the current users home directory
@@ -54,7 +54,7 @@ public class FileSystem {
     }
 
     /**
-     * Entry point for the {@code pwd} function that returns the canonicalised path, that based on current
+     * Entry point for the {@code pwd} function, which returns the canonicalised path, that based on current
      * operating system, of the current working directory.
      * It is guaranteed this will have a trailing {@link #fileSeparator()}
      * <br>
@@ -73,7 +73,7 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.home} function that returns the canonicalised path, that based on current
+     * Entry point for the {@code system.home} function, which returns the canonicalised path, that based on current
      * operating system,  of the users home directory.
      * It is guaranteed this will have a trailing {@link #fileSeparator()}
      * <br>
@@ -92,7 +92,7 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.temp} function that returns the canonicalised path, that based on current
+     * Entry point for the {@code system.temp} function, which returns the canonicalised path, that based on current
      * operating system,  of the system temp directory.
      * It is guaranteed this will have a trailing {@link #fileSeparator()}
      * <br>

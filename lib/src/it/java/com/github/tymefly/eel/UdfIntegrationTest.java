@@ -1,6 +1,7 @@
 package com.github.tymefly.eel;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
+import java.time.Duration;
+
 import func.functions.Plus1;
 import func.functions.Sum;
 import func.functions2.Half;
@@ -28,7 +29,9 @@ public class UdfIntegrationTest {
     @Test
     public void test_NotExtended() {
         EelFunctionException actual = Assert.assertThrows(EelFunctionException.class,
-            () -> Eel.factory().compile("Result is $( Plus1( 5 ) )"));
+            () -> Eel.factory()
+                .withTimeout(Duration.ofSeconds(0))
+                .compile("Result is $( Plus1( 5 ) )"));
 
         Assert.assertEquals("Unexpected Error", "Undefined function 'Plus1'", actual.getMessage());
     }
@@ -40,6 +43,7 @@ public class UdfIntegrationTest {
     @Test
     public void test_Extend_Function() {
         EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
             .withUdfClass(Plus1.class)
             .build();
 
@@ -59,6 +63,7 @@ public class UdfIntegrationTest {
     public void test_Extend_Package() {
         String actual = Eel.factory()
             .withUdfPackage(Sum.class.getPackage())
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( test.plus1( 5 ) )")
             .evaluate()
             .asText();
@@ -74,6 +79,7 @@ public class UdfIntegrationTest {
         String actual = Eel.factory()
             .withUdfPackage(Sum.class.getPackage())
             .withUdfPackage(Half.class.getPackage())
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( test.half( test.plus1( 5 )) )")
             .evaluate()
             .asText();
@@ -89,6 +95,7 @@ public class UdfIntegrationTest {
         String actual = Eel.factory()
             .withUdfPackage(Sum.class.getPackage())
             .withUdfClass(Times2.class)
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( test.double( test.plus1( 5 )) )")
             .evaluate()
             .asText();

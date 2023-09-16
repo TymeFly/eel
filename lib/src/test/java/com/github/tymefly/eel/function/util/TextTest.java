@@ -30,6 +30,17 @@ public class TextTest {
     }
 
     /**
+     * Unit test {@link Text#title(String)}
+     */
+    @Test
+    public void test_title() {
+        Assert.assertEquals("Empty String", "", new Text().title(""));
+        Assert.assertEquals("lower case", "Abc", new Text().title("abc"));
+        Assert.assertEquals("upper case", "Abc", new Text().title("ABC"));
+        Assert.assertEquals("mixed types", "Abc Abc 123 @+2", new Text().title("ABC abc 123 @+2"));
+    }
+
+    /**
      * Unit test {@link Text#left(String, int)}
      */
     @Test
@@ -198,7 +209,18 @@ public class TextTest {
     @Test
     public void test_isEmpty() {
         Assert.assertTrue("Empty String", new Text().isEmpty(""));
+        Assert.assertFalse("Whitespace String", new Text().isEmpty(" \t "));
         Assert.assertFalse("Non-empty String", new Text().isEmpty("x"));
+    }
+
+    /**
+     * Unit test {@link Text#isBlank(String)}
+     */
+    @Test
+    public void test_isBlank() {
+        Assert.assertTrue("Empty String", new Text().isBlank(""));
+        Assert.assertTrue("Whitespace String", new Text().isBlank(" \t "));
+        Assert.assertFalse("Non-empty String", new Text().isBlank("x"));
     }
 
 
@@ -209,8 +231,8 @@ public class TextTest {
     public void test_len() {
         Assert.assertEquals("Empty String", 0, new Text().len(""));
         Assert.assertEquals("Single character", 1, new Text().len("a"));
-        Assert.assertEquals("Spaces", 2, new Text().len("  "));
-        Assert.assertEquals("Multiple characters", 3, new Text().len("abc"));
+        Assert.assertEquals("Whitespace", 3, new Text().len(" \t "));
+        Assert.assertEquals("Multiple characters", 4, new Text().len("abcd"));
     }
 
     /**

@@ -2,7 +2,6 @@ package com.github.tymefly.eel.function.format;
 
 import java.math.BigInteger;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,10 +60,10 @@ public class FormatNumberTest {
         Assert.assertEquals("Max Radix", "ya", formatter.formatNumber(BigInteger.valueOf(1234), Character.MAX_RADIX));
 
         Assert.assertThrows("Below Mix Radix",
-            EelFunctionException.class,
+            IllegalArgumentException.class,
             () -> formatter.formatNumber(BigInteger.valueOf(1234), Character.MIN_RADIX - 1));
         Assert.assertThrows("Above Max Radix",
-            EelFunctionException.class,
+            IllegalArgumentException.class,
             () -> formatter.formatNumber(BigInteger.valueOf(1234), Character.MAX_RADIX + 1));
     }
 }

@@ -1,8 +1,8 @@
 package com.github.tymefly.eel.function.date;
 
+import java.time.DateTimeException;
 import java.time.temporal.ChronoUnit;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -50,10 +50,10 @@ public class PeriodTest {
      */
     @Test
     public void test_lookup_unexpected() {
-        Assert.assertThrows("Y", EelFunctionException.class, () -> Period.lookup("Y"));         // short case check
-        Assert.assertThrows("Year", EelFunctionException.class, () -> Period.lookup("Year"));   // long case check
-        Assert.assertThrows("Years", EelFunctionException.class, () -> Period.lookup("Years")); // long case plural check
-        Assert.assertThrows("?", EelFunctionException.class, () -> Period.lookup("?"));         // unexpected
+        Assert.assertThrows("Y", DateTimeException.class, () -> Period.lookup("Y"));         // short case check
+        Assert.assertThrows("Year", DateTimeException.class, () -> Period.lookup("Year"));   // long case check
+        Assert.assertThrows("Years", DateTimeException.class, () -> Period.lookup("Years")); // long case plural check
+        Assert.assertThrows("?", DateTimeException.class, () -> Period.lookup("?"));         // unexpected
     }
 
     /**

@@ -186,13 +186,14 @@ public class TokenizerTest {
     @Test
     public void test_constants() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("true false e pi");
+        Tokenizer tokenizer = buildTokenizer("true false e pi c");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.TRUE, "true", 1);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.FALSE, "false", 6);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.E, "e", 12);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.PI, "pi", 14);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 16);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.C, "c", 17);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 18);
     }
 
     /**
@@ -369,7 +370,7 @@ public class TokenizerTest {
     @Test
     public void test_identifier() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("Key Key2 Key_3 ENV_VAR _PWD system.property");
+        Tokenizer tokenizer = buildTokenizer("Key Key2 Key_3 ENV_VAR _PWD system.property with.array[123].element");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "Key", 1);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "Key2", 5);
@@ -377,7 +378,8 @@ public class TokenizerTest {
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "ENV_VAR", 16);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "_PWD", 24);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "system.property", 29);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 44);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "with.array[123].element", 45);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 68);
     }
 
 

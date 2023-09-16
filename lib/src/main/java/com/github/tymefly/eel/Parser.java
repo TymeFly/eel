@@ -17,6 +17,8 @@ import static java.util.Map.entry;
  * EEL Parser implementation
  */
 class Parser {
+    private static final long SPEED_OF_LIGHT = 299_792_458;
+
     private static final Map<Token, CompileVariableOp> CASE_OP = Map.ofEntries(
         entry(Token.POWER, StringUtils::upperFirst),
         entry(Token.ALL_UPPER, String::toUpperCase),
@@ -56,6 +58,13 @@ class Parser {
         entry(Token.CONVERT_TO_NUMBER, Compiler::toNumber),
         entry(Token.CONVERT_TO_LOGIC, Compiler::toLogic),
         entry(Token.CONVERT_TO_DATE, Compiler::toDate));
+    private static final Map<Token, Number> NUMBER_CONSTANTS = Map.ofEntries(
+        entry(Token.PI, Math.PI),
+        entry(Token.E, Math.E),
+        entry(Token.C, SPEED_OF_LIGHT));
+    private static final Map<Token, Boolean> LOGIC_CONSTANTS = Map.ofEntries(
+        entry(Token.TRUE, true),
+        entry(Token.FALSE, false));
 
     private final Tokenizer tokenizer;
     private final EelContextImpl context;
@@ -279,31 +288,25 @@ class Parser {
         } else if (terminal.token() == Token.BITWISE_NOT) {
             nextToken(Mode.EXPRESSION);
             result = compiler.bitwiseNot(simpleFactor());
-        } else if (CONVERT_OP.containsKey(terminal.token())) {
-            result = convert(CONVERT_OP.get(terminal.token()));
-        } else if (terminal.token() == Token.NUMBER) {
-            result = compiler.numericConstant(terminal.value());
-            nextToken(Mode.EXPRESSION);
         } else if (terminal.token() == Token.STRING) {
             result = compiler.textConstant(terminal.lexeme());
             nextToken(Mode.EXPRESSION);
-        } else if (terminal.token() == Token.TRUE) {
-            result = compiler.logicConstant(true);
+        } else if (terminal.token() == Token.NUMBER) {
+            result = compiler.numericConstant(terminal.value());
             nextToken(Mode.EXPRESSION);
-        } else if (terminal.token() == Token.FALSE) {
-            result = compiler.logicConstant(false);
+        } else if (NUMBER_CONSTANTS.containsKey(terminal.token())) {
+            result = compiler.numericConstant(NUMBER_CONSTANTS.get(terminal.token()));
             nextToken(Mode.EXPRESSION);
-        } else if (terminal.token() == Token.PI) {
-            result = compiler.pi();
-            nextToken(Mode.EXPRESSION);
-        } else if (terminal.token() == Token.E) {
-            result = compiler.e();
+        } else if (LOGIC_CONSTANTS.containsKey(terminal.token())) {
+            result = compiler.logicConstant(LOGIC_CONSTANTS.get(terminal.token()));
             nextToken(Mode.EXPRESSION);
         } else if (terminal.token() == Token.VARIABLE_EXPANSION) {
             result = variable();
             nextToken(Mode.EXPRESSION);
         } else if (terminal.token() == Token.IDENTIFIER) {
             result = identifier();
+        } else if (CONVERT_OP.containsKey(terminal.token())) {
+            result = convert(CONVERT_OP.get(terminal.token()));
         } else if (terminal.token() == Token.LEFT_PARENTHESES) {
             nextToken(Mode.EXPRESSION);
             result = calculation();
@@ -428,7 +431,7 @@ class Parser {
 
     /**
      * Throw a standardised exception to indicate there was an unexpected token
-     * @return nothing, but the calling methods typically need Executor to make them compile
+     * @return nothing, but the calling methods need an Executor to make them compile
      * @throws EelSyntaxException everytime
      */
     @Nonnull

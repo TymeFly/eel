@@ -1,8 +1,10 @@
 package com.github.tymefly.eel;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemErrRule;
@@ -18,7 +20,15 @@ public class SymbolsTableIntegrationTest {
     @Rule
     public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
 
+    private EelContext context;
 
+
+    @Before
+    public void setUp() {
+        context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
+    }
 
     /**
      * Integration test {@link Eel}
@@ -33,7 +43,7 @@ public class SymbolsTableIntegrationTest {
             .withDefault("????")
             .build();
 
-        String actual = Eel.compile("${Key1} <-${file.separator}-> ${Key2} <-${file.separator}-> ${unknown}")
+        String actual = Eel.compile(context, "${Key1} <-${file.separator}-> ${Key2} <-${file.separator}-> ${unknown}")
             .evaluate(table)
             .asText();
 
@@ -47,8 +57,8 @@ public class SymbolsTableIntegrationTest {
      */
     @Test
     public void test_withMap() {
-        String actual = Eel.compile("${hello-???}")
-            .evaluate(Map.of("hello", "world"))
+        String actual = Eel.compile(context, "${hello[12]-???}")
+            .evaluate(Map.of("hello[12]", "world"))
             .asText();
 
         Assert.assertEquals("Failed to read Map", "world", actual);
@@ -59,7 +69,7 @@ public class SymbolsTableIntegrationTest {
      */
     @Test
     public void test_withLookup() {
-        String actual = Eel.compile("${key-???}")
+        String actual = Eel.compile(context, "${key-???}")
             .evaluate(String::toUpperCase)
             .asText();
 
@@ -75,7 +85,7 @@ public class SymbolsTableIntegrationTest {
         String key = env.keySet().iterator().next();
         String expected = env.get(key);
 
-        String actual = Eel.compile("${" + key + "-???}")
+        String actual = Eel.compile(context, "${" + key + "-???}")
             .evaluateEnvironment()
             .asText();
 
@@ -88,7 +98,7 @@ public class SymbolsTableIntegrationTest {
     @Test
     public void test_withProperties() {
         String expected = System.getProperty("user.dir");
-        String actual = Eel.compile("${user.dir-???}")
+        String actual = Eel.compile(context, "${user.dir-???}")
             .evaluateProperties()
             .asText();
 
@@ -109,8 +119,8 @@ public class SymbolsTableIntegrationTest {
             .withDefault("????")
             .build();
 
-        Eel expression1 = Eel.compile("#1: ${Key1}");
-        Eel expression2 = Eel.compile("#2: ${Key2}");
+        Eel expression1 = Eel.compile(context, "#1: ${Key1}");
+        Eel expression2 = Eel.compile(context, "#2: ${Key2}");
 
         Assert.assertEquals("First", "#1: Foo", expression1.evaluate(table).asText());
         Assert.assertEquals("Second", "#2: Bar", expression2.evaluate(table).asText());

@@ -1,5 +1,6 @@
 package com.github.tymefly.eel.evaluate;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import com.github.tymefly.eel.Type;
 import com.github.tymefly.eel.builder.EelBuilder;
 import com.github.tymefly.eel.builder.EelContextBuilder;
 import com.github.tymefly.eel.builder.SymbolTableBuilder;
-import com.github.tymefly.eel.exception.EelFunctionException;
+import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -104,6 +105,8 @@ public class EvaluateTest {
         // train the context builder API
         when(contextBuilder.withPrecision(anyInt()))
             .thenReturn(contextBuilder);
+        when(contextBuilder.withTimeout(any(Duration.class)))
+            .thenReturn(contextBuilder);
         when(contextBuilder.withUdfClass(any(Class.class)))
             .thenReturn(contextBuilder);
         when(contextBuilder.withUdfPackage(any(Package.class)))
@@ -143,7 +146,7 @@ public class EvaluateTest {
             MockedStatic<EelContext> staticContextBuilder = mockStatic(EelContext.class);
             MockedStatic<SymbolsTable> staticSymbolsTable = mockStatic(SymbolsTable.class)
         ) {
-            staticConfig.when(() -> Config.parse(any()))
+            staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
             staticEel.when(Eel::factory)
                 .thenReturn(eelBuilder);
@@ -169,7 +172,7 @@ public class EvaluateTest {
             MockedStatic<EelContext> staticContextBuilder = mockStatic(EelContext.class);
             MockedStatic<SymbolsTable> staticSymbolsTable = mockStatic(SymbolsTable.class)
         ) {
-            staticConfig.when(() -> Config.parse(any()))
+            staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
             staticEel.when(Eel::factory)
                 .thenReturn(eelBuilder);
@@ -212,12 +215,13 @@ public class EvaluateTest {
     public void test_HelpPage() {
         exit.expectSystemExitWithStatus(1);
 
-        when(config.requestHelp()).thenReturn(true);
+        when(config.requestHelp())
+            .thenReturn(true);
 
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class)
         ) {
-            staticConfig.when(() -> Config.parse(any()))
+            staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
             Evaluate.main(new String[] { "Hello", "World" });
@@ -231,7 +235,7 @@ public class EvaluateTest {
     @Test
     public void test_BadExpression() {
         when(eel.evaluate(any(SymbolsTable.class))).
-            thenThrow(new EelFunctionException("expected"));
+            thenThrow(new EelUnknownSymbolException("expected"));
 
         exit.expectSystemExitWithStatus(2);
 
@@ -241,7 +245,7 @@ public class EvaluateTest {
             MockedStatic<EelContext> staticContextBuilder = mockStatic(EelContext.class);
             MockedStatic<SymbolsTable> staticSymbolsTable = mockStatic(SymbolsTable.class)
         ) {
-            staticConfig.when(() -> Config.parse(any()))
+            staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
             staticEel.when(Eel::factory)
                 .thenReturn(eelBuilder);
@@ -262,12 +266,13 @@ public class EvaluateTest {
     public void test_BadCommandLine() {
         exit.expectSystemExitWithStatus(3);
 
-        when(config.isValid()).thenReturn(false);
+        when(config.isValid())
+            .thenReturn(false);
 
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class)
         ) {
-            staticConfig.when(() -> Config.parse(any()))
+            staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
             Evaluate.main(new String[] { "Hello", "World" });

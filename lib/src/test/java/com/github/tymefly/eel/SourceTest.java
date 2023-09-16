@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.exception.EelIOException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -111,7 +110,7 @@ public class SourceTest {
         source.read();
         assertSource(++index, source, 3, '3', '4');
 
-        EelIOException actual = Assert.assertThrows(EelIOException.class, source::read);
+        EelSourceException actual = Assert.assertThrows(EelSourceException.class, source::read);
 
         Assert.assertEquals("Unexpected message",
             "Attempt to read beyond maximum expression length of 3 bytes",

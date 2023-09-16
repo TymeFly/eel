@@ -27,6 +27,9 @@ public class TimeoutIntegrationTest {
     public Stopwatch stopwatch = new Stopwatch();
 
 
+    private static final long DURATION_TOLERANCE = 500;
+
+
     /**
      * Integration test {@link Eel}. 'delay' drives the CPU constantly for the duration - thread can't be interrupted
      */
@@ -39,10 +42,10 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText());
 
-        long duration = stopwatch.runtime(TimeUnit.SECONDS);
+        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
 
         Assert.assertEquals("Unexpected message", "EEL Timeout after 5 second(s)", actual.getMessage());
-        Assert.assertEquals("Unexpected duration", 5, duration);
+        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 5_000));
     }
 
     /**
@@ -57,10 +60,10 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText());
 
-        long duration = stopwatch.runtime(TimeUnit.SECONDS);
+        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
 
         Assert.assertEquals("Unexpected message", "EEL Timeout after 5 second(s)", actual.getMessage());
-        Assert.assertEquals("Unexpected duration", 5, duration);
+        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 5_000));
     }
 
     /**
@@ -75,11 +78,12 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText();
 
-        long duration = stopwatch.runtime(TimeUnit.SECONDS);
+        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
 
         Assert.assertEquals("Unexpected message", "Slept for 3 seconds", actual);
-        Assert.assertEquals("Unexpected duration", 3, duration);
+        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 3_000));
     }
+
 
     /**
      * Integration test {@link Eel}
@@ -93,9 +97,23 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText();
 
-        long duration = stopwatch.runtime(TimeUnit.SECONDS);
+        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
 
         Assert.assertEquals("Unexpected message", "Slept for 3 seconds", actual);
-        Assert.assertEquals("Unexpected duration", 3, duration);
+        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 3_000));
+    }
+
+
+    /**
+     * Returns {@literal true} only if the actual duration is +/- DURATION_TOLERANCE of the expected duration
+     * @param actual        actual duration in mS
+     * @param expected      expected duration im mS
+     * @return {@literal true} only if the actual duration is +/- DURATION_TOLERANCE of the expected duration
+     */
+    private boolean validateDuration(long actual, long expected) {
+        boolean valid = (actual >= (expected - DURATION_TOLERANCE));
+        valid = valid && (actual <= (expected + DURATION_TOLERANCE));
+
+        return valid;
     }
 }

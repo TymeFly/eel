@@ -8,6 +8,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.tymefly.eel.EelContext;
+import com.github.tymefly.eel.EelValue;
 import com.github.tymefly.eel.exception.EelConvertException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,20 +52,85 @@ public class ConvertTest {
      * Unit test {@link Convert#to(Object, Class)}
      */
     @Test
+    public void test_to_char() {
+        Assert.assertEquals("boolean", 't', (char) Convert.to(true, char.class));
+        Assert.assertEquals("string", 'o', (char) Convert.to("on", char.class));
+        Assert.assertEquals("byte", '0', (char) Convert.to((byte) 0, char.class));
+        Assert.assertEquals("short", '1', (char) Convert.to((short) 1, char.class));
+        Assert.assertEquals("integer", '2', (char) Convert.to(2, char.class));
+        Assert.assertEquals("long", '3', (char) Convert.to((long) 3, char.class));
+        Assert.assertEquals("float", '3', (char) Convert.to(3.4f, char.class));
+        Assert.assertEquals("double", '-', (char) Convert.to(-5.6, char.class));
+        Assert.assertEquals("BigDecimal", '7', (char) Convert.to(BigDecimal.valueOf(7), char.class));
+        Assert.assertEquals("BigInteger", '8', (char) Convert.to(BigInteger.valueOf(8), char.class));
+        Assert.assertEquals("Date", '2', (char) Convert.to(DATE_STAMP, char.class));
+    }
+
+    /**
+     * Unit test {@link Convert#to(Object, Class)}
+     */
+    @Test
+    public void test_to_char_Boxed() {
+        Assert.assertEquals("boolean", Character.valueOf('t'), Convert.to(true, Character.class));
+        Assert.assertEquals("string", Character.valueOf('o'), Convert.to("on", Character.class));
+        Assert.assertEquals("byte", Character.valueOf('0'), Convert.to((byte) 0, Character.class));
+        Assert.assertEquals("short", Character.valueOf('1'), Convert.to((short) 1, Character.class));
+        Assert.assertEquals("integer", Character.valueOf('2'), Convert.to(2, Character.class));
+        Assert.assertEquals("long", Character.valueOf('3'), Convert.to((long) 3, Character.class));
+        Assert.assertEquals("float", Character.valueOf('3'), Convert.to(3.4f, Character.class));
+        Assert.assertEquals("double", Character.valueOf('-'), Convert.to(-5.6, Character.class));
+        Assert.assertEquals("BigDecimal", Character.valueOf('7'), Convert.to(BigDecimal.valueOf(7), Character.class));
+        Assert.assertEquals("BigInteger", Character.valueOf('8'), Convert.to(BigInteger.valueOf(8), Character.class));
+        Assert.assertEquals("Date", Character.valueOf('2'), Convert.to(DATE_STAMP, Character.class));
+    }
+
+
+    /**
+     * Unit test {@link Convert#to(Object, Class)}
+     */
+    @Test
     public void test_to_Boolean() {
+        ZonedDateTime dateMinus1 = EelContext.FALSE_DATE.minusSeconds(1);
+        ZonedDateTime datePlus1 = EelContext.FALSE_DATE.plusSeconds(1);
+
         Assert.assertTrue("boolean", Convert.to(true, Boolean.class));
         Assert.assertFalse("string", Convert.to("0", Boolean.class));
         Assert.assertFalse("byte", Convert.to((byte) 0, Boolean.class));
         Assert.assertTrue("short", Convert.to((short) 1, Boolean.class));
-        Assert.assertThrows("integer", RuntimeException.class, () -> Convert.to(2, Boolean.class));
-        Assert.assertThrows("long", RuntimeException.class, () -> Convert.to((long) 3, Boolean.class));
-        Assert.assertThrows("float", RuntimeException.class, () -> Convert.to(3.4f, Boolean.class));
-        Assert.assertThrows("double", RuntimeException.class, () -> Convert.to(-5.6, Boolean.class));
-        Assert.assertThrows("BigDecimal", RuntimeException.class, () -> Convert.to(BigDecimal.valueOf(7), Boolean.class));
-        Assert.assertThrows("BigInteger", RuntimeException.class, () -> Convert.to(BigInteger.valueOf(8), Boolean.class));
-        Assert.assertThrows("Date", RuntimeException.class, () -> Convert.to(DATE_STAMP, Boolean.class));
+        Assert.assertTrue("integer", Convert.to(2, Boolean.class));
+        Assert.assertTrue("long", Convert.to((long) 3, Boolean.class));
+        Assert.assertTrue("float", Convert.to(3.4f, Boolean.class));
+        Assert.assertFalse("double", Convert.to(0.0, Boolean.class));
+        Assert.assertFalse("BigDecimal", Convert.to(new BigDecimal("0.000"), Boolean.class));
+        Assert.assertTrue("BigInteger", Convert.to(BigInteger.valueOf(8), Boolean.class));
+
+        Assert.assertFalse("-2", Convert.to(-2, Boolean.class));
+        Assert.assertFalse("-1", Convert.to(-1, Boolean.class));
+        Assert.assertFalse("0", Convert.to(0, Boolean.class));
+        Assert.assertTrue("1", Convert.to(1, Boolean.class));
+        Assert.assertTrue("2", Convert.to(3, Boolean.class));
+
+        Assert.assertTrue("Date", Convert.to(DATE_STAMP, Boolean.class));
+        Assert.assertFalse("Zero Date", Convert.to(EelContext.FALSE_DATE, Boolean.class));
+        Assert.assertFalse("Zero Date in Zone +1",
+            Convert.to(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("+01")), Boolean.class));
+        Assert.assertFalse("Zero Date in Zone -1",
+            Convert.to(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("-01")), Boolean.class));
+
+        Assert.assertFalse("-1 Date", Convert.to(dateMinus1, Boolean.class));
+        Assert.assertFalse("-1 Date in Zone +1",
+            Convert.to(dateMinus1.withZoneSameInstant(ZoneId.of("+01")), Boolean.class));
+        Assert.assertFalse("-1 Date in Zone -1",
+            Convert.to(dateMinus1.withZoneSameInstant(ZoneId.of("-01")), Boolean.class));
+        Assert.assertTrue("+1 Date", Convert.to(datePlus1, Boolean.class));
+        Assert.assertTrue("+1 Date in Zone +1",
+            Convert.to(datePlus1.withZoneSameInstant(ZoneId.of("+01")), Boolean.class));
+        Assert.assertTrue("+1 Date in Zone -1",
+            Convert.to(datePlus1.withZoneSameInstant(ZoneId.of("-01")), Boolean.class));
 
         Assert.assertThrows("bad String", RuntimeException.class, () -> Convert.to("unknown", Boolean.class));
+        Assert.assertThrows("blank string", RuntimeException.class, () -> Convert.to("", Boolean.class));
+        Assert.assertThrows("0.0", RuntimeException.class, () -> Convert.to("0.0", Boolean.class));
     }
 
 
@@ -395,5 +462,20 @@ public class ConvertTest {
     public void test_to_Number_UnsupportedType() {
         Assert.assertThrows("From Number", RuntimeException.class, () -> Convert.to(1, AtomicInteger.class));
         Assert.assertThrows("From String", RuntimeException.class, () -> Convert.to("1", AtomicInteger.class));
+    }
+
+
+    /**
+     * Unit test {@link Convert#toChar(EelValue)}
+     */
+    @Test
+    public void test_toChar() {
+        Assert.assertEquals("From String of 1 character", 'X', Convert.toChar(EelValue.of("X")));
+        Assert.assertEquals("From String with multiple characters", 'a', Convert.toChar(EelValue.of("abc")));
+        Assert.assertEquals("From Number", '1', Convert.toChar(EelValue.of(12.34)));
+        Assert.assertEquals("From Logic", 't', Convert.toChar(EelValue.of(true)));
+        Assert.assertEquals("From Date", '1', Convert.toChar(EelValue.of(EelContext.FALSE_DATE)));
+
+        Assert.assertThrows("Empty String", EelConvertException.class, () -> Convert.toChar(EelValue.of("")));
     }
 }

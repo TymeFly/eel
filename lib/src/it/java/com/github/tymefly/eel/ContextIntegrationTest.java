@@ -1,8 +1,8 @@
 package com.github.tymefly.eel;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
 
-import com.github.tymefly.eel.exception.EelIOException;
 import func.functions.Plus1;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -28,6 +28,7 @@ public class ContextIntegrationTest {
     public void test_ReuseContext() {
         EelContext context = EelContext.factory()
             .withUdfPackage(Plus1.class.getPackage())
+            .withTimeout(Duration.ofSeconds(0))
             .build();
 
         Assert.assertEquals("Exp1",
@@ -45,9 +46,10 @@ public class ContextIntegrationTest {
      */
     @Test
     public void test_maxExpressionSize() {
-        EelIOException actual = Assert.assertThrows(EelIOException.class,
+        EelSourceException actual = Assert.assertThrows(EelSourceException.class,
             () -> Eel.factory()
                 .withMaxExpressionSize(10)
+                .withTimeout(Duration.ofSeconds(0))
                 .compile("1234567890a"));
 
         Assert.assertEquals("Unexpected error",
@@ -61,6 +63,7 @@ public class ContextIntegrationTest {
     @Test
     public void test_setScale_default() {
         String actual = Eel.factory()
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( 1 / 3 )")
             .evaluate()
             .asText();
@@ -75,6 +78,7 @@ public class ContextIntegrationTest {
     public void test_withPrecision_reduced() {
         String actual = Eel.factory()
             .withPrecision(1)
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( 1 / 3 )")
             .evaluate()
             .asText();
@@ -89,6 +93,7 @@ public class ContextIntegrationTest {
     public void test_withPrecision_expanded() {
         String actual = Eel.factory()
             .withPrecision(6)
+            .withTimeout(Duration.ofSeconds(0))
             .compile("Result is $( 1 / 3 )")
             .evaluate()
             .asText();
@@ -102,7 +107,9 @@ public class ContextIntegrationTest {
      */
     @Test
     public void test_defaultContextReuse_count() {
-        Eel expression = Eel.compile("$( count() )");
+        Eel expression = Eel.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .compile("$( count() )");
         int first = expression.evaluate()
             .asNumber()
             .intValue();
@@ -118,7 +125,9 @@ public class ContextIntegrationTest {
      */
     @Test
     public void test_defaultContextReuse_timeStamp() throws Exception {
-        Eel expression = Eel.compile("$( date.start() )");
+        Eel expression = Eel.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .compile("$( date.start() )");
         ZonedDateTime first = expression.evaluate()
             .asDate();
 

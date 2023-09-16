@@ -178,7 +178,6 @@ public class LambdaCompilerTest {
 
         Assert.assertEquals("Unexpected type", Type.TEXT, value.getType());
         Assert.assertEquals("Unexpected value", "Hello World", value.asText());
-        Assert.assertSame("Value was not cached", actual, compile.textConstant("Hello World"));
     }
 
     /**
@@ -191,8 +190,6 @@ public class LambdaCompilerTest {
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, value.getType());
         Assert.assertTrue("Unexpected value", value.asLogic());
-        Assert.assertSame("Value was not cached", actual, compile.logicConstant(true));
-        Assert.assertNotSame("Unexpected executor", actual, compile.logicConstant(false));
     }
 
     /**
@@ -205,8 +202,6 @@ public class LambdaCompilerTest {
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, value.getType());
         Assert.assertFalse("Unexpected value", value.asLogic());
-        Assert.assertSame("Value was not cached", actual, compile.logicConstant(false));
-        Assert.assertNotSame("Unexpected executor", actual, compile.logicConstant(true));
     }
 
     /**
@@ -219,33 +214,6 @@ public class LambdaCompilerTest {
 
         Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
         Assert.assertEquals("Unexpected value", new BigDecimal("123.456"), value.asNumber());
-        Assert.assertSame("Value was not cached", actual, compile.numericConstant(123.456));
-    }
-
-    /**
-     * Unit test {@link LambdaCompiler#pi()}
-     */
-    @Test
-    public void test_pi() {
-        Executor actual = compile.pi();
-        Value value = actual.execute(symbols);
-
-        Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals("Unexpected value", new BigDecimal("3.141592653589793"), value.asNumber());
-        Assert.assertSame("Value was not cached", actual,compile.pi());
-    }
-
-    /**
-     * Unit test {@link LambdaCompiler#e()}
-     */
-    @Test
-    public void test_e() {
-        Executor actual = compile.e();
-        Value value = actual.execute(symbols);
-
-        Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals("Unexpected value", new BigDecimal("2.718281828459045"), value.asNumber());
-        Assert.assertSame("Value was not cached", actual,compile.e());
     }
 
 
@@ -337,6 +305,10 @@ public class LambdaCompilerTest {
      */
     @Test
     public void test_equal_date() {
+        ZonedDateTime date1 = ZonedDateTime.now(ZoneId.of("-5"));
+        ZonedDateTime date2 = ZonedDateTime.now(ZoneId.of("-6"));   // Same instant as date1
+        ZonedDateTime date3 = date2.plusHours(1);                   // Same time on clock as date1, but different zone
+
         equalHelper("Date 0 to String 1970", Value.of(START), Value.of("1970-01-01T00:00:00Z"), true);
         equalHelper("Date 0 to String 0", Value.of(START), Value.of("0"), false);
         equalHelper("Date 0 to String false", Value.of(START), Value.of("false"), false);
@@ -347,6 +319,9 @@ public class LambdaCompilerTest {
         equalHelper("Date 0 to Logic true", Value.of(START), Value.TRUE, false);
         equalHelper("Date 0 to Date 0", Value.of(START), Value.of(START), true);
         equalHelper("Date 0 to Date 1", Value.of(START), Value.of(ONE_SECOND), false);
+
+        equalHelper("date 1 to date2", Value.of(date1), Value.of(date2), true);
+        equalHelper("date 1 to date3", Value.of(date1), Value.of(date3), false);
     }
 
     private void equalHelper(@Nonnull String message, @Nonnull Value left, @Nonnull Value right, boolean expected) {

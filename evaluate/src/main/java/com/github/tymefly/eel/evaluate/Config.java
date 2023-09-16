@@ -1,16 +1,23 @@
 package com.github.tymefly.eel.evaluate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.EelContext;
+import com.github.tymefly.eel.builder.EelContextSettingBuilder;
+import com.github.tymefly.eel.integration.EelProperties;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -55,6 +62,11 @@ class Config {
         metaVar = "value",
         usage = "Set a default value that will be used if the symbols table does not contain a required key")
     private String defaultValue;
+
+    @Option(name = "--timeout",
+        metaVar = "number",
+        usage = "timeout, in seconds, of a EEL expression or 0 to disable timeouts")
+    private long timeout = EelContextSettingBuilder.DEFAULT_TIMEOUT.toSeconds();
 
     @Option(name = "--precision",
         metaVar = "number",
@@ -117,15 +129,44 @@ class Config {
         return this;
     }
 
+
+    @Option(name = "--defs", aliases = {"--definitions"},
+        metaVar = "propertiesFile",
+        usage = "Add all the definitions in a properties file to the symbols table")
+    private void loadDefinitions(@Nonnull File propertiesFile) throws CmdLineException {
+        Properties extra;
+
+        try (
+            FileInputStream source = new FileInputStream(propertiesFile);
+        ) {
+            extra = new EelProperties().load(source);
+        } catch (IOException e) {
+            throw new CmdLineException(parser, "Can not read file '" + propertiesFile.getAbsolutePath() + "'", e);
+        }
+
+        for (var entry : extra.entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+
+            setDefinition(key.toString(), value.toString());
+        }
+    }
+
     @Option(name = "-D", aliases = {"--define"},
         metaVar = "key=value",
         usage = "Add a definition to the symbols table")
-    private void setDefinitions(@Nonnull String input) throws CmdLineException {
+    private void setDefinition(@Nonnull String input) throws CmdLineException {
         String[] parts = input.split("=", 2);
-        String old = definitions.put(parts[0], parts.length == 1 ? "": parts[1]);
+        String key = parts[0];
+        String value = parts.length == 1 ? "" : parts[1];
+        setDefinition(key, value);
+    }
+
+    private void setDefinition(@Nonnull String key, @Nonnull String value) throws CmdLineException {
+        String old = definitions.put(key, value);
 
         if (old != null) {
-            throw new CmdLineException(parser, "'" + parts[0] + "' is already in the symbols table");
+            throw new CmdLineException(parser, "'" + key + "' is already in the symbols table");
         }
     }
 
@@ -229,6 +270,7 @@ class Config {
         return Collections.unmodifiableMap(definitions);
     }
 
+
     /**
      * Returns the default value returned by the symbols table if a required key is not present
      * @return the default value returned by the symbols table if a required key is not present
@@ -236,6 +278,16 @@ class Config {
     @Nullable
     String defaultValue() {
         return defaultValue;
+    }
+
+
+    /**
+     * Returns the maximum allowed duration of an EEL expression
+     * @return the maximum allowed duration of an EEL expression
+     */
+    @Nonnull
+    public Duration timeout() {
+        return Duration.ofSeconds(timeout);
     }
 
     /**

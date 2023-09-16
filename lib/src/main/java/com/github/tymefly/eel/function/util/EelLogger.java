@@ -61,7 +61,7 @@ public class EelLogger {
      * The EEL syntax for this function is:
      * <ul>
      *   <li><code>Log.error( value )</code> - write a value to the logger</li>
-     *   <li><code>Log.error( format, value... )</code> - write a formatted message to the logger</li>
+     *   <li><code>Log.error( message, value... )</code> - write a formatted message to the logger</li>
      * </ul>
      * @param first     Either the value to be logged or the formatting string
      * @param others    arguments for logging
@@ -96,7 +96,7 @@ public class EelLogger {
      * The EEL syntax for this function is:
      * <ul>
      *   <li><code>Log.warn( value )</code> - write a value to the logger</li>
-     *   <li><code>Log.warn( format, value... )</code> - write a formatted message to the logger</li>
+     *   <li><code>Log.warn( message, value... )</code> - write a formatted message to the logger</li>
      * </ul>
      * @param first     Either the value to be logged or the formatting string
      * @param others    arguments for logging
@@ -131,7 +131,7 @@ public class EelLogger {
      * The EEL syntax for this function is:
      * <ul>
      *   <li><code>Log.info( value )</code> - write a value to the logger</li>
-     *   <li><code>Log.info( format, value... )</code> - write a formatted message to the logger</li>
+     *   <li><code>Log.info( message, value... )</code> - write a formatted message to the logger</li>
      * </ul>
      * @param first     Either the value to be logged or the formatting string
      * @param others    arguments for logging
@@ -167,7 +167,7 @@ public class EelLogger {
      * The EEL syntax for this function is:
      * <ul>
      *   <li><code>Log.debug( value )</code> - write a value to the logger</li>
-     *   <li><code>Log.debug( format, value... )</code> - write a formatted message to the logger</li>
+     *   <li><code>Log.debug( message, value... )</code> - write a formatted message to the logger</li>
      * </ul>
      * @param first     Either the value to be logged or the formatting string
      * @param others    arguments for logging
@@ -203,7 +203,7 @@ public class EelLogger {
      * The EEL syntax for this function is:
      * <ul>
      *   <li><code>Log.trace( value )</code> - write a value to the logger</li>
-     *   <li><code>Log.trace( format, value... )</code> - write a formatted message to the logger</li>
+     *   <li><code>Log.trace( message, value... )</code> - write a formatted message to the logger</li>
      * </ul>
      * @param first     Either the value to be logged or the formatting string
      * @param others    arguments for logging

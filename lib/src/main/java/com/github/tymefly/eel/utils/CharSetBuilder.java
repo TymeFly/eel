@@ -43,9 +43,9 @@ public class CharSetBuilder {
     public CharSetBuilder range(char from, char to) throws IllegalArgumentException {
         Preconditions.checkArgument((from <= to), "Invalid character range (%d -> %d)", (int) from, (int) to);
 
-        do {
-            backing.add(from);
-        } while (from++ != to);
+        while (from <= to) {
+            backing.add(from++);
+        }
 
         return this;
     }

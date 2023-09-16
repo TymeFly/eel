@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.function.date.DateFactory;
+import com.github.tymefly.eel.function.date.Offset;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
@@ -16,6 +17,8 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class FormatDate {
     private final DateFactory dateFactory;
+    private final Offset dateOffsets;
+
 
     /** Application constructor */
     public FormatDate() {
@@ -29,15 +32,17 @@ public class FormatDate {
     @VisibleForTesting
     FormatDate(@Nonnull DateFactory dateFactory) {
         this.dateFactory = dateFactory;
+        this.dateOffsets = new Offset();
     }
 
 
     /**
-     * Entry point for the {@code format.date} function that returns any given DATE in a customised formatted
+     * Entry point for the {@code format.date} function, which returns any given DATE in a customised formatted
      * <br>
-     * The EEL syntax for this function is <code>format.date( date, format )</code>
+     * The EEL syntax for this function is <code>format.date( date, format, offsets... )</code>
      * @param format    Format of the returned string.
      * @param date      date to format
+     * @param offsets   optional offsets.
      * @return the formatted date
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
@@ -45,18 +50,17 @@ public class FormatDate {
      */
     @Nonnull
     @EelFunction(name = "format.date")
-    public String formatDate(@Nonnull String format, @Nonnull ZonedDateTime date) {
-        String result = DateTimeFormatter.ofPattern(format)
-            .format(date);
+    public String formatDate(@Nonnull String format, @Nonnull ZonedDateTime date, @Nonnull String... offsets) {
+        date = dateOffsets.offset(date, offsets);
 
-        return result;
+        return DateTimeFormatter.ofPattern(format)
+            .format(date);
     }
 
 
     /**
-     * Entry point for the {@code format.utc} function that returns a DATE in the UTC zone with optional offsets
-     * in a customised formatted. This function is the equivalent of
-     * {@code format.date( date.utc(), format ) }
+     * Entry point for the {@code format.utc} function, which returns a DATE in the UTC zone with optional offsets
+     * in a customised formatted. This function is the equivalent of {@code format.date( date.utc(), format ) }
      * <br>
      * The EEL syntax for this function is:
      * <ul>
@@ -67,7 +71,7 @@ public class FormatDate {
      * @param offsets   optional offsets.
      * @return the formatted date
      * @see DateFactory#utc(String...)
-     * @see #formatDate(String, ZonedDateTime)
+     * @see #formatDate(String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
@@ -82,9 +86,8 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.local} function that returns a DATE in the local time zone with optional
-     * offsets in a customised formatted. This function is the equivalent of
-     * {@code format.date( date.local(), format ) }
+     * Entry point for the {@code format.local} function, which returns a DATE in the local time zone with optional
+     * offsets in a customised formatted. This function is the equivalent of {@code format.date( date.local(), format )}
      * <br>
      * The EEL syntax for this function is:
      * <ul>
@@ -96,7 +99,7 @@ public class FormatDate {
      * @param offsets   optional offsets.
      * @return the formatted date
      * @see DateFactory#local(String...) (String...)
-     * @see #formatDate(String, ZonedDateTime)
+     * @see #formatDate(String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
@@ -111,7 +114,7 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.local} function that returns a DATE the specified zone with optional
+     * Entry point for the {@code format.local} function, which returns a DATE the specified zone with optional
      * offsets in a customised formatted. This function is the equivalent of
      * {@code format.date( date.at( zone ), format ) }
      * <br>
@@ -126,7 +129,7 @@ public class FormatDate {
      * @param offsets   optional offsets.
      * @return the formatted date
      * @see DateFactory#at(String, String...) (String...)
-     * @see #formatDate(String, ZonedDateTime)
+     * @see #formatDate(String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>

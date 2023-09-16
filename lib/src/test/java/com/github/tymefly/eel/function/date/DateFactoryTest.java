@@ -1,5 +1,6 @@
 package com.github.tymefly.eel.function.date;
 
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -9,7 +10,6 @@ import java.time.temporal.ChronoUnit;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.EelContext;
-import com.github.tymefly.eel.exception.EelFunctionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -177,10 +177,7 @@ public class DateFactoryTest {
      */
     @Test
     public void test_at_badZone() {
-        EelFunctionException actual =
-            Assert.assertThrows(EelFunctionException.class, () -> new DateFactory().at("badZone"));
-
-        Assert.assertEquals("Unexpected message", "Invalid Zone 'badZone'", actual.getMessage());
+        Assert.assertThrows(DateTimeException.class, () -> new DateFactory().at("badZone"));
     }
 
 

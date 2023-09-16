@@ -1,8 +1,9 @@
 package com.github.tymefly.eel;
 
+import java.time.Duration;
+
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import func.functions2.Half;
 import func.functions2.Times2;
 import org.junit.Assert;
@@ -29,8 +30,10 @@ public class UdfIsolationIntegrationTest {
     public void test_class() {
         EelContext withUdf = EelContext.factory()
             .withUdfClass(Half.class)
+            .withTimeout(Duration.ofSeconds(0))
             .build();
         EelContext withoutUdf = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
             .build();
 
         helper(withUdf, withoutUdf);
@@ -44,8 +47,10 @@ public class UdfIsolationIntegrationTest {
     public void test_package() {
         EelContext withUdf = EelContext.factory()
             .withUdfPackage(Times2.class.getPackage())     // Class in same package as "half"
+            .withTimeout(Duration.ofSeconds(0))
             .build();
         EelContext withoutUdf = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
             .build();
 
         helper(withUdf, withoutUdf);

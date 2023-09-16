@@ -9,8 +9,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
-
 /**
  * Helper methods for EEL date functions
  */
@@ -25,19 +23,11 @@ class DateHelper {
      * Convert a zone name to a ZoneId
      * @param zone  The case-insensitive name of a Zone
      * @return      The associated ZoneId
-     * @throws EelFunctionException if the {@code zone} is not valid
+     * @throws DateTimeException if the {@code zone} is not valid
      */
     @Nonnull
-    static ZoneId toZone(@Nonnull String zone) throws EelFunctionException {
-        ZoneId zoneId;
-
-        try {
-            zoneId = ZoneId.of(zone);
-        } catch (DateTimeException e) {
-            throw new EelFunctionException("Invalid Zone '%s'", zone);
-        }
-
-        return zoneId;
+    static ZoneId toZone(@Nonnull String zone) throws DateTimeException {
+        return ZoneId.of(zone);
     }
 
 
@@ -47,31 +37,28 @@ class DateHelper {
      * @param spec  The offset from {@code date}. The format of the string is a signed number followed by the Period.
      *              Positive offsets are in the future; negative offsets are in the past
      * @return      an adjusted date
+     * @throws DateTimeException if the {@code spec} is invalid
      */
     @Nonnull
-    static ZonedDateTime applyOffset(@Nonnull ZonedDateTime date, @Nonnull String spec) {
+    static ZonedDateTime applyOffset(@Nonnull ZonedDateTime date, @Nonnull String spec) throws DateTimeException {
         Matcher matcher = OFFSET_PATTERN.matcher(spec);
 
         if (!matcher.matches()) {
-            throw new EelFunctionException("Invalid Date offset '%s'", spec);
+            throw new DateTimeException("Invalid Date offset '" + spec + "'");
         }
 
         long offset = Long.parseLong(matcher.group(1));
         Period period = Period.lookup(matcher.group(2));
 
-        try {
-            date = switch (period) {
-                case YEAR -> date.plusYears(offset);
-                case MONTH -> date.plusMonths(offset);
-                case WEEK -> date.plus(offset, ChronoUnit.WEEKS);
-                case DAY -> date.plusDays(offset);
-                case HOUR -> date.plusHours(offset);
-                case MINUTE -> date.plusMinutes(offset);
-                case SECOND -> date.plusSeconds(offset);
-            };
-        } catch (DateTimeException e) {
-            throw new EelFunctionException("Invalid Date field '%s'", spec);
-        }
+        date = switch (period) {
+            case YEAR -> date.plusYears(offset);
+            case MONTH -> date.plusMonths(offset);
+            case WEEK -> date.plus(offset, ChronoUnit.WEEKS);
+            case DAY -> date.plusDays(offset);
+            case HOUR -> date.plusHours(offset);
+            case MINUTE -> date.plusMinutes(offset);
+            case SECOND -> date.plusSeconds(offset);
+        };
 
         return date;
     }
@@ -83,10 +70,10 @@ class DateHelper {
      * @param spec  The field and value to set. The format of the string is a signed number followed by the Period.
      *              Positive offsets are in the future; negative offsets are in the past
      * @return a copy of the {@code date} with a specific field set to a given value
-     * @throws EelFunctionException if the {@code spec} is invalid
+     * @throws DateTimeException if the {@code spec} is invalid
      */
     @Nonnull
-    static ZonedDateTime setField(@Nonnull ZonedDateTime date, @Nonnull String spec) throws EelFunctionException {
+    static ZonedDateTime setField(@Nonnull ZonedDateTime date, @Nonnull String spec) throws DateTimeException {
         Matcher matcher = OFFSET_PATTERN.matcher(spec);
 
         if (matcher.matches()) {
@@ -111,7 +98,7 @@ class DateHelper {
         }
 
         if (date == null) {
-            throw new EelFunctionException("Invalid Date field '%s'", spec);
+            throw new DateTimeException("Invalid Date field '" + spec + "'");
         }
 
         return date;

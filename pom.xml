@@ -4,11 +4,12 @@
 
     <groupId>com.github.tymefly</groupId>
     <artifactId>eel</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>Extensible Expression Language</name>
     <packaging>pom</packaging>
 
     <modules>
+        <module>parent</module>
         <module>lib</module>
         <module>integration</module>
         <module>evaluate</module>

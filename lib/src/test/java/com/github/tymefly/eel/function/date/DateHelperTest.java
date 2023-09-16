@@ -1,10 +1,10 @@
 package com.github.tymefly.eel.function.date;
 
+import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class DateHelperTest {
         Assert.assertEquals("-5", ZoneId.of("-5"), DateHelper.toZone("-5"));
         Assert.assertEquals("Paris", ZoneId.of("Europe/Paris"), DateHelper.toZone("Europe/Paris"));
 
-        Assert.assertThrows(EelFunctionException.class, () -> DateHelper.toZone("unknown"));
+        Assert.assertThrows(DateTimeException.class, () -> DateHelper.toZone("unknown"));
     }
 
 
@@ -74,17 +74,17 @@ public class DateHelperTest {
     @Test
     public void test_applyOffset_invalid() {
         Assert.assertThrows("No digits",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.applyOffset(date, "s"));
         Assert.assertThrows("No units",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.applyOffset(date, "123"));
         Assert.assertThrows("Bad units",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.applyOffset(date, "123X"));
 
         Assert.assertThrows("Out of range",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.applyOffset(date, "-99999999999y"));
     }
 
@@ -119,10 +119,10 @@ public class DateHelperTest {
     @Test
     public void test_setField_invalid() {
         Assert.assertThrows("Weeks are unsupported",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-2w"));
         Assert.assertThrows("Bad units",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-2X"));
     }
 
@@ -132,22 +132,22 @@ public class DateHelperTest {
     @Test
     public void test_setField_rangeError_max() {
         Assert.assertThrows("Years",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "99999999999y"));
         Assert.assertThrows("Months",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "13M"));
         Assert.assertThrows("Days",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "32d"));
         Assert.assertThrows("Hours",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "24h"));
         Assert.assertThrows("Minutes",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "60m"));
         Assert.assertThrows("Seconds",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "60s"));
     }
 
@@ -157,22 +157,22 @@ public class DateHelperTest {
     @Test
     public void test_setField_rangeError_min() {
         Assert.assertThrows("Years",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-99999999999y"));
         Assert.assertThrows("Months",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "0M"));
         Assert.assertThrows("Days",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "0d"));
         Assert.assertThrows("Hours",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-1h"));
         Assert.assertThrows("Minutes",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-1m"));
         Assert.assertThrows("Seconds",
-            EelFunctionException.class,
+            DateTimeException.class,
             () -> DateHelper.setField(date, "-1s"));
     }
 }

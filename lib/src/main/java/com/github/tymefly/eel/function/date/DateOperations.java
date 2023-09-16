@@ -14,7 +14,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class DateOperations {
     /**
-     * Entry point for the {@code duration} function that returns the difference between two dates in
+     * Entry point for the {@code duration} function, which returns the difference between two dates in
      * a specific unit of time. If the duration can not be exactly expressed in the specified unit then the
      * fractional part is removed.
      * <br>

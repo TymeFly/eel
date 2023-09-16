@@ -40,17 +40,19 @@ public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
      * Adds a map to the generated SymbolsTable. This method may be called multiple times if more than
      * map is required
      * @param values    a collection of key-value pairs that will be added to the generated symbols table
-     * @return      a fluent interface
+     * @return          a fluent interface
      */
     @Nonnull
     SymbolTableBuilder withValues(@Nonnull Map<String, String> values);
 
     /**
      * Adds a callback function from the symbols table that allows the client to read symbols in a flexible way.
-     * This method may be called multiple times if more than one lookup function is required
+     * This method may be called multiple times if more than one lookup function is required.
+     * <br>
+     * <b>Note:</b> It is required that for any given key the lookup function always returns the same value.
      * @param lookup    A function that is passed the lookup key and returns the associated value or
      *                      {@literal null} of there is no related value.
-     * @return      a fluent interface
+     * @return          a fluent interface
      */
     @Nonnull
     SymbolTableBuilder withLookup(@Nonnull Function<String, String> lookup);
@@ -58,8 +60,8 @@ public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
     /**
      * Set a default value that is returned when a symbol can not be found in the symbols table.
      * As this always returns the {@code defaultValue} no further strategies can be added to this symbols table
-     * @param defaultValue      The default value that is returned when
-     * @return      a fluent interface
+     * @param defaultValue  The default value that is returned when
+     * @return              a fluent interface
      */
     @Nonnull
     BasicSymbolTableBuilder withDefault(@Nonnull String defaultValue);

@@ -1,5 +1,7 @@
 package com.github.tymefly.eel.evaluate;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,13 @@ public class ConfigTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        URI propertiesFile = this.getClass()
+            .getClassLoader()
+            .getResource("symbols-table.properties")
+            .toURI();
+        String path = new File(propertiesFile).getCanonicalPath();
+
         badOption = Config.parse("--expected-error");
         requestHelp = Config.parse("--help");
         minimal = Config.parse("minimal");
@@ -41,6 +49,7 @@ public class ConfigTest {
             "--props",
             "-D", "key1=value1",
             "-D", "key2",
+            "--definitions", path,
             "--default", "<undefined>",
             "--precision", "5",
             "--udf-class", "test.functions1.Plus1",
@@ -114,7 +123,15 @@ public class ConfigTest {
         Assert.assertEquals("badOption", Collections.emptyMap(), badOption.definitions());
         Assert.assertEquals("requestHelp", Collections.emptyMap(), requestHelp.definitions());
         Assert.assertEquals("minimal", Collections.emptyMap(), minimal.definitions());
-        Assert.assertEquals("maximal", Map.of("key1", "value1", "key2", ""), maximal.definitions());
+        Assert.assertEquals("maximal",
+            Map.ofEntries(
+                Map.entry("key1", "value1"),
+                Map.entry("key2", ""),
+                Map.entry("a", "true"),
+                Map.entry("b", "123"),
+                Map.entry("c", "Hello World"),
+                Map.entry("d", "2000-01-02T03:04:05Z")),
+            maximal.definitions());
     }
 
     /**
@@ -222,7 +239,23 @@ public class ConfigTest {
             "should fail");
 
         Assert.assertFalse("should not be valid", config.isValid());
-        Assert.assertTrue("Help message not written",
+        Assert.assertTrue("Error message not written",
             stdErr.getLog().contains("Error: 'key' is already in the symbols table"));
+    }
+
+    /**
+     * Unit test {@link Config}
+     */
+    @Test
+    public void test_badPropertiesFile() {
+        Config config = Config.parse("--definitions", "path/to/unknown/file.xxxx");
+
+        Assert.assertFalse("should not be valid", config.isValid());
+
+        String log = stdErr.getLogWithNormalizedLineSeparator()
+            .split("\n")[0]
+            .replace('\\', '/');
+        Assert.assertTrue("Error message not written",
+            log.matches("Error: Can not read file '.*/path/to/unknown/file.xxxx'"));
     }
 }

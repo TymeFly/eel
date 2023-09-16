@@ -17,12 +17,13 @@ import com.github.tymefly.eel.utils.StringUtils;
 public class Text {
 
     /**
-     * Entry point for the {@code upper} function that returns the {@code text} converted to upper case
+     * Entry point for the {@code upper} function, which returns the {@code text} converted to upper case
      * <br>
      * The EEL syntax for this function is <code>upper( text )</code>
      * @param text  to convert to upper case
      * @return text in upper case
      * @see #lower(String) 
+     * @see #title(String) 
      */
     @EelFunction(name = "upper")
     @Nonnull
@@ -31,12 +32,13 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code lower} function that returns the {@code text} converted to lower case
+     * Entry point for the {@code lower} function, which returns the {@code text} converted to lower case
      * <br>
      * The EEL syntax for this function is <code>lower( text )</code>
      * @param text  to convert to lower case
      * @return text in lower case
      * @see #upper(String) 
+     * @see #title(String)
      */
     @EelFunction(name = "lower")
     @Nonnull
@@ -44,9 +46,26 @@ public class Text {
         return text.toLowerCase();
     }
     
-    
+
     /**
-     * Entry point for the {@code left} function that returns the first part of some text
+     * Entry point for the {@code title} function, which returns the {@code text} converted to title case.
+     * <br>
+     * The EEL syntax for this function is <code>title( text )</code>
+     * @param text  to convert to lower case
+     * @return text in title case
+     * @see #upper(String)
+     * @see #lower(String) 
+     * @since 1.1
+     */
+    @EelFunction(name = "title")
+    @Nonnull
+    public String title(@Nonnull String text) {
+        return StringUtils.toTitleCase(text);
+    }
+
+
+    /**
+     * Entry point for the {@code left} function, which returns the first part of some text
      * <br>
      * The EEL syntax for this function is <code>left( text, count )</code>
      * @param text      Text from which the left most characters are returned
@@ -63,7 +82,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code right} function that returns the last part of some text
+     * Entry point for the {@code right} function, which returns the last part of some text
      * <br>
      * The EEL syntax for this function is <code>right( text, count )</code>
      * @param text      Text from which the right most characters are returned
@@ -80,7 +99,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code mid} function that returns the middle part of some text
+     * Entry point for the {@code mid} function, which returns the middle part of some text
      * <br>
      * The EEL syntax for this function is <code>mid( text, offset, end )</code>
      * @param text      Text from which the right most characters are returned
@@ -99,7 +118,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code beforeFirst} function that returns all the text before the first occurrence
+     * Entry point for the {@code beforeFirst} function, which returns all the text before the first occurrence
      * of the {@code delimiter}
      * <br>
      * The EEL syntax for this function is <code>beforeFirst( text, delimiter )</code>
@@ -119,7 +138,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code afterFirst} function that returns all the text after the first occurrence
+     * Entry point for the {@code afterFirst} function, which returns all the text after the first occurrence
      * of the {@code delimiter}
      * <br>
      * The EEL syntax for this function is <code>afterFirst( text, delimiter )</code>
@@ -139,7 +158,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code beforeLast} function that returns all the text before the last occurrence
+     * Entry point for the {@code beforeLast} function, which returns all the text before the last occurrence
      * of the {@code delimiter}
      * <br>
      * The EEL syntax for this function is <code>beforeLast( text, delimiter )</code>
@@ -159,7 +178,7 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code beforeFirst} function that returns all the text after the last occurrence
+     * Entry point for the {@code beforeFirst} function, which returns all the text after the last occurrence
      * of the {@code delimiter}
      * <br>
      * The EEL syntax for this function is <code>afterLast( text, delimiter )</code>
@@ -264,7 +283,7 @@ public class Text {
     
 
     /**
-     * Entry point for the {@code trim} function that returns the {@code text} with any leading and
+     * Entry point for the {@code trim} function, which returns the {@code text} with any leading and
      * trailing spaces removed
      * <br>
      * The EEL syntax for this function is <code>trim( text )</code>
@@ -279,13 +298,14 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code len} function that returns the length of a string, including leading and 
+     * Entry point for the {@code len} function, which returns the length of a string, including leading and 
      * trailing spaces
      * <br>
      * The EEL syntax for this function is <code>len( text )</code>
      * @param text  text to check
      * @return the length of {@code text}, including leading and trailing spaces
-     * @see #isEmpty(String) 
+     * @see #isEmpty(String)
+     * @see #isBlank(String)
      */
     @EelFunction(name = "len")
     public int len(@Nonnull String text) {
@@ -293,12 +313,13 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code isEmpty} function that returns the true only if the {@code text} is empty
+     * Entry point for the {@code isEmpty} function, which returns the true only if the {@code text} is empty
      * <br>
      * The EEL syntax for this function is <code>isEmpty( text )</code>
      * @param text  text to check
      * @return the {@literal true} only if the {@code text} is empty
-     * @see #len(String) 
+     * @see #len(String)
+     * @see #isBlank(String)
      */
     @EelFunction(name = "isEmpty")
     public boolean isEmpty(@Nonnull String text) {
@@ -306,7 +327,23 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code indexOf} function that returns the 0 based index of the first occurrence of
+     * Entry point for the {@code isEmpty} function, which returns the true only if the {@code text} is empty or
+     * contains whitespace
+     * <br>
+     * The EEL syntax for this function is <code>isBlank( text )</code>
+     * @param text  text to check
+     * @return the {@literal true} only if the {@code text} is empty or contains whitespace
+     * @see #len(String)
+     * @see #isEmpty(String)
+     * @since 1.1
+     */
+    @EelFunction(name = "isBlank")
+    public boolean isBlank(@Nonnull String text) {
+        return text.isBlank();
+    }
+
+    /**
+     * Entry point for the {@code indexOf} function, which returns the 0 based index of the first occurrence of
      * {@code subString} in {@code text}, or -1 if {@code text} does not contain {@code subString}
      * <br>
      * The EEL syntax for this function is <code>indexOf( text, subString )</code>

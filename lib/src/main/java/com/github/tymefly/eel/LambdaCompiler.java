@@ -1,8 +1,6 @@
 package com.github.tymefly.eel;
 
 
-import java.util.WeakHashMap;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -14,11 +12,6 @@ import com.github.tymefly.eel.utils.BigDecimals;
  * Class that creates {@link Executor} objects for the Parser.
  */
 class LambdaCompiler implements Compiler {
-    // Cache the executors for constants - we might well use them again
-    private static final WeakHashMap<String, Executor> TEXT_POOL = new WeakHashMap<>();
-    private static final WeakHashMap<Boolean, Executor> LOGIC_POOL = new WeakHashMap<>();
-    private static final WeakHashMap<Number, Executor> NUMBER_POOL = new WeakHashMap<>();
-
     private final EelContext context;
 
 
@@ -64,36 +57,24 @@ class LambdaCompiler implements Compiler {
 
                 //*** Constants ***//
 
-
     @Override
     @Nonnull
     public Executor textConstant(@Nonnull String value) {
-        return TEXT_POOL.computeIfAbsent(value, v -> (s -> Value.of(v)));
+        return s -> Value.of(value);
     }
 
     @Override
     @Nonnull
     public Executor logicConstant(boolean value) {
-        return LOGIC_POOL.computeIfAbsent(value, v -> (s -> Value.of(v)));
+        return s -> Value.of(value);
     }
 
     @Override
     @Nonnull
     public Executor numericConstant(@Nonnull Number value) {
-        return NUMBER_POOL.computeIfAbsent(value, v -> (s -> Value.of(v)));
+        return s -> Value.of(value);
     }
 
-    @Nonnull
-    @Override
-    public Executor pi() {
-        return numericConstant(Math.PI);
-    }
-
-    @Nonnull
-    @Override
-    public Executor e() {
-        return numericConstant(Math.E);
-    }
 
                 //*** ternary Op ***//
 
@@ -120,11 +101,17 @@ class LambdaCompiler implements Compiler {
         Type leftType = leftValue.getType();
         Type rightType = rightValue.getType();
 
-        if (leftType == rightType) {
-            equal = leftValue.equals(rightValue);
-        } else if ((leftType == Type.TEXT) || (rightType == Type.TEXT)) {       // All values can be converted to text
+        if ((leftType == Type.TEXT) || (rightType == Type.TEXT)) {              // All values can be converted to text
             equal = leftValue.asText().equals(rightValue.asText());
-        } else { // Logic and Date can be converted to numbers
+        } else if ((leftType == Type.LOGIC) && (rightType == Type.LOGIC)) {
+            equal = leftValue.asLogic() == rightValue.asLogic();
+        } else {
+            /*
+                Converting Dates to Numbers returns a numeric offset from UTC. As a consequence two dates are
+                considered equal if they represent the same instant even if they are in different time zones.
+                This is required so that the =, <, <=, => and > operators all give consistent results.
+             */
+
             equal = BigDecimals.eq(leftValue.asNumber(), rightValue.asNumber());
         }
 
@@ -205,7 +192,8 @@ class LambdaCompiler implements Compiler {
     @Override
     @Nonnull
     public Executor divide(@Nonnull Executor left, @Nonnull Executor right) {
-        return s -> Value.of(left.execute(s).asNumber().divide(right.execute(s).asNumber(), context.getMathContext()));
+        return s -> Value.of(
+            left.execute(s).asNumber().divide(right.execute(s).asNumber(), context.getMathContext()));
     }
 
     @Override

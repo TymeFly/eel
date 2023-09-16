@@ -11,6 +11,48 @@ public class StringUtils {
 
 
     /**
+     * Returns a string containing all the characters in the {@code text} String but in title case.
+     * Characters will be converted upper case only if they are either the first character in the string or
+     * if they are proceeded by at least one whitespace character. All other characters will be converted to
+     * lower case. The definition of a whitespace, uppercase letter and lowercase letter are all based on the
+     * functions in {@link Character}
+     * @param text      text that will be returned with the first character in title case
+     * @return a string containing all the characters in the {@code text} String but in title case.
+     * @see Character#isWhitespace(int)
+     * @see Character#isUpperCase(int)
+     * @see Character#isLowerCase(int)
+     * @see Character#toUpperCase(int)
+     * @see Character#toLowerCase(int)
+     */
+    @Nonnull
+    public static String toTitleCase(@Nonnull String text) {
+        int length = text.length();
+        StringBuilder builder = new StringBuilder(length);
+        int index = 0;
+        boolean toUpper = true;
+
+        while (index < length) {
+            int codePoint = text.codePointAt(index);
+
+            if (toUpper && Character.isLowerCase(codePoint)) {
+                codePoint = Character.toUpperCase(codePoint);
+                toUpper = false;
+            } else if (!toUpper && Character.isUpperCase(codePoint)) {
+                codePoint = Character.toLowerCase(codePoint);
+            } else {
+                toUpper = Character.isWhitespace(codePoint);
+            }
+
+            builder.appendCodePoint(codePoint);
+
+            index += Character.isBmpCodePoint(codePoint) ? 1 : 2;
+        }
+
+        return builder.toString();
+    }
+
+
+    /**
      * Returns a new string containing all the characters in the {@code text} String but with the
      * case of the first character changed to upper case
      * If the first character is not alphabetical then the returned string is equal to the input {@code text}

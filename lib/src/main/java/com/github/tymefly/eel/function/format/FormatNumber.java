@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
@@ -56,14 +55,14 @@ public class FormatNumber {
      * @param radix     radix of the String representation. This is in the range {@link Character#MIN_RADIX} to
      *                  {@link Character#MAX_RADIX} inclusive.
      * @return the number in hex.
-     * @throws EelFunctionException if the radix is out of range
+     * @throws IllegalArgumentException if the radix is out of range
      */
     @Nonnull
     @EelFunction(name = "format.number")
     public String formatNumber(@Nonnull BigInteger value,
-                               int radix) throws EelFunctionException {
+                               int radix) throws IllegalArgumentException {
         if ((radix < Character.MIN_RADIX) || (radix > Character.MAX_RADIX)) {
-            throw new EelFunctionException("Radix %d is out of range", radix);
+            throw new IllegalArgumentException("Radix " + radix + " is out of range");
         }
 
         return value.toString(radix);

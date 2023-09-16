@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * We are not using Guava because it's a huge library when all we need is one annotation
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
 @Documented
 public @interface VisibleForTesting {
 }

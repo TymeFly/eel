@@ -30,12 +30,6 @@ interface Compiler {
     @Nonnull
     Executor numericConstant(@Nonnull Number value);
 
-    @Nonnull
-    Executor pi();
-
-    @Nonnull
-    Executor e();
-
 
     @Nonnull
     Executor condition(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second);

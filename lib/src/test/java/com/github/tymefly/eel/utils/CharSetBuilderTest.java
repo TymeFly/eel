@@ -44,6 +44,16 @@ public class CharSetBuilderTest {
      * Unit test {@link CharSetBuilder#range(char, char)}
      */
     @Test
+    public void test_range_single() {
+        Assert.assertEquals("Expected all digits",
+            Set.of('0'),
+            new CharSetBuilder().range('0', '0').immutable());
+    }
+
+    /**
+     * Unit test {@link CharSetBuilder#range(char, char)}
+     */
+    @Test
     public void test_range_invalid() {
         Assert.assertThrows(IllegalArgumentException.class,
             () -> new CharSetBuilder().range('1', '0'));

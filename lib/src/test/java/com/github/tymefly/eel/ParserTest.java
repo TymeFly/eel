@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.exception.EelConvertException;
 import com.github.tymefly.eel.exception.EelSyntaxException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -366,6 +365,24 @@ public class ParserTest {
 
         Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
         Assert.assertTrue("Unexpected value: " + actual.asText(), actual.asText().startsWith("3.141592653"));
+    }
+
+    /**
+     * Unit test {@link Parser#parse()}
+     */
+    @Test
+    public void test_c() {
+        mockToken(Token.EXPRESSION_EXPANSION);
+        mockToken(Token.C);
+        mockToken(Token.RIGHT_PARENTHESES);
+        mockToken(Token.END_OF_PROGRAM);
+
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .execute(symbolsTable);
+
+        Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
+        Assert.assertEquals("Unexpected value", "299792458", actual.asText());
     }
 
     /**
@@ -1614,13 +1631,11 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelConvertException actual = Assert.assertThrows(EelConvertException.class,
-            () -> new Parser(context, tokenizer, compiler)
+        Value actual =new Parser(context, tokenizer, compiler)
                 .parse()
-                .execute(symbolsTable));
+                .execute(symbolsTable);
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().matches("Can not convert Value\\{type=DATE, value=[0-9T:-]+Z} to LOGIC"));
+        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
     }
 
 
@@ -1668,7 +1683,27 @@ public class ParserTest {
      * Unit test {@link Parser#parse()}
      */
     @Test
-    public void test_cast_Logic_Date() {
+    public void test_cast_Logic_Date_False() {
+        mockToken(Token.EXPRESSION_EXPANSION);
+        mockToken(Token.CONVERT_TO_DATE);
+        mockToken(Token.LEFT_PARENTHESES);
+        mockToken(Token.FALSE);
+        mockToken(Token.RIGHT_PARENTHESES);
+        mockToken(Token.RIGHT_PARENTHESES);
+        mockToken(Token.END_OF_PROGRAM);
+
+        Value actual = new Parser(context, tokenizer, compiler)
+                .parse()
+                .execute(symbolsTable);
+
+        Assert.assertEquals("Unexpected value", Value.of(EelContext.FALSE_DATE), actual);
+    }
+
+    /**
+     * Unit test {@link Parser#parse()}
+     */
+    @Test
+    public void test_cast_Logic_Date_True() {
         mockToken(Token.EXPRESSION_EXPANSION);
         mockToken(Token.CONVERT_TO_DATE);
         mockToken(Token.LEFT_PARENTHESES);
@@ -1677,14 +1712,11 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelConvertException actual = Assert.assertThrows(EelConvertException.class,
-            () -> new Parser(context, tokenizer, compiler)
+        Value actual = new Parser(context, tokenizer, compiler)
                 .parse()
-                .execute(symbolsTable));
+                .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected message",
-            "Can not convert Value{type=LOGIC, value=true} to DATE",
-            actual.getMessage());
+        Assert.assertEquals("Unexpected value", Value.of(ZonedDateTime.of(1970, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC)), actual);
     }
 
     /**

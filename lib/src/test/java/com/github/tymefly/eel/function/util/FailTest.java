@@ -1,5 +1,6 @@
 package com.github.tymefly.eel.function.util;
 
+import com.github.tymefly.eel.exception.EelFailException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class FailTest {
      */
     @Test
     public void test_Fail() {
-        Fail.EelFailException actual = Assert.assertThrows(Fail.EelFailException.class,
+        EelFailException actual = Assert.assertThrows(EelFailException.class,
             () -> new Fail().fail("Bye!"));
 
         Assert.assertEquals("Unexpected message", "Bye!", actual.getMessage());

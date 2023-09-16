@@ -60,7 +60,8 @@ public class Evaluate {
     @Nonnull
     private EelContext createContext() {
         EelContextBuilder builder = EelContext.factory()
-            .withPrecision(config.precision());
+            .withPrecision(config.precision())
+            .withTimeout(config.timeout());
 
         for (var function : config.functionList()) {
             builder = builder.withUdfClass(function);

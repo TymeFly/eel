@@ -9,7 +9,6 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.builder.EelBuilder;
-import com.github.tymefly.eel.builder.EelContextBuilder;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
@@ -18,19 +17,23 @@ import com.github.tymefly.eel.validate.Preconditions;
 public class Eel {
     /** EEL Expression builder implementation */
     private static class EelBuilderImpl implements EelBuilder {
-        private final EelContextBuilder contextBuilder;
-        private EelContext context;
+        private final EelContextImpl.Builder contextBuilder;
+        private EelContextImpl context;
 
 
         private EelBuilderImpl() {
-            this.contextBuilder = EelContext.factory();
+            this.contextBuilder = new EelContextImpl.Builder();
         }
 
 
         @Override
         @Nonnull
         public EelBuilder withContext(@Nonnull EelContext context) {
-            this.context = Preconditions.checkNotNull(context, "Can not compile with a null context");
+            if (context instanceof EelContextImpl contextImpl) {
+                this.context = contextImpl;
+            } else {
+                throw new IllegalStateException("Invalid EelContext");
+            }
 
             return this;
         }
@@ -39,6 +42,7 @@ public class Eel {
         @Override
         public EelBuilder withMaxExpressionSize(int maxLength) {
             contextBuilder.withMaxExpressionSize(maxLength);
+            context = null;
 
             return this;
         }
@@ -47,6 +51,7 @@ public class Eel {
         @Override
         public EelBuilder withTimeout(@Nonnull Duration timeout) {
             contextBuilder.withTimeout(timeout);
+            context = null;
 
             return this;
         }
@@ -55,6 +60,7 @@ public class Eel {
         @Override
         public EelBuilder withPrecision(int precision) {
             contextBuilder.withPrecision(precision);
+            context = null;
 
             return this;
         }
@@ -65,6 +71,7 @@ public class Eel {
             Preconditions.checkNotNull(location, "Can not set a null location");
 
             contextBuilder.withUdfPackage(location);
+            context = null;
 
             return this;
         }
@@ -75,6 +82,7 @@ public class Eel {
             Preconditions.checkNotNull(udfClass, "Can not set a null function");
 
             contextBuilder.withUdfClass(udfClass);
+            context = null;
 
             return this;
         }
@@ -85,7 +93,7 @@ public class Eel {
         public Eel compile(@Nonnull String expression) {
             Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
 
-            EelContextImpl context = (EelContextImpl) (this.context != null ? this.context : contextBuilder.build());
+            resolveContext();
             Source source = new Source(expression, context.maxExpressionLength());
 
             return new Eel(context, source);
@@ -96,15 +104,22 @@ public class Eel {
         public Eel compile(@Nonnull InputStream expression) {
             Preconditions.checkNotNull(expression, "Can not parse a null input stream");
 
-            EelContextImpl context = (EelContextImpl) (this.context != null ? this.context : contextBuilder.build());
+            resolveContext();
             Source source = new Source(expression, context.maxExpressionLength());
 
             return new Eel(context, source);
         }
+
+
+        private void resolveContext() {
+            if (this.context == null) {
+                context = contextBuilder.build();
+            }
+        }
     }
 
 
-    private static final EelContextImpl DEFAULT_CONTEXT = (EelContextImpl) EelContext.factory().build();
+    private static final EelContextImpl DEFAULT_CONTEXT = new EelContextImpl.Builder().build();
 
     private final Executor expression;
 

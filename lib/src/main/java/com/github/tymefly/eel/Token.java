@@ -17,6 +17,7 @@ public enum Token {
     FALSE,
     PI,
     E,
+    C,
 
     CONCATENATE,                                    // Text Ops
 

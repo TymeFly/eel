@@ -2,7 +2,7 @@ package com.github.tymefly.eel.function.util;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.exception.EelFunctionException;
+import com.github.tymefly.eel.exception.EelFailException;
 import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
@@ -21,15 +21,6 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
  */
 @PackagedEelFunction
 public class Fail {
-    /**
-     * The exception that will be thrown by the {@code fail} function
-     */
-    public static class EelFailException extends EelFunctionException {
-        EelFailException(@Nonnull String message) {
-            super(message);
-        }
-    }
-
     /**
      * Entry point for the {@code fail} function
      * @param message   The optional message that will be passed back to the client application

@@ -2,15 +2,17 @@ package com.github.tymefly.eel;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.github.tymefly.eel.exception.EelConvertException;
-import com.github.tymefly.eel.exception.EelInternalException;
 import com.github.tymefly.eel.utils.BigDecimals;
 import com.github.tymefly.eel.utils.Convert;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -20,12 +22,21 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @Immutable
 @SuppressFBWarnings(value="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", justification="fields cache computed values")
-class Value implements Result {
-    public static final Value BLANK = new Value(Type.TEXT, "", null, null, null);
-    public static final Value ZERO = new Value(Type.NUMBER, "0", BigDecimal.ZERO, false, null);
-    public static final Value ONE = new Value(Type.NUMBER, "1", BigDecimal.ONE, true, null);
-    public static final Value TRUE = new Value(Type.LOGIC, "true", BigDecimal.ONE, true, null);
-    public static final Value FALSE = new Value(Type.LOGIC, "false", BigDecimal.ZERO, false, null);
+class Value implements EelValue, Result {
+    private static final ZonedDateTime ONE_DATE = ZonedDateTime.of(1970, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC);
+
+    static final Value BLANK = new Value(Type.TEXT, "", null, null, null);
+    static final Value ZERO = new Value(Type.NUMBER, "0", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
+    static final Value ONE = new Value(Type.NUMBER, "1", BigDecimal.ONE, true, ONE_DATE);
+    static final Value TRUE = new Value(Type.LOGIC, "true", BigDecimal.ONE, true, ONE_DATE);
+    static final Value FALSE = new Value(Type.LOGIC, "false", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
+    static final Value EPOCH_START_UTC =
+        new Value(Type.DATE, null, BigDecimal.ZERO, false, EelContext.FALSE_DATE);
+
+
+    private static final Map<String, Value> TEXT_POOL = new WeakHashMap<>();
+    private static final Map<BigDecimal, Value> NUMBER_POOL = new WeakHashMap<>();
+    private static final Map<ZonedDateTime, Value> DATE_POOL = new WeakHashMap<>();
 
 
     private final Type type;
@@ -33,6 +44,19 @@ class Value implements Result {
     private BigDecimal number;
     private Boolean logic;
     private ZonedDateTime date;
+
+
+    static {
+        // As we keep a reference to these objects as static final fields they can't be garbage collected
+        // and therefore will not be removed from the WeakHashMap
+        TEXT_POOL.put(BLANK.asText(), BLANK);
+
+        NUMBER_POOL.put(ZERO.asNumber(), ZERO);
+        NUMBER_POOL.put(ONE.asNumber(), ONE);
+
+        DATE_POOL.put(EPOCH_START_UTC.asDate(), EPOCH_START_UTC);
+    }
+
 
     private Value(@Nonnull Type type,
                   @Nullable String text,
@@ -49,15 +73,7 @@ class Value implements Result {
 
     @Nonnull
     static Value of(@Nonnull String value) {
-        Value result;
-
-        if (value.isEmpty()) {
-            result = BLANK;
-        } else {
-            result = new Value(Type.TEXT, value, null, null, null);
-        }
-
-        return result;
+        return TEXT_POOL.computeIfAbsent(value, v -> new Value(Type.TEXT, v, null, null, null));
     }
 
     @Nonnull
@@ -65,12 +81,13 @@ class Value implements Result {
         BigDecimal cleaned = BigDecimals.toBigDecimal(value);
         Value result;
 
+        // Need to be careful about the scale
         if (BigDecimals.eq(cleaned, BigDecimal.ZERO)) {
             result = ZERO;
         } else if (BigDecimals.eq(cleaned, BigDecimal.ONE)) {
             result = ONE;
         } else {
-            result = new Value(Type.NUMBER, null, cleaned, null, null);
+            result = NUMBER_POOL.computeIfAbsent(cleaned, v -> new Value(Type.NUMBER, null, v, null, null));
         }
 
         return result;
@@ -87,7 +104,7 @@ class Value implements Result {
             value = value.withNano(0);                      //   This is because conventions to dates are based on secs
         }
 
-        return new Value(Type.DATE, null, null, null, value);
+        return DATE_POOL.computeIfAbsent(value, v -> new Value(Type.DATE, null, null, null, v));
     }
 
     @Override
@@ -103,7 +120,7 @@ class Value implements Result {
             text = switch (type) {
                 case NUMBER -> Convert.to(number, String.class);
                 case DATE -> Convert.to(date, String.class);
-                default -> null;    // Value.TRUE and Value.FALSE were created with text values => no conversion
+                default -> null;    // ValueImpl.TRUE and ValueImpl.FALSE were created with text values => no conversion
             };
         }
 
@@ -158,12 +175,16 @@ class Value implements Result {
 
     @Override
     public boolean asLogic() {
-        if ((logic == null) && (type == Type.TEXT)) {
-            logic = Convert.to(text, Boolean.class);
-        }
-        // Value.ZERO and Value.ONE were created with their logic values defined, so no conversion is required
-
         if (logic == null) {
+            logic = switch (type) {
+                case TEXT -> Convert.to(text, Boolean.class);
+                case NUMBER -> Convert.to(number, Boolean.class);
+                case DATE -> Convert.to(date, Boolean.class);
+                default -> null;    // ValueImpl.TRUE and ValueImpl.FALSE already have the correct logic value
+            };
+        }
+
+        if (logic == null) {        // Should not happen - all types can be converted to Logic
             throw new EelConvertException("Can not convert %s to LOGIC", this);
         }
 
@@ -179,7 +200,7 @@ class Value implements Result {
                 date = switch (type) {
                     case TEXT -> Convert.to(text, ZonedDateTime.class);
                     case NUMBER -> Convert.to(number, ZonedDateTime.class);
-                    default -> null;    // Value.TRUE and Value.FALSE can't be converted => no conversion
+                    default -> null;    // Value.TRUE and Value.FALSE were created with date values => no conversion
                 };
             } catch (RuntimeException e) {
                 // Following code will generate a better exception.
@@ -208,16 +229,13 @@ class Value implements Result {
 
             if (this.type != value.type) {
                 equal = false;
-            } else if (type == Type.TEXT) {
-                equal = this.text.equals(value.text);
-            } else if (type == Type.NUMBER) {
-                equal = (this.number.compareTo(value.number) == 0);
-            } else if (type == Type.LOGIC) {
-                equal = (this.logic.equals(value.logic));
-            } else if (type == Type.DATE) {
-                equal = (this.date.equals(value.date));
-            } else {            // Should not happen
-                throw new EelInternalException("Unexpected type %s", type.toString());
+            } else {
+                equal = switch (type) {
+                    case TEXT -> this.text.equals(value.text);
+                    case NUMBER -> BigDecimals.eq(this.number, value.number);
+                    case LOGIC -> this.logic.equals(value.logic);
+                    case DATE -> this.date.equals(value.date);
+                };
             }
         }
 

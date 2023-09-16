@@ -73,8 +73,9 @@ class Tokenizer {
     private static final Map<String, Token> RESERVED = Map.ofEntries(
         entry("true", Token.TRUE),
         entry("false", Token.FALSE),
-        entry("e", Token.E),
         entry("pi", Token.PI),
+        entry("e", Token.E),
+        entry("c", Token.C),
         entry("AND", Token.BITWISE_AND),
         entry("OR", Token.BITWISE_OR),
         entry("XOR", Token.BITWISE_XOR),
@@ -140,6 +141,7 @@ class Tokenizer {
         .withAll(WORD_START)
         .withAll(DIGITS)
         .with('.')
+        .with('[').with(']')
         .immutable();
 
 

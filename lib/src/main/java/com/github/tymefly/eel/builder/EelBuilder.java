@@ -9,7 +9,8 @@ import com.github.tymefly.eel.EelContext;
  */
 public interface EelBuilder extends EelBuilderComplete, EelContextSettingBuilder<EelBuilder> {
     /**
-     * Add an EEL Context to this Expression
+     * Add an EEL Context to this Expression.
+     * After this method had been called no further changes to the EelContext can be made.
      * @param context   pre-generated EEL Context
      * @return          A fluent interface
      * @see EelContext#factory()

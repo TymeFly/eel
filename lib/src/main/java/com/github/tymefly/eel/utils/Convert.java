@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.github.tymefly.eel.EelValue;
 import com.github.tymefly.eel.exception.EelConvertException;
 import com.github.tymefly.eel.validate.Preconditions;
 
@@ -26,14 +27,15 @@ import static java.util.Map.entry;
  * Value conversion functions
  */
 public class Convert {
-    private static final Set<String> FALSE_VALUES = Set.of("false", "0");
-    private static final Set<String> TRUE_VALUES = Set.of("true", "1");
+    private static final Set<String> FALSE_TEXT = Set.of("false", "0");
+    private static final Set<String> TRUE_TEXT = Set.of("true", "1");
 
     private static final int HEX_RADIX = 16;
     private static final int DEC_RADIX = 10;
 
     private static final Set<Class<?>> SUPPORTED = Set.of(
         String.class,
+        Character.class,
         Boolean.class,
         Byte.class,
         Short.class,
@@ -53,7 +55,8 @@ public class Convert {
         entry(int.class, Integer.class),
         entry(long.class, Long.class),
         entry(float.class, Float.class),
-        entry(double.class, Double.class)
+        entry(double.class, Double.class),
+        entry(char.class, Character.class)
     );
 
     private static final int YEAR_WIDTH = 4;
@@ -135,6 +138,8 @@ public class Convert {
                 result = toNumber(value, (Class<? extends Number>) type);
             } else if (type == ZonedDateTime.class) {
                 result = toDate(value);
+            } else if (type == Character.class) {
+                result = Convert.toChar(toString(value));
             } else {                // Should not happen
                 result = null;
             }
@@ -148,6 +153,26 @@ public class Convert {
         }
 
         return type.cast(result);
+    }
+
+
+    /**
+     * Convert an EelValue to a character.
+     * This is done by converting the {@code value} to a String and returning the first character
+     * @param value     value to convert
+     * @return          the first character of the {@code value}
+     * @throws EelConvertException if the value represents an empty string
+     */
+    public static char toChar(@Nonnull EelValue value) throws EelConvertException {
+        return toChar(value.asText());
+    }
+
+    private static char toChar(@Nonnull String text) {
+        if (text.isEmpty()) {
+            throw new EelConvertException("Empty text can not be converted to a char");
+        }
+
+        return text.charAt(0);
     }
 
 
@@ -171,11 +196,30 @@ public class Convert {
     private static Boolean toBoolean(@Nonnull Object value) {
         Boolean result;
 
-        value = value.toString().trim().toLowerCase();
+        if (value instanceof Boolean bool) {
+            result = bool;
+        } else if (value instanceof Number num) {
+            result = BigDecimal.ZERO.compareTo(toNumber(num, BigDecimal.class)) < 0;
+        } else if (value instanceof String str) {
+            result = toBoolean(str);
+        } else if (value instanceof ZonedDateTime date) {
+            result = (date.toEpochSecond() > 0);
+        } else {
+            result = null;
+        }
 
-        if (FALSE_VALUES.contains(value)) {
+        return result;
+    }
+
+    @Nullable
+    private static Boolean toBoolean(@Nonnull String value) {
+        Boolean result;
+
+        value = value.trim().toLowerCase();
+
+        if (FALSE_TEXT.contains(value)) {
             result = Boolean.FALSE;
-        } else if (TRUE_VALUES.contains(value)) {
+        } else if (TRUE_TEXT.contains(value)) {
             result = Boolean.TRUE;
         } else {
             result = null;

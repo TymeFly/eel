@@ -15,7 +15,7 @@ public abstract non-sealed class EelCompileException extends EelException {
      * Constructor for a raw message
      * @param message       Human readable (raw) message
      */
-    EelCompileException(@Nonnull String message) {
+    public EelCompileException(@Nonnull String message) {
         super(message);
     }
 
@@ -26,7 +26,7 @@ public abstract non-sealed class EelCompileException extends EelException {
      * @param args          formatting arguments
      * @see java.util.Formatter
      */
-    EelCompileException(@Nonnull String message, @Nonnull Object... args) {
+    public EelCompileException(@Nonnull String message, @Nonnull Object... args) {
         super(message, args);
     }
 
@@ -36,7 +36,7 @@ public abstract non-sealed class EelCompileException extends EelException {
      * @param message       Human readable (raw) message
      * @param cause         Wrapped exception
      */
-    EelCompileException(@Nonnull String message, @Nonnull Throwable cause) {
+    public EelCompileException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);
     }
 }

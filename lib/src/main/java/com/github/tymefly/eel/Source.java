@@ -9,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.annotation.VisibleForTesting;
-import com.github.tymefly.eel.exception.EelIOException;
 
 import static java.lang.Math.max;
 
@@ -55,11 +54,12 @@ class Source {
             try {
                 this.next = (char) data.read();
             } catch (IOException e) {
-                throw new EelIOException("Failed to read source after position " + position, e);
+                throw new EelSourceException("Failed to read source after position " + position, e);
             }
 
             if ((position > maxLength) && (current != END)) {
-                throw new EelIOException("Attempt to read beyond maximum expression length of " + maxLength + " bytes");
+                throw new EelSourceException(
+                    "Attempt to read beyond maximum expression length of " + maxLength + " bytes");
             }
         }
 

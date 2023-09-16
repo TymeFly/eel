@@ -1,5 +1,6 @@
 package com.github.tymefly.eel;
 
+import java.io.IOException;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.ZoneOffset;
@@ -7,8 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.tymefly.eel.exception.EelArithmeticException;
-import com.github.tymefly.eel.exception.EelFunctionException;
+import com.github.tymefly.eel.exception.EelRuntimeException;
 import func.bad_functions.Test1;
 import func.bad_functions.Test10;
 import func.bad_functions.Test11;
@@ -16,6 +16,7 @@ import func.bad_functions.Test12;
 import func.bad_functions.Test13;
 import func.bad_functions.Test14;
 import func.bad_functions.Test15;
+import func.bad_functions.Test16;
 import func.bad_functions.Test2;
 import func.bad_functions.Test3;
 import func.bad_functions.Test4;
@@ -28,6 +29,7 @@ import func.functions.Defaults;
 import func.functions.Plus1;
 import func.functions.SameValue;
 import func.functions.Sum;
+import func.functions.TestTypes;
 import func.functions.Tomorrow;
 import org.junit.Assert;
 import org.junit.Before;
@@ -121,7 +123,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test3.class)
                 .build()
-                .compileCall("test3", context, Collections.emptyList()).execute(symbolsTable));
+                .compileCall("test3", context, Collections.emptyList())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Invalid function class func.bad_functions.Test3",
@@ -140,7 +143,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test5.class)
                 .build()
-                .compileCall("test.5", context, Collections.emptyList()).execute(symbolsTable));
+                .compileCall("test.5", context, Collections.emptyList())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Failed to execute function 'test.5'",
@@ -156,12 +160,18 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test10.class)
                 .build()
-                .compileCall("test.10", context, Collections.emptyList()).execute(symbolsTable));
+                .compileCall("test.10", context, Collections.emptyList())
+                .execute(symbolsTable));
 
         // Error message should not be wrapped
         Assert.assertEquals("Unexpected message",
-            "This was thrown in side a Function",
+            "Failed to execute function 'test.10'",
             actual.getMessage());
+
+        Assert.assertEquals("Unexpected cause type", RuntimeException.class, actual.getCause().getClass());
+        Assert.assertEquals("Unexpected cause",
+            "This was thrown inside a Function",
+            actual.getCause().getMessage());
     }
 
     /**
@@ -169,10 +179,11 @@ public class FunctionManagerTest {
      */
     @Test
     public void test_EelArithmeticException() {
-        EelFunctionException actual = Assert.assertThrows(EelArithmeticException.class,
+        EelRuntimeException actual = Assert.assertThrows(EelFunctionException.class,
             () -> new FunctionManager.Builder()
                 .build()
-                .compileCall("asin", context, List.of(s -> Value.of(12))).execute(symbolsTable));
+                .compileCall("asin", context, List.of(s -> Value.of(12)))
+                .execute(symbolsTable));
 
         // Error message should not be wrapped
         Assert.assertEquals("Unexpected message",
@@ -189,7 +200,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test6.class)
                 .build()
-                .compileCall("test.6", context, Collections.emptyList()).execute(symbolsTable));
+                .compileCall("test.6", context, Collections.emptyList())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Function 'test.6' returned unexpected type 'java.lang.Thread'",
@@ -205,7 +217,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test7.class)
                 .build()
-                .compileCall("Test7", context, Collections.emptyList()).execute(symbolsTable));
+                .compileCall("Test7", context, Collections.emptyList())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Invalid function class func.bad_functions.Test7",
@@ -224,7 +237,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test8.class)
                 .build()
-                .compileCall("test.8", context, List.of(r -> Value.TRUE)).execute(symbolsTable));
+                .compileCall("test.8", context, List.of(r -> Value.TRUE))
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Argument 0 for function 'test.8' is of unsupported type java.lang.Thread",
@@ -240,7 +254,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test9.class)
                 .build()
-                .compileCall("test.9", context, List.of()).execute(symbolsTable));
+                .compileCall("test.9", context, List.of())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Function 'test.9' returned null",
@@ -321,12 +336,35 @@ public class FunctionManagerTest {
      * Unit test {@link FunctionManager}
      */
     @Test
+    public void test_CheckedException() {
+        EelFunctionException actual = Assert.assertThrows(EelFunctionException.class,
+            () -> new FunctionManager.Builder()
+                .withUdfClass(Test16.class)
+                .build()
+                .compileCall("test.16", context, List.of())
+                .execute(symbolsTable));
+        Throwable cause = actual.getCause();
+
+        Assert.assertEquals("Unexpected message",
+            "Failed to execute function 'test.16'",
+            actual.getMessage());
+        Assert.assertEquals("Unexpected cause type", IOException.class, cause.getClass());
+        Assert.assertEquals("Unexpected cause message",
+            "This message was thrown by test.16",
+            cause.getMessage());
+    }
+
+    /**
+     * Unit test {@link FunctionManager}
+     */
+    @Test
     public void test_MissingArguments() {
         EelFunctionException actual = Assert.assertThrows(EelFunctionException.class,
             () -> new FunctionManager.Builder()
                 .withUdfClass(Plus1.class)
                 .build()
-                .compileCall("test.plus1", context, List.of()).execute(symbolsTable));
+                .compileCall("test.plus1", context, List.of())
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Argument 0 for function 'test.plus1' is missing and no default exists",
@@ -343,7 +381,8 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Plus1.class)
                 .build()
-                .compileCall("test.plus1", context, List.of(r -> Value.of(1), r -> Value.of(2))).execute(symbolsTable));
+                .compileCall("test.plus1", context, List.of(r -> Value.of(1), r -> Value.of(2)))
+                .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
             "Expected 1 argument(s) for function 'test.plus1' but 2 were passed",
@@ -356,11 +395,96 @@ public class FunctionManagerTest {
     @Test
     public void test_HappyPath() {
         Value actual = new FunctionManager.Builder()
-                .withUdfClass(Plus1.class)
-                .build()
-                .compileCall("test.plus1", context, List.of(r -> Value.of(3))).execute(symbolsTable);
+            .withUdfClass(Plus1.class)
+            .build()
+            .compileCall("test.plus1", context, List.of(r -> Value.of(3)))
+            .execute(symbolsTable);
 
         Assert.assertEquals("Unexpected value returned", Value.of(4), actual);
+    }
+
+    /**
+     * Unit test {@link FunctionManager}
+     */
+    @Test
+    public void test_Types() {
+        FunctionManager manager = new FunctionManager.Builder()
+            .withUdfClass(TestTypes.class)
+            .build();
+
+        Assert.assertEquals("pass Value",
+            Value.of(3),
+            manager.compileCall("types.value", context, List.of(r -> Value.of(3))).execute(symbolsTable));
+
+        Assert.assertEquals("pass String",
+            Value.of("Hello"),
+            manager.compileCall("types.str", context, List.of(r -> Value.of("Hello"))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Boolean",
+            Value.TRUE,
+            manager.compileCall("types.Bool", context, List.of(r -> Value.of(Boolean.TRUE))).execute(symbolsTable));
+        Assert.assertEquals("pass boolean",
+            Value.FALSE,
+            manager.compileCall("types.bool", context, List.of(r -> Value.of(false))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Byte",
+            Value.of(12),
+            manager.compileCall("types.Byte", context, List.of(r -> Value.of((byte) 12))).execute(symbolsTable));
+        Assert.assertEquals("pass byte",
+            Value.of(93),
+            manager.compileCall("types.byte", context, List.of(r -> Value.of((byte) 93))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Short",
+            Value.of(123),
+            manager.compileCall("types.Short", context, List.of(r -> Value.of((short) 123))).execute(symbolsTable));
+        Assert.assertEquals("pass short",
+            Value.of(345),
+            manager.compileCall("types.short", context, List.of(r -> Value.of((short) 345))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Int",
+            Value.of(1234),
+            manager.compileCall("types.Int", context, List.of(r -> Value.of(1234))).execute(symbolsTable));
+        Assert.assertEquals("pass int",
+            Value.of(3456),
+            manager.compileCall("types.int", context, List.of(r -> Value.of(3456))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Long",
+            Value.of(12345),
+            manager.compileCall("types.Long", context, List.of(r -> Value.of((long) 12345))).execute(symbolsTable));
+        Assert.assertEquals("pass long",
+            Value.of(34567),
+            manager.compileCall("types.long", context, List.of(r -> Value.of((long) 34567))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Float",
+            Value.of(123.45),
+            manager.compileCall("types.Float", context, List.of(r -> Value.of(123.45f))).execute(symbolsTable));
+        Assert.assertEquals("pass float",
+            Value.of(345.67),
+            manager.compileCall("types.float", context, List.of(r -> Value.of(345.67f))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Double",
+            Value.of(123.456),
+            manager.compileCall("types.Double", context, List.of(r -> Value.of(123.456))).execute(symbolsTable));
+        Assert.assertEquals("pass double",
+            Value.of(345.678),
+            manager.compileCall("types.double", context, List.of(r -> Value.of(345.678))).execute(symbolsTable));
+
+        Assert.assertEquals("pass BigInt",
+            Value.of(12345678),
+            manager.compileCall("types.BigInt", context, List.of(r -> Value.of(12345678))).execute(symbolsTable));
+        Assert.assertEquals("pass BigDec",
+            Value.of(1234.5678),
+            manager.compileCall("types.BigDec", context, List.of(r -> Value.of(1234.5678))).execute(symbolsTable));
+        Assert.assertEquals("pass date",
+            Value.EPOCH_START_UTC,
+            manager.compileCall("types.date", context, List.of(r -> Value.EPOCH_START_UTC)).execute(symbolsTable));
+
+        Assert.assertEquals("pass char",
+            Value.of("H"),
+            manager.compileCall("types.char", context, List.of(r -> Value.of("Hello"))).execute(symbolsTable));
+        Assert.assertEquals("pass Character",
+            Value.of("W"),
+            manager.compileCall("types.Character", context, List.of(r -> Value.of("World"))).execute(symbolsTable));
     }
 
     /**
@@ -377,8 +501,6 @@ public class FunctionManagerTest {
 
         Assert.assertEquals("Unexpected value returned from function 1", Value.of("execute1"), actual_1);
         Assert.assertEquals("Unexpected value returned from function 1", Value.of("execute2"), actual_2);
-
-
     }
 
 

@@ -3,6 +3,7 @@ package com.github.tymefly.eel;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,18 +29,15 @@ class EelRuntime {
 
     @Nonnull
     Executor apply(@Nonnull Executor wrapped) {
-        Executor result = handleExceptions(wrapped);
-
-        if (!context.getTimeout().isZero()) {
-            result = withTimeout(result);
-        }
+        Duration timeout = context.getTimeout();
+        Executor result = (timeout.isZero() ? withoutTimeout(wrapped) : withTimeout(wrapped, timeout));
 
         return result;
     }
 
 
     @Nonnull
-    private Executor handleExceptions(@Nonnull Executor wrapped) {
+    private Executor withoutTimeout(@Nonnull Executor wrapped) {
         return s -> {
             try {
                 return wrapped.execute(s);
@@ -53,9 +51,7 @@ class EelRuntime {
 
 
     @Nonnull
-    private Executor withTimeout(@Nonnull Executor wrapped) {
-        Duration timeout = context.getTimeout();
-
+    private Executor withTimeout(@Nonnull Executor wrapped, @Nonnull Duration timeout) {
         return s -> {
             Instant start = Instant.now();
             CompletableFuture<Value> future = CompletableFuture.supplyAsync(() -> wrapped.execute(s))
@@ -72,8 +68,18 @@ class EelRuntime {
                     long duration = ChronoUnit.SECONDS.between(start, Instant.now());
 
                     throw new EelTimeoutException("EEL Timeout after %d second(s)", duration);
+                } else if (cause instanceof EelException eelException) {
+                    // It is more important to the client that the stack trace reports where EEL was called rather than
+                    // the EEL internals, which is largely a timer thread calling anonymous lambda functions
+
+                    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+                    stack = Arrays.copyOfRange(stack, 1, stack.length);     // remove call to getStackTrace()
+
+                    eelException.setStackTrace(stack);
+
+                    throw eelException;
                 } else {
-                    throw (EelException) cause;         // handleExceptions() ensures this case will work
+                    throw new EelRuntimeException("EEL execution failed", cause);
                 }
             }
         };

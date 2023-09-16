@@ -38,15 +38,15 @@ public class FormatDateTest {
 
 
     /**
-     * Unit test {@link FormatDate#formatDate(String, ZonedDateTime)}
+     * Unit test {@link FormatDate#formatDate(String, ZonedDateTime, String...)}
      */
     @Test
     public void test_FormatDate() {
         ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("America/New_York"));
 
         Assert.assertEquals("US Format",
-            "12/03/2007 12:15 p.m. GMT-05:00",
-            formatDate.formatDate("MM/dd/yyy h:mm a z", date));
+            "12/03/2007 12:15 -0500",
+            formatDate.formatDate("MM/dd/yyy HH:mm Z", date));
     }
 
     /**
@@ -55,8 +55,8 @@ public class FormatDateTest {
     @Test
     public void test_FormatUtc() {
         Assert.assertEquals("UTC Format",
-            "12/03/2007 5:15 p.m. UTC",
-            formatDate.formatUtc("MM/dd/yyy h:mm a z"));
+            "12/03/2007 17:15 +0000",
+            formatDate.formatUtc("MM/dd/yyy HH:mm Z"));
     }
 
     /**
@@ -65,8 +65,8 @@ public class FormatDateTest {
     @Test
     public void test_FormatLocal() {
         Assert.assertEquals("Local Format",
-            "12/03/2007 6:15 p.m. +01:00",
-            formatDate.formatLocal("MM/dd/yyy h:mm a z"));
+            "12/03/2007 18:15 +0100",
+            formatDate.formatLocal("MM/dd/yyy HH:mm Z"));
     }
 
     /**
@@ -75,7 +75,7 @@ public class FormatDateTest {
     @Test
     public void test_FormatAt() {
         Assert.assertEquals("Custom TimeZone Format",
-            "12/03/2007 12:15 p.m. GMT-05:00",
-            formatDate.formatAt("America/New_York", "MM/dd/yyy h:mm a z"));
+            "12/03/2007 12:15 -0500",
+            formatDate.formatAt("America/New_York", "MM/dd/yyy HH:mm Z"));
     }
 }

@@ -16,18 +16,18 @@ import com.github.tymefly.eel.validate.Preconditions;
  * The only implementation of the EelContext interface
  */
 class EelContextImpl implements EelContext {
+    private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
+
     /**
      * Builder for {@link EelContext} objects
      */
     static class Builder implements EelContextBuilder {
-        private static final MathContext DEFAULT_MATH_CONTEXT =
-            new MathContext(EelContext.DEFAULT_PRECISION, RoundingMode.HALF_UP);
-
+        private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(EelContext.DEFAULT_PRECISION, ROUNDING);
 
         private final FunctionManager.Builder functionManager;
         private MathContext mathContext = DEFAULT_MATH_CONTEXT;
         private int maxLength = DEFAULT_MAX_EXPRESSION_LENGTH;
-        private Duration timeout = DEFAULT_TIMEOUT_SECONDS;
+        private Duration timeout = DEFAULT_TIMEOUT;
 
 
         Builder() {
@@ -58,7 +58,7 @@ class EelContextImpl implements EelContext {
         @Nonnull
         @Override
         public EelContextBuilder withPrecision(int precision) {
-            this.mathContext = new MathContext(precision, RoundingMode.HALF_UP);
+            this.mathContext = new MathContext(precision, ROUNDING);
 
             return this;
         }
@@ -85,7 +85,7 @@ class EelContextImpl implements EelContext {
 
         @Nonnull
         @Override
-        public EelContext build() {
+        public EelContextImpl build() {
             return new EelContextImpl(this);
         }
     }
