@@ -24,7 +24,7 @@ public interface EelContextSettingBuilder<T> {
 
     /**
      * Sets the maximum maxLength of an EEL expression. If EEL tries to parse an expression that is longer than
-     * this limit then an {@link com.github.tymefly.eel.exception.EelIOException} will be thrown.
+     * this limit then an {@link com.github.tymefly.eel.EelSourceException} will be thrown.
      * The purpose of this setting is to prevent the client mounting a Denial Of Service (DOS) attack by defining an
      * expression that is so long enough that it will consume all the resources. For example, by piping a stream
      * of data that never ends.

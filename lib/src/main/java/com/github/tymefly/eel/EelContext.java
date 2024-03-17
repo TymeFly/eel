@@ -36,6 +36,14 @@ public interface EelContext {
         return new EelContextImpl.Builder();
     }
 
+
+    /**
+     * Returns an object that can reading Eel language metadata
+     * @return an object that can reading Eel language metadata
+     */
+    @Nonnull
+    Metadata metadata();
+
     /**
      * Returns a unique ID for this context object. No particular significant should be assigned to the string
      * returned by this method as it may change in future versions.

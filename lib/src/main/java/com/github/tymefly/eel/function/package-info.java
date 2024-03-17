@@ -1,4 +1,4 @@
 /**
- * This package contains all the EEL Standard Functions
+ * This package contains the Standard EEL Functions
  */
 package com.github.tymefly.eel.function;

@@ -51,7 +51,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_BigNumber_To_Text() {
-        Result actual = Eel.compile(context, "$( 3 * 10 ^ 8 )").evaluate();
+        Result actual = Eel.compile(context, "$( 3 * 10 ** 8 )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
         Assert.assertEquals("Unexpected value", "300000000", actual.asText());      // Plain string (Not Sci Notation)
@@ -62,7 +62,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_To_Text() {
-        Result actual = Eel.compile(context, "$( true & false )").evaluate();
+        Result actual = Eel.compile(context, "$( true and false )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertEquals("Unexpected value", "false", actual.asText());
@@ -108,7 +108,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_To_Number() {
-        Result actual = Eel.compile(context, "$( true & false )").evaluate();
+        Result actual = Eel.compile(context, "$( true and false )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertEquals("Unexpected value", BigDecimal.ZERO, actual.asNumber());
@@ -218,7 +218,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Date_To_Logic_false() {
-        Result actual = Eel.compile(context, "$( DATE(0) )").evaluate();
+        Result actual = Eel.compile(context, "$( date(0) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.DATE, actual.getType());
         Assert.assertFalse("Unexpected value", actual.asLogic());
@@ -256,7 +256,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_To_Date_true() {
-        Result actual = Eel.compile(context, "$( true | false )").evaluate();
+        Result actual = Eel.compile(context, "$( true or false )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertEquals("Unexpected value", DATE_TRUE, actual.asDate());
@@ -267,7 +267,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_To_Date_false() {
-        Result actual = Eel.compile(context, "$( true & false )").evaluate();
+        Result actual = Eel.compile(context, "$( true and false )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertEquals("Unexpected value", EelContext.FALSE_DATE, actual.asDate());
@@ -279,7 +279,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Text_Operator() {
-        Result actual = Eel.compile(context, "$( TEXT( 1 + 2 ) )").evaluate();
+        Result actual = Eel.compile(context, "$( text( 1 + 2 ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
         Assert.assertEquals("Unexpected value", "3", actual.asText());
@@ -290,7 +290,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Number_Operator() {
-        Result actual = Eel.compile(context, "$( NUMBER( true ) )").evaluate();
+        Result actual = Eel.compile(context, "$( number( true ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
         Assert.assertEquals("Unexpected value", BigDecimal.ONE, actual.asNumber());
@@ -301,7 +301,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Number_Operator_invalid() {
-        Eel expression = Eel.compile(context, "$( NUMBER( 'text' ) )");
+        Eel expression = Eel.compile(context, "$( number( 'text' ) )");
 
         Assert.assertThrows(EelConvertException.class, expression::evaluate);
     }
@@ -311,7 +311,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_Operator() {
-        Result actual = Eel.compile(context, "$( LOGIC( 'true' ) )").evaluate();
+        Result actual = Eel.compile(context, "$( logic( 'true' ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertTrue("Unexpected value", actual.asLogic());
@@ -322,7 +322,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_Operator_number() {
-        Result actual = Eel.compile(context, "$( LOGIC( 12345 ) )").evaluate();
+        Result actual = Eel.compile(context, "$( logic( 12345 ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
         Assert.assertTrue("Unexpected value", actual.asLogic());
@@ -333,7 +333,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Logic_Operator_invalid() {
-        Eel expression = Eel.compile(context, "$( LOGIC( 'text' ) )");
+        Eel expression = Eel.compile(context, "$( logic( 'text' ) )");
 
         Assert.assertThrows(EelConvertException.class, expression::evaluate);
     }
@@ -343,7 +343,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Date_Operator_FromNumber() {
-        Result actual = Eel.compile(context, "$( DATE( 946782240 + 5 ) )").evaluate();
+        Result actual = Eel.compile(context, "$( date( 946782240 + 5 ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.DATE, actual.getType());
         Assert.assertEquals("Unexpected value",
@@ -356,7 +356,7 @@ public class ConversionIntegrationTest {
      */
     @Test
     public void test_Date_Operator_FromLogic() {
-        Result actual = Eel.compile(context, "$( DATE( true | false ) )").evaluate();
+        Result actual = Eel.compile(context, "$( date( true or false ) )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.DATE, actual.getType());
         Assert.assertEquals("Unexpected value", DATE_TRUE, actual.asDate());

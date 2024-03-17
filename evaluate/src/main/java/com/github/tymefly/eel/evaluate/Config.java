@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.builder.EelContextSettingBuilder;
 import com.github.tymefly.eel.integration.EelProperties;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -73,6 +76,10 @@ class Config {
         usage = "Default precision used in calculations")
     private int precision = EelContext.DEFAULT_PRECISION;
 
+    @Option(name = "--version",
+        usage = "Write EEL version and exit")
+    private boolean version = false;
+
 
     // EEL Symbol table options
     private final List<Class<?>> functionList = new ArrayList<>();
@@ -80,9 +87,8 @@ class Config {
     private final List<Package> packageList = new ArrayList<>();
 
     // Evaluate Arguments
-    @Argument(required = true, metaVar = "Expression",
-        usage = "The expression to evaluate")
-    private String expression = "";
+    @Argument(metaVar = "Expression", usage = "The expression to evaluate")
+    private String expression;
 
 
     private final CmdLineParser parser;
@@ -115,7 +121,7 @@ class Config {
     private Config parseArgs(@Nonnull String[] args) {
         try {
             parser.parseArgument(args);
-            isValid = true;
+            isValid = (help || version || (expression != null));
         } catch (CmdLineException e) {
             isValid = false;
             System.err.println("Error: " + e.getMessage());
@@ -152,6 +158,7 @@ class Config {
         }
     }
 
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification = "Called by args4J via reflection")
     @Option(name = "-D", aliases = {"--define"},
         metaVar = "key=value",
         usage = "Add a definition to the symbols table")
@@ -219,6 +226,13 @@ class Config {
         stream.println();
 
         this.parser.printUsage(stream);
+        stream.println();
+        stream.println("Exit status:");
+        Arrays.stream(State.values())
+            .sorted(Comparator.comparing(State::getReturnCode))
+            .forEach(s -> stream.printf("  %2d    %s%n", s.getReturnCode(), s.description()));
+
+        stream.println();
     }
 
     /**
@@ -235,6 +249,14 @@ class Config {
      */
     boolean requestHelp() {
         return help;
+    }
+
+    /**
+     * Returns {@literal true} only if the user asked to see the version information
+     * @return {@literal true} only if the user asked to see the version information
+     */
+    boolean requestVersion() {
+        return version;
     }
 
     /**
@@ -327,6 +349,6 @@ class Config {
      */
     @Nonnull
     String getExpression() {
-        return expression;
+        return (expression == null ? "" : expression);
     }
 }

@@ -28,7 +28,7 @@ public class Root {
     @Nonnull
     public BigDecimal root(@Nonnull EelContext context,
                            @Nonnull BigDecimal value,
-                           @DefaultArgument (of = "2") @Nonnull BigDecimal base) {
+                           @DefaultArgument ("2") @Nonnull BigDecimal base) {
         return BigDecimalMath.root(value, base, context.getMathContext());
     }
 }

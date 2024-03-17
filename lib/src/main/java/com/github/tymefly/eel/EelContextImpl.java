@@ -5,7 +5,11 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -17,6 +21,7 @@ import com.github.tymefly.eel.validate.Preconditions;
  */
 class EelContextImpl implements EelContext {
     private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
+
 
     /**
      * Builder for {@link EelContext} objects
@@ -90,8 +95,16 @@ class EelContextImpl implements EelContext {
         }
     }
 
+
     private static final AtomicLong CONTEXT_COUNT = new AtomicLong();
 
+    /**
+     * Keys to the {@link #resources}
+     * @param owner     Class that implements one or more UDF's
+     * @param name      Name of the resource
+     */
+    private record ResourceKey(@Nonnull Class<?> owner, @Nonnull String name) {
+    }
 
     private final String id;
     private final ZonedDateTime startTime;
@@ -99,7 +112,7 @@ class EelContextImpl implements EelContext {
     private final int maxLength;
     private final Duration timeout;
     private final FunctionManager functionManager;
-
+    private final Map<ResourceKey, Object> resources = Collections.synchronizedMap(new HashMap<>());
 
 
     private EelContextImpl(@Nonnull Builder builder) {
@@ -109,6 +122,13 @@ class EelContextImpl implements EelContext {
         this.maxLength = builder.maxLength;
         this.timeout = builder.timeout;
         this.functionManager = builder.functionManager.build();
+    }
+
+
+    @Nonnull
+    @Override
+    public Metadata metadata() {
+        return BuildTime.getInstance();
     }
 
     @Override
@@ -132,6 +152,16 @@ class EelContextImpl implements EelContext {
     @Nonnull
     FunctionManager getFunctionManager() {
         return functionManager;
+    }
+
+    @Nonnull
+    synchronized <T> T getResource(@Nonnull Class<?> owner,
+                                   @Nonnull String name,
+                                   @Nonnull Function<String, T> constructor) {
+        ResourceKey key = new ResourceKey(owner, name);
+        Object resource = resources.computeIfAbsent(key, k -> constructor.apply(name));
+
+        return (T) resource;
     }
 
     int maxExpressionLength() {

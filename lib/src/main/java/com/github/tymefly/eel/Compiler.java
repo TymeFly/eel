@@ -1,25 +1,42 @@
 package com.github.tymefly.eel;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Defines the contract of a Compiler in the EEL language. The root operations are
- * {@link #readVariable(String, Executor, CompileVariableOp, boolean)}, {@link #textConstant(String)},
- * {@link #numericConstant(Number)} and {@link #logicConstant(boolean)}. The remaining operations are created by
- * combining and encapsulating previously generated operations.
- * @see CompileUnaryOp
- * @see CompileBinaryOp
+ * {@link #readSymbol(String)}, {@link #textConstant(String)}, {@link #numericConstant(Number)} and
+ * {@link #logicConstant(boolean)}. The remaining operations are created by combining and encapsulating previously
+ * generated operations.
  */
 interface Compiler {
+    /** Transformations on values read from the symbols table */
+    @FunctionalInterface
+    @SuppressWarnings("checkstyle:interfaceistype")             // methods are inherited from Function
+    interface SymbolTransformation extends Function<String, String> {
+        SymbolTransformation LENGTH = t -> String.valueOf(t.length());
+    }
+
+    /** Fluent interface used to read values from the Symbols Table. Multiple SymbolTransformation can be set */
+    interface SymbolBuilder {
+        @Nonnull
+        SymbolBuilder withDefault(@Nonnull Executor defaultValue);
+
+        @Nonnull
+        SymbolBuilder withTransformation(@Nonnull SymbolTransformation transformation);
+
+        @Nonnull
+        Executor build();
+    }
+
+
     @Nonnull
     Executor isDefined(@Nonnull String identifier);
 
     @Nonnull
-    Executor readVariable(@Nonnull String identifier,
-                          @Nullable Executor defaultValue,
-                          @Nullable CompileVariableOp caseOp,
-                          boolean takeLength);
+    SymbolBuilder readSymbol(@Nonnull String identifier);
+
 
     @Nonnull
     Executor textConstant(@Nonnull String value);
@@ -32,7 +49,8 @@ interface Compiler {
 
 
     @Nonnull
-    Executor condition(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second);
+    Executor conditional(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second);
+
 
     @Nonnull
     Executor equal(@Nonnull Executor left, @Nonnull Executor right);
@@ -53,10 +71,11 @@ interface Compiler {
     Executor lessThanEquals(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
-    Executor leftShift(@Nonnull Executor value, @Nonnull Executor shift);
+    Executor isBefore(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
-    Executor rightShift(@Nonnull Executor value, @Nonnull Executor shift);
+    Executor isAfter(@Nonnull Executor left, @Nonnull Executor right);
+
 
     @Nonnull
     Executor negate(@Nonnull Executor value);
@@ -74,10 +93,17 @@ interface Compiler {
     Executor divide(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
+    Executor divideFloor(@Nonnull Executor left, @Nonnull Executor right);
+
+    @Nonnull
+    Executor divideTruncate(@Nonnull Executor left, @Nonnull Executor right);
+
+    @Nonnull
     Executor modulus(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
     Executor power(@Nonnull Executor left, @Nonnull Executor right);
+
 
     @Nonnull
     Executor logicalNot(@Nonnull Executor value);
@@ -86,13 +112,8 @@ interface Compiler {
     Executor logicalAnd(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
-    Executor shortCircuitAnd(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
     Executor logicalOr(@Nonnull Executor left, @Nonnull Executor right);
 
-    @Nonnull
-    Executor shortCircuitOr(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
     Executor bitwiseNot(@Nonnull Executor value);
@@ -107,17 +128,12 @@ interface Compiler {
     Executor bitwiseXor(@Nonnull Executor left, @Nonnull Executor right);
 
     @Nonnull
+    Executor leftShift(@Nonnull Executor value, @Nonnull Executor shift);
+
+    @Nonnull
+    Executor rightShift(@Nonnull Executor value, @Nonnull Executor shift);
+
+
+    @Nonnull
     Executor concatenate(@Nonnull Executor first, @Nonnull Executor second);
-
-    @Nonnull
-    Executor toText(@Nonnull Executor value);
-
-    @Nonnull
-    Executor toNumber(@Nonnull Executor value);
-
-    @Nonnull
-    Executor toLogic(@Nonnull Executor value);
-
-    @Nonnull
-    Executor toDate(@Nonnull Executor value);
 }

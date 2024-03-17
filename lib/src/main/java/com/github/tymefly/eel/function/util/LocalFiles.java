@@ -15,15 +15,19 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.github.tymefly.eel.EelValue;
 import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.function.system.FileSystem;
 import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
+import com.github.tymefly.eel.udf.EelLambda;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
+import com.github.tymefly.eel.validate.Preconditions;
 
 /**
  * A collection of functions that examine files on the local file system.
@@ -31,6 +35,10 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
  */
 @PackagedEelFunction
 public class LocalFiles {
+    /** Default value used by file searching functions to indicate an exception should be thrown if no file is found */
+    public static final String DEFAULT_THROWS_EXCEPTION = "**THROW_IOEXCEPTION**";
+
+
     private enum Direction {
         ASCENDING {
             @Override
@@ -54,17 +62,30 @@ public class LocalFiles {
      * As this is unsupported we'll throw this unchecked exception and convert it to a checked exception later
      */
     private static class UncheckedIOException extends RuntimeException {
+        private final IOException cause;
+
+        UncheckedIOException(@Nonnull IOException cause) {
+            super(cause);
+
+            this.cause = cause;
+        }
+
         UncheckedIOException(@Nonnull String message, @Nonnull Object... args) {
             super(String.format(message, args));
+
+            this.cause = null;
         }
 
         UncheckedIOException(@Nonnull String message, @Nonnull Throwable cause) {
             super(message, cause);
+
+            this.cause = null;
         }
+
 
         @Nonnull
         IOException asChecked() {
-            IOException checked = new IOException(getMessage(), getCause());
+            IOException checked = (cause != null ? cause : new IOException(getMessage(), getCause()));
 
             checked.setStackTrace(this.getStackTrace());
 
@@ -86,8 +107,8 @@ public class LocalFiles {
     }
 
     private static class LazyStartEpoch {
-        private static final ZonedDateTime LOCAL =
-            ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), LazyZone.LOCAL);
+        private static final EelLambda LOCAL =
+            () -> EelValue.of(ZonedDateTime.ofInstant(Instant.ofEpochMilli(0), LazyZone.LOCAL));
     }
 
 
@@ -113,23 +134,28 @@ public class LocalFiles {
      * Entry point for the {@code fileCount} function, which returns the number of files in the {@code directory}
      * that match the {@code glob} pattern. Subdirectory names, and any files they may contain, will not be counted.
      * <br>
-     * The EEL syntax for this function is <code>fileCount( directory {, glob } )</code>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>fileCount( directory )</code></li>
+     *  <li><code>fileCount( directory, glob )</code></li>
+     * </ul>
      * @param directory the path to a directory on the local file system
-     * @param glob      globing expression of file to consider. The defaults to {@code "*"}
+     * @param glob      globing expression of file to consider. This defaults to {@code "*"}
      * @return the length of the file in bytes
      * @throws IOException if the length could not be read
      * @since 1.1
      */
     @EelFunction(name = "fileCount")
     public long fileCount(@Nonnull String directory,
-            @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob) throws IOException {
         Path path = Paths.get(directory);
         PathMatcher matcher = getPathMatcher(directory, glob);
         long count;
 
-        try {
-            count = Files.list(path)
-                .filter(p -> p.toFile().isFile())
+        try (
+            Stream<Path> list = Files.list(path)
+        ) {
+            count = list.filter(p -> p.toFile().isFile())
                 .filter(matcher::matches)
                 .count();
         } catch (IOException e) {
@@ -144,15 +170,20 @@ public class LocalFiles {
      * Entry point for the {@code fileSize} function, which returns the DATE that returns the length of the file
      * in bytes
      * <br>
-     * The EEL syntax for this function is <code>fileSize( path {, defaultDate } )</code>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>fileSize( path )</code></li>
+     *  <li><code>fileSize( path, defaultDate )</code></li>
+     * </ul>
      * @param path          the path to a file on the local
-     * @param defaultValue  Value returned if the file does not exist. The defaults to {@literal -1}
+     * @param defaultValue   A function that provides the value returned if the file does not exist.
+     *                          This defaults to the literal value {@literal -1}
      * @return the length of the file in bytes
      * @throws IOException if the length could not be read
      */
     @EelFunction(name = "fileSize")
     public long fileSize(@Nonnull String path,
-            @DefaultArgument(of = "-1") long defaultValue) throws IOException {
+            @DefaultArgument("-1") @Nonnull EelLambda defaultValue) throws IOException {
         BasicFileAttributes attributes;
 
         try {
@@ -161,55 +192,70 @@ public class LocalFiles {
             throw e.asChecked();
         }
 
-        return (attributes == null ? defaultValue : attributes.size());
+        return (attributes == null ? defaultValue.get().asNumber().longValue() : attributes.size());
     }
 
 
     /**
      * Entry point for the {@code createAt} function, which returns the DATE that a file was created
      * <br>
-     * The EEL syntax for this function is <code>createAt( path {, defaultDate } )</code>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>createAt( path )</code></li>
+     *  <li><code>createAt( path, defaultDate )</code></li>
+     * </ul>
      * @param path          the path to a file on the local
-     * @param defaultValue  Value returned if the file does not exist. The defaults to {@literal 1970-01-01 00:00:00Z}
+     * @param defaultValue  A function that provides the value returned if the file does not exist.
+     *                          This defaults to {@literal 1970-01-01 00:00:00Z}
      * @return the time the file was created in the local time zone
      * @throws IOException if the time stamp could not be read
      */
     @EelFunction(name = "createAt")
     @Nonnull
     public ZonedDateTime createAt(@Nonnull String path,
-            @Nonnull @DefaultArgument(of = "1970") ZonedDateTime defaultValue) throws IOException {
+            @DefaultArgument("1970") @Nonnull EelLambda defaultValue) throws IOException {
         return readTimeChecked(Paths.get(path), defaultValue, BasicFileAttributes::creationTime);
     }
 
     /**
      * Entry point for the {@code accessedAt} function, which returns the DATE that a file was last accessed
      * <br>
-     * The EEL syntax for this function is <code>accessedAt( path {, defaultDate } )</code>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>accessedAt( path )</code></li>
+     *  <li><code>accessedAt( path, defaultDate )</code></li>
+     * </ul>
      * @param path          the path to a file on the local
-     * @param defaultValue  Value returned if the file does not exist. The defaults to {@literal 1970-01-01 00:00:00Z}
+     * @param defaultValue  A function that provides the value returned if the file does not exist.
+     *                          This defaults to {@literal 1970-01-01 00:00:00Z}
      * @return the time the file was last accessed in the local time zone
      * @throws IOException if the time stamp could not be read
      */
     @EelFunction(name = "accessedAt")
     @Nonnull
     public ZonedDateTime accessedAt(@Nonnull String path,
-            @Nonnull @DefaultArgument(of = "1970") ZonedDateTime defaultValue) throws IOException {
+            @DefaultArgument("1970") @Nonnull EelLambda defaultValue) throws IOException {
         return readTimeChecked(Paths.get(path), defaultValue, BasicFileAttributes::lastAccessTime);
     }
 
     /**
      * Entry point for the {@code modifiedAt} function, which returns the DATE that a file was last modified
      * <br>
-     * The EEL syntax for this function is <code>modifiedAt( path {, defaultDate } )</code>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>modifiedAt( path )</code></li>
+     *  <li><code>modifiedAt( path, defaultDate )</code></li>
+     * </ul>
      * @param path          the path to a file on the local
-     * @param defaultValue  Value returned if the file does not exist. The defaults to {@literal 1970-01-01 00:00:00Z}
+     * @param defaultValue  A function that provides the value returned if the file does not exist.
+     *                          This defaults to {@literal 1970-01-01 00:00:00Z}
      * @return the time the file was last modified in the local time zone
      * @throws IOException if the time stamp could not be read
      */
     @EelFunction(name = "modifiedAt")
     @Nonnull
     public ZonedDateTime modifiedAt(@Nonnull String path,
-            @Nonnull @DefaultArgument(of = "1970") ZonedDateTime defaultValue) throws IOException {
+            @DefaultArgument("1970") @Nonnull EelLambda defaultValue) throws IOException {
         return readTimeChecked(Paths.get(path), defaultValue, BasicFileAttributes::lastModifiedTime);
     }
 
@@ -218,44 +264,68 @@ public class LocalFiles {
      * Entry point for the {@code firstCreated} function, which returns the full path to the file in the {@code path}
      * that was created first. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>firstCreated( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>firstCreated( path )</code></li>
+     *  <li><code>firstCreated( path, glob )</code></li>
+     *  <li><code>firstCreated( path, glob, index )</code></li>
+     *  <li><code>firstCreated( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                          the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException the time of the oldest file could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException if the last time could not be obtained. This might be because
+     *          there are no files in the {@code path} that math the {@code glob} pattern and no {@code defaultValue}
+     *          was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "firstCreated")
     @Nonnull
     public String firstCreated(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+           @DefaultArgument("*") @Nonnull String glob,
+           @DefaultArgument("0") int index,
+           @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::creationTime, Direction.DESCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
     /**
      * Entry point for the {@code lastCreated} function, which returns the full path to the file in the {@code path}
      * that was created most recently. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>lastCreated( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>lastCreated( path )</code></li>
+     *  <li><code>lastCreated( path, glob )</code></li>
+     *  <li><code>lastCreated( path, glob, index )</code></li>
+     *  <li><code>lastCreated( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                      the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException the time of the most recent file could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException  if the last time could not be obtained. This might be because
+     *                      there are no files in the {@code path} that math the {@code glob} pattern and no
+     *                      {@code defaultValue} was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "lastCreated")
     @Nonnull
     public String lastCreated(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob,
+            @DefaultArgument("0") int index,
+            @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::creationTime, Direction.ASCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
 
@@ -263,44 +333,69 @@ public class LocalFiles {
      * Entry point for the {@code firstAccessed} function, which returns the full path to the file in the {@code path}
      * that was last accessed first. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>firstAccessed( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>firstAccessed( path )</code></li>
+     *  <li><code>firstAccessed( path, glob )</code></li>
+     *  <li><code>firstAccessed( path, glob, index )</code></li>
+     *  <li><code>firstAccessed( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                      the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException if the first time could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException  if the last time could not be obtained. This might be because
+     *                      there are no files in the {@code path} that math the {@code glob} pattern and no
+     *                      {@code defaultValue} was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "firstAccessed")
     @Nonnull
     public String firstAccessed(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob,
+            @DefaultArgument("0") int index,
+            @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::lastAccessTime, Direction.DESCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
     /**
      * Entry point for the {@code lastAccessed} function, which returns the full path to the file in the {@code path}
      * that was last accessed most recently. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>lastAccessed( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>lastAccessed( path )</code></li>
+     *  <li><code>lastAccessed( path, glob )</code></li>
+     *  <li><code>lastAccessed( path, glob, index )</code></li>
+     *  <li><code>lastAccessed( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                      the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException if the last time could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException  if the last time could not be obtained. This might be because
+     *                      there are no files in the {@code path} that math the {@code glob} pattern and no
+     *                      {@code defaultValue} was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "lastAccessed")
     @Nonnull
     public String lastAccessed(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob,
+            @DefaultArgument("0") int index,
+            @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::lastAccessTime, Direction.ASCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
 
@@ -308,22 +403,33 @@ public class LocalFiles {
      * Entry point for the {@code firstModified} function, which returns the full path to the file in the {@code path}
      * that was modified first. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>firstModified( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * <ul>
+     *  <li><code>firstModified( path )</code></li>
+     *  <li><code>firstModified( path, glob )</code></li>
+     *  <li><code>firstModified( path, glob, index )</code></li>
+     *  <li><code>firstModified( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                      the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException if the first time could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException  if the last time could not be obtained. This might be because
+     *                      there are no files in the {@code path} that math the {@code glob} pattern and
+     *                      no {@code defaultValue} was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "firstModified")
     @Nonnull
     public String firstModified(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob,
+            @DefaultArgument("0") int index,
+            @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::lastModifiedTime, Direction.DESCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
 
@@ -331,22 +437,33 @@ public class LocalFiles {
      * Entry point for the {@code lastModified} function, which returns the full path to the file in the {@code path}
      * that was modified most recently. Files in subdirectories are not considered
      * <br>
-     * The EEL syntax for this function is <code>lastModified( path {, glob } )</code>
-     * @param path  the path to a directory on the local file system
-     * @param glob  globing expression of file to consider. The defaults to {@code "*"}
+     * <ul>
+     *  <li><code>lastModified( path )</code></li>
+     *  <li><code>lastModified( path, glob )</code></li>
+     *  <li><code>lastModified( path, glob, index )</code></li>
+     *  <li><code>lastModified( path, glob, index, defaultValue )</code></li>
+     * </ul>
+     * @param path          the path to a directory on the local file system
+     * @param glob          globing expression of file to consider. This defaults to {@code "*"}
+     * @param index         0 based index of the file to retrieve. This defaults to {@code "*"}
+     * @param defaultValue  A function that provides the value returned if no files exist in the {@code path} that match
+     *                      the {@code glob} pattern. This defaults to throwing an {@link IOException}
      * @return the full path to a file in {@code path}
-     * @throws IOException if the last time could not be obtained. This might be because
-     *          there are no files in the {@code path} that math the {@code glob} pattern
+     * @throws IOException  if the last time could not be obtained. This might be because
+     *                      there are no files in the {@code path} that math the {@code glob} pattern and no
+     *                      {@code defaultValue} was specified
      * @see #fileCount
      * @since 1.1
      */
     @EelFunction(name = "lastModified")
     @Nonnull
     public String lastModified(@Nonnull String path,
-           @DefaultArgument(of = "*") @Nonnull String glob) throws IOException {
+            @DefaultArgument("*") @Nonnull String glob,
+            @DefaultArgument("0") int index,
+            @DefaultArgument(DEFAULT_THROWS_EXCEPTION) @Nonnull EelLambda defaultValue) throws IOException {
         Comparator<Path> comparator = fileTimeComparator(BasicFileAttributes::lastModifiedTime, Direction.ASCENDING);
 
-        return findFile(path, glob, comparator);
+        return findFile(path, glob, index, comparator, defaultValue);
     }
 
 
@@ -387,19 +504,27 @@ public class LocalFiles {
     @Nonnull
     private String findFile(@Nonnull String directory,
                             @Nonnull String glob,
-                            @Nonnull Comparator<Path> comparator) throws IOException {
+                            int index,
+                            @Nonnull Comparator<Path> comparator,
+                            @Nonnull EelLambda defaultValue) throws IOException {
+        Preconditions.checkArgument((index >= 0), "%d is an invalid index", index);
+
         PathMatcher matcher = getPathMatcher(directory, glob);
         Path path = Paths.get(directory);
         String fullPath;
 
-        try {
-            fullPath = Files.list(path)
-                .filter(p -> p.toFile().isFile())
+        try (
+            Stream<Path> list = Files.list(path);
+        ) {
+            fullPath = list.filter(p -> p.toFile().isFile())
                 .filter(matcher::matches)
                 .sorted(comparator)
-                .map(Path::toString)
+                .map(Path::toFile)
+                .map(File::getAbsoluteFile)
+                .map(this::canonicalisePath)
+                .skip(index)
                 .findFirst()
-                .orElseThrow(() -> new UncheckedIOException("There are no matching files in " + directory));
+                .orElseGet(() -> evaluateDefault(defaultValue, directory, glob, index));
         } catch (IOException e) {
             throw new IOException("Can not read directory " + directory, e);
         } catch (UncheckedIOException e) {
@@ -409,10 +534,41 @@ public class LocalFiles {
         return fullPath;
     }
 
+    @Nonnull
+    private String canonicalisePath(@Nonnull File file) {
+        String path;
+
+        try {
+            path = file.getCanonicalPath();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        return path;
+    }
+
+    @Nonnull
+    private String evaluateDefault(@Nonnull EelLambda defaultValue,
+                                   @Nonnull String directory,
+                                   @Nonnull String glob,
+                                   int index) throws UncheckedIOException {
+        String evaluated = defaultValue.get()
+            .asText();
+
+        if (DEFAULT_THROWS_EXCEPTION.equals(evaluated)) {
+            throw new UncheckedIOException("There is no file in %s with index %d that matches '%s'",
+                new File(directory).getAbsolutePath(),
+                index,
+                glob);
+        }
+
+        return evaluated;
+    }
+
 
     @Nonnull
     private ZonedDateTime readTimeChecked(@Nonnull Path path,
-            @Nonnull ZonedDateTime defaultValue,
+            @Nonnull EelLambda defaultValue,
             @Nonnull Function<BasicFileAttributes, FileTime> reader) throws IOException {
         try {
             return readTime(path, defaultValue, reader);
@@ -423,13 +579,13 @@ public class LocalFiles {
 
     @Nonnull
     private ZonedDateTime readTime(@Nonnull Path path,
-            @Nonnull ZonedDateTime defaultValue,
+            @Nonnull EelLambda defaultValue,
             @Nonnull Function<BasicFileAttributes, FileTime> attribute) throws UncheckedIOException {
         BasicFileAttributes attributes = readAttributes(path);
         ZonedDateTime result;
 
         if (attributes == null) {
-            result = defaultValue;
+            result = defaultValue.get().asDate();
         } else {
             Instant instant = attribute.apply(attributes)
                 .toInstant();

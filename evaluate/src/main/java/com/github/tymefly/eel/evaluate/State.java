@@ -1,18 +1,32 @@
 package com.github.tymefly.eel.evaluate;
 
+import javax.annotation.Nonnull;
+
 /**
  * Possible states the evaluation application be in
  */
 public enum State {
-    EVALUATED(0),
-    HELP(1),
-    EXPRESSION_FAILED(2),
-    BAD_COMMAND_LINE(3);
+    EVALUATED("Successfully evaluated EEL expression", 0),              // 0 => success
+    HELP("Help page requested", 1),                                     // 1 -> 9 => terminated for expected reasons
+    VERSION("Version information requested", 2),
+    BAD_COMMAND_LINE("Invalid command line options passed", 10),        // 10 + => error conditions;
+    EXPRESSION_FAILED("EEL expression failed to evaluate", 11);
 
+    private final String description;
     private final int returnCode;
 
-    State(int returnCode) {
+    State(@Nonnull String description, int returnCode) {
+        this.description = description;
         this.returnCode = returnCode;
+    }
+
+    /**
+     * Returns a human-readable description of this state
+     * @return a human-readable description of this state
+     */
+    @Nonnull
+    String description() {
+        return description;
     }
 
     /**

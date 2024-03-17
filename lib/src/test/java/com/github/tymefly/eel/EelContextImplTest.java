@@ -6,13 +6,18 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import func.functions.SameValue;
 import func.functions.Sum;
 import func.functions2.Half;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -26,6 +31,18 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link EelContextImpl}
  */
 public class EelContextImplTest {
+    private BuildTime buildTime;
+
+    @Before
+    public void setUp() {
+        buildTime = mock(BuildTime.class);
+
+        when(buildTime.version())
+            .thenReturn("mockedVersion");
+        when(buildTime.buildDate())
+            .thenReturn(EelContext.FALSE_DATE);
+    }
+
     /**
      * Unit test {@link EelContextImpl}
      */
@@ -37,7 +54,7 @@ public class EelContextImplTest {
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
                 mockConstruction(FunctionManager.Builder.class, (c, s) -> when(c.build()).thenReturn(funcMan))
         ) {
-            EelContextImpl context = (EelContextImpl) new EelContextImpl.Builder()
+            EelContextImpl context = new EelContextImpl.Builder()
                 .build();
 
             Assert.assertEquals("Bad MathContext", new MathContext(16, RoundingMode.HALF_UP), context.getMathContext());
@@ -220,7 +237,7 @@ public class EelContextImplTest {
     @Test
     public void test_getStartTime() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-        EelContextImpl context = (EelContextImpl) new EelContextImpl.Builder()
+        EelContextImpl context = new EelContextImpl.Builder()
             .build();
 
         ZonedDateTime actual = context.getStartTime();
@@ -230,5 +247,52 @@ public class EelContextImplTest {
         Assert.assertTrue("Unexpected time", (difference < 1_000));
         Assert.assertEquals("Unexpected Zone", "UTC", actual.getZone().getId());
         Assert.assertSame("Time stamp should not change", actual, context.getStartTime());
+    }
+
+
+    /**
+     * Unit test {@link EelContextImpl#metadata()}
+     */
+    @Test
+    public void test_eelInfo() {
+        try (
+            MockedStatic<BuildTime> buildTime = Mockito.mockStatic(BuildTime.class)
+        ) {
+            buildTime.when(BuildTime::getInstance)
+                .thenReturn(this.buildTime);
+
+            Metadata actual = new EelContextImpl.Builder()
+                .build()
+                .metadata();
+
+            Assert.assertEquals("Unexpected information", "mockedVersion", actual.version());
+        }
+    }
+
+
+    /**
+     * Unit test {@link EelContextImpl#getResource(Class, String, Function)} 
+     */
+    @Test
+    public void test_getResource() {
+        Class<?> owner1 = getClass();
+        Class<?> owner2 = EelContextImpl.class;
+        AtomicInteger count = new AtomicInteger();
+        Function<String, String> constructor = n -> "Item" + count.incrementAndGet() + " (" + n + ")";
+        EelContextImpl context = new EelContextImpl.Builder().build();
+
+        String resource1 = context.getResource(owner1, "Name1", constructor);
+        String resource2 = context.getResource(owner1, "Name1", constructor);
+        String resource3 = context.getResource(owner1, "Name2", constructor);
+        String resource4 = context.getResource(owner2, "Name1", constructor);
+        String resource5 = context.getResource(owner2, "Name2", constructor);
+        String resource6 = context.getResource(owner2, "Name2", constructor);
+
+        Assert.assertEquals("Unexpected resource1", "Item1 (Name1)", resource1);
+        Assert.assertSame("Unexpected resource2", resource1, resource2);
+        Assert.assertEquals("Unexpected resource3", "Item2 (Name2)", resource3);
+        Assert.assertEquals("Unexpected resource4", "Item3 (Name1)", resource4);
+        Assert.assertEquals("Unexpected resource5", "Item4 (Name2)", resource5);
+        Assert.assertSame("Unexpected resource6", resource5, resource6);
     }
 }

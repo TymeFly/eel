@@ -28,6 +28,7 @@ public class ConfigTest {
 
     private Config badOption;
     private Config requestHelp;
+    private Config requestVersion;
     private Config minimal;
     private Config maximal;
 
@@ -42,6 +43,7 @@ public class ConfigTest {
 
         badOption = Config.parse("--expected-error");
         requestHelp = Config.parse("--help");
+        requestVersion = Config.parse("--version");
         minimal = Config.parse("minimal");
         maximal = Config.parse(
             "--verbose",
@@ -67,6 +69,7 @@ public class ConfigTest {
     public void test_isValid() {
         Assert.assertFalse("badOption", badOption.isValid());
         Assert.assertTrue("requestHelp", requestHelp.isValid());
+        Assert.assertTrue("requestVersion", requestVersion.isValid());
         Assert.assertTrue("minimal", minimal.isValid());
         Assert.assertTrue("maximal", maximal.isValid());
     }
@@ -78,9 +81,24 @@ public class ConfigTest {
     public void test_requestHelp() {
         Assert.assertFalse("badOption", badOption.requestHelp());
         Assert.assertTrue("requestHelp", requestHelp.requestHelp());
+        Assert.assertFalse("requestVersion", requestVersion.requestHelp());
         Assert.assertFalse("minimal", minimal.requestHelp());
         Assert.assertFalse("maximal", maximal.requestHelp());
     }
+
+
+    /**
+     * Unit test {@link Config#requestVersion()}
+     */
+    @Test
+    public void test_requestVersion() {
+        Assert.assertFalse("badOption", badOption.requestVersion());
+        Assert.assertFalse("requestHelp", requestHelp.requestVersion());
+        Assert.assertTrue("requestVersion", requestVersion.requestVersion());
+        Assert.assertFalse("minimal", minimal.requestVersion());
+        Assert.assertFalse("maximal", maximal.requestVersion());
+    }
+
 
     /**
      * Unit test {@link Config#verbose()}
@@ -89,6 +107,7 @@ public class ConfigTest {
     public void test_verbose() {
         Assert.assertFalse("badOption", badOption.verbose());
         Assert.assertFalse("requestHelp", requestHelp.verbose());
+        Assert.assertFalse("requestVersion", requestVersion.verbose());
         Assert.assertFalse("minimal", minimal.verbose());
         Assert.assertTrue("maximal", maximal.verbose());
     }
@@ -100,6 +119,7 @@ public class ConfigTest {
     public void test_useEnvironmentVariables() {
         Assert.assertFalse("badOption", badOption.useEnvironmentVariables());
         Assert.assertFalse("requestHelp", requestHelp.useEnvironmentVariables());
+        Assert.assertFalse("requestVersion", requestVersion.useEnvironmentVariables());
         Assert.assertFalse("minimal", minimal.useEnvironmentVariables());
         Assert.assertTrue("maximal", maximal.useEnvironmentVariables());
     }
@@ -111,6 +131,7 @@ public class ConfigTest {
     public void test_useProperties() {
         Assert.assertFalse("badOption", badOption.useProperties());
         Assert.assertFalse("requestHelp", requestHelp.useProperties());
+        Assert.assertFalse("requestVersion", requestVersion.useProperties());
         Assert.assertFalse("minimal", minimal.useProperties());
         Assert.assertTrue("maximal", maximal.useProperties());
     }
@@ -122,6 +143,7 @@ public class ConfigTest {
     public void test_definitions() {
         Assert.assertEquals("badOption", Collections.emptyMap(), badOption.definitions());
         Assert.assertEquals("requestHelp", Collections.emptyMap(), requestHelp.definitions());
+        Assert.assertEquals("requestVersion", Collections.emptyMap(), requestVersion.definitions());
         Assert.assertEquals("minimal", Collections.emptyMap(), minimal.definitions());
         Assert.assertEquals("maximal",
             Map.ofEntries(
@@ -141,6 +163,7 @@ public class ConfigTest {
     public void test_defaultValue() {
         Assert.assertNull("badOption", badOption.defaultValue());
         Assert.assertNull("requestHelp", requestHelp.defaultValue());
+        Assert.assertNull("requestVersion", requestVersion.defaultValue());
         Assert.assertNull("minimal", minimal.defaultValue());
         Assert.assertEquals("maximal", "<undefined>", maximal.defaultValue());
     }
@@ -152,6 +175,7 @@ public class ConfigTest {
     public void test_precision() {
         Assert.assertEquals("badOption", EelContext.DEFAULT_PRECISION, badOption.precision());
         Assert.assertEquals("requestHelp", EelContext.DEFAULT_PRECISION, requestHelp.precision());
+        Assert.assertEquals("requestVersion", EelContext.DEFAULT_PRECISION, requestVersion.precision());
         Assert.assertEquals("minimal", EelContext.DEFAULT_PRECISION, minimal.precision());
         Assert.assertEquals("maximal", 5, maximal.precision());
     }
@@ -163,6 +187,7 @@ public class ConfigTest {
     public void test_functionList() {
         Assert.assertEquals("badOption", Collections.emptyList(), badOption.functionList());
         Assert.assertEquals("requestHelp", Collections.emptyList(), requestHelp.functionList());
+        Assert.assertEquals("requestVersion", Collections.emptyList(), requestVersion.functionList());
         Assert.assertEquals("minimal", Collections.emptyList(), minimal.functionList());
         Assert.assertEquals("maximal", List.of(Plus1.class), maximal.functionList());
     }
@@ -174,6 +199,7 @@ public class ConfigTest {
     public void test_packageList() {
         Assert.assertEquals("badOption", Collections.emptyList(), badOption.packageList());
         Assert.assertEquals("requestHelp", Collections.emptyList(), requestHelp.packageList());
+        Assert.assertEquals("requestVersion", Collections.emptyList(), requestVersion.packageList());
         Assert.assertEquals("minimal", Collections.emptyList(), minimal.packageList());
         Assert.assertEquals("maximal", List.of(Plus2.class.getPackage()), maximal.packageList());
     }
@@ -185,6 +211,7 @@ public class ConfigTest {
     public void test_getExpression() {
         Assert.assertEquals("badOption", "", badOption.getExpression());
         Assert.assertEquals("requestHelp", "", requestHelp.getExpression());
+        Assert.assertEquals("requestVersion", "", requestVersion.getExpression());
         Assert.assertEquals("minimal", "minimal", minimal.getExpression());
         Assert.assertEquals("maximal", "maximal", maximal.getExpression());
     }
@@ -195,6 +222,8 @@ public class ConfigTest {
     @Test
     public void test_displayUsage() {
         minimal.displayUsage();
+
+
 
         Assert.assertTrue("Help message not written",
             stdOut.getLog().replaceAll("\r\n", "\n").startsWith("Usage:\n  java -jar evaluate-<version>.jar"));
@@ -258,4 +287,5 @@ public class ConfigTest {
         Assert.assertTrue("Error message not written",
             log.matches("Error: Can not read file '.*/path/to/unknown/file.xxxx'"));
     }
+
 }

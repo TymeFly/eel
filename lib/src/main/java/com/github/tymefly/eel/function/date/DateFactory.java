@@ -39,7 +39,7 @@ public class DateFactory {
     @Nonnull
     @EelFunction(name = "date.start")
     public ZonedDateTime start(@Nonnull EelContext context,
-                               @DefaultArgument(of = "UTC") @Nonnull String zone) throws DateTimeException {
+                               @DefaultArgument("UTC") @Nonnull String zone) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
         ZonedDateTime result = context.getStartTime()
             .withZoneSameInstant(zoneId);

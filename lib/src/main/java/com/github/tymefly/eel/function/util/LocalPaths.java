@@ -41,11 +41,16 @@ public class LocalPaths {
      * The EEL syntax for this function is <code>realPath( path )</code>
      * @param path  a file path
      * @return      a canonicalized {@code path}
-     * @throws IOException if the canonicalised path could not be obtained.
+     * @throws IOException  if the canonicalised path could not be obtained. This could be because
+     *                          the {@code path} is empty
      */
     @EelFunction(name = "realPath")
     @Nonnull
     public String realPath(@Nonnull String path) throws IOException {
+        if (path.isEmpty()) {
+            throw new IOException("Empty file path");
+        }
+
         File location = new File(path.replace('\\', '/')).getCanonicalFile();
 
         return location.getAbsolutePath();
@@ -92,7 +97,7 @@ public class LocalPaths {
      */
     @EelFunction(name = "baseName")
     @Nonnull
-    public String baseName(@Nonnull String path, @DefaultArgument(of = "") @Nonnull String extension) {
+    public String baseName(@Nonnull String path, @DefaultArgument("") @Nonnull String extension) {
         int lastIndex = path.lastIndexOf(separator);
         String fileName = path.substring(lastIndex + 1);
 
@@ -124,7 +129,7 @@ public class LocalPaths {
      */
     @EelFunction(name = "extension")
     @Nonnull
-    public String extension(@Nonnull String path, @DefaultArgument(of = "-1") int max) {
+    public String extension(@Nonnull String path, @DefaultArgument("-1") int max) {
         String result;
         String fileName = baseName(path, "");
         int index = fileName.length();

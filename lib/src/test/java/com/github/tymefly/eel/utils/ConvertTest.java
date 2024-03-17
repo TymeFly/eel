@@ -128,8 +128,9 @@ public class ConvertTest {
         Assert.assertTrue("+1 Date in Zone -1",
             Convert.to(datePlus1.withZoneSameInstant(ZoneId.of("-01")), Boolean.class));
 
+        Assert.assertFalse("blank string", Convert.to("", Boolean.class));
+
         Assert.assertThrows("bad String", RuntimeException.class, () -> Convert.to("unknown", Boolean.class));
-        Assert.assertThrows("blank string", RuntimeException.class, () -> Convert.to("", Boolean.class));
         Assert.assertThrows("0.0", RuntimeException.class, () -> Convert.to("0.0", Boolean.class));
     }
 

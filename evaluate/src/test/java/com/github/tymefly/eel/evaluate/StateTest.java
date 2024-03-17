@@ -25,4 +25,14 @@ public class StateTest {
             Assert.assertTrue("Duplicate return code " + returnCode, unique);
         }
     }
+
+    /**
+     * Unit test {@link State#description()}
+     */
+    @Test
+    public void test_description() {
+        Assert.assertEquals("EVALUATED", "Successfully evaluated EEL expression", State.EVALUATED.description());
+        Assert.assertEquals("VERSION", "Version information requested", State.VERSION.description());
+        Assert.assertEquals("BAD_COMMAND_LINE", "Invalid command line options passed", State.BAD_COMMAND_LINE.description());
+    }
 }

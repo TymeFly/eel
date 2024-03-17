@@ -2,7 +2,6 @@ package com.github.tymefly.eel;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -23,14 +22,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Immutable
 @SuppressFBWarnings(value="JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS", justification="fields cache computed values")
 class Value implements EelValue, Result {
-    private static final ZonedDateTime ONE_DATE = ZonedDateTime.of(1970, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC);
+    private static final ZonedDateTime ONE_DATE = EelContext.FALSE_DATE.plusSeconds(1);
+    private static final ZonedDateTime TEN_DATE = EelContext.FALSE_DATE.plusSeconds(10);
 
-    static final Value BLANK = new Value(Type.TEXT, "", null, null, null);
-    static final Value ZERO = new Value(Type.NUMBER, "0", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
-    static final Value ONE = new Value(Type.NUMBER, "1", BigDecimal.ONE, true, ONE_DATE);
-    static final Value TRUE = new Value(Type.LOGIC, "true", BigDecimal.ONE, true, ONE_DATE);
-    static final Value FALSE = new Value(Type.LOGIC, "false", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
-    static final Value EPOCH_START_UTC =
+    private static final Value BLANK = new Value(Type.TEXT, "", null, null, null);
+    private static final Value ZERO = new Value(Type.NUMBER, "0", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
+    private static final Value ONE = new Value(Type.NUMBER, "1", BigDecimal.ONE, true, ONE_DATE);
+    private static final Value TEN = new Value(Type.NUMBER, "10", BigDecimal.TEN, true, TEN_DATE);
+    private static final Value TRUE = new Value(Type.LOGIC, "true", BigDecimal.ONE, true, ONE_DATE);
+    private static final Value FALSE = new Value(Type.LOGIC, "false", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
+    private static final Value EPOCH_START_UTC =
         new Value(Type.DATE, null, BigDecimal.ZERO, false, EelContext.FALSE_DATE);
 
 
@@ -49,10 +50,12 @@ class Value implements EelValue, Result {
     static {
         // As we keep a reference to these objects as static final fields they can't be garbage collected
         // and therefore will not be removed from the WeakHashMap
+        // These values are created with all the conversion values defined to save time later.
         TEXT_POOL.put(BLANK.asText(), BLANK);
 
         NUMBER_POOL.put(ZERO.asNumber(), ZERO);
         NUMBER_POOL.put(ONE.asNumber(), ONE);
+        NUMBER_POOL.put(TEN.asNumber(), TEN);
 
         DATE_POOL.put(EPOCH_START_UTC.asDate(), EPOCH_START_UTC);
     }

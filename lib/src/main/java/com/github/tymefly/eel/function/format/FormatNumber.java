@@ -8,7 +8,7 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL functions that converts NUMBER to TEXT with a different base
+ * EEL functions that converts NUMBER to TEXT with a different base
  */
 @PackagedEelFunction
 public class FormatNumber {

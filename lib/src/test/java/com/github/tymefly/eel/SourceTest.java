@@ -128,7 +128,7 @@ public class SourceTest {
         byte[] raw = data.getBytes(StandardCharsets.UTF_8);
         InputStream stream = new ByteArrayInputStream(raw);
 
-        return new Source(stream, maxLength);
+        return Source.build(stream, maxLength);
     }
 
 

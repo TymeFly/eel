@@ -4,18 +4,23 @@
 
     <groupId>com.github.tymefly.eel</groupId>
     <artifactId>parent</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>EEL Parent POM</name>
     <packaging>pom</packaging>
 
     <properties>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ssZ</maven.build.timestamp.format>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
 
-        <version.mockito>5.3.1</version.mockito>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+
         <version.log4j>2.17.0</version.log4j>
-        <version.slf4j>2.0.7</version.slf4j>
+        <version.slf4j>2.0.12</version.slf4j>
+        <version.logback>1.5.2</version.logback>
+
+        <version.mockito>5.3.1</version.mockito>
+        <version.junit>4.13.2</version.junit>
     </properties>
 
     <dependencyManagement>
@@ -24,7 +29,7 @@
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
-                <version>4.7.3</version>
+                <version>4.8.3</version>
             </dependency>
 
             <!-- Logging -->
@@ -37,14 +42,14 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.4.7</version>
+                <version>${version.logback}</version>
             </dependency>
 
             <!-- Testing -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.13.2</version>
+                <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -70,7 +75,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>3.12.1</version>
                     <configuration>
                         <source>17</source>
                         <target>17</target>
@@ -81,7 +86,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                     <executions>
                         <execution>
                             <id>integration-test-source</id>
@@ -101,7 +106,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.5</version>
                     <executions>
                         <execution>
                             <id>default-test</id>
@@ -122,7 +127,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.5</version>
                     <executions>
                         <execution>
                             <goals>
@@ -164,7 +169,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.7.3.4</version>
+                    <version>4.8.3.1</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -181,7 +186,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.10</version>
+                    <version>0.8.11</version>
                     <executions>
                         <execution>
                             <id>default-prepare-agent</id>
@@ -206,9 +211,24 @@
                                         <element>BUNDLE</element>
                                         <limits>
                                             <limit>
-                                                <counter>COMPLEXITY</counter>
+                                                <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0</minimum>
+                                                <minimum>0.95</minimum>
+                                            </limit>
+                                            <limit>
+                                                <counter>BRANCH</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.80</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                    <rule>
+                                        <element>METHOD</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>COMPLEXITY</counter>
+                                                <value>TOTALCOUNT</value>
+                                                <maximum>15</maximum>
                                             </limit>
                                         </limits>
                                     </rule>
@@ -221,7 +241,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.4.1</version>
+                    <version>3.5.2</version>
                     <executions>
                         <execution>
                             <phase>package</phase>
@@ -241,7 +261,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.5.0</version>
+                    <version>3.6.3</version>
                     <executions>
                         <execution>
                             <phase>site</phase>

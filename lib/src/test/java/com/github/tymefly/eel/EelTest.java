@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -32,15 +33,23 @@ public class EelTest {
     private EelContextImpl context;
     private SymbolsTable symbolsTable;
     private Executor executor;
+    private BuildTime buildTime;
+
 
     @Before
     public void setUp() {
         context = mock(EelContextImpl.class);
         symbolsTable = mock(SymbolsTable.class);
         executor = mock(Executor.class);
+        buildTime = mock(BuildTime.class);
 
         when(context.maxExpressionLength())
             .thenReturn(100);
+
+        when(buildTime.version())
+            .thenReturn("mockedVersion");
+        when(buildTime.buildDate())
+            .thenReturn(EelContext.FALSE_DATE);
     }
 
 
@@ -52,6 +61,25 @@ public class EelTest {
     private void mockParser(@Nonnull Parser mock) {
         when(mock.parse())
             .thenReturn(executor);
+    }
+
+
+
+    /**
+     * Unit test {@link Eel#metadata()}
+     */
+    @Test
+    public void test_eelInfo() {
+        try (
+            MockedStatic<BuildTime> buildTime = Mockito.mockStatic(BuildTime.class)
+        ) {
+            buildTime.when(BuildTime::getInstance)
+                .thenReturn(this.buildTime);
+
+            Metadata actual = Eel.metadata();
+
+            Assert.assertEquals("Unexpected information", "mockedVersion", actual.version());
+        }
     }
 
 

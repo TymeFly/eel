@@ -3,93 +3,155 @@ package com.github.tymefly.eel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.builder.SymbolTableBuilder;
+import com.github.tymefly.eel.builder.ScopedSymbolsTableBuilder;
+import com.github.tymefly.eel.builder.SymbolsTableBuilder;
+import com.github.tymefly.eel.exception.EelSymbolsTableException;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
  * The symbols table is a look-up mechanism which allows a compiled {@link Eel} to read external values.
  * The symbols table can be something as simple as a lookup from a map (see {@link #from(Map)}, a callback
- * function (see {@link #from(Function)}, or a fully fledged lookup strategy that can read values from multiple
- * sources (see {@link #factory()} with priorities and defaults.
+ * function (see {@link #from(Function)}), or a fully fledged lookup strategy that can read values from multiple
+ * sources (see {@link #factory()}) with priorities and defaults.
  */
 public class SymbolsTable {
-    private static class Builder implements SymbolTableBuilder {
-        private final List<Function<String, ?>> strategy;
+    private static class Builder implements SymbolsTableBuilder, ScopedSymbolsTableBuilder {
+        private final String delimiter;
+        private final List<SymbolsSource> sources;
+        private final Set<String> scopeNames = new HashSet<>();
 
-        Builder() {
-            strategy = new ArrayList<>();
+
+        private Builder(@Nullable String delimiter) {
+            this.delimiter = delimiter;
+            this.sources = new ArrayList<>();
+        }
+
+
+        @Nonnull
+        @Override
+        public SymbolsTableBuilder withProperties() {
+            return unscoped(System.getProperties()::get);
         }
 
         @Nonnull
         @Override
-        public SymbolTableBuilder withProperties() {
-            strategy.add(System.getProperties()::get);
+        public ScopedSymbolsTableBuilder withProperties(@Nonnull String scopeName) {
+            return addScoped(scopeName, System.getProperties()::get);
+        }
 
-            return this;
+
+        @Nonnull
+        @Override
+        public SymbolsTableBuilder withEnvironment() {
+            return unscoped(System.getenv()::get);
         }
 
         @Nonnull
         @Override
-        public SymbolTableBuilder withEnvironment() {
-            strategy.add(System.getenv()::get);
-
-            return this;
+        public ScopedSymbolsTableBuilder withEnvironment(@Nonnull String scopeName) {
+            return addScoped(scopeName, System.getenv()::get);
         }
+
 
         @Nonnull
         @Override
-        public SymbolTableBuilder withValues(@Nonnull Map<String, String> values) {
+        public SymbolsTableBuilder withValues(@Nonnull Map<String, String> values) {
             Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
 
             Map<String, String> copy = new HashMap<>(values);
 
-            strategy.add(copy::get);
-
-            return this;
+            return unscoped(copy::get);
         }
 
         @Nonnull
         @Override
-        public SymbolTableBuilder withLookup(@Nonnull Function<String, String> lookup) {
+        public ScopedSymbolsTableBuilder withValues(@Nonnull String scopeName, @Nonnull Map<String, String> values) {
+            Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
+
+            Map<String, String> copy = new HashMap<>(values);
+
+            return addScoped(scopeName, copy::get);
+        }
+
+
+        @Nonnull
+        @Override
+        public SymbolsTableBuilder withLookup(@Nonnull Function<String, String> lookup) {
             Preconditions.checkNotNull(lookup, "Can not evaluate a null symbols lookup");
 
-            strategy.add(lookup);
+            return unscoped(lookup);
+        }
+
+        @Nonnull
+        @Override
+        public ScopedSymbolsTableBuilder withLookup(@Nonnull String scopeName,
+                                                    @Nonnull Function<String, String> lookup) {
+            Preconditions.checkNotNull(lookup, "Can not evaluate a null symbols lookup");
+
+            return addScoped(scopeName, lookup);
+        }
+
+
+        @Nonnull
+        @Override
+        public SymbolsTableBuilder withDefault(@Nonnull String defaultValue) {
+            Preconditions.checkNotNull(defaultValue, "Can not evaluate a null symbols default value");
+
+            sources.add(SymbolsSource.unscoped(k -> defaultValue));
+
+            return this;
+        }
+
+
+        @Nonnull
+        private SymbolsTableBuilder unscoped(@Nonnull Function<String, ?> strategy) {
+            SymbolsSource symbolsSource = SymbolsSource.unscoped(strategy);
+
+            sources.add(symbolsSource);
 
             return this;
         }
 
         @Nonnull
-        @Override
-        public SymbolTableBuilder withDefault(@Nonnull String defaultValue) {
-            Preconditions.checkNotNull(defaultValue, "Can not evaluate a null symbols default value");
+        private ScopedSymbolsTableBuilder addScoped(@Nonnull String scopeName, @Nonnull Function<String, ?> strategy) {
+            boolean valid = scopeNames.add(scopeName);
 
-            strategy.add(k -> defaultValue);
+            if (!valid) {
+                throw new EelSymbolsTableException("Duplicate scope '%s'", scopeName);
+            }
+
+            SymbolsSource symbolsSource = SymbolsSource.scoped(scopeName, delimiter, strategy);
+
+            sources.add(symbolsSource);
 
             return this;
         }
+
 
         @Nonnull
         @Override
         public SymbolsTable build() {
-            return new SymbolsTable(strategy);
+            return new SymbolsTable(sources);
         }
     }
 
 
     static final SymbolsTable EMPTY = new SymbolsTable(Collections.emptyList());
 
-    private final List<Function<String, ?>> strategy;
+    private final List<SymbolsSource> sources;
 
 
-    private SymbolsTable(@Nonnull List<Function<String, ?>> strategy) {
-        this.strategy = new ArrayList<>(strategy);
+    private SymbolsTable(@Nonnull List<SymbolsSource> sources) {
+        this.sources = new ArrayList<>(sources);
     }
 
 
@@ -98,8 +160,20 @@ public class SymbolsTable {
      * @return a builder for a SymbolsTable.
      */
     @Nonnull
-    public static SymbolTableBuilder factory() {
-        return new Builder();
+    public static SymbolsTableBuilder factory() {
+        return new Builder(null);
+    }
+
+    /**
+     * Returns a builder that can create flexible SymbolsTable which can read symbols from a multiple locations.
+     * @param delimiter     characters that separate the scope name from the key name
+     * @return a builder for a SymbolsTable.
+     */
+    @Nonnull
+    public static ScopedSymbolsTableBuilder factory(@Nonnull String delimiter) {
+        Preconditions.checkArgument(!delimiter.isBlank(), "Scope delimiters can not be blank strings");
+
+        return new Builder(delimiter);
     }
 
     /**
@@ -119,7 +193,7 @@ public class SymbolsTable {
 
         Map<String, String> copy = new HashMap<>(values);
 
-        return new SymbolsTable(List.of(copy::get));
+        return new SymbolsTable(List.of(SymbolsSource.unscoped(copy::get)));
     }
 
     /**
@@ -137,7 +211,7 @@ public class SymbolsTable {
     public static SymbolsTable from(@Nonnull Function<String, String> lookup) {
         Preconditions.checkNotNull(lookup, "Can not evaluate a null symbols lookup");
 
-        return new SymbolsTable(List.of(lookup));
+        return new SymbolsTable(List.of(SymbolsSource.unscoped(lookup)));
     }
 
     /**
@@ -191,12 +265,12 @@ public class SymbolsTable {
     @Nullable
     String read(@Nonnull String key) {
         Object value = null;
-        int size = strategy.size();
+        int size = sources.size();
         int index = -1;
 
         while ((value == null) && (++index != size)) {
-            value = strategy.get(index)
-                .apply(key);
+            value = sources.get(index)
+                .read(key);
         }
 
         return (value != null ? value.toString() : null);

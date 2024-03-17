@@ -28,7 +28,7 @@ public class Random {
      * @return a random number between {@code min} and {@code max}
      */
     @EelFunction(name = "random")
-    public long random(@DefaultArgument(of = "0") int min, @DefaultArgument(of = "99") int max) {
+    public long random(@DefaultArgument("0") int min, @DefaultArgument("99") int max) {
         return ThreadLocalRandom.current()
             .nextLong(min, max + 1);                    // max is inclusive, but nextInt() upper bound is exclusive
     }

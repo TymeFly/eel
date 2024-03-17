@@ -21,7 +21,7 @@ import com.github.tymefly.eel.utils.Convert;
 public class PrintF {
     private static class ArgumentParser {
         private static final String FORMAT_SPECIFIER
-            = "%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%]).*";
+            = "%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%]).*";
         private static final int ARG_INDEX_GROUP = 1;
         private static final int TIME_GROUP = 5;
         private static final int CONVERSION_GROUP = 6;

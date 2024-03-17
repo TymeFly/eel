@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.SymbolsTable;
 
 /**
- * Part of the fluent interface for a {@link SymbolsTable} Builder.
+ * Part of the fluent interface for the {@link SymbolsTable} Builders.
  */
 public interface BasicSymbolTableBuilder {
     /**

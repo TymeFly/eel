@@ -11,7 +11,7 @@ import com.github.tymefly.eel.SymbolsTable;
 import com.github.tymefly.eel.Type;
 import com.github.tymefly.eel.builder.EelBuilder;
 import com.github.tymefly.eel.builder.EelContextBuilder;
-import com.github.tymefly.eel.builder.SymbolTableBuilder;
+import com.github.tymefly.eel.builder.SymbolsTableBuilder;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public class EvaluateTest {
     private Eel eel;
     private EelContextBuilder contextBuilder;
     private EelContext context;
-    private SymbolTableBuilder symbolTableBuilder;
+    private SymbolsTableBuilder symbolsTableBuilder;
     private SymbolsTable symbolTable;
 
     private Package functions;
@@ -67,7 +67,7 @@ public class EvaluateTest {
         eel = mock(Eel.class);
         contextBuilder = mock(EelContextBuilder.class);
         context = mock(EelContext.class);
-        symbolTableBuilder = mock(SymbolTableBuilder.class);
+        symbolsTableBuilder = mock(SymbolsTableBuilder.class);
         symbolTable = mock(SymbolsTable.class);
 
         functions = mock(Package.class);
@@ -115,15 +115,15 @@ public class EvaluateTest {
             .thenReturn(context);
 
         // train the symbols table builder API
-        when(symbolTableBuilder.withProperties())
-            .thenReturn(symbolTableBuilder);
-        when(symbolTableBuilder.withEnvironment())
-            .thenReturn(symbolTableBuilder);
-        when(symbolTableBuilder.withValues(anyMap()))
-            .thenReturn(symbolTableBuilder);
-        when(symbolTableBuilder.withDefault(anyString()))
-            .thenReturn(symbolTableBuilder);
-        when(symbolTableBuilder.build())
+        when(symbolsTableBuilder.withProperties())
+            .thenReturn(symbolsTableBuilder);
+        when(symbolsTableBuilder.withEnvironment())
+            .thenReturn(symbolsTableBuilder);
+        when(symbolsTableBuilder.withValues(anyMap()))
+            .thenReturn(symbolsTableBuilder);
+        when(symbolsTableBuilder.withDefault(anyString()))
+            .thenReturn(symbolsTableBuilder);
+        when(symbolsTableBuilder.build())
             .thenReturn(symbolTable);
 
         // train the result
@@ -153,7 +153,7 @@ public class EvaluateTest {
             staticContextBuilder.when(EelContext::factory)
                 .thenReturn(contextBuilder);
             staticSymbolsTable.when(SymbolsTable::factory)
-                .thenReturn(symbolTableBuilder);
+                .thenReturn(symbolsTableBuilder);
 
             Evaluate.main(new String[] { "Hello", "World" });
         }
@@ -179,7 +179,7 @@ public class EvaluateTest {
             staticContextBuilder.when(EelContext::factory)
                 .thenReturn(contextBuilder);
             staticSymbolsTable.when(SymbolsTable::factory)
-                .thenReturn(symbolTableBuilder);
+                .thenReturn(symbolsTableBuilder);
 
             Evaluate.execute(new String[] { "Hello", "World" });
         }
@@ -193,11 +193,11 @@ public class EvaluateTest {
 
 
         // symbols table builder API
-        verify(symbolTableBuilder).withProperties();
-        verify(symbolTableBuilder).withEnvironment();
-        verify(symbolTableBuilder).withValues(Map.of("k1", "v1", "k2", "v2"));
-        verify(symbolTableBuilder).withDefault("<default>");
-        verify(symbolTableBuilder).build();
+        verify(symbolsTableBuilder).withProperties();
+        verify(symbolsTableBuilder).withEnvironment();
+        verify(symbolsTableBuilder).withValues(Map.of("k1", "v1", "k2", "v2"));
+        verify(symbolsTableBuilder).withDefault("<default>");
+        verify(symbolsTableBuilder).build();
 
         // verify expression builder API
         verify(eelBuilder).withContext(context);
@@ -228,6 +228,26 @@ public class EvaluateTest {
         }
     }
 
+    /**
+     * Unit test {@link Evaluate}
+     */
+    @Test
+    public void test_Version() {
+        exit.expectSystemExitWithStatus(2);
+
+        when(config.requestVersion())
+            .thenReturn(true);
+
+        try (
+            MockedStatic<Config> staticConfig = mockStatic(Config.class)
+        ) {
+            staticConfig.when(() -> Config.parse(any(String[].class)))
+                .thenReturn(config);
+
+            Evaluate.main(new String[] { "--version" });
+        }
+    }
+
 
     /**
      * Unit test {@link Evaluate}
@@ -237,7 +257,7 @@ public class EvaluateTest {
         when(eel.evaluate(any(SymbolsTable.class))).
             thenThrow(new EelUnknownSymbolException("expected"));
 
-        exit.expectSystemExitWithStatus(2);
+        exit.expectSystemExitWithStatus(11);
 
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class);
@@ -252,7 +272,7 @@ public class EvaluateTest {
             staticContextBuilder.when(EelContext::factory)
                 .thenReturn(contextBuilder);
             staticSymbolsTable.when(SymbolsTable::factory)
-                .thenReturn(symbolTableBuilder);
+                .thenReturn(symbolsTableBuilder);
 
             Evaluate.main(new String[] { "Hello", "World" });
         }
@@ -264,7 +284,7 @@ public class EvaluateTest {
      */
     @Test
     public void test_BadCommandLine() {
-        exit.expectSystemExitWithStatus(3);
+        exit.expectSystemExitWithStatus(10);
 
         when(config.isValid())
             .thenReturn(false);

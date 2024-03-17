@@ -1,8 +1,11 @@
 package com.github.tymefly.eel;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
@@ -12,6 +15,55 @@ import com.github.tymefly.eel.utils.BigDecimals;
  * Class that creates {@link Executor} objects for the Parser.
  */
 class LambdaCompiler implements Compiler {
+    private static class LambdaSymbolBuilder implements SymbolBuilder {
+        private final String identifier;
+        private Executor defaultValue;
+        private Function<String, String> transformations = Function.identity();
+
+        private LambdaSymbolBuilder(@Nonnull String identifier) {
+            this.identifier = identifier;
+        }
+
+        @Nonnull
+        @Override
+        public SymbolBuilder withDefault(@Nonnull Executor defaultValue) {
+            this.defaultValue = defaultValue;
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public SymbolBuilder withTransformation(@Nonnull SymbolTransformation transformation) {
+            transformations = transformations.andThen(transformation);
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Executor build() {
+            Executor result = s -> {
+                String text = s.read(identifier);
+                Value value;
+
+                if (text != null) {
+                    text = transformations.apply(text);
+                    value = Value.of(text);
+                } else if (defaultValue != null) {
+                    value = defaultValue.execute(s);
+                } else {
+                    throw new EelUnknownSymbolException("Unknown variable '%s'", identifier);
+                }
+
+                return value;
+            };
+
+            return result;
+        }
+    }
+
+
     private final EelContext context;
 
 
@@ -30,29 +82,10 @@ class LambdaCompiler implements Compiler {
         return result;
     }
 
-    @Override
     @Nonnull
-    public Executor readVariable(@Nonnull String identifier,
-                                 @Nullable Executor defaultValue,
-                                 @Nullable CompileVariableOp caseOp,
-                                 boolean takeLength) {
-        Executor result = s -> {
-            String text = s.read(identifier);
-            Value value;
-
-            if (text != null){
-                text = (caseOp == null ? text : caseOp.apply(text));
-                value = (takeLength ? Value.of(text.length()) : Value.of(text));
-            } else if (defaultValue == null) {
-                throw new EelUnknownSymbolException("Unknown variable '%s'", identifier);
-            } else {
-                value = defaultValue.execute(s);
-            }
-
-            return value;
-        };
-
-        return result;
+    @Override
+    public SymbolBuilder readSymbol(@Nonnull String identifier) {
+        return new LambdaSymbolBuilder(identifier);
     }
 
                 //*** Constants ***//
@@ -80,7 +113,7 @@ class LambdaCompiler implements Compiler {
 
     @Override
     @Nonnull
-    public Executor condition(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second) {
+    public Executor conditional(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second) {
         Executor result = s -> condition.execute(s).asLogic() ? first.execute(s) : second.execute(s);
 
         return result;
@@ -148,18 +181,16 @@ class LambdaCompiler implements Compiler {
         return s -> Value.of(BigDecimals.le(left.execute(s).asNumber(), right.execute(s).asNumber()));
     }
 
-                //*** Shift Ops ***//
-
-    @Override
     @Nonnull
-    public Executor leftShift(@Nonnull Executor value, @Nonnull Executor shift) {
-        return s -> Value.of(value.execute(s).asBigInteger().shiftLeft(shift.execute(s).asInteger()));
+    @Override
+    public Executor isBefore(@Nonnull Executor left, @Nonnull Executor right) {
+        return s -> Value.of(left.execute(s).asDate().isBefore(right.execute(s).asDate()));
     }
 
-    @Override
     @Nonnull
-    public Executor rightShift(@Nonnull Executor value, @Nonnull Executor shift) {
-        return s -> Value.of(value.execute(s).asBigInteger().shiftRight(shift.execute(s).asInteger()));
+    @Override
+    public Executor isAfter(@Nonnull Executor left, @Nonnull Executor right) {
+        return s -> Value.of(left.execute(s).asDate().isAfter(right.execute(s).asDate()));
     }
 
                 //*** Numeric Ops ***//
@@ -196,6 +227,35 @@ class LambdaCompiler implements Compiler {
             left.execute(s).asNumber().divide(right.execute(s).asNumber(), context.getMathContext()));
     }
 
+    @Nonnull
+    @Override
+    public Executor divideFloor(@Nonnull Executor left, @Nonnull Executor right) {
+        return s -> divideHelper(s, left, right, RoundingMode.FLOOR);
+    }
+
+    @Nonnull
+    @Override
+    public Executor divideTruncate(@Nonnull Executor left, @Nonnull Executor right) {
+        return s -> divideHelper(s, left, right, RoundingMode.DOWN);
+    }
+
+    @Nonnull
+    private Value divideHelper(@Nonnull SymbolsTable symbols,
+                               @Nonnull Executor left,
+                               @Nonnull Executor right,
+                               @Nonnull RoundingMode mode) {
+        BigDecimal divisor = right.execute(symbols)
+            .asNumber();
+        BigDecimal quotient = left.execute(symbols)
+            .asNumber()
+            .divide(divisor, context.getMathContext())
+            .setScale(0, mode);
+        Value result = Value.of(quotient);
+
+        return result;
+    }
+
+
     @Override
     @Nonnull
     public Executor modulus(@Nonnull Executor left, @Nonnull Executor right) {
@@ -221,24 +281,12 @@ class LambdaCompiler implements Compiler {
     @Override
     @Nonnull
     public Executor logicalAnd(@Nonnull Executor left, @Nonnull Executor right) {
-        return s -> Value.of(left.execute(s).asLogic() & right.execute(s).asLogic());
-    }
-
-    @Nonnull
-    @Override
-    public Executor shortCircuitAnd(@Nonnull Executor left, @Nonnull Executor right) {
         return s -> Value.of(left.execute(s).asLogic() && right.execute(s).asLogic());
     }
 
     @Override
     @Nonnull
     public Executor logicalOr(@Nonnull Executor left, @Nonnull Executor right) {
-        return s -> Value.of(left.execute(s).asLogic() | right.execute(s).asLogic());
-    }
-
-    @Nonnull
-    @Override
-    public Executor shortCircuitOr(@Nonnull Executor left, @Nonnull Executor right) {
         return s -> Value.of(left.execute(s).asLogic() || right.execute(s).asLogic());
     }
 
@@ -268,38 +316,23 @@ class LambdaCompiler implements Compiler {
         return s -> Value.of(left.execute(s).asBigInteger().xor(right.execute(s).asBigInteger()));
     }
 
+    @Override
+    @Nonnull
+    public Executor leftShift(@Nonnull Executor value, @Nonnull Executor shift) {
+        return s -> Value.of(value.execute(s).asBigInteger().shiftLeft(shift.execute(s).asInteger()));
+    }
+
+    @Override
+    @Nonnull
+    public Executor rightShift(@Nonnull Executor value, @Nonnull Executor shift) {
+        return s -> Value.of(value.execute(s).asBigInteger().shiftRight(shift.execute(s).asInteger()));
+    }
+
                 //*** String Ops ***//
 
     @Override
     @Nonnull
     public Executor concatenate(@Nonnull Executor first, @Nonnull Executor second) {
         return s -> Value.of(first.execute(s).asText() + second.execute(s).asText());
-    }
-
-
-                //*** Cast Ops ***//
-
-    @Override
-    @Nonnull
-    public Executor toText(@Nonnull Executor value) {
-        return s -> Value.of(value.execute(s).asText());
-    }
-
-    @Override
-    @Nonnull
-    public Executor toNumber(@Nonnull Executor value) {
-        return s -> Value.of(value.execute(s).asNumber());
-    }
-
-    @Override
-    @Nonnull
-    public Executor toLogic(@Nonnull Executor value) {
-        return s -> Value.of(value.execute(s).asLogic());
-    }
-
-    @Nonnull
-    @Override
-    public Executor toDate(@Nonnull Executor value) {
-        return s -> Value.of(value.execute(s).asDate());
     }
 }

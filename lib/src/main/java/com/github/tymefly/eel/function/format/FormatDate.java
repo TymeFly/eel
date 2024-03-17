@@ -12,7 +12,7 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL functions that converts DATE to TEXT with a custom format
+ * EEL functions that converts DATE to TEXT with a custom format
  */
 @PackagedEelFunction
 public class FormatDate {

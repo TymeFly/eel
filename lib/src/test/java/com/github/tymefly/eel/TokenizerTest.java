@@ -35,10 +35,13 @@ public class TokenizerTest {
         assertToken(1, buildTokenizer("").next(Mode.INTERPOLATE), Token.END_OF_PROGRAM, "", 0);
         assertToken(1, buildTokenizer("some text").next(Mode.INTERPOLATE), Token.STRING, "some text", 1);
         assertToken(1, buildTokenizer("  some text  ").next(Mode.INTERPOLATE), Token.STRING, "  some text  ", 1);
-        assertToken(1, buildTokenizer("some$text").next(Mode.INTERPOLATE), Token.STRING, "some$text", 1);
-        assertToken(1, buildTokenizer("$text$").next(Mode.INTERPOLATE), Token.STRING, "$text$", 1);
         assertToken(1, buildTokenizer("xxx $(").next(Mode.INTERPOLATE), Token.STRING, "xxx ", 1);
         assertToken(1, buildTokenizer("___${").next(Mode.INTERPOLATE), Token.STRING, "___", 1);
+        assertToken(1, buildTokenizer("$1.23").next(Mode.INTERPOLATE), Token.STRING, "$1.23", 1);
+        assertToken(1, buildTokenizer("$_").next(Mode.INTERPOLATE), Token.FUNCTION_INTERPOLATION, "$", 1);
+        assertToken(1, buildTokenizer("${abc}").next(Mode.INTERPOLATE), Token.VALUE_INTERPOLATION, "${", 1);
+        assertToken(1, buildTokenizer("$(abc)").next(Mode.INTERPOLATE), Token.EXPRESSION_INTERPOLATION, "$(", 1);
+        assertToken(1, buildTokenizer("$func()").next(Mode.INTERPOLATE), Token.FUNCTION_INTERPOLATION, "$", 1);
     }
 
     /**
@@ -89,19 +92,19 @@ public class TokenizerTest {
             "Embedded new lines",
             EelSyntaxException.class,
             () -> buildTokenizer(" '\\r\\n   ' ").next(Mode.EXPRESSION));
-        Assert.assertEquals("Unexpected message", "Error at position 2: Invalid character 0x0072", actual.getMessage());
+        Assert.assertEquals("Unexpected message", "Error at position 4: Unexpected char 'r' (0x72)", actual.getMessage());
 
         actual = Assert.assertThrows(
             "Embedded Control characters",
             EelSyntaxException.class,
             () -> buildTokenizer(" '\u0004   ' ").next(Mode.EXPRESSION));
-        Assert.assertEquals("Unexpected message", "Error at position 2: Invalid character 0x0004", actual.getMessage());
+        Assert.assertEquals("Error at position 3: Unexpected char (0x04)", actual.getMessage());
 
         actual = Assert.assertThrows(
             "Unicode Specials Block (Interlinear Annotation Anchor)",
             EelSyntaxException.class,
             () -> buildTokenizer(" '\uFFF9   ' ").next(Mode.EXPRESSION));
-        Assert.assertEquals("Error at position 2: Invalid character 0xfff9", actual.getMessage());
+        Assert.assertEquals("Error at position 3: Unexpected char (0xfff9)", actual.getMessage());
 
         actual = Assert.assertThrows(
             "Embedded CHAR_UNDEFINED (EOF marker)",
@@ -130,17 +133,101 @@ public class TokenizerTest {
     @Test
     public void test_numbers() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer(".1 200 3.00 4.44 5e2 6E-3 7.3e10 0xfe");
+        Tokenizer tokenizer = buildTokenizer(".1 200 3.00 4.44 5e2 6E-3 7.3e10 8. 0xfe");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".1", new BigDecimal(".1"), 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "200", new BigDecimal("200"), 4);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "3.00", new BigDecimal("3.00"), 8);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "4.44", new BigDecimal("4.44"), 13);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "5e2", new BigDecimal("500"), 18);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "6E-3", new BigDecimal("0.006"), 22);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "7.3e10", new BigDecimal("73000000000"), 27);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "0xfe", new BigDecimal("254"), 34);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 38);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".1", new BigDecimal(".1"), true, 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "200", new BigDecimal("200"), false, 4);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "3.00", new BigDecimal("3.00"), true, 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "4.44", new BigDecimal("4.44"), true, 13);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "5e2", new BigDecimal("500"), false, 18);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "6E-3", new BigDecimal("0.006"), false, 22);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "7.3e10", new BigDecimal("73000000000"), true, 27);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "8.", new BigDecimal("8"), true, 34);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "0xfe", new BigDecimal("254"), false, 37);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 41);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer(".1_00  2_000  0_3.00  4.4_4  5_0e2_0  6_0E-3_0  7_00.3e1_000  0xff_fe");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".100", new BigDecimal(".1"), true, 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "2000", new BigDecimal("2000"), false, 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "03.00", new BigDecimal("3.00"), true, 15);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "4.44", new BigDecimal("4.44"), true, 23);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "50e20", new BigDecimal("5.0E+21"), false, 30);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "60E-30", new BigDecimal("6.0E-29"), false, 39);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "700.3e1000", new BigDecimal("7.003E+1002"), true, 49);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "0xfffe", new BigDecimal("65534"), false, 63);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 70);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores_invalid_double() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("1__2").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message",
+            "Error at position 2: Unexpected char '_' (0x5f)",
+            actual.getMessage());
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores_invalid_lastChar() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer(".1_").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message",
+            "Error at position 3: Unexpected char '_' (0x5f)",
+            actual.getMessage());
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores_invalid_beforePoint() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("1_.").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message",
+            "Error at position 2: Unexpected char '_' (0x5f)",
+            actual.getMessage());
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores_invalid_afterPoint() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("1._2").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message",
+            "Error at position 3: Unexpected char '_' (0x5f)",
+            actual.getMessage());
+
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_numbers_withUnderscores_invalid_beforeExponent() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("1_e3").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message", "Error at position 2: Unexpected char '_' (0x5f)", actual.getMessage());
     }
 
 
@@ -164,8 +251,8 @@ public class TokenizerTest {
         int index = 0;
         Tokenizer tokenizer = buildTokenizer("1.2e-3.4");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "1.2e-3", new BigDecimal("0.0012"), 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".4", new BigDecimal("0.4"), 7);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "1.2e-3", new BigDecimal("0.0012"), true, 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".4", new BigDecimal("0.4"), true, 7);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 9);
     }
 
@@ -186,14 +273,11 @@ public class TokenizerTest {
     @Test
     public void test_constants() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("true false e pi c");
+        Tokenizer tokenizer = buildTokenizer("true false");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.TRUE, "true", 1);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.FALSE, "false", 6);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.E, "e", 12);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.PI, "pi", 14);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.C, "c", 17);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 18);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 11);
     }
 
     /**
@@ -202,13 +286,13 @@ public class TokenizerTest {
     @Test
     public void test_bitwise_op() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("AND OR NOT XOR");
+        Tokenizer tokenizer = buildTokenizer("~ & | ^");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_AND, "AND", 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_OR, "OR", 5);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_NOT, "NOT", 8);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_XOR, "XOR", 12);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 15);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.TILDE, "~", 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_AND, "&", 3);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.BITWISE_OR, "|", 5);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CARET, "^", 7);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 8);
     }
 
     /**
@@ -219,8 +303,8 @@ public class TokenizerTest {
         int index = 0;
         Tokenizer tokenizer = buildTokenizer("${ $(");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.VARIABLE_EXPANSION, "${", 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EXPRESSION_EXPANSION, "$(", 4);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.VALUE_INTERPOLATION, "${", 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EXPRESSION_INTERPOLATION, "$(", 4);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 6);
     }
 
@@ -230,18 +314,19 @@ public class TokenizerTest {
     @Test
     public void test_math_operators() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer(" + - * / % ^ ** << >>");
+        Tokenizer tokenizer = buildTokenizer(" + - * / // -/ % ** << >>");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.PLUS, "+", 2);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MINUS, "-", 4);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MULTIPLY, "*", 6);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.DIVIDE, "/", 8);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MODULUS, "%", 10);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.POWER, "^", 12);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.POWER, "**", 14);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LEFT_SHIFT, "<<", 17);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.RIGHT_SHIFT, ">>", 20);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 22);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.DIVIDE_FLOOR, "//", 10);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.DIVIDE_TRUNCATE, "-/", 13);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MODULUS, "%", 16);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EXPONENTIATION, "**", 18);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LEFT_SHIFT, "<<", 21);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.RIGHT_SHIFT, ">>", 24);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 26);
     }
 
     /**
@@ -250,7 +335,7 @@ public class TokenizerTest {
     @Test
     public void test_relational_operators() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("= <> != >= > < <=");
+        Tokenizer tokenizer = buildTokenizer("= <> != >= > < <= isBefore isAfter");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EQUAL, "=", 1);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NOT_EQUAL, "<>", 3);
@@ -259,7 +344,9 @@ public class TokenizerTest {
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.GREATER_THAN, ">", 12);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LESS_THAN, "<", 14);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LESS_THAN_EQUAL, "<=", 16);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 18);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IS_BEFORE, "isBefore", 19);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IS_AFTER, "isAfter", 28);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 35);
     }
 
     /**
@@ -268,14 +355,12 @@ public class TokenizerTest {
     @Test
     public void test_logical_operators() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer("& | ! && ||");
+        Tokenizer tokenizer = buildTokenizer("not and or");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_AND, "&", 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_OR, "|", 3);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_NOT, "!", 5);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.SHORT_CIRCUIT_AND, "&&", 7);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.SHORT_CIRCUIT_OR, "||", 10);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 12);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_NOT, "not", 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_AND, "and", 5);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.LOGICAL_OR, "or", 9);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 11);
     }
 
         /**
@@ -290,20 +375,6 @@ public class TokenizerTest {
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 3);
     }
 
-        /**
-     * Unit test {@link Tokenizer#next(Mode)}
-     */
-    @Test
-    public void test_convert_operators() {
-        int index = 0;
-        Tokenizer tokenizer = buildTokenizer("TEXT NUMBER LOGIC DATE");
-
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CONVERT_TO_TEXT, "TEXT", 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CONVERT_TO_NUMBER, "NUMBER", 6);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CONVERT_TO_LOGIC, "LOGIC", 13);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CONVERT_TO_DATE, "DATE", 19);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 23);
-    }
 
     /**
      * Unit test {@link Tokenizer#next(Mode)}
@@ -314,11 +385,11 @@ public class TokenizerTest {
         Tokenizer tokenizer = buildTokenizer("# ^ ^^ , ,, ~ ~~");
 
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.HASH, "#", 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.POWER, "^", 3);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.CARET, "^", 3);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.ALL_UPPER, "^^", 5);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.COMMA, ",", 8);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.ALL_LOWER, ",,", 10);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.TOGGLE, "~", 13);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.TILDE, "~", 13);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.ALL_TOGGLE, "~~", 15);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 17);
     }
@@ -391,12 +462,12 @@ public class TokenizerTest {
         int index = 0;
         Tokenizer tokenizer = buildTokenizer("$(Hello-'World!'+\t9e-2");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EXPRESSION_EXPANSION, "$(", 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.EXPRESSION_INTERPOLATION, "$(", 1);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.IDENTIFIER, "Hello", 3);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MINUS, "-", 8);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.STRING, "World!", 9);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.PLUS, "+", 17);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "9e-2", new BigDecimal("0.09"), 19);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "9e-2", new BigDecimal("0.09"), false, 19);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 23);
     }
 
@@ -406,16 +477,16 @@ public class TokenizerTest {
             @Nonnull Token expectedToken,
             @Nonnull String expectedLexeme,
             int expectedPosition) {
-        assertToken(index, actual, expectedToken, expectedLexeme, null, expectedPosition);
+        assertToken(index, actual, expectedToken, expectedLexeme, null, false, expectedPosition);
     }
 
 
     private void assertToken(int index,
-            @Nonnull Terminal actual,
-            @Nonnull Token expectedToken,
-            @Nonnull String expectedLiteral,
-            @Nullable BigDecimal expectedValue,
-            int expectedPosition) {
+                             @Nonnull Terminal actual,
+                             @Nonnull Token expectedToken,
+                             @Nonnull String expectedLiteral,
+                             @Nullable BigDecimal expectedValue,
+                             boolean expectedFractional, int expectedPosition) {
         Assert.assertEquals("Token " + index + ". Unexpected token", expectedToken, actual.token());
         Assert.assertEquals("Token " + index + ". Unexpected lexeme", expectedLiteral, actual.lexeme());
 
@@ -425,13 +496,14 @@ public class TokenizerTest {
                 expectedValue.compareTo(actual.value()) == 0);
         }
 
+        Assert.assertEquals("Token " + index + ". Unexpected fractional", expectedFractional, actual.isFractional());
         Assert.assertEquals("Token " + index + ". unexpected position", expectedPosition, actual.position());
     }
 
 
     @Nonnull
     private Tokenizer buildTokenizer(@Nonnull String expression) {
-        Source source = new Source(expression, expression.length());
+        Source source = Source.build(expression, expression.length());
 
         return new Tokenizer(source);
     }

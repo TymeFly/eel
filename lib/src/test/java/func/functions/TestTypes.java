@@ -6,12 +6,25 @@ import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.EelValue;
+import com.github.tymefly.eel.FunctionalResource;
 import com.github.tymefly.eel.udf.EelFunction;
+import com.github.tymefly.eel.udf.EelLambda;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class TestTypes {
+    @EelFunction(name = "types.functionalResource")
+    public String types(@Nonnull FunctionalResource in) {
+        return in.getResource("resourceName", n -> "resourceValue!!");
+    }
+
+    @EelFunction(name = "types.context")
+    public String types(@Nonnull EelContext in) {
+        return in.contextId();
+    }
+
     @EelFunction(name = "types.value")
     public EelValue types(@Nonnull EelValue in) {
         return in;
@@ -123,6 +136,11 @@ public class TestTypes {
     @EelFunction(name = "types.Character")
     public Character types(@Nonnull Character in) {
         return in;
+    }
+
+    @EelFunction(name = "types.Lambda")
+    public String types(@Nonnull EelLambda in) {
+        return in.get().asText() + "!!";
     }
 }
 

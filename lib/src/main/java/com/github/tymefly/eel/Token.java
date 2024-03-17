@@ -10,31 +10,27 @@ public enum Token {
     STRING,
     IDENTIFIER,
 
-    VARIABLE_EXPANSION,                             // Interpolated tokens
-    EXPRESSION_EXPANSION,
+    VALUE_INTERPOLATION,                            // Interpolated tokens
+    EXPRESSION_INTERPOLATION,
+    FUNCTION_INTERPOLATION,
 
     TRUE,                                           // Predefined constants
     FALSE,
-    PI,
-    E,
-    C,
 
     CONCATENATE,                                    // Text Ops
 
     LOGICAL_AND,                                    // Logic Ops
     LOGICAL_OR,
-    SHORT_CIRCUIT_AND,
-    SHORT_CIRCUIT_OR,
     LOGICAL_NOT,
 
     PLUS,                                           // Numeric Ops
     MINUS,
     MULTIPLY,
     DIVIDE,
+    DIVIDE_FLOOR,
+    DIVIDE_TRUNCATE,
     MODULUS,
-    LEFT_SHIFT,
-    RIGHT_SHIFT,
-    POWER,
+    EXPONENTIATION,
 
     EQUAL,                                          // Relations
     NOT_EQUAL,
@@ -42,27 +38,25 @@ public enum Token {
     LESS_THAN,
     GREATER_THAN_EQUAL,
     LESS_THAN_EQUAL,
+    IS_BEFORE,
+    IS_AFTER,
 
     BITWISE_AND,                                    // BitWise Ops
     BITWISE_OR,
-    BITWISE_XOR,
-    BITWISE_NOT,
+    LEFT_SHIFT,
+    RIGHT_SHIFT,
 
     LEFT_PARENTHESES,                               // Brackets
     RIGHT_PARENTHESES,
     LEFT_BRACE,
     RIGHT_BRACE,
 
-    CONVERT_TO_TEXT,                                // Convert
-    CONVERT_TO_NUMBER,
-    CONVERT_TO_LOGIC,
-    CONVERT_TO_DATE,
-
     COMMA,                                          // Misc
     QUESTION_MARK,
     COLON,
     HASH,
-    TOGGLE,
+    TILDE,
+    CARET,
     ALL_TOGGLE,
     ALL_UPPER,
     ALL_LOWER,

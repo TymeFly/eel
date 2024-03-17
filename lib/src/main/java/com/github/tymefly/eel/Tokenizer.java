@@ -20,12 +20,18 @@ import static java.util.Map.entry;
 class Tokenizer {
     /**
      * Description of a single terminal read by the tokenizer
-     * @param token     Token this terminal describes
-     * @param lexeme    The literal text of this token
-     * @param value     If {@code token} is a {@link Token#NUMBER} then this holds value of the number
-     * @param position  start position in the input stream of the token.
+     * @param token         Token this terminal describes
+     * @param lexeme        The literal text of this token
+     * @param value         If {@code token} is a {@link Token#NUMBER} then this holds value of the number
+     * @param isFractional  If {@code token} is a {@link Token#NUMBER} then this is {@literal true} if there is a
+     *                          fractional part.
+     * @param position      start position in the input stream of the token.
      */
-    record Terminal(@Nonnull Token token, @Nonnull String lexeme, @Nullable BigDecimal value, int position) {
+    record Terminal(@Nonnull Token token,
+                    @Nonnull String lexeme,
+                    @Nullable BigDecimal value,
+                    boolean isFractional,
+                    int position) {
         @Override
         @Nonnull
         public BigDecimal value() {
@@ -40,19 +46,17 @@ class Tokenizer {
      */
     enum Mode {
         /**
-         * Interpolated strings terminate at the start of an expression, the start of a variable or
-         * the end of the expression
+         * Terminate at the start of an interpolation sequence or the end of the source
          */
         INTERPOLATE(true, Source.END),
 
         /**
-         * Interpolated blocks terminate at the start of an expression, the start of a variable or
-         * the end of the current block or the end of the expression
+         * Terminate at the start of an interpolation sequence or the end of the source or the end of the current block
          */
         INTERPOLATE_BLOCK(true, '}'),
 
         /**
-         * Expressions terminate at the end of the next number, identifier, punctuation or symbol.
+         * Terminate at the end of the next number, identifier, punctuation or symbol
          */
         EXPRESSION(false, Source.END);
 
@@ -71,32 +75,23 @@ class Tokenizer {
         entry('\'', '\''),
         entry('"', '"'));
     private static final Map<String, Token> RESERVED = Map.ofEntries(
-        entry("true", Token.TRUE),
+        entry("true", Token.TRUE),                      // Constants
         entry("false", Token.FALSE),
-        entry("pi", Token.PI),
-        entry("e", Token.E),
-        entry("c", Token.C),
-        entry("AND", Token.BITWISE_AND),
-        entry("OR", Token.BITWISE_OR),
-        entry("XOR", Token.BITWISE_XOR),
-        entry("NOT", Token.BITWISE_NOT),
-        entry("TEXT", Token.CONVERT_TO_TEXT),
-        entry("NUMBER", Token.CONVERT_TO_NUMBER),
-        entry("LOGIC", Token.CONVERT_TO_LOGIC),
-        entry("DATE", Token.CONVERT_TO_DATE));
+        entry("and", Token.LOGICAL_AND),                // Logic Ops
+        entry("or", Token.LOGICAL_OR),
+        entry("not", Token.LOGICAL_NOT),
+        entry("isBefore", Token.IS_BEFORE),                // Date Ops
+        entry("isAfter", Token.IS_AFTER));
     private static final Map<String, Token> SYMBOLS = Map.ofEntries(
-        entry("${", Token.VARIABLE_EXPANSION),          // Interpolation markers
-        entry("$(", Token.EXPRESSION_EXPANSION),
         entry("~>", Token.CONCATENATE),                 // Text Ops
         entry("+", Token.PLUS),                         // Maths Ops
         entry("-", Token.MINUS),
         entry("*", Token.MULTIPLY),
         entry("/", Token.DIVIDE),
+        entry("//", Token.DIVIDE_FLOOR),
+        entry("-/", Token.DIVIDE_TRUNCATE),
         entry("%", Token.MODULUS),
-        entry("<<", Token.LEFT_SHIFT),
-        entry(">>", Token.RIGHT_SHIFT),
-        entry("^", Token.POWER),
-        entry("**", Token.POWER),
+        entry("**", Token.EXPONENTIATION),
         entry("=", Token.EQUAL),                        // Relational Ops
         entry("<>", Token.NOT_EQUAL),
         entry("!=", Token.NOT_EQUAL),
@@ -104,12 +99,11 @@ class Tokenizer {
         entry(">=", Token.GREATER_THAN_EQUAL),
         entry("<", Token.LESS_THAN),
         entry("<=", Token.LESS_THAN_EQUAL),
-        entry("&", Token.LOGICAL_AND),                  // Logical Ops
-        entry("|", Token.LOGICAL_OR),
-        entry("&&", Token.SHORT_CIRCUIT_AND),
-        entry("||", Token.SHORT_CIRCUIT_OR),
-        entry("!", Token.LOGICAL_NOT),
-        entry("(", Token.LEFT_PARENTHESES),             // other symbols
+        entry("&", Token.BITWISE_AND),                   // Bitwise Ops
+        entry("|", Token.BITWISE_OR),
+        entry("<<", Token.LEFT_SHIFT),
+        entry(">>", Token.RIGHT_SHIFT),
+        entry("(", Token.LEFT_PARENTHESES),             // Other Symbols
         entry(")", Token.RIGHT_PARENTHESES),
         entry("{", Token.LEFT_BRACE),
         entry("}", Token.RIGHT_BRACE),
@@ -117,8 +111,9 @@ class Tokenizer {
         entry("?", Token.QUESTION_MARK),
         entry(":", Token.COLON),
         entry("#", Token.HASH),
-        entry("~", Token.TOGGLE),
+        entry("~", Token.TILDE),
         entry("~~", Token.ALL_TOGGLE),
+        entry("^", Token.CARET),
         entry("^^", Token.ALL_UPPER),
         entry(",,", Token.ALL_LOWER));
     private static final Set<Character> LETTER = new CharSetBuilder()
@@ -133,12 +128,12 @@ class Tokenizer {
         .range('A', 'F')
         .range('a', 'f')
         .immutable();
-    private static final Set<Character> WORD_START = new CharSetBuilder()
+    private static final Set<Character> IDENTIFIER_START = new CharSetBuilder()
         .withAll(LETTER)
         .with('_')
         .immutable();
-    private static final Set<Character> WORD_INTERNAL = new CharSetBuilder()
-        .withAll(WORD_START)
+    private static final Set<Character> IDENTIFIER_INTERNAL = new CharSetBuilder()
+        .withAll(IDENTIFIER_START)
         .withAll(DIGITS)
         .with('.')
         .with('[').with(']')
@@ -151,6 +146,7 @@ class Tokenizer {
     private final Source source;
     private final StringBuilder lexeme;
     private BigDecimal value;
+    private boolean fractional;
 
 
     Tokenizer(@Nonnull Source source) {
@@ -172,37 +168,63 @@ class Tokenizer {
 
         lexeme.setLength(0);
         value = null;
+        fractional = false;
 
         do {
             if (current == Source.END) {
                 token = Token.END_OF_PROGRAM;
-            } else if (mode.interpolate && !endInterpolation(mode, current)) {
-                token = interpolateString(mode, current);
-            } else if (WHITESPACE.contains(current)) {
-                current = source.read();
-                position = source.position();
-            } else if ((current == '"') || (current == '\'')) {
-                token = parseString(current);
-            } else if ((current == '.') || DIGITS.contains(current)) {
-                token = parseNumber(current);
-            } else if (WORD_START.contains(current)) {
-                token = parseWord(current);
             } else {
-                token = parseSymbol(current);
+                if (mode.interpolate && !endInterpolation(mode, current)) {
+                    token = interpolateString(mode);
+                } else if (current == '$') {
+                    token = parseDollar(mode);
+                } else if (WHITESPACE.contains(current)) {
+                    current = source.read();
+                    position = source.position();
+                } else if ((current == '"') || (current == '\'')) {
+                    token = parseString(current);
+                } else if ((current == '.') || DIGITS.contains(current)) {
+                    token = parseNumber(current);
+                } else if (IDENTIFIER_START.contains(current)) {
+                    token = parseIdentifier();
+                } else {
+                    token = parseSymbol(current);
+                }
             }
         } while (token == Token.UNDEFINED);
 
-        return new Terminal(token, lexeme.toString(), value, position);
+        return new Terminal(token, lexeme.toString(), value, fractional, position);
     }
 
+    @Nonnull
+    private Token parseDollar(@Nonnull Mode mode) {
+        char next = source.next();
+        Token token;
+
+        if (next == '{') {
+            token = Token.VALUE_INTERPOLATION;
+            appendLexme();
+            appendLexme();
+        } else if (next == '(') {
+            token = Token.EXPRESSION_INTERPOLATION;
+            appendLexme();
+            appendLexme();
+        } else if (IDENTIFIER_START.contains(next)) {
+            token = Token.FUNCTION_INTERPOLATION;
+            appendLexme();
+        } else {
+            token = interpolateString(mode);
+        }
+
+        return token;
+    }
 
     @Nonnull
-    private Token interpolateString(@Nonnull Mode mode, char current) {
+    private Token interpolateString(@Nonnull Mode mode) {
         boolean done;
 
         do {
-            lexeme.append(current);
-            current = source.read();
+            char current = appendLexme();
 
             done = (current == Source.END) || endInterpolation(mode, current);
         } while (!done);
@@ -211,23 +233,17 @@ class Tokenizer {
     }
 
     private boolean endInterpolation(@Nonnull Mode mode, char current) {
-        char next = source.next();
-        boolean end;
-
-        end = (current == mode.follow);
-        end = end || ((current == '$') && (next == '{'));
-        end = end || ((current == '$') && (next == '('));
-
-        return end;
+        return (current == mode.follow) || (current == '$');
     }
 
 
     @Nonnull
-    private Token parseWord(char current) {
-        while(WORD_INTERNAL.contains(current)) {
-            lexeme.append(current);
-            current = source.read();
-        }
+    private Token parseIdentifier() {
+        char current;
+
+        do {
+            current = appendLexme();
+        } while (IDENTIFIER_INTERNAL.contains(current));
 
         return RESERVED.getOrDefault(lexeme.toString(), Token.IDENTIFIER);
     }
@@ -252,8 +268,7 @@ class Tokenizer {
             }
 
             if (!isValidCharacter(resolved)) {
-                throw new EelSyntaxException(position, "Invalid character 0x%04x",
-                    (short)(resolved == null ? source.current() : resolved));
+                unexpectedCharacter(resolved == null ? source.current() : resolved);
             }
 
             lexeme.append(resolved);
@@ -282,62 +297,96 @@ class Tokenizer {
     }
 
 
+    /**
+     * @param current       a digit
+     */
     @Nonnull
     private Token parseNumber(char current) {
         char next = source.next();
 
         if ((current == '0') && ((next == 'x') || (next == 'X'))) {
-            parseHex(current);
+            parseHex();
         } else {
-            current = parseInt(current);
-
-            if (current == '.') {
-                do {
-                    lexeme.append(current);
-                    current = source.read();
-                } while (DIGITS.contains(current));
-            }
-
-            if ((current == 'e') || (current == 'E')) {
-                parseExponent(current);
-            }
-
-            value = new BigDecimal(lexeme.toString());
+            parseDecimal();
         }
 
         return Token.NUMBER;
     }
 
-    private void parseHex(char current) {
-        int size = 0;
+    private void parseHex() {
+        appendLexme();                                      // skip 0x
+        appendLexme();
 
-        lexeme.append(current);
-        current = source.read();
+        int digits = parseDigits(HEX);
 
-        lexeme.append(current);
-        current = source.read();
-
-        while (HEX.contains(current)) {
-            lexeme.append(current);
-            current = source.read();
-            size++;
-        }
-
-        if (size == 0) {
+        if (digits == 0) {
             throw new EelSyntaxException(source.position(), "Expected hex digit");
         }
 
         value = new BigDecimal(new BigInteger(lexeme.substring(2), HEX_BASE));
     }
 
+    private void parseDecimal() {
+        char current = parseInt();
 
-    private char parseInt(char current) {
-        do {
-            lexeme.append(current);
-            current = source.read();
-        } while (DIGITS.contains(current));
+        if (current == '.') {
+            fractional = true;
+            current = appendLexme();
 
-        return current;
+            if (current == '_') {
+                unexpectedCharacter();
+            }
+
+            current = parseInt();
+        }
+
+        if ((current == 'e') || (current == 'E')) {
+            parseExponent();
+        }
+
+        value = new BigDecimal(lexeme.toString());
+    }
+
+
+    private char parseInt() {
+        parseDigits(DIGITS);
+
+        return source.current();
+    }
+
+
+    private int parseDigits(@Nonnull Set<Character> digits) {
+        char current = source.current();
+        int count = 0;
+
+        while (digits.contains(current)) {
+            current = appendLexme();
+            count++;
+
+            if (current == '_') {
+                if (digits.contains(source.next())) {
+                    current = source.read();
+                } else {
+                    unexpectedCharacter();
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private void parseExponent() {
+        char current = appendLexme();
+
+        if (current == '-') {
+            current = appendLexme();
+        }
+
+        if (!DIGITS.contains(current)) {
+            throw new EelSyntaxException(source.position(), "Expected exponent");
+        }
+
+        parseInt();
     }
 
 
@@ -355,10 +404,7 @@ class Tokenizer {
         }
 
         if (result == null) {
-            throw new EelSyntaxException(source.position(),
-                "Unexpected char %s(0x%02x)",
-                (isAsciiPrintable(current) ? "'" + current + "' " : ""),
-                (int) current);
+            unexpectedCharacter(current);
         }
 
         source.read();
@@ -366,24 +412,26 @@ class Tokenizer {
         return result;
     }
 
-    private void parseExponent(char current) {
-        lexeme.append(current);
-        current = source.read();
-
-        if (current == '-') {
-            lexeme.append(current);
-            current = source.read();
-        }
-
-        if (!DIGITS.contains(current)) {
-            throw new EelSyntaxException(source.position(), "Expected exponent");
-        }
-
-        parseInt(current);
+    private boolean isAsciiPrintable(char test) {
+        return ((test >= ' ') && (test < '~'));
     }
 
 
-    private boolean isAsciiPrintable(char test) {
-        return ((test >= ' ') && (test < '~'));
+    private char appendLexme() {
+        lexeme.append(source.current());
+
+        return source.read();
+    }
+
+
+    private void unexpectedCharacter() {
+        unexpectedCharacter(source.current());
+    }
+
+    private void unexpectedCharacter(char current) {
+        throw new EelSyntaxException(source.position(),
+            "Unexpected char %s(0x%02x)",
+            (isAsciiPrintable(current) ? "'" + current + "' " : ""),
+            (int) current);
     }
 }

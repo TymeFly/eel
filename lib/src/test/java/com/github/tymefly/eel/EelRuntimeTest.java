@@ -45,7 +45,7 @@ public class EelRuntimeTest {
         when(context.getTimeout())
             .thenReturn(Duration.of(0, ChronoUnit.SECONDS));
 
-        Executor backing = s -> Value.ONE;
+        Executor backing = s -> Value.of(1);
         Executor wrapped = new EelRuntime(context).apply(backing);
         SymbolsTable table = mock(SymbolsTable.class);
 
@@ -103,7 +103,7 @@ public class EelRuntimeTest {
      */
     @Test
     public void test_withTimeout_happyPath() {
-        Executor backing = s -> Value.ONE;
+        Executor backing = s -> Value.of(1);
         Executor wrapped = new EelRuntime(context).apply(backing);
         SymbolsTable table = mock(SymbolsTable.class);
 
@@ -125,7 +125,7 @@ public class EelRuntimeTest {
             } catch (Exception e) {
             }
 
-            return Value.BLANK;
+            return Value.of("");
         };
         Executor wrapped = new EelRuntime(context).apply(backing);
         SymbolsTable table = mock(SymbolsTable.class);
@@ -185,7 +185,7 @@ public class EelRuntimeTest {
             } catch (Exception e) {
             }
 
-            return Value.TRUE;
+            return Value.of(true);
         };
 
         Executor wrapped = new EelRuntime(context).apply(backing);

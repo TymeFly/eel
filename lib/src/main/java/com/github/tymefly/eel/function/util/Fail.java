@@ -27,7 +27,7 @@ public class Fail {
      * @throws EelFailException always
      */
     @EelFunction(name = "fail")
-    public void fail(@Nonnull @DefaultArgument(of = "") String message) throws EelFailException {
+    public void fail(@Nonnull @DefaultArgument("") String message) throws EelFailException {
         throw new EelFailException(message);
     }
 }

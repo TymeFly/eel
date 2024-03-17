@@ -1,5 +1,7 @@
 package com.github.tymefly.eel.function.util;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,6 +26,7 @@ public class LocalPathsTest {
             "/a/c",
             new LocalPaths().realPath("/a/b/../c/.").replaceFirst("^[A-Za-z]:", "").replace('\\', '/'));
 
+        Assert.assertThrows("Empty String", IOException.class, () -> new LocalPaths().realPath(""));
     }
 
 

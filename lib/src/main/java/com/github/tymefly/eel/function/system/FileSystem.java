@@ -9,7 +9,7 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL functions that return local file system information
+ * EEL functions that return local file system information
  */
 @PackagedEelFunction
 public class FileSystem {

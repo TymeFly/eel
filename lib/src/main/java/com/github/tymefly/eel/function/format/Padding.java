@@ -24,7 +24,7 @@ public class Padding {
      */
     @EelFunction(name = "padLeft")
     @Nonnull
-    public String padLeft(@Nonnull String text, int width, @DefaultArgument(of = " ") char pad) {
+    public String padLeft(@Nonnull String text, int width, @DefaultArgument(" ") char pad) {
         return pad(text, width, pad, true);
     }
 
@@ -41,7 +41,7 @@ public class Padding {
      */
     @EelFunction(name = "padRight")
     @Nonnull
-    public String padRight(@Nonnull String text, int width, @DefaultArgument(of = " ") char pad) {
+    public String padRight(@Nonnull String text, int width, @DefaultArgument(" ") char pad) {
         return pad(text, width, pad, false);
     }
 

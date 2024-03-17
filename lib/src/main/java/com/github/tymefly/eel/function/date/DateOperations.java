@@ -33,7 +33,7 @@ public class DateOperations {
     @EelFunction(name = "duration")
     public long duration(@Nonnull ZonedDateTime from,
                          @Nonnull ZonedDateTime to,
-                         @DefaultArgument(of = "s") String period) {
+                         @DefaultArgument("s") String period) {
         return Period.lookup(period)
             .getChronoUnit()
             .between(from, to);

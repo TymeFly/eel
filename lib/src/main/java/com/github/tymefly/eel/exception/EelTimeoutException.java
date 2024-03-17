@@ -13,7 +13,6 @@ public class EelTimeoutException extends EelRuntimeException {
     @Serial
     private static final long serialVersionUID = 0x1L;
 
-
     /**
      * Constructor for a raw message
      * @param message       Human readable (raw) message

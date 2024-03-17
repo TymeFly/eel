@@ -1,7 +1,10 @@
 package com.github.tymefly.eel.function.util;
 
+import java.util.function.BiConsumer;
+
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelValue;
 import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
@@ -15,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * <br>
  * <pre> "${ Log.debug(1 + 2 + 3) }"</pre>
  * will calculate the value {@literal 6}, log it at debug level, and then return it as
- * {@link com.github.tymefly.eel.Type#TEXT} to the client application.
+ * {@link com.github.tymefly.eel.Type#NUMBER} to the client application.
  * <br>
  * Logging hardcoded values probably isn't that valuable, however EEL can log values read from the symbols table.
  * For example:
@@ -27,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * <br>
  * <pre>"The Result is: ${key-$( log.info("defaulting to {}", "defaultValue") )}"</pre>
  *
- * In this case if {@literal key} is in the symbols table then its associated value will be returned (without any
- * logging). However, if the value can not be read then a warning is logged and the {@literal defaultValue} is
+ * In this case if {@literal key} is in the symbols table then its associated value will be returned without any
+ * logging. However, if the value can not be read then a warning is logged and the {@literal defaultValue} is
  * returned instead. This works because the default value for a variable is a complete EEL expression in its own right,
  * as such it can support embedded expressions that include function calls
  * <p>
@@ -68,26 +71,11 @@ public class EelLogger {
      * @return the last {@code value} logged
      */
     @EelFunction(name = "log.error")
-    public String error(@Nonnull String first,
-                        @DefaultArgument(of = "") String... others) {
-        int length = others.length;
-        String result;
-
-        first = sanitise(first);
-
-        if (length == 0) {
-            result = first;
-
-            LOGGER.error(PREFIX + result);
-        } else {
-            String[] arguments = sanitise(others);
-            result = arguments[length - 1];
-
-            LOGGER.error(PREFIX + first, (Object[]) arguments);
-        }
-
-        return result;
+    public EelValue error(@Nonnull EelValue first,
+                        @DefaultArgument("") EelValue... others) {
+        return log(LOGGER::error, first, others);
     }
+
 
     /**
      * Entry point for the {@code log.warn} function which will write a message to the logger at
@@ -103,25 +91,9 @@ public class EelLogger {
      * @return the last {@code value} logged
      */
     @EelFunction(name = "log.warn")
-    public String warn(@Nonnull String first,
-                       @DefaultArgument(of = "") String... others) {
-        int length = others.length;
-        String result;
-
-        first = sanitise(first);
-
-        if (length == 0) {
-            result = first;
-
-            LOGGER.warn(PREFIX + first);
-        } else {
-            String[] arguments = sanitise(others);
-            result = arguments[length - 1];
-
-            LOGGER.warn(PREFIX + first, (Object[]) arguments);
-        }
-
-        return result;
+    public EelValue warn(@Nonnull EelValue first,
+                       @DefaultArgument("") EelValue... others) {
+        return log(LOGGER::warn, first, others);
     }
 
     /**
@@ -138,25 +110,9 @@ public class EelLogger {
      * @return the last {@code value} logged
      */
     @EelFunction(name = "log.info")
-    public String info(@Nonnull String first,
-                       @DefaultArgument(of = "") String... others) {
-        int length = others.length;
-        String result;
-
-        first = sanitise(first);
-
-        if (length == 0) {
-            result = first;
-
-            LOGGER.info(PREFIX + first);
-        } else {
-            String[] arguments = sanitise(others);
-            result = arguments[length - 1];
-
-            LOGGER.info(PREFIX + first, (Object[]) arguments);
-        }
-
-        return result;
+    public EelValue info(@Nonnull EelValue first,
+                       @DefaultArgument("") EelValue... others) {
+        return log(LOGGER::info, first, others);
     }
 
 
@@ -174,25 +130,9 @@ public class EelLogger {
      * @return the last {@code value} logged
      */
     @EelFunction(name = "log.debug")
-    public String debug(@Nonnull String first,
-                        @DefaultArgument(of = "") String... others) {
-        int length = others.length;
-        String result;
-
-        first = sanitise(first);
-
-        if (length == 0) {
-            result = first;
-
-            LOGGER.debug(PREFIX + first);
-        } else {
-            String[] arguments = sanitise(others);
-            result = arguments[length - 1];
-
-            LOGGER.debug(PREFIX + first, (Object[]) arguments);
-        }
-
-        return result;
+    public EelValue debug(@Nonnull EelValue first,
+                        @DefaultArgument("") EelValue... others) {
+        return log(LOGGER::debug, first, others);
     }
 
 
@@ -210,39 +150,38 @@ public class EelLogger {
      * @return the last {@code value} logged
      */
     @EelFunction(name = "log.trace")
-    public String trace(@Nonnull String first,
-                        @DefaultArgument(of = "") String... others) {
+    public EelValue trace(@Nonnull EelValue first,
+                        @DefaultArgument("") EelValue... others) {
+        return log(LOGGER::trace, first, others);
+    }
+
+
+    @Nonnull
+    private EelValue log(@Nonnull BiConsumer<String, Object[]> logger, @Nonnull EelValue first, EelValue... others) {
+        String format = sanitise(first);
+        String[] arguments = sanitise(others);
         int length = others.length;
-        String result;
+        EelValue result = (length == 0 ? first : others[length - 1]);
 
-        first = sanitise(first);
-
-        if (length == 0) {
-            result = first;
-
-            LOGGER.trace(PREFIX + first);
-        } else {
-            String[] arguments = sanitise(others);
-            result = arguments[length - 1];
-
-            LOGGER.trace(PREFIX + first, (Object[]) arguments);
-        }
+        logger.accept(PREFIX + format, arguments);
 
         return result;
     }
 
 
     @Nonnull
-    private String[] sanitise(@Nonnull String[] arguments) {
+    private String[] sanitise(@Nonnull EelValue[] arguments) {
+        String[] sanitised = new String[arguments.length];
+
         for (int index = 0; index != arguments.length; index++) {
-            arguments[index] = sanitise(arguments[index]);
+            sanitised[index] = sanitise(arguments[index]);
         }
 
-        return arguments;
+        return sanitised;
     }
 
     @Nonnull
-    private String sanitise(@Nonnull String value) {
-        return value.replaceAll("[^\\p{Print}\\t]", "");
+    private String sanitise(@Nonnull EelValue value) {
+        return value.asText().replaceAll("[^\\p{Print}\\t]", "");
     }
 }

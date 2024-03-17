@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.Eel;
 import com.github.tymefly.eel.EelContext;
+import com.github.tymefly.eel.Metadata;
 import com.github.tymefly.eel.Result;
 import com.github.tymefly.eel.SymbolsTable;
 import com.github.tymefly.eel.annotation.VisibleForTesting;
@@ -31,7 +32,6 @@ public class Evaluate {
         this.config = config;
     }
 
-
     @Nonnull
     private State run() {
         State state;
@@ -55,6 +55,17 @@ public class Evaluate {
         }
 
         return state;
+    }
+
+    @Nonnull
+    private State showVersion() {
+        Metadata metadata = Eel.metadata();
+
+        System.out.printf("Eel version %s, built on %s%n",
+            metadata.version(),
+            metadata.buildDate());
+
+        return State.VERSION;
     }
 
     @Nonnull
@@ -97,6 +108,8 @@ public class Evaluate {
         if (config.requestHelp()) {
             config.displayUsage();
             state = State.HELP;
+        } else if (config.requestVersion()) {
+            state = new Evaluate(config).showVersion();
         } else if (config.isValid()) {
             state = new Evaluate(config).run();
         } else {

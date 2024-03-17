@@ -1,6 +1,7 @@
 package com.github.tymefly.eel.function.util;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelValue;
+import com.github.tymefly.eel.udf.EelLambda;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +30,7 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,12 +42,16 @@ public class LocalFilesTest {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final ZonedDateTime DEFAULT_DATE = ZonedDateTime.parse("2000-01-01T12:13:14Z");
-    private static final String FILE_SEPARATOR = System.getProperty("file.separator");
-
+    private static final String FILE_SEPARATOR = FileSystems.getDefault().getSeparator();
 
     private final Map<String, BasicFileAttributes> mockAttributes = new HashMap<>();
     private BasicFileAttributes attributes;
     private String tempFolderPath;
+
+    private EelLambda defaultEmptyString;
+    private EelLambda defaultNumber;
+    private EelLambda defaultDate;
+    private EelLambda defaultFileName;
 
 
     @Before
@@ -58,6 +66,11 @@ public class LocalFilesTest {
             .thenReturn(FileTime.from(1015120922, TimeUnit.SECONDS));
         when(attributes.size())
             .thenReturn(0x12345L);
+
+        defaultEmptyString = () -> EelValue.of(LocalFiles.DEFAULT_THROWS_EXCEPTION);
+        defaultNumber = () -> EelValue.of(-1);
+        defaultDate = () -> EelValue.of("1970");
+        defaultFileName = () -> EelValue.of("myFile.txt");
 
         tempFolderPath = tempFolder.getRoot().getAbsolutePath() + FILE_SEPARATOR;
 
@@ -154,7 +167,7 @@ public class LocalFilesTest {
 
 
     /**
-     * Unit test {@link LocalFiles#createAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#createAt(String, EelLambda)}
      */
     @Test
     public void test_createAt() throws Exception {
@@ -165,7 +178,7 @@ public class LocalFilesTest {
                 .thenReturn(attributes);
 
             Instant actual = new LocalFiles()
-                .createAt("pom.xml", DEFAULT_DATE)
+                .createAt("pom.xml", defaultDate)
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
@@ -174,28 +187,28 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#createAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#createAt(String, EelLambda)}
      */
     @Test
     public void test_createAt_missingFile() throws Exception {
         ZonedDateTime actual = new LocalFiles()
-            .createAt("unknown.file", DEFAULT_DATE);
+            .createAt("unknown.file", () -> EelValue.of(DEFAULT_DATE));
 
         Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
     }
 
     /**
-     * Unit test {@link LocalFiles#createAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#createAt(String, EelLambda)}
      */
     @Test
     public void test_createAt_directory() {
         Assert.assertThrows(IOException.class,
-            () -> new LocalFiles().createAt(tempFolderPath + "sub", DEFAULT_DATE));
+            () -> new LocalFiles().createAt(tempFolderPath + "sub", defaultDate));
     }
 
 
     /**
-     * Unit test {@link LocalFiles#accessedAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#accessedAt(String, EelLambda)}
      */
     @Test
     public void test_accessedAt() throws Exception {
@@ -206,7 +219,7 @@ public class LocalFilesTest {
                 .thenReturn(attributes);
 
             Instant actual = new LocalFiles()
-                .accessedAt("pom.xml", DEFAULT_DATE)
+                .accessedAt("pom.xml", defaultDate)
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
@@ -215,19 +228,19 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#accessedAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#accessedAt(String, EelLambda)}
      */
     @Test
     public void test_accessedAt_missingFile() throws Exception {
         ZonedDateTime actual = new LocalFiles()
-            .accessedAt("unknown.file", DEFAULT_DATE);
+            .accessedAt("unknown.file", () -> EelValue.of(DEFAULT_DATE));
 
         Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
     }
 
 
     /**
-     * Unit test {@link LocalFiles#modifiedAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#modifiedAt(String, EelLambda)}
      */
     @Test
     public void test_modifiedAt() throws Exception {
@@ -238,7 +251,7 @@ public class LocalFilesTest {
                 .thenReturn(attributes);
 
             Instant actual = new LocalFiles()
-                .modifiedAt("pom.xml", DEFAULT_DATE)
+                .modifiedAt("pom.xml", defaultDate)
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
@@ -247,19 +260,19 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#modifiedAt(String, ZonedDateTime)}
+     * Unit test {@link LocalFiles#modifiedAt(String, EelLambda)}
      */
     @Test
     public void test_modifiedAt_missingFile() throws Exception {
         ZonedDateTime actual = new LocalFiles()
-            .modifiedAt("unknown.file", DEFAULT_DATE);
+            .modifiedAt("unknown.file", () -> EelValue.of(DEFAULT_DATE));
 
         Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
     }
 
 
     /**
-     * Unit test {@link LocalFiles#fileSize(String, long)}
+     * Unit test {@link LocalFiles#fileSize(String, EelLambda)}
      */
     @Test
     public void test_fileSize() throws Exception {
@@ -270,25 +283,25 @@ public class LocalFilesTest {
                 .thenReturn(attributes);
 
             long actual = new LocalFiles()
-                .fileSize("pom.xml", -1);
+                .fileSize("pom.xml", defaultNumber);
 
             Assert.assertEquals("Unexpected modified time", 74565, actual);
         }
     }
 
     /**
-     * Unit test {@link LocalFiles#fileSize(String, long)}
+     * Unit test {@link LocalFiles#fileSize(String, EelLambda)}
      */
     @Test
     public void test_fileSize_missingFile() throws Exception {
         long actual = new LocalFiles()
-            .fileSize("unknown.file", -999);
+            .fileSize("unknown.file", () -> EelValue.of(-999));
 
         Assert.assertEquals("Unexpected create time", -999, actual);
     }
 
     /**
-     * Unit test {@link LocalFiles#fileSize(String, long)}
+     * Unit test {@link LocalFiles#fileSize(String, EelLambda)}
      */
     @Test
     public void test_fileSize_noAttributes() {
@@ -301,7 +314,7 @@ public class LocalFilesTest {
                 .thenThrow(cause);
 
             IOException actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().fileSize("pom.xml", -1));
+                () -> new LocalFiles().fileSize("pom.xml", defaultNumber));
 
             String message = actual.getMessage();
 
@@ -312,7 +325,7 @@ public class LocalFilesTest {
 
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_all() throws Exception {
@@ -322,7 +335,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*");
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("1.txt"));
@@ -332,7 +345,27 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
+     */
+    @Test
+    public void test_firstCreated_all_index1() throws Exception {
+        try (
+            MockedStatic<Files> files = Mockito.mockStatic(Files.class)
+        ) {
+            files.when(() -> Files.list(any(Path.class)))
+                .thenAnswer(i -> mockDirectory(files));
+
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "*", 1, defaultEmptyString);
+
+            Assert.assertTrue("Unexpected File found: " + actual,
+                actual.endsWith("2.txt"));
+
+            verify(mockAttributes.get("2.txt"), times(2)).creationTime();
+        }
+    }
+
+    /**
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_withOutTrailingSlash() throws Exception {
@@ -343,7 +376,7 @@ public class LocalFilesTest {
                 .thenAnswer(i -> mockDirectory(files));
 
             String path = tempFolder.getRoot().getAbsolutePath();
-            String actual = new LocalFiles().firstCreated(path, "*");
+            String actual = new LocalFiles().firstCreated(path, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("1.txt"));
@@ -353,7 +386,7 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_fileName() throws Exception {
@@ -363,7 +396,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "2.*");
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "2.*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("2.txt"));
@@ -371,9 +404,28 @@ public class LocalFilesTest {
             verify(mockAttributes.get("2.txt")).creationTime();
         }
     }
+    /**
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
+     */
+    @Test
+    public void test_firstCreated_fileName_index1() throws Exception {
+        try (
+            MockedStatic<Files> files = Mockito.mockStatic(Files.class)
+        ) {
+            files.when(() -> Files.list(any(Path.class)))
+                .thenAnswer(i -> mockDirectory(files));
+
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "2.*", 1, defaultEmptyString);
+
+            Assert.assertTrue("Unexpected File found: " + actual,
+                actual.endsWith("2.jpg"));
+
+            verify(mockAttributes.get("2.jpg")).creationTime();
+        }
+    }
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_images() throws Exception {
@@ -383,7 +435,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*.jpg");
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "*.jpg", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("2.jpg"));
@@ -391,7 +443,7 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_NoFiles() {
@@ -402,15 +454,68 @@ public class LocalFilesTest {
                 .thenAnswer(i -> mockDirectory(files));
 
             Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*.unknown"));
+                () -> new LocalFiles().firstCreated(tempFolderPath, "*.unknown", 0, defaultEmptyString));
 
             Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-                actual.getMessage().startsWith("There are no matching files in "));
+                actual.getMessage().matches("^There is no file in .* with index 0 that matches '\\*.unknown'$"));
         }
     }
 
     /**
-     * Unit test {@link LocalFiles#firstCreated(String, String)}
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
+     */
+    @Test
+    public void test_firstCreated_negativeIndex() throws Exception {
+        try (
+            MockedStatic<Files> files = Mockito.mockStatic(Files.class)
+        ) {
+            files.when(() -> Files.list(any(Path.class)))
+                .thenAnswer(i -> mockDirectory(files));
+
+           Exception actual = Assert.assertThrows(IllegalArgumentException.class,
+                () -> new LocalFiles().firstCreated(tempFolderPath, "*", -1, defaultFileName));
+
+            Assert.assertEquals("Unexpected File found: ", "-1 is an invalid index", actual.getMessage());
+        }
+    }
+    /**
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
+     */
+    @Test
+    public void test_firstCreated_highIndex() {
+        try (
+            MockedStatic<Files> files = Mockito.mockStatic(Files.class)
+        ) {
+            files.when(() -> Files.list(any(Path.class)))
+                .thenAnswer(i -> mockDirectory(files));
+
+            Exception actual = Assert.assertThrows(IOException.class,
+                () -> new LocalFiles().firstCreated(tempFolderPath, "*", 999, defaultEmptyString));
+
+            Assert.assertTrue("Unexpected message: " + actual.getMessage(),
+                actual.getMessage().matches("^There is no file in .* with index 999 that matches '\\*'$"));
+        }
+    }
+
+    /**
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
+     */
+    @Test
+    public void test_firstCreated_NoFiles_Defaulted() throws Exception {
+        try (
+            MockedStatic<Files> files = Mockito.mockStatic(Files.class)
+        ) {
+            files.when(() -> Files.list(any(Path.class)))
+                .thenAnswer(i -> mockDirectory(files));
+
+            String actual = new LocalFiles().firstCreated(tempFolderPath, "*.unknown", 0, defaultFileName);
+
+            Assert.assertEquals("Unexpected File found: ", "myFile.txt", actual);
+        }
+    }
+
+    /**
+     * Unit test {@link LocalFiles#firstCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstCreated_CantReadDirectory() {
@@ -421,7 +526,7 @@ public class LocalFilesTest {
                 .thenThrow(new IOException("Expected"));
 
             Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*"));
+                () -> new LocalFiles().firstCreated(tempFolderPath, "*", 0, defaultEmptyString));
 
             Assert.assertTrue("Unexpected message:" + actual.getMessage(),
                 actual.getMessage().startsWith("Can not read directory"));
@@ -430,7 +535,7 @@ public class LocalFilesTest {
 
 
     /**
-     * Unit test {@link LocalFiles#lastCreated(String, String)}
+     * Unit test {@link LocalFiles#lastCreated(String, String, int, EelLambda)}
      */
     @Test
     public void test_lastCreated() throws Exception {
@@ -440,7 +545,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastCreated(tempFolderPath, "*");
+            String actual = new LocalFiles().lastCreated(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("2.jpg"));
@@ -451,7 +556,7 @@ public class LocalFilesTest {
 
 
     /**
-     * Unit test {@link LocalFiles#firstAccessed(String, String)}
+     * Unit test {@link LocalFiles#firstAccessed(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstAccessed() throws Exception {
@@ -461,7 +566,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstAccessed(tempFolderPath, "*");
+            String actual = new LocalFiles().firstAccessed(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("1.txt"));
@@ -471,7 +576,7 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#lastAccessed(String, String)}
+     * Unit test {@link LocalFiles#lastAccessed(String, String, int, EelLambda)}
      */
     @Test
     public void test_lastAccessed() throws Exception {
@@ -481,7 +586,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastAccessed(tempFolderPath, "*");
+            String actual = new LocalFiles().lastAccessed(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("2.jpg"));
@@ -491,7 +596,7 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#firstModified(String, String)}
+     * Unit test {@link LocalFiles#firstModified(String, String, int, EelLambda)}
      */
     @Test
     public void test_firstModified() throws Exception {
@@ -501,7 +606,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstModified(tempFolderPath, "*");
+            String actual = new LocalFiles().firstModified(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("1.txt"));
@@ -511,7 +616,7 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#lastModified(String, String)}
+     * Unit test {@link LocalFiles#lastModified(String, String, int, EelLambda)}
      */
     @Test
     public void test_lastModified() throws Exception {
@@ -521,7 +626,7 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastModified(tempFolderPath, "*");
+            String actual = new LocalFiles().lastModified(tempFolderPath, "*", 0, defaultEmptyString);
 
             Assert.assertTrue("Unexpected File found: " + actual,
                 actual.endsWith("2.jpg"));

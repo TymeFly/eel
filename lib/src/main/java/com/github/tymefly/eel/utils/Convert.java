@@ -27,7 +27,7 @@ import static java.util.Map.entry;
  * Value conversion functions
  */
 public class Convert {
-    private static final Set<String> FALSE_TEXT = Set.of("false", "0");
+    private static final Set<String> FALSE_TEXT = Set.of("false", "0", "");
     private static final Set<String> TRUE_TEXT = Set.of("true", "1");
 
     private static final int HEX_RADIX = 16;

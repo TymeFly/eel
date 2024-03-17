@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import com.github.tymefly.eel.exception.EelRuntimeException;
 import func.bad_functions.Test1;
@@ -38,6 +39,8 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,17 +56,21 @@ public class FunctionManagerTest {
 
 
     private SymbolsTable symbolsTable;
-    private EelContext context;
+    private EelContextImpl context;
 
     @Before
     public void setUp() {
         symbolsTable = mock(SymbolsTable.class);
-        context = mock(EelContext.class);
+        context = mock(EelContextImpl.class);
 
         MathContext mathContext = new MathContext(2, RoundingMode.HALF_UP);
 
+        when(context.contextId())
+            .thenReturn("myContext!!");
         when(context.getMathContext())
             .thenReturn(mathContext);
+        when(context.getResource(any(Class.class), anyString(), any(Function.class)))
+            .thenAnswer(a -> ((Function<String, ?>) a.getArguments()[2]).apply(""));
 
         when(symbolsTable.read("myVar"))
             .thenReturn("late");
@@ -237,7 +244,7 @@ public class FunctionManagerTest {
             () -> new FunctionManager.Builder()
                 .withUdfClass(Test8.class)
                 .build()
-                .compileCall("test.8", context, List.of(r -> Value.TRUE))
+                .compileCall("test.8", context, List.of(r -> Value.of(true)))
                 .execute(symbolsTable));
 
         Assert.assertEquals("Unexpected message",
@@ -412,6 +419,15 @@ public class FunctionManagerTest {
             .withUdfClass(TestTypes.class)
             .build();
 
+        Assert.assertEquals("pass EelContext",
+            Value.of("myContext!!"),
+            manager.compileCall("types.context", context, List.of()).execute(symbolsTable));
+
+        Assert.assertEquals("pass FunctionalResource",
+            Value.of("resourceValue!!"),
+            manager.compileCall("types.functionalResource", context, List.of()).execute(symbolsTable));
+
+
         Assert.assertEquals("pass Value",
             Value.of(3),
             manager.compileCall("types.value", context, List.of(r -> Value.of(3))).execute(symbolsTable));
@@ -421,10 +437,10 @@ public class FunctionManagerTest {
             manager.compileCall("types.str", context, List.of(r -> Value.of("Hello"))).execute(symbolsTable));
 
         Assert.assertEquals("pass Boolean",
-            Value.TRUE,
+            EelValue.TRUE,
             manager.compileCall("types.Bool", context, List.of(r -> Value.of(Boolean.TRUE))).execute(symbolsTable));
         Assert.assertEquals("pass boolean",
-            Value.FALSE,
+            EelValue.FALSE,
             manager.compileCall("types.bool", context, List.of(r -> Value.of(false))).execute(symbolsTable));
 
         Assert.assertEquals("pass Byte",
@@ -476,8 +492,8 @@ public class FunctionManagerTest {
             Value.of(1234.5678),
             manager.compileCall("types.BigDec", context, List.of(r -> Value.of(1234.5678))).execute(symbolsTable));
         Assert.assertEquals("pass date",
-            Value.EPOCH_START_UTC,
-            manager.compileCall("types.date", context, List.of(r -> Value.EPOCH_START_UTC)).execute(symbolsTable));
+            Value.of(EelContext.FALSE_DATE),
+            manager.compileCall("types.date", context, List.of(r -> Value.of(EelContext.FALSE_DATE))).execute(symbolsTable));
 
         Assert.assertEquals("pass char",
             Value.of("H"),
@@ -485,6 +501,10 @@ public class FunctionManagerTest {
         Assert.assertEquals("pass Character",
             Value.of("W"),
             manager.compileCall("types.Character", context, List.of(r -> Value.of("World"))).execute(symbolsTable));
+
+        Assert.assertEquals("pass Lambda",
+            Value.of("Callback!!"),
+            manager.compileCall("types.Lambda", context, List.of(r -> Value.of("Callback"))).execute(symbolsTable));
     }
 
     /**
@@ -517,7 +537,7 @@ public class FunctionManagerTest {
                     List.of(r -> Value.of(1), r -> Value.of(1), r -> Value.of(1), r -> Value.of(1), r -> Value.of(1)))
             .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected value returned", Value.TRUE, actual);
+        Assert.assertEquals("Unexpected value returned", EelValue.TRUE, actual);
     }
 
 
@@ -531,7 +551,8 @@ public class FunctionManagerTest {
             r -> Value.of(-123),
             r -> Value.of(true),
             r -> Value.of(r.read("myVar")),
-            r -> Value.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6_000_000, ZoneOffset.UTC))
+            r -> Value.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6_000_000, ZoneOffset.UTC)),
+            r -> Value.of("myFunction")
         );
 
         Value actual = new FunctionManager.Builder()
@@ -540,7 +561,9 @@ public class FunctionManagerTest {
             .compileCall("test.defaults", context, argumentList)
             .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Passed 'myText', -123, true, 'late' ~ 2022-01-02T03:04:05Z"), actual);
+        Assert.assertEquals("Unexpected value",
+            Value.of("Passed 'myText', -123, true, 'late' ~ 2022-01-02T03:04:05Z, myFunction"),
+            actual);
     }
 
     /**
@@ -556,7 +579,9 @@ public class FunctionManagerTest {
             .compileCall("test.defaults", context, argumentList)
             .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Passed 'requiredText', 987, false, '???' ~ 2001-02-03T04:05Z"), actual);
+        Assert.assertEquals("Unexpected value",
+            Value.of("Passed 'requiredText', 987, false, '???' ~ 2001-02-03T04:05Z, ???"),
+            actual);
     }
 
     /**

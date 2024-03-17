@@ -85,7 +85,7 @@ public class VariableExpansionIntegrationTest {
      */
     @Test
     public void test_use_default_withEmbeddedExpression() {
-        Result actual = Eel.compile(context, "${key-~$( 1 + NUMBER(${two}) )~${postfix}~}!")
+        Result actual = Eel.compile(context, "${key-~$( 1 + number(${two}) )~${postfix}~}!")
             .evaluate(SymbolsTable.from(Map.of("two", "2", "postfix", "@@")));
 
         Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
@@ -169,6 +169,18 @@ public class VariableExpansionIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
+    public void test_MultipleCases() {
+        Result actual = Eel.compile(context, "${var1,,^} ${var2,,^}")
+            .evaluate(SymbolsTable.from(Map.of("var1", "UPPER", "var2", "lower")));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "Upper Lower", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
     public void test_caseChange_and_default() {
         Result actual = Eel.compile(context, "${key^^-default value}")
             .evaluate(SymbolsTable.from(Map.of("key", "Value")));
@@ -197,7 +209,7 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${#key}")
             .evaluate(SymbolsTable.from(Map.of("key", "123456")));
 
-        Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
         Assert.assertEquals("Unexpected value", "6", actual.asText());
     }
 
@@ -221,9 +233,59 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${#key^^}")             // change of case should be ignored
             .evaluate(SymbolsTable.from(Map.of("key", "123456")));
 
-        Assert.assertEquals("Unexpected type", Type.NUMBER, actual.getType());
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
         Assert.assertEquals("Unexpected value", "6", actual.asText());
     }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_substring() {
+        Result actual = Eel.compile(context, "${key:3:2}")
+            .evaluate(SymbolsTable.from(Map.of("key", "0123456789")));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "34", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_substring_WithDefault_unused() {
+        Result actual = Eel.compile(context, "${key:3:2-undefined}")
+            .evaluate(SymbolsTable.from(Map.of("key", "0123456789")));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "34", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_substring_WithDefault_used() {
+        Result actual = Eel.compile(context, "${key:3:2^^-undefined}")
+            .evaluate();
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "undefined", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_substring_caseChange_and_default() {
+        Result actual = Eel.compile(context, "${key:2:4,,~-undefined}")
+            .evaluate(SymbolsTable.from(Map.of("key", "ABCDEFGHI")));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "Cdef", actual.asText());
+    }
+
+
 
     /**
      * Integration test {@link Eel}
@@ -260,5 +322,4 @@ public class VariableExpansionIntegrationTest {
         Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
         Assert.assertEquals("Unexpected value", "notFound", actual.asText());
     }
-    
 }

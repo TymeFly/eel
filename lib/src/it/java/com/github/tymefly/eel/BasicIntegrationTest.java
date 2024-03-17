@@ -87,9 +87,6 @@ public class BasicIntegrationTest {
     public void test_ConstantsValue() {
         testConstant("$( true )", Type.LOGIC, "true");
         testConstant("$( false )", Type.LOGIC, "false");
-        testConstant("$( pi )", Type.NUMBER, "3.141592653589793");
-        testConstant("$( e )", Type.NUMBER, "2.718281828459045");
-        testConstant("$( c )", Type.NUMBER, "299792458");
     }
 
     private void testConstant(@Nonnull String expression, @Nonnull Type expectedType, @Nonnull String expectedValue) {
@@ -106,7 +103,7 @@ public class BasicIntegrationTest {
      */
     @Test
     public void test_StringAndValue() {
-        String actual = Eel.compile(context, "Hello $(2 ^ 8) World")
+        String actual = Eel.compile(context, "Hello $(2 ** 8) World")
             .evaluate()
             .asText();
 
@@ -129,12 +126,37 @@ public class BasicIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
+    public void test_Dollar() {
+        Assert.assertEquals("Function Interpolation",
+            "~~~ 0 ~~~ 1 ~~~",
+            Eel.compile(context, "~~~ $count() ~~~ $count() ~~~").evaluate().asText());
+        Assert.assertEquals("Digits",
+            "$99",
+            Eel.compile(context, "$99").evaluate().asText());
+        Assert.assertEquals("Spaces",
+            "$  random(99,99)",
+            Eel.compile(context, "$  random(99,99)").evaluate().asText());
+        Assert.assertEquals("Double $",
+            "$99",
+            Eel.compile(context, "$$random(99,99)").evaluate().asText());
+        Assert.assertEquals("Nested in Expression",
+            "$99",
+            Eel.compile(context, "$$( $random(99,99) )").evaluate().asText());
+        Assert.assertEquals("Nested in Value",
+            "def:$99$",
+            Eel.compile(context, "${UNDEFINED-def:$$random(99,99)$}").evaluate().asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
     public void test_ReuseCompiledExpression() {
         Eel compiled = Eel.factory()                            // Create a new Context for count
             .compile("Result is $( count() )");
 
-        Assert.assertEquals("First", "Result is 1", compiled.evaluate().asText());
-        Assert.assertEquals("Second", "Result is 2", compiled.evaluate().asText());
-        Assert.assertEquals("Third", "Result is 3", compiled.evaluate().asText());
+        Assert.assertEquals("First", "Result is 0", compiled.evaluate().asText());
+        Assert.assertEquals("Second", "Result is 1", compiled.evaluate().asText());
+        Assert.assertEquals("Third", "Result is 2", compiled.evaluate().asText());
     }
 }

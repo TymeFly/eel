@@ -94,7 +94,7 @@ public class Eel {
             Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
 
             resolveContext();
-            Source source = new Source(expression, context.maxExpressionLength());
+            Source source = Source.build(expression, context.maxExpressionLength());
 
             return new Eel(context, source);
         }
@@ -105,7 +105,7 @@ public class Eel {
             Preconditions.checkNotNull(expression, "Can not parse a null input stream");
 
             resolveContext();
-            Source source = new Source(expression, context.maxExpressionLength());
+            Source source = Source.build(expression, context.maxExpressionLength());
 
             return new Eel(context, source);
         }
@@ -131,6 +131,17 @@ public class Eel {
 
         this.expression = new EelRuntime(context)
             .apply(parser.parse());
+    }
+
+
+    /**
+     * Public entry point for reading Eel language metadata
+     * @return Eel language metadata
+     * @since 2.0.0
+     */
+    @Nonnull
+    public static Metadata metadata() {
+        return BuildTime.getInstance();
     }
 
 
@@ -170,7 +181,7 @@ public class Eel {
 
         EelContextImpl contextImpl = (EelContextImpl) context;
 
-        return new Eel(contextImpl, new Source(expression, contextImpl.maxExpressionLength()));
+        return new Eel(contextImpl, Source.build(expression, contextImpl.maxExpressionLength()));
     }
 
 

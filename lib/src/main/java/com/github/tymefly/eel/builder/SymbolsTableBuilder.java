@@ -19,14 +19,14 @@ import javax.annotation.Nonnull;
  *             .build();
  * }</pre>
  */
-public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
+public interface SymbolsTableBuilder extends BasicSymbolTableBuilder {
     /**
      * Adds all the system properties to the generated SymbolsTable.
      * @return      a fluent interface
      * @see System#getProperties()
      */
     @Nonnull
-    SymbolTableBuilder withProperties();
+    SymbolsTableBuilder withProperties();
 
     /**
      * Adds all the environment variables to the generated SymbolsTable.
@@ -34,7 +34,7 @@ public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
      * @see System#getenv()
      */
     @Nonnull
-    SymbolTableBuilder withEnvironment();
+    SymbolsTableBuilder withEnvironment();
 
     /**
      * Adds a map to the generated SymbolsTable. This method may be called multiple times if more than
@@ -43,7 +43,7 @@ public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
      * @return          a fluent interface
      */
     @Nonnull
-    SymbolTableBuilder withValues(@Nonnull Map<String, String> values);
+    SymbolsTableBuilder withValues(@Nonnull Map<String, String> values);
 
     /**
      * Adds a callback function from the symbols table that allows the client to read symbols in a flexible way.
@@ -55,7 +55,7 @@ public interface SymbolTableBuilder extends BasicSymbolTableBuilder {
      * @return          a fluent interface
      */
     @Nonnull
-    SymbolTableBuilder withLookup(@Nonnull Function<String, String> lookup);
+    SymbolsTableBuilder withLookup(@Nonnull Function<String, String> lookup);
 
     /**
      * Set a default value that is returned when a symbol can not be found in the symbols table.
