@@ -23,9 +23,9 @@ public class EelLambdaImplTest {
 
     @Before
     public void setUp() {
-        executor = mock(Executor.class);
-        symbolsTable = mock (SymbolsTable.class);
-        value = mock(Value.class);
+        executor = mock();
+        symbolsTable = mock();
+        value = mock();
 
         when(executor.execute(any(SymbolsTable.class)))
             .thenReturn(value);

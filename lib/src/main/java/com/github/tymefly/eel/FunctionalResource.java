@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
  * The managed resources also relate to the class that implements the {@link com.github.tymefly.eel.udf.EelFunction}.
  * If the implementing class supports multiple EelFunctions they can all share the same resources. However, UDFs
  * resource are protected from functions that are in different classes.
+ * @since 2.0.0
  */
 public interface FunctionalResource {
     /**

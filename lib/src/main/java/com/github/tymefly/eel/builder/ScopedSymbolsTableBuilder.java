@@ -6,7 +6,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
- * Builder class used to generate a flexible SymbolsTable that can return values from multiple sources.
+ * Builder class used to generate a flexible SymbolsTable that can return values from multiple named sources.
  * A unique scope name is used to disambiguate keys that exist in multiple sources.
  * Typical usage is:
  * <pre>{@code SymbolsTable.factory(".")
@@ -42,7 +42,7 @@ public interface ScopedSymbolsTableBuilder extends BasicSymbolTableBuilder {
     /**
      * Adds a map to the generated SymbolsTable. This method may be called multiple times if more than
      * map is required
-     * @param scopeName Name of the scope for the values
+     * @param scopeName Name of the scope for the map
      * @param values    a collection of key-value pairs that will be added to the generated symbols table
      * @return          a fluent interface
      */
@@ -54,7 +54,7 @@ public interface ScopedSymbolsTableBuilder extends BasicSymbolTableBuilder {
      * This method may be called multiple times if more than one lookup function is required.
      * <br>
      * <b>Note:</b> It is required that for any given key the lookup function always returns the same value.
-     * @param scopeName Name of the scope for the keys passed to the mapping function
+     * @param scopeName Name of the scope for lookup function
      * @param lookup    A function that is passed the lookup key and returns the associated value or
      *                      {@literal null} of there is no related value.
      * @return          a fluent interface

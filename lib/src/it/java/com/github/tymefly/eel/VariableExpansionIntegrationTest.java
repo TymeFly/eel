@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemErrRule;
 import org.junit.contrib.java.lang.system.SystemOutRule;
 
+import static java.util.Map.entry;
+
 
 /**
  * Integration Test for variable expansions
@@ -285,41 +287,101 @@ public class VariableExpansionIntegrationTest {
         Assert.assertEquals("Unexpected value", "Cdef", actual.asText());
     }
 
-
-
     /**
      * Integration test {@link Eel}
      */
     @Test
-    public void test_isDefined() {
-        Result actual = Eel.compile(context, "$( key? )")
-            .evaluate(Map.of("key", "value"));
-
-        Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
-        Assert.assertTrue("Unexpected value", actual.asLogic());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_isUndefined() {
-        Result actual = Eel.compile(context, "$( key? )")
-            .evaluate();
-
-        Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
-        Assert.assertFalse("Unexpected value", actual.asLogic());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_isDefined_custom() {
-        Result actual = Eel.compile(context, "$( key? ? 'found' : 'notFound' )")
-            .evaluate();
+    public void test_index_value() {
+        Result actual = Eel.compile(context, "${key:${index}:4}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("index", "3"))));
 
         Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "notFound", actual.asText());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_index_expression() {
+        Result actual = Eel.compile(context, "${key:$( 1 + 2 ):4}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("index", "3"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_index_function() {
+        Result actual = Eel.compile(context, "${key:$indexOf('123456789', '4'):4}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("index", "3"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_count_value() {
+        Result actual = Eel.compile(context, "${key:3:${count}}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("count", "4"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_count_expression() {
+        Result actual = Eel.compile(context, "${key:3:$(5 - 1)}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("count", "4"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_count_function() {
+        Result actual = Eel.compile(context, "${key:3:$indexOf('123456789', '5')}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("count", "4"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_count_value_caseChange() {
+        Result actual = Eel.compile(context, "${key:3:${count},,}")
+            .evaluate(SymbolsTable.from(Map.ofEntries(
+                entry("key", "ABCDEFGHI"),
+                entry("count", "4"))));
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "defg", actual.asText());
     }
 }

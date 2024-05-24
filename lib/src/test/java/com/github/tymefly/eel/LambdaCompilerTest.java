@@ -54,9 +54,9 @@ public class LambdaCompilerTest {
 
     @Before
     public void setUp() {
-        EelContext context = mock(EelContext.class);
+        EelContextImpl context = mock();
 
-        symbols = mock(SymbolsTable.class);
+        symbols = mock();
 
         when(context.getMathContext())
             .thenReturn(new MathContext(3, RoundingMode.HALF_UP));
@@ -110,7 +110,7 @@ public class LambdaCompilerTest {
     @Test
     public void test_variable_withCaseOp() {
         Executor actual = compile.readSymbol("key")
-            .withTransformation(StringUtils::toggleAll)
+            .withTransformation((s, t) -> StringUtils.toggleAll(t))
             .build();
         Value value = actual.execute(symbols);
 
@@ -139,7 +139,7 @@ public class LambdaCompilerTest {
         Executor defaultValue = s -> Value.of("Hello");
         Executor actual = compile.readSymbol("other")
             .withDefault(defaultValue)
-            .withTransformation(StringUtils::toggleAll)
+            .withTransformation((s, t) -> StringUtils.toggleAll(t))
             .build();
         Value value = actual.execute(symbols);
 

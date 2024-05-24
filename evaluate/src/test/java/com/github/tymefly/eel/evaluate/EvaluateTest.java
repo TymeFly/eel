@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,17 +61,16 @@ public class EvaluateTest {
 
     @Before
     public void setUp() {
-        Result result = mock(Result.class);
+        Result result = mock();
 
-        config = mock(Config.class);
-        eelBuilder = mock(EelBuilder.class);
-        eel = mock(Eel.class);
-        contextBuilder = mock(EelContextBuilder.class);
-        context = mock(EelContext.class);
-        symbolsTableBuilder = mock(SymbolsTableBuilder.class);
-        symbolTable = mock(SymbolsTable.class);
-
-        functions = mock(Package.class);
+        config = mock();
+        eelBuilder = mock();
+        eel = mock();
+        contextBuilder = mock();
+        context = spy(EelContext.factory().build());
+        symbolsTableBuilder = mock();
+        symbolTable = mock();
+        functions = mock();
 
         // train the config
         when(config.getExpression())

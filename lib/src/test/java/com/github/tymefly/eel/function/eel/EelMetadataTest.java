@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
@@ -17,9 +18,9 @@ public class EelMetadataTest {
 
     @Before
     public void setUp() {
-        Metadata info = mock(Metadata.class);
+        Metadata info = mock();
 
-        context = mock(EelContext.class);
+        context = spy(EelContext.factory().build());
 
         when(context.metadata())
             .thenReturn(info);

@@ -5,9 +5,11 @@ import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.function.date.DateFactory;
 import com.github.tymefly.eel.function.date.Offset;
+import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
@@ -57,6 +59,40 @@ public class FormatDate {
             .format(date);
     }
 
+
+    /**
+     * Entry point for the {@code format.start} function, which returns a DATE with optional offsets
+     * in a customised formatted. This function is the equivalent of {@code format.date( date.start(), format ) }
+     * <br>
+     * The EEL syntax for this function is:
+     * <ul>
+     *  <li><code>format.start( format )</code> - format the current time in the UTC Zone</li>
+     *  <li><code>format.start( format, zone )</code> - format the current time in the specified Zone</li>
+     *  <li><code>format.start( format, zone, offsets... )</code> - format the time in the specified Zone after
+     *               applying offsets</li>
+     * </ul>
+     * @param context   The current EEL Context
+     * @param format    Format of the returned string.
+     * @param zone      time zone
+     * @param offsets   optional offsets.
+     * @return the formatted date
+     * @see DateFactory#start(EelContext, String, String...)
+     * @see #formatDate(String, ZonedDateTime, String...)
+     * @see <a
+     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *  Java DateTimeFormatter</a>
+     * @since 2.1.0
+     */
+    @Nonnull
+    @EelFunction(name = "format.start")
+    public String formatStart(@Nonnull EelContext context,
+                              @Nonnull String format,
+                              @DefaultArgument("UTC") @Nonnull String zone,
+                              @DefaultArgument("") @Nonnull String... offsets) {
+        ZonedDateTime date = dateFactory.start(context, zone, offsets);
+
+        return formatDate(format, date);
+    }
 
     /**
      * Entry point for the {@code format.utc} function, which returns a DATE in the UTC zone with optional offsets

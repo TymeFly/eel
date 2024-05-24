@@ -30,19 +30,27 @@ public class DateFactory {
      * <ul>
      *  <li><code>date.start()</code> - the start time in the UTC Zone</li>
      *  <li><code>date.start( zone )</code> - the start time in the specified Zone</li>
+     *  <li><code>date.start( zone, offsets )</code> - the start time in the specified Zone after applying the
+     *                          offsets</li>
      * </ul>
      * @param context   The EEL Context
      * @param zone      The optional zone name. This defaults to UTC
+     * @param offsets   optional offsets.
      * @return a timestamp at which the {@code context} was created
      * @throws DateTimeException if the {@code zone} is not valid
      */
     @Nonnull
     @EelFunction(name = "date.start")
     public ZonedDateTime start(@Nonnull EelContext context,
-                               @DefaultArgument("UTC") @Nonnull String zone) throws DateTimeException {
+                               @DefaultArgument("UTC") @Nonnull String zone,
+                               @DefaultArgument("") @Nonnull String... offsets) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
         ZonedDateTime result = context.getStartTime()
             .withZoneSameInstant(zoneId);
+
+        for (var offset : offsets) {
+            result = DateHelper.applyOffset(result, offset);
+        }
 
         return result;
     }

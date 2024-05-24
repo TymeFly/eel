@@ -12,13 +12,13 @@ import com.github.tymefly.eel.EelValue;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 import com.github.tymefly.eel.utils.CharSetBuilder;
-import com.github.tymefly.eel.utils.Convert;
 
 /**
  * The PrintF function
  */
 @PackagedEelFunction
 public class PrintF {
+    /** Disposable class that holds state for the stateless {@link #printf(String, EelValue...)}  function */
     private static class ArgumentParser {
         private static final String FORMAT_SPECIFIER
             = "%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%]).*";
@@ -102,7 +102,7 @@ public class PrintF {
             }
 
             if (index >= arguments.length) {
-                throw new MissingFormatArgumentException("Format specifier '%" + format + "");
+                throw new MissingFormatArgumentException("Format specifier '%" + format + "'");
             }
 
             return index;
@@ -114,7 +114,7 @@ public class PrintF {
                     case 's', 'S' ->
                         parsed[index] = arguments[index].asText();
                     case 'c', 'C' ->
-                        parsed[index] = Convert.toChar(arguments[index]);
+                        parsed[index] = arguments[index].asChar();
                     case 'b', 'B' ->
                         parsed[index] = arguments[index].asLogic();
                     case 'd', 'o' , 'x', 'X' ->
@@ -134,13 +134,13 @@ public class PrintF {
     /**
      * Entry point for the {@code printf} function. The following conversion characters are supported:
      * <ul>
-     *  <li>Text: {@code s}, {@code S}</li>
-     *  <li>Character: {@code c}, {@code C} - this is the first character of text passed to the function</li>
-     *  <li>Logic: {@code b}, {@code B}/li>
-     *  <li>Integral Number: {@code d}, {@code o}, {@code x}, {@code X}/li>
-     *  <li>Real Number: {@code e}, {@code E}, {@code f}, {@code g}, {@code G}/li>
-     *  <li>Dates: {@code t}, {@code T}/li>
-     *  <li>Character literals: {@code %}, {@code n}/li>
+     *  <li><b>Text:</b> {@code s}, {@code S}</li>
+     *  <li><b>Character:</b> {@code c}, {@code C} - this is the first character of text passed to the function</li>
+     *  <li><b>Logic:</b> {@code b}, {@code B}</li>
+     *  <li><b>Integral Number:</b> {@code d}, {@code o}, {@code x}, {@code X}</li>
+     *  <li><b>Real Number:</b> {@code e}, {@code E}, {@code f}, {@code g}, {@code G}</li>
+     *  <li><b>Dates:</b> {@code t}, {@code T}</li>
+     *  <li><b>Character literals:</b> {@code %}, {@code n}</li>
      * </ul>
      * All Java formatting indexes, flags, widths and precisions are supported.
      * <br>

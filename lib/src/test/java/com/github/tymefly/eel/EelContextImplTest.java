@@ -35,7 +35,7 @@ public class EelContextImplTest {
 
     @Before
     public void setUp() {
-        buildTime = mock(BuildTime.class);
+        buildTime = mock();
 
         when(buildTime.version())
             .thenReturn("mockedVersion");
@@ -48,7 +48,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_defaultContext() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
@@ -74,7 +74,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_withMaxLength() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
@@ -110,7 +110,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_getTimeout() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
@@ -148,7 +148,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_withPrecision() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
@@ -175,7 +175,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_addFunctions() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =
@@ -206,7 +206,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_addPackage() {
-        FunctionManager funcMan = mock(FunctionManager.class);
+        FunctionManager funcMan = mock();
 
         try (
             MockedConstruction<FunctionManager.Builder> funcManConstructor =

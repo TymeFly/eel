@@ -8,12 +8,29 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL functions that converts NUMBER to TEXT with a different base
+ * EEL functions that converts NUMBER to TEXT in different bases
  */
 @PackagedEelFunction
 public class FormatNumber {
+    private static final int BINARY_RADIX = 2;
     private static final int OCTAL_RADIX = 8;
     private static final int HEX_RADIX = 16;
+
+    /**
+     * Entry point for the {@code format.binary} function that converts a number to binary Text.
+     * Logically this is the same as the more verbose {@code format.number( <value>, 2) }
+     * <br>
+     * The EEL syntax for this function is <code>format.binary( value )</code>
+     * @param value     Value to convert
+     * @return the number in binary.
+     * @see #formatNumber(BigInteger, int)
+     * @since 2.1.0
+     */
+    @Nonnull
+    @EelFunction(name = "format.binary")
+    public String formatBinary(@Nonnull BigInteger value) {
+        return formatNumber(value, BINARY_RADIX);
+    }
 
     /**
      * Entry point for the {@code format.octal} function that converts a number to octal Text.

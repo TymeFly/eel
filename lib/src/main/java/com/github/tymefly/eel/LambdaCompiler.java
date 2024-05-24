@@ -3,7 +3,6 @@ package com.github.tymefly.eel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +17,7 @@ class LambdaCompiler implements Compiler {
     private static class LambdaSymbolBuilder implements SymbolBuilder {
         private final String identifier;
         private Executor defaultValue;
-        private Function<String, String> transformations = Function.identity();
+        private SymbolTransformation transformations = SymbolTransformation.IDENTITY;
 
         private LambdaSymbolBuilder(@Nonnull String identifier) {
             this.identifier = identifier;
@@ -48,7 +47,7 @@ class LambdaCompiler implements Compiler {
                 Value value;
 
                 if (text != null) {
-                    text = transformations.apply(text);
+                    text = transformations.transform(s, text);
                     value = Value.of(text);
                 } else if (defaultValue != null) {
                     value = defaultValue.execute(s);

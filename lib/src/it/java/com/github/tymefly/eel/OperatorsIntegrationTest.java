@@ -3,6 +3,7 @@ package com.github.tymefly.eel;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -271,5 +272,42 @@ public class OperatorsIntegrationTest {
         Result actual = Eel.compile(context, expression).evaluate();
 
         Assert.assertEquals(expression, new BigDecimal(expected), actual.asNumber());
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_isDefined() {
+        Result actual = Eel.compile(context, "$( key? )")
+            .evaluate(Map.of("key", "value"));
+
+        Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
+        Assert.assertTrue("Unexpected value", actual.asLogic());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_isUndefined() {
+        Result actual = Eel.compile(context, "$( key? )")
+            .evaluate();
+
+        Assert.assertEquals("Unexpected type", Type.LOGIC, actual.getType());
+        Assert.assertFalse("Unexpected value", actual.asLogic());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_isDefined_custom() {
+        Result actual = Eel.compile(context, "$( key? ? 'found' : 'notFound' )")
+            .evaluate();
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value", "notFound", actual.asText());
     }
 }

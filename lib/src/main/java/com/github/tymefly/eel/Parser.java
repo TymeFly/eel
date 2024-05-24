@@ -1,17 +1,14 @@
 package com.github.tymefly.eel;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.Tokenizer.Mode;
 import com.github.tymefly.eel.Tokenizer.Terminal;
 import com.github.tymefly.eel.exception.EelSyntaxException;
-import com.github.tymefly.eel.utils.BigDecimals;
 import com.github.tymefly.eel.utils.StringUtils;
 
 import static java.util.Map.entry;
@@ -20,18 +17,13 @@ import static java.util.Map.entry;
  * EEL Parser implementation
  */
 class Parser {
-    private static final BigDecimal MAX_INTEGER = BigDecimal.valueOf(Integer.MAX_VALUE);
-
-    private static final Set<Token> FOLLOW_FULL_EXPRESSION = Set.of(
-        Token.END_OF_PROGRAM,
-        Token.RIGHT_BRACE);
     private static final Map<Token, Compiler.SymbolTransformation> CASE_OP = Map.ofEntries(
-        entry(Token.CARET, StringUtils::upperFirst),
-        entry(Token.ALL_UPPER, String::toUpperCase),
-        entry(Token.COMMA, StringUtils::lowerFirst),
-        entry(Token.ALL_LOWER, String::toLowerCase),
-        entry(Token.TILDE, StringUtils::toggleFirst),
-        entry(Token.ALL_TOGGLE, StringUtils::toggleAll));
+        entry(Token.CARET, (s, t) -> StringUtils.upperFirst(t)),
+        entry(Token.ALL_UPPER, (s, t) -> t.toUpperCase()),
+        entry(Token.COMMA, (s, t) -> StringUtils.lowerFirst(t)),
+        entry(Token.ALL_LOWER, (s, t) -> t.toLowerCase()),
+        entry(Token.TILDE, (s, t) -> StringUtils.toggleFirst(t)),
+        entry(Token.ALL_TOGGLE, (s, t) -> StringUtils.toggleAll(t)));
     private static final Map<Token, CompileBinaryOp> REL_OP = Map.ofEntries(
         entry(Token.EQUAL, Compiler::equal),
         entry(Token.NOT_EQUAL, Compiler::notEqual),
@@ -68,7 +60,6 @@ class Parser {
     private final Tokenizer tokenizer;
     private final EelContextImpl context;
     private final Compiler compiler;
-    private final Executor empty;
 
     private Terminal terminal;
 
@@ -83,15 +74,14 @@ class Parser {
         this.tokenizer = tokenizer;
         this.context = context;
         this.compiler = compiler;
-        this.empty = compiler.textConstant("");
 
-        nextToken(Mode.INTERPOLATE);
+        nextToken(Mode.INTERPOLATE, Token.END_OF_PROGRAM);
     }
 
 
     @Nonnull
     Executor parse() {
-        Executor result = fullExpression(Mode.INTERPOLATE);
+        Executor result = fullExpression(Token.END_OF_PROGRAM);
 
         assertToken(Token.END_OF_PROGRAM);
 
@@ -100,38 +90,48 @@ class Parser {
 
 
     @Nonnull
-    private Executor fullExpression(@Nonnull Mode mode) {
-        Executor result = empty;
+    private Executor fullExpression(@Nonnull Token follow) {
+        Executor result = null;
 
-        while (!FOLLOW_FULL_EXPRESSION.contains(terminal.token())) {
-            Executor interpolateElement;
+        while (terminal.token() != follow) {
+            Executor interpolateElement = interpolate(follow);
 
-            if (terminal.token() == Token.STRING) {
-                interpolateElement = string();
-            } else if (terminal.token() == Token.VALUE_INTERPOLATION) {
-                interpolateElement = value();
-            } else if (terminal.token() == Token.EXPRESSION_INTERPOLATION) {
-                nextToken(Mode.EXPRESSION);
-
-                interpolateElement = calculation();
-                assertToken(Token.RIGHT_PARENTHESES);
-            } else if (terminal.token() == Token.FUNCTION_INTERPOLATION) {
-                interpolateElement = functionInterpolation();
-            } else {                // should not happen
-                interpolateElement = unexpected();
-            }
-
-            if (result == empty) {
+            if (result == null) {
                 result = interpolateElement;
             } else {
                 Executor finalResult = result;
                 result = compiler.concatenate(finalResult, interpolateElement);
             }
 
-            nextToken(mode);
+            nextToken(Mode.INTERPOLATE, follow);
         }
 
-        return result;
+        return (result == null ? compiler.textConstant("") : result);
+    }
+
+
+    @Nonnull
+    private Executor interpolate(@Nonnull Token follow) {
+        Executor interpolateElement;
+
+        if (terminal.token() == Token.STRING) {
+            interpolateElement = string();
+        } else if (terminal.token() == Token.NUMBER) {
+            interpolateElement = number();
+        } else if (terminal.token() == Token.VALUE_INTERPOLATION) {
+            interpolateElement = value(follow);
+        } else if (terminal.token() == Token.EXPRESSION_INTERPOLATION) {
+            nextToken(Mode.EXPRESSION, follow);
+
+            interpolateElement = calculation(follow);
+            assertToken(Token.RIGHT_PARENTHESES);
+        } else if (terminal.token() == Token.FUNCTION_INTERPOLATION) {
+            interpolateElement = functionInterpolation(follow);
+        } else {                // Syntax error
+            interpolateElement = unexpected();
+        }
+
+        return interpolateElement;
     }
 
     @Nonnull
@@ -139,29 +139,34 @@ class Parser {
         return compiler.textConstant(terminal.lexeme());
     }
 
+    @Nonnull
+    private Executor number() {
+        return compiler.numericConstant(terminal.value());
+    }
+
 
     @Nonnull
-    private Executor value() {
+    private Executor value(@Nonnull Token follow) {
         Compiler.SymbolBuilder symbolBuilder;
         boolean takeLength;
 
-        nextToken(Mode.EXPRESSION);
+        nextToken(follow);
 
         takeLength = (terminal.token() == Token.HASH);
         if (takeLength) {
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
         }
 
         assertToken(Token.IDENTIFIER);
 
         symbolBuilder = compiler.readSymbol(terminal.lexeme());
-        nextToken(Mode.EXPRESSION);
+        nextToken(follow);
 
         if (terminal.token() == Token.COLON) {
-            symbolBuilder = valueSubstring(symbolBuilder);
+            symbolBuilder = valueSubstring(symbolBuilder, follow);
         }
 
-        symbolBuilder = valueCaseChange(symbolBuilder);
+        symbolBuilder = valueCaseChange(symbolBuilder, follow);
 
         if (takeLength) {
             symbolBuilder = symbolBuilder.withTransformation(Compiler.SymbolTransformation.LENGTH);
@@ -177,7 +182,8 @@ class Parser {
     }
 
     @Nonnull
-    private Compiler.SymbolBuilder valueCaseChange(@Nonnull Compiler.SymbolBuilder symbolBuilder) {
+    private Compiler.SymbolBuilder valueCaseChange(@Nonnull Compiler.SymbolBuilder symbolBuilder,
+                                                   @Nonnull Token follow) {
         boolean done;
 
         do {
@@ -188,7 +194,7 @@ class Parser {
             if (!done) {
                 symbolBuilder = symbolBuilder.withTransformation(caseOp);
 
-                nextToken(Mode.EXPRESSION);
+                nextToken(follow);
             }
         } while (!done);
 
@@ -196,55 +202,57 @@ class Parser {
     }
 
     @Nonnull
-    private Compiler.SymbolBuilder valueSubstring(@Nonnull Compiler.SymbolBuilder symbolBuilder) {
-        int count;
-        int start = readInteger();
+    private Compiler.SymbolBuilder valueSubstring(@Nonnull Compiler.SymbolBuilder symbolBuilder,
+                                                  @Nonnull Token follow) {
+        Executor count;
+        Executor start;
 
-        nextToken(Mode.EXPRESSION, Token.COLON);
-        count = readInteger();
+        nextToken(Mode.INTERPOLATE, Token.COLON);
 
-        if (((long) start + (long) count) > Integer.MAX_VALUE) {
-            throw new EelSyntaxException(terminal.position(), "count is out of range");
-        }
+        start = interpolate(Token.COLON);
+        nextToken(Token.COLON, follow);
+        nextToken(follow);
 
-        nextToken(Mode.EXPRESSION);
+        count = interpolate(Token.RIGHT_BRACE);
+        nextToken(follow);
 
-        return symbolBuilder.withTransformation(t -> StringUtils.mid(t, start, count));
+        return symbolBuilder.withTransformation((s, t) ->
+            StringUtils.mid(t, start.execute(s).asInteger(), count.execute(s).asInteger()));
     }
 
     @Nonnull
     private Executor valueDefault() {
-        nextToken(Mode.INTERPOLATE_BLOCK);
+        nextToken(Mode.INTERPOLATE, Token.RIGHT_BRACE);
 
-        return fullExpression(Mode.INTERPOLATE_BLOCK);
+        return fullExpression(Token.RIGHT_BRACE);
     }
 
 
     @Nonnull
-    private Executor functionInterpolation() {
-        nextToken(Mode.EXPRESSION, Token.IDENTIFIER);
+    private Executor functionInterpolation(@Nonnull Token follow) {
+        nextToken(Token.IDENTIFIER, follow);
 
         String name = terminal.lexeme();
 
-        nextToken(Mode.EXPRESSION, Token.LEFT_PARENTHESES);
+        nextToken(Token.LEFT_PARENTHESES, follow);
 
-        return functionCall(name);
+        return functionCall(name, Token.RIGHT_PARENTHESES);
     }
 
 
     @Nonnull
-    private Executor calculation() {
-        Executor result = expression();
+    private Executor calculation(@Nonnull Token follow) {
+        Executor result = expression(follow);
 
         if (terminal.token() == Token.QUESTION_MARK) {
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
 
-            Executor first = expression();
+            Executor first = expression(follow);
 
             assertToken(Token.COLON);
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
 
-            result = compiler.conditional(result, first, expression());
+            result = compiler.conditional(result, first, expression(follow));
         }
 
         return result;
@@ -252,13 +260,13 @@ class Parser {
 
 
     @Nonnull
-    private Executor expression() {
-        Executor result = simpleExpression();
+    private Executor expression(@Nonnull Token follow) {
+        Executor result = simpleExpression(follow);
         CompileBinaryOp relOp = REL_OP.get(terminal.token());
 
         while (relOp != null) {
-            nextToken(Mode.EXPRESSION);
-            result = relOp.apply(compiler, result, simpleExpression());
+            nextToken(follow);
+            result = relOp.apply(compiler, result, simpleExpression(follow));
             relOp = REL_OP.get(terminal.token());
         }
 
@@ -267,13 +275,13 @@ class Parser {
 
 
     @Nonnull
-    private Executor simpleExpression() {
-        Executor result = term();
+    private Executor simpleExpression(@Nonnull Token follow) {
+        Executor result = term(follow);
         CompileBinaryOp shiftOp = SHIFT_OP.get(terminal.token());
 
         while (shiftOp != null) {
-            nextToken(Mode.EXPRESSION);
-            result = shiftOp.apply(compiler, result, term());
+            nextToken(follow);
+            result = shiftOp.apply(compiler, result, term(follow));
             shiftOp = SHIFT_OP.get(terminal.token());
         }
 
@@ -282,13 +290,13 @@ class Parser {
 
 
     @Nonnull
-    private Executor term() {
-        Executor result = simpleTerm();
+    private Executor term(@Nonnull Token follow) {
+        Executor result = simpleTerm(follow);
         CompileBinaryOp addOp = ADD_OP.get(terminal.token());
 
         while (addOp != null) {
-            nextToken(Mode.EXPRESSION);
-            result = addOp.apply(compiler, result, simpleTerm());
+            nextToken(follow);
+            result = addOp.apply(compiler, result, simpleTerm(follow));
             addOp = ADD_OP.get(terminal.token());
         }
 
@@ -297,13 +305,13 @@ class Parser {
 
 
     @Nonnull
-    private Executor simpleTerm() {
-        Executor result = factor();
+    private Executor simpleTerm(@Nonnull Token follow) {
+        Executor result = factor(follow);
         CompileBinaryOp mulOp = MUL_OP.get(terminal.token());
 
         while (mulOp != null) {
-            nextToken(Mode.EXPRESSION);
-            result = mulOp.apply(compiler, result, factor());
+            nextToken(follow);
+            result = mulOp.apply(compiler, result, factor(follow));
             mulOp = MUL_OP.get(terminal.token());
         }
 
@@ -312,13 +320,13 @@ class Parser {
 
 
     @Nonnull
-    private Executor factor() {
-        Executor result = simpleFactor();
+    private Executor factor(@Nonnull Token follow) {
+        Executor result = simpleFactor(follow);
         CompileBinaryOp powOp = POW_OP.get(terminal.token());
 
         while (powOp != null) {
-            nextToken(Mode.EXPRESSION);
-            result = powOp.apply(compiler, result, simpleFactor());
+            nextToken(follow);
+            result = powOp.apply(compiler, result, simpleFactor(follow));
             powOp = POW_OP.get(terminal.token());
         }
 
@@ -326,50 +334,46 @@ class Parser {
     }
 
 
-    // Suspend Checkstyle rule MethodLength for 70 lines:
     @Nonnull
-    private Executor simpleFactor() {
+    private Executor simpleFactor(@Nonnull Token follow) {
         Executor result;
-        boolean negate = terminal.token() == Token.MINUS;
 
-        if (negate || (terminal.token() == Token.PLUS)) {
-            nextToken(Mode.EXPRESSION);
-        }
-
-        if (terminal.token() == Token.LOGICAL_NOT) {
-            nextToken(Mode.EXPRESSION);
-            result = compiler.logicalNot(simpleFactor());
-        } else if (terminal.token() == Token.TILDE) {                   // Bitwise not
-            nextToken(Mode.EXPRESSION);
-            result = compiler.bitwiseNot(simpleFactor());
+        if (terminal.token() == Token.MINUS) {
+            nextToken(follow);
+            result = compiler.negate(simpleFactor(follow));
+        } else if (terminal.token() == Token.PLUS) {
+            nextToken(follow);
+            result = simpleFactor(follow);
+        } else if (terminal.token() == Token.LOGICAL_NOT) {
+            nextToken(follow);
+            result = compiler.logicalNot(simpleFactor(follow));
+        } else if (terminal.token() == Token.TILDE) {                           // Bitwise not
+            nextToken(follow);
+            result = compiler.bitwiseNot(simpleFactor(follow));
         } else if (terminal.token() == Token.STRING) {
-            result = compiler.textConstant(terminal.lexeme());
-            nextToken(Mode.EXPRESSION);
+            result = string();
+            nextToken(follow);
         } else if (terminal.token() == Token.NUMBER) {
-            result = compiler.numericConstant(terminal.value());
-            nextToken(Mode.EXPRESSION);
+            result = number();
+            nextToken(follow);
         } else if (LOGIC_CONSTANTS.containsKey(terminal.token())) {
             result = compiler.logicConstant(LOGIC_CONSTANTS.get(terminal.token()));
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
         } else if (terminal.token() == Token.VALUE_INTERPOLATION) {
-            result = value();
-            nextToken(Mode.EXPRESSION);
+            result = value(follow);
+            nextToken(follow);
         } else if (terminal.token() == Token.IDENTIFIER) {
-            result = identifier();
+            result = identifier(follow);
         } else if (terminal.token() == Token.LEFT_PARENTHESES) {
-            nextToken(Mode.EXPRESSION);
-            result = calculation();
+            nextToken(follow);
+            result = calculation(follow);
             assertToken(Token.RIGHT_PARENTHESES);
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
         } else if (terminal.token() == Token.FUNCTION_INTERPOLATION) {
-            result = functionInterpolation();               // Can nest function interpolation, but it is pointless!
-            nextToken(Mode.EXPRESSION, Token.RIGHT_PARENTHESES);
+            result = functionInterpolation(follow);                             // legal and consistent, but pointless
+            nextToken(Token.RIGHT_PARENTHESES, follow);
         } else {
             result = unexpected();
-        }
-
-        if (negate) {
-            result = compiler.negate(result);
         }
 
         return result;
@@ -377,18 +381,18 @@ class Parser {
 
 
     @Nonnull
-    private Executor identifier() {
+    private Executor identifier(@Nonnull Token follow) {
         Executor result;
         String name = terminal.lexeme();
 
-        nextToken(Mode.EXPRESSION);
+        nextToken(follow);
 
         if (terminal.token() == Token.LEFT_PARENTHESES) {
-            result = functionCall(name);
+            result = functionCall(name, follow);
 
-            nextToken(Mode.EXPRESSION);
+            nextToken(follow);
         } else if (terminal.token() == Token.QUESTION_MARK) {
-            result = isDefined(name);
+            result = isDefined(name, follow);
         } else {
             result = unexpected();
         }
@@ -397,20 +401,20 @@ class Parser {
     }
 
     @Nonnull
-    private Executor isDefined(@Nonnull String identifier) {
-        nextToken(Mode.EXPRESSION);
+    private Executor isDefined(@Nonnull String identifier, @Nonnull Token follow) {
+        nextToken(follow);
 
         return compiler.isDefined(identifier);
     }
 
     @Nonnull
-    private Executor functionCall(@Nonnull String functionName) {
+    private Executor functionCall(@Nonnull String functionName, @Nonnull Token follow) {
         Executor result;
         List<Executor> argumentList;
 
-        nextToken(Mode.EXPRESSION);
+        nextToken(follow);
 
-        argumentList = argumentList();
+        argumentList = argumentList(follow);
 
         assertToken(Token.RIGHT_PARENTHESES);
 
@@ -422,16 +426,16 @@ class Parser {
 
 
     @Nonnull
-    private List<Executor> argumentList() {
+    private List<Executor> argumentList(@Nonnull Token follow) {
         List<Executor> arguments = new ArrayList<>();
-        boolean more = (terminal.token() != Token.RIGHT_PARENTHESES) && (terminal.token() != Token.END_OF_PROGRAM);
+        boolean more = (terminal.token() != Token.RIGHT_PARENTHESES);
 
         while (more) {
-            arguments.add(calculation());
+            arguments.add(calculation(Token.RIGHT_PARENTHESES));
             more = terminal.token() == Token.COMMA;
 
             if (more) {
-                nextToken(Mode.EXPRESSION);
+                nextToken(follow);
             }
         }
 
@@ -440,24 +444,32 @@ class Parser {
 
 
     /**
-     * Read the next token, ensuring it's a {@link Token#NUMBER} that holds an integer value
-     * @return the integer value of the token
+     * Read the next terminal from the source in to {@link #terminal}. Mode is {@link Mode#EXPRESSION}
+     * @param follow    Next token in subexpression
      */
-    private int readInteger() {
-        nextToken(Mode.EXPRESSION, Token.NUMBER);
-
-        BigDecimal value = terminal.value();
-
-        if (terminal.isFractional()) {
-            throw new EelSyntaxException(terminal.position(), "'%s' has unexpected fractional part", terminal.lexeme());
-        }
-
-        if (BigDecimals.gt(value, MAX_INTEGER)) {
-            throw new EelSyntaxException(terminal.position(), "'%s' is out of range", terminal.lexeme());
-        }
-
-        return value.intValue();
+    private void nextToken(@Nonnull Token follow) {
+        nextToken(Mode.EXPRESSION, follow);
     }
+
+    /**
+     * Read the next terminal from the source in to {@link #terminal}
+     * @param mode      Read mode
+     * @param follow    Next token in subexpression
+     */
+    private void nextToken(@Nonnull Mode mode, @Nonnull Token follow) {
+        terminal = tokenizer.next(mode, follow.lexeme().charAt(0));
+    }
+
+    /**
+     * Read the next terminal from the source in to {@link #terminal} and assert that it's the {@code expected} type.
+     * @param expected  The expected token
+     * @param follow    Next token in subexpression
+     */
+    private void nextToken(@Nonnull Token expected, @Nonnull Token follow) {
+        nextToken(follow);
+        assertToken(expected);
+    }
+
 
     /**
      * Ensure the current token is the one that is {@code expected}
@@ -467,24 +479,6 @@ class Parser {
         if (terminal.token() != expected) {
             unexpected();
         }
-    }
-
-    /**
-     * Read the next terminal from the source in to {@link #terminal}
-     * @param mode      Read mode
-     */
-    private void nextToken(@Nonnull Mode mode) {
-        terminal = tokenizer.next(mode);
-    }
-
-    /**
-     * Read the next terminal from the source in to {@link #terminal} and assert that it's the {@code expected} type.
-     * @param mode      Read mode
-     * @param expected  The expected token
-     */
-    private void nextToken(@Nonnull Mode mode, @Nonnull Token expected) {
-        nextToken(mode);
-        assertToken(expected);
     }
 
 

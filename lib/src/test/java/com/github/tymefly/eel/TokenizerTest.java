@@ -45,7 +45,7 @@ public class TokenizerTest {
     }
 
     /**
-     * Unit test {@link Tokenizer#next(Mode)} 
+     * Unit test {@link Tokenizer#next(Mode)}
      */
     @Test
     public void test_strings() {
@@ -131,40 +131,118 @@ public class TokenizerTest {
      * Unit test {@link Tokenizer#next(Mode)}
      */
     @Test
-    public void test_numbers() {
+    public void test_decimals() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer(".1 200 3.00 4.44 5e2 6E-3 7.3e10 8. 0xfe");
+        Tokenizer tokenizer = buildTokenizer(".1 200 3.00 4.44 5e2 6E-3 7.3e10 8.");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".1", new BigDecimal(".1"), true, 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "200", new BigDecimal("200"), false, 4);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "3.00", new BigDecimal("3.00"), true, 8);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "4.44", new BigDecimal("4.44"), true, 13);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "5e2", new BigDecimal("500"), false, 18);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "6E-3", new BigDecimal("0.006"), false, 22);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "7.3e10", new BigDecimal("73000000000"), true, 27);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "8.", new BigDecimal("8"), true, 34);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "0xfe", new BigDecimal("254"), false, 37);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 41);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal(".1"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("200"), 4);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("3.00"), 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("4.44"), 13);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("500"), 18);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("0.006"), 22);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("73000000000"), 27);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("8"), 34);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 36);
     }
 
     /**
      * Unit test {@link Tokenizer#next(Mode)}
      */
     @Test
-    public void test_numbers_withUnderscores() {
+    public void test_decimals_withUnderscores() {
         int index = 0;
-        Tokenizer tokenizer = buildTokenizer(".1_00  2_000  0_3.00  4.4_4  5_0e2_0  6_0E-3_0  7_00.3e1_000  0xff_fe");
+        Tokenizer tokenizer = buildTokenizer(".1_00  2_000  0_3.00  4.4_4  5_0e2_0  6_0E-3_0  7_00.3e1_000");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".100", new BigDecimal(".1"), true, 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "2000", new BigDecimal("2000"), false, 8);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "03.00", new BigDecimal("3.00"), true, 15);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "4.44", new BigDecimal("4.44"), true, 23);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "50e20", new BigDecimal("5.0E+21"), false, 30);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "60E-30", new BigDecimal("6.0E-29"), false, 39);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "700.3e1000", new BigDecimal("7.003E+1002"), true, 49);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "0xfffe", new BigDecimal("65534"), false, 63);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 70);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal(".1"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("2000"), 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("3.00"), 15);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("4.44"), 23);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("5.0E+21"), 30);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("6.0E-29"), 39);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("7.003E+1002"), 49);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 61);
     }
+
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_binary() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0b0101 0B1010");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("5"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("10"), 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 14);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_binary_withUnderscores() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0b01_01 0B10_10");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("5"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("10"), 9);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 16);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_octal() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0c773 0C532");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("507"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("346"), 7);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 12);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_octal_withUnderscores() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0c77_3 0C5_32");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("507"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("346"), 8);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 14);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_hex() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0xfe 0Xa5");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("254"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("165"), 6);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 10);
+    }
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_hex_withUnderscores() {
+        int index = 0;
+        Tokenizer tokenizer = buildTokenizer("0xff_fe 0Xa5_5a");
+
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("65534"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("42330"), 9);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 16);
+    }
+
 
     /**
      * Unit test {@link Tokenizer#next(Mode)}
@@ -235,11 +313,35 @@ public class TokenizerTest {
      * Unit test {@link Tokenizer#next(Mode)}
      */
     @Test
-    public void test_number_missingHex() {
+    public void test_missingBinaryDigits() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("0b").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
+    }
+
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_missingOctalDigits() {
+        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("0C").next(Mode.EXPRESSION));
+
+        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
+    }
+
+
+    /**
+     * Unit test {@link Tokenizer#next(Mode)}
+     */
+    @Test
+    public void test_missingHexDigits() {
         EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("0x").next(Mode.EXPRESSION));
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: Expected hex digit", actual.getMessage());
+        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
     }
 
 
@@ -251,8 +353,8 @@ public class TokenizerTest {
         int index = 0;
         Tokenizer tokenizer = buildTokenizer("1.2e-3.4");
 
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "1.2e-3", new BigDecimal("0.0012"), true, 1);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, ".4", new BigDecimal("0.4"), true, 7);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("0.0012"), 1);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("0.4"), 7);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 9);
     }
 
@@ -467,7 +569,7 @@ public class TokenizerTest {
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.MINUS, "-", 8);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.STRING, "World!", 9);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.PLUS, "+", 17);
-        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "9e-2", new BigDecimal("0.09"), false, 19);
+        assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.NUMBER, "", new BigDecimal("0.09"), 19);
         assertToken(++index, tokenizer.next(Mode.EXPRESSION), Token.END_OF_PROGRAM, "", 23);
     }
 
@@ -477,7 +579,7 @@ public class TokenizerTest {
             @Nonnull Token expectedToken,
             @Nonnull String expectedLexeme,
             int expectedPosition) {
-        assertToken(index, actual, expectedToken, expectedLexeme, null, false, expectedPosition);
+        assertToken(index, actual, expectedToken, expectedLexeme, null, expectedPosition);
     }
 
 
@@ -486,7 +588,7 @@ public class TokenizerTest {
                              @Nonnull Token expectedToken,
                              @Nonnull String expectedLiteral,
                              @Nullable BigDecimal expectedValue,
-                             boolean expectedFractional, int expectedPosition) {
+                             int expectedPosition) {
         Assert.assertEquals("Token " + index + ". Unexpected token", expectedToken, actual.token());
         Assert.assertEquals("Token " + index + ". Unexpected lexeme", expectedLiteral, actual.lexeme());
 
@@ -496,7 +598,6 @@ public class TokenizerTest {
                 expectedValue.compareTo(actual.value()) == 0);
         }
 
-        Assert.assertEquals("Token " + index + ". Unexpected fractional", expectedFractional, actual.isFractional());
         Assert.assertEquals("Token " + index + ". unexpected position", expectedPosition, actual.position());
     }
 

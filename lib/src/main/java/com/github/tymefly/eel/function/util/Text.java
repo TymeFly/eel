@@ -170,6 +170,7 @@ public class Text {
      * @see #beforeLast(String, String)
      * @see #afterLast(String, String)
      * @see #contains(String, String)
+     * @since 2.0.0
      */
     @EelFunction(name = "afterFirst")
     @Nonnull
@@ -218,6 +219,7 @@ public class Text {
      * @see #afterFirst(String, String)
      * @see #beforeLast(String, String)
      * @see #contains(String, String)
+     * @since 2.0.0
      */
     @EelFunction(name = "afterLast")
     @Nonnull

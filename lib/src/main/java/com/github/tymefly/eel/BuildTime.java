@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,6 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.exception.EelRuntimeException;
-import com.github.tymefly.eel.utils.Convert;
 
 /**
  * Manages build time information.
@@ -40,7 +40,7 @@ class BuildTime implements Metadata {
                     properties.load(stream);
 
                     version = read("version", properties, "build.version", VERSION_PATTERN);
-                    buildDate = read("date", properties, "build.date", DATE_PATTERN, ZonedDateTime.class);
+                    buildDate = read("date", properties, "build.date", DATE_PATTERN, Convert::toDate);
                 } catch (EelRuntimeException e) {
                     throw e;
                 } catch (RuntimeException | IOException e) {
@@ -56,9 +56,9 @@ class BuildTime implements Metadata {
                            @Nonnull Properties properties,
                            @Nonnull String key,
                            @Nonnull Pattern pattern,
-                           @Nonnull Class<T> type) {
+                           @Nonnull Function<String, T> convert) {
             String raw = read(message, properties, key, pattern);
-            T value = Convert.to(raw, type);
+            T value = convert.apply(raw);
 
             return value;
         }

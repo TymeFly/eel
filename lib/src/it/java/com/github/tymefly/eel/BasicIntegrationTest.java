@@ -72,12 +72,21 @@ public class BasicIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
-    public void test_SingleValue() {
+    public void test_NumericValues() {
         BigDecimal actual = Eel.compile(context, "$(123)")
             .evaluate()
             .asNumber();
 
-        Assert.assertEquals("Unexpected Number", BigDecimal.valueOf(123), actual);
+        Assert.assertEquals("+ve Decimal Integer", BigDecimal.valueOf(1234), Eel.compile("$(1234)").evaluate().asNumber());
+        Assert.assertEquals("-ve Decimal Integer", BigDecimal.valueOf(-123), Eel.compile("$(-123)").evaluate().asNumber());
+        Assert.assertEquals("+ve Fractional Decimal", BigDecimal.valueOf(123.456), Eel.compile("$(123.456)").evaluate().asNumber());
+        Assert.assertEquals("-ve Fractional Decimal", BigDecimal.valueOf(-123.456), Eel.compile("$(-123.456)").evaluate().asNumber());
+        Assert.assertEquals("Large Scientific Format", new BigDecimal("2.99792e8"), Eel.compile("$(2.99792e8)").evaluate().asNumber());
+        Assert.assertEquals("Small Scientific Format", new BigDecimal("9.109383e-31"), Eel.compile("$(9.109383e-31)").evaluate().asNumber());
+
+        Assert.assertEquals("Binary integers", BigDecimal.TEN, Eel.compile("$(0b1010)").evaluate().asNumber());
+        Assert.assertEquals("Octal integers", BigDecimal.valueOf(342391), Eel.compile("$(0c1234567)").evaluate().asNumber());
+        Assert.assertEquals("Hex integers", BigDecimal.valueOf(35243), Eel.compile("$(0x89ab)").evaluate().asNumber());
     }
 
     /**

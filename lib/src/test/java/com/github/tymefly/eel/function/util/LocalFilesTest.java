@@ -56,7 +56,7 @@ public class LocalFilesTest {
 
     @Before
     public void setUp() throws Exception {
-        attributes = mock(BasicFileAttributes.class);
+        attributes = mock();
 
         when(attributes.creationTime())
             .thenReturn(FileTime.from(946684800, TimeUnit.SECONDS));
@@ -95,7 +95,7 @@ public class LocalFilesTest {
     @Nonnull
     private Path mockFile(@Nonnull MockedStatic<Files> files, @Nonnull String fileName, @Nonnull FileTime time) {
         Path path = Paths.get(tempFolderPath + fileName);
-        BasicFileAttributes attributes = mock(BasicFileAttributes.class);
+        BasicFileAttributes attributes = mock();
 
         when(attributes.creationTime())
             .thenReturn(time);

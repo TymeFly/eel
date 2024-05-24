@@ -15,9 +15,7 @@ import static java.lang.Math.max;
 /**
  * Class to manage the expression source with a single character lookahead.
  */
-class Source {
-    static final char END = (char) -1;
-
+class Source implements Input {
     private final int maxLength;
     private final InputStreamReader data;
 
@@ -65,12 +63,8 @@ class Source {
     }
 
 
-    /**
-     * Reads the next character from the input
-     * @return the current character from the input
-     * @see #current()
-     */
-    char read() {
+    @Override
+    public char read() {
         if (current != END) {
             position++;
             current = this.next;
@@ -90,25 +84,19 @@ class Source {
         return current;
     }
 
-    /**
-     * Returns the current character from the input. This was previously the {@link #next} character
-     * @return the current character from the input
-     */
-    char current() {
+    @Override
+    public char current() {
         return current;
     }
 
-    /**
-     * Returns the lookahead character. The current character is not consumed.
-     * @return the lookahead character
-     */
-    char next() {
+    @Override
+    public char next() {
         return next;
     }
 
     /**
-     * Returns the position in the input of the current character
-     * @return the position in the input of the current character
+     * Returns the 1-based position in the input of the current character.
+     * @return the 1-based position in the input of the current character
      */
     int position() {
         return position;

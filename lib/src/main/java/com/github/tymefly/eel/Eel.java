@@ -29,10 +29,11 @@ public class Eel {
         @Override
         @Nonnull
         public EelBuilder withContext(@Nonnull EelContext context) {
+            // Guaranteed to work: EelContext is a sealed interface with EelContextImpl as the sole implementation
             if (context instanceof EelContextImpl contextImpl) {
                 this.context = contextImpl;
             } else {
-                throw new IllegalStateException("Invalid EelContext");
+                throw new IllegalStateException("Invalid EelContext " + context.getClass().getName());
             }
 
             return this;
@@ -168,7 +169,7 @@ public class Eel {
     }
 
     /**
-     * Public entry point for Expression with a shared custom context
+     * Public entry point for Expression with a custom context
      * @param expression    The expression to be evaluated
      * @param context       A custom context
      * @return              A generated expression
@@ -186,7 +187,17 @@ public class Eel {
 
 
     /**
-     * Evaluate this expression without referencing the supplied {@code symbolsTable} for variables
+     * Evaluate this expression without reference to a SymbolsTable
+     * @return the result of evaluating this expression
+     */
+    @Nonnull
+    public Result evaluate() {
+        return expression.execute(SymbolsTable.EMPTY);
+    }
+
+
+    /**
+     * Evaluate this expression using the supplied {@code symbolsTable}
      * @param symbolsTable  an object that can provide the expression with values
      * @return the result of evaluating this expression
      * @see SymbolsTable#factory()
@@ -198,32 +209,68 @@ public class Eel {
         return expression.execute(symbolsTable);
     }
 
+
     /**
-     * Evaluate this expression using the supplied {@code values} for the  {@code symbolsTable}
+     * Evaluate this expression using the supplied {@code values} as an anonymous {@link SymbolsTable}
      * @param values    A collection of key-value pairs that will be used as the symbols table
      * @return the result of evaluating this expression
-     * @see SymbolsTable#from(Map) 
+     * @see SymbolsTable#from(Map)
+     * @see #evaluate(String, Map) 
      */
     @Nonnull
     public Result evaluate(@Nonnull Map<String, String> values) {
         return expression.execute(SymbolsTable.from(values));
     }
 
+
     /**
-     * Evaluate this expression using the supplied {@code lookup} function for the {@code symbolsTable}
+     * Evaluate this expression using the supplied {@code values} as a scoped {@link SymbolsTable} with the
+     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
+     * @param scopeName Name of the scope for the map
+     * @param values    A collection of key-value pairs that will be used as the symbols table
+     * @return the result of evaluating this expression
+     * @see SymbolsTable#from(Map)
+     * @see #evaluate(Map)
+     */
+    @Nonnull
+    public Result evaluate(@Nonnull String scopeName, @Nonnull Map<String, String> values) {
+        return expression.execute(SymbolsTable.from(scopeName, values));
+    }
+
+
+    /**
+     * Evaluate this expression using the supplied {@code lookup} function as an anonymous {@link SymbolsTable}
      * @param lookup    A lookup function that will be used as when accessing the symbols table
      * @return the result of evaluating this expression
      * @see SymbolsTable#from(Function) 
+     * @see #evaluate(String, Function)
      */
     @Nonnull
     public Result evaluate(@Nonnull Function<String, String> lookup) {
         return expression.execute(SymbolsTable.from(lookup));
     }
 
+
     /**
-     * Evaluate this expression using the system properties for the {@code symbolsTable}
+     * Evaluate this expression using the supplied {@code lookup} function as a scoped {@link SymbolsTable} with the
+     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
+     * @param scopeName Name of the scope for lookup function
+     * @param lookup    A lookup function that will be used as when accessing the symbols table
+     * @return the result of evaluating this expression
+     * @see SymbolsTable#from(Function)
+     * @see #evaluate(Function)
+     */
+    @Nonnull
+    public Result evaluate(@Nonnull String scopeName, @Nonnull Function<String, String> lookup) {
+        return expression.execute(SymbolsTable.from(scopeName, lookup));
+    }
+
+    
+    /**
+     * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
      * @return the result of evaluating this expression
      * @see SymbolsTable#fromEnvironment() 
+     * @see #evaluateEnvironment(String) 
      */
     @Nonnull
     public Result evaluateEnvironment() {
@@ -231,17 +278,47 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the system properties for the {@code symbolsTable}
+     * Evaluate this expression using the system properties as a scoped {@link SymbolsTable} with the
+     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
+     * @param scopeName Name of the scope for the environment variables
+     * @return the result of evaluating this expression
+     * @see SymbolsTable#fromEnvironment()
+     * @see #evaluateEnvironment()
+     */
+    @Nonnull
+    public Result evaluateEnvironment(@Nonnull String scopeName) {
+        return expression.execute(SymbolsTable.fromEnvironment(scopeName));
+    }
+
+
+    /**
+     * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
      * @return the result of evaluating this expression
      * @see SymbolsTable#fromProperties() 
+     * @see #evaluateProperties(String)
      */
     @Nonnull
     public Result evaluateProperties() {
         return expression.execute(SymbolsTable.fromProperties());
     }
+    
+    /**
+     * Evaluate this expression using the system properties as a scoped {@link SymbolsTable} with the
+     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
+     * @param scopeName Name of the scope for the properties
+     * @return the result of evaluating this expression
+     * @see SymbolsTable#fromProperties()
+     * @see #evaluateProperties(String)
+     */
+    @Nonnull
+    public Result evaluateProperties(@Nonnull String scopeName) {
+        return expression.execute(SymbolsTable.fromProperties(scopeName));
+    }
+
 
     /**
      * Evaluate this expression using the supplied {@code defaultValue} for all values in the {@code symbolsTable}
+     * without a scope name
      * @param defaultValue  A string that will be used for all values ae could be in the symbols table
      * @return the result of evaluating this expression
      * @see SymbolsTable#from(String) 
@@ -249,14 +326,5 @@ public class Eel {
     @Nonnull
     public Result evaluate(@Nonnull String defaultValue) {
         return expression.execute(SymbolsTable.from(defaultValue));
-    }
-
-    /**
-     * Evaluate this expression without reference to a SymbolsTable
-     * @return the result of evaluating this expression
-     */
-    @Nonnull
-    public Result evaluate() {
-        return expression.execute(SymbolsTable.EMPTY);
     }
 }

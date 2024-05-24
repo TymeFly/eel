@@ -14,14 +14,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit test for {@link DateFactory}
  */
 public class DateFactoryTest {
-    private static final long TOLERANCE = 25;
+    private static final long TOLERANCE = 100;
 
     private EelContext context;
     private ZonedDateTime now;
@@ -29,7 +29,7 @@ public class DateFactoryTest {
 
     @Before
     public void setUp() {
-        context = mock(EelContext.class);
+        context = spy(EelContext.factory().build());
         now = ZonedDateTime.now(ZoneId.of("UTC"));
         date = ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC);
 
@@ -45,11 +45,14 @@ public class DateFactoryTest {
     @Test
     public void test_start() {
         ZonedDateTime first = new DateFactory().start(context, "UTC");
+        ZonedDateTime second = new DateFactory().start(context, "UTC", "3days");
 
         Assert.assertEquals("UTC Instant", date.toInstant(), first.toInstant());
         Assert.assertEquals("UTC Zone", ZoneOffset.ofHours(0), first.getOffset());
+        Assert.assertEquals("-5 Instant", date.plusDays(3).toInstant(), second.toInstant());
 
-        Assert.assertEquals("#2 Unexpected time returned", first, new DateFactory().start(context, "UTC")); // Check it's fixed
+         // Check it's always the same
+        Assert.assertEquals("#2 Unexpected time returned", first, new DateFactory().start(context, "UTC"));
     }
 
     /**

@@ -1,65 +1,89 @@
 package com.github.tymefly.eel;
 
+import javax.annotation.Nonnull;
+
+import com.github.tymefly.eel.validate.Preconditions;
+
 /**
  * All the token that can exist within an expression
  */
 public enum Token {
-    UNDEFINED,
-
     NUMBER,                                         // Literals
     STRING,
     IDENTIFIER,
 
-    VALUE_INTERPOLATION,                            // Interpolated tokens
-    EXPRESSION_INTERPOLATION,
-    FUNCTION_INTERPOLATION,
+    VALUE_INTERPOLATION("${"),                      // Interpolated tokens
+    EXPRESSION_INTERPOLATION("$("),
+    FUNCTION_INTERPOLATION("$"),
 
-    TRUE,                                           // Predefined constants
-    FALSE,
+    TRUE("true"),                                   // Predefined constants
+    FALSE("false"),
 
-    CONCATENATE,                                    // Text Ops
+    CONCATENATE("~>"),                              // Text Ops
 
-    LOGICAL_AND,                                    // Logic Ops
-    LOGICAL_OR,
-    LOGICAL_NOT,
+    LOGICAL_AND("and"),                             // Logic Ops
+    LOGICAL_OR("or"),
+    LOGICAL_NOT("not"),
 
-    PLUS,                                           // Numeric Ops
-    MINUS,
-    MULTIPLY,
-    DIVIDE,
-    DIVIDE_FLOOR,
-    DIVIDE_TRUNCATE,
-    MODULUS,
-    EXPONENTIATION,
+    PLUS("+"),                                      // Numeric Ops
+    MINUS("-"),
+    MULTIPLY("*"),
+    DIVIDE("/"),
+    DIVIDE_FLOOR("//"),
+    DIVIDE_TRUNCATE("-/"),
+    MODULUS("%"),
+    EXPONENTIATION("**"),
 
-    EQUAL,                                          // Relations
-    NOT_EQUAL,
-    GREATER_THAN,
-    LESS_THAN,
-    GREATER_THAN_EQUAL,
-    LESS_THAN_EQUAL,
-    IS_BEFORE,
-    IS_AFTER,
+    EQUAL("="),                                     // Relations
+    NOT_EQUAL("<>"),
+    GREATER_THAN(">"),
+    LESS_THAN("<"),
+    GREATER_THAN_EQUAL(">="),
+    LESS_THAN_EQUAL("<="),
+    IS_BEFORE("isBefore"),
+    IS_AFTER("isAfter"),
 
-    BITWISE_AND,                                    // BitWise Ops
-    BITWISE_OR,
-    LEFT_SHIFT,
-    RIGHT_SHIFT,
+    BITWISE_AND("&"),                               // BitWise Ops
+    BITWISE_OR("|"),
+    LEFT_SHIFT("<<"),
+    RIGHT_SHIFT(">>"),
 
-    LEFT_PARENTHESES,                               // Brackets
-    RIGHT_PARENTHESES,
-    LEFT_BRACE,
-    RIGHT_BRACE,
+    LEFT_PARENTHESES("("),                          // Brackets
+    RIGHT_PARENTHESES(")"),
+    LEFT_BRACE("{"),
+    RIGHT_BRACE("}"),
 
-    COMMA,                                          // Misc
-    QUESTION_MARK,
-    COLON,
-    HASH,
-    TILDE,
-    CARET,
-    ALL_TOGGLE,
-    ALL_UPPER,
-    ALL_LOWER,
+    COMMA(","),                                     // Misc
+    QUESTION_MARK("?"),
+    COLON(":"),
+    HASH("#"),
+    TILDE("~"),
+    ALL_TOGGLE("~~"),
+    CARET("^"),
+    ALL_UPPER("^^"),
+    ALL_LOWER(",,"),
 
-    END_OF_PROGRAM
+    UNDEFINED,                                      // Special cases
+    END_OF_PROGRAM(Input.END);
+
+
+    private final String lexeme;
+
+    Token() {
+        lexeme = null;
+    }
+
+    Token(char lexeme) {
+        this(Character.toString(lexeme));
+    }
+
+    Token(@Nonnull String lexeme) {
+        this.lexeme = lexeme;
+    }
+
+
+    @Nonnull
+    String lexeme() {
+        return Preconditions.checkNotNull(lexeme, "Internal error: %s has undefined lexeme", this);
+    }
 }

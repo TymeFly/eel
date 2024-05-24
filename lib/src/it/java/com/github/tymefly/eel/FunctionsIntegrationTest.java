@@ -107,6 +107,10 @@ public class FunctionsIntegrationTest {
         Assert.assertEquals("Abs", new BigDecimal("2.1"), Eel.compile(context, "$abs(-2.1)").evaluate().asNumber());
         Assert.assertEquals("Sgn", new BigDecimal("-1"), Eel.compile(context, "$sgn(-2.1)").evaluate().asNumber());
 
+        // Conversion functions
+        Assert.assertEquals("toDegrees", 180, Eel.compile(context, "$toDegrees(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA);
+        Assert.assertEquals("toRadians", 3.14159265, Eel.compile(context, "$toRadians(180)").evaluate().asNumber().doubleValue(), TEST_DELTA);
+
         // Logarithms and exponential functions
         Assert.assertEquals("Log", 2.0, Eel.compile(context, "$log(100)").evaluate().asNumber().doubleValue(), TEST_DELTA);
         Assert.assertEquals("Ln", 4.605170185988091, Eel.compile(context, "$ln(100)").evaluate().asNumber().doubleValue(), TEST_DELTA);
@@ -204,6 +208,11 @@ public class FunctionsIntegrationTest {
             "7/12/2007 10:08",
             date);
 
+        String start = Eel.compile(context, "$format.start( 'd/M/yyyy HH:mm', 'UTC', '+1h' )")
+            .evaluate()
+            .asText();
+        Assert.assertTrue("format.start: " + start, start.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"));
+
         String utc = Eel.compile(context, "$format.utc( 'd/M/yyyy HH:mm', '+2w' )")
             .evaluate()
             .asText();
@@ -225,15 +234,20 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_format_number() {
-        String hex = Eel.compile(context, "$format.hex( 1196676933 )")
+        String binary = Eel.compile(context, "$format.binary( 0xa55a )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.hex", "4753d745", hex);
+        Assert.assertEquals("format.octal", "1010010101011010", binary);
 
         String octal = Eel.compile(context, "$format.octal( 1196676933 )")
             .evaluate()
             .asText();
         Assert.assertEquals("format.octal", "10724753505", octal);
+
+        String hex = Eel.compile(context, "$format.hex( 1196676933 )")
+            .evaluate()
+            .asText();
+        Assert.assertEquals("format.hex", "4753d745", hex);
 
         String radixThree = Eel.compile(context, "$format.number( 1196676933, 3 )")
             .evaluate()

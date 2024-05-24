@@ -29,7 +29,7 @@ public class EelRuntimeTest {
 
     @Before
     public void setUp() {
-        context = mock(EelContextImpl.class);
+        context = mock();
 
         when(context.getTimeout())
             .thenReturn(Duration.of(2, ChronoUnit.SECONDS));
@@ -47,7 +47,7 @@ public class EelRuntimeTest {
 
         Executor backing = s -> Value.of(1);
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         Value actual = wrapped.execute(table);
 
@@ -67,7 +67,7 @@ public class EelRuntimeTest {
         EelException cause = new EelRuntimeException("expected");
         Executor backing = s -> { throw cause; };
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
 
@@ -87,7 +87,7 @@ public class EelRuntimeTest {
         RuntimeException cause = new ArithmeticException("expected");
         Executor backing = s -> { throw cause; };
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
 
@@ -105,7 +105,7 @@ public class EelRuntimeTest {
     public void test_withTimeout_happyPath() {
         Executor backing = s -> Value.of(1);
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         Value actual = wrapped.execute(table);
 
@@ -128,7 +128,7 @@ public class EelRuntimeTest {
             return Value.of("");
         };
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         EelRuntimeException actual = Assert.assertThrows(EelTimeoutException.class, () -> wrapped.execute(table));
 
@@ -145,7 +145,7 @@ public class EelRuntimeTest {
         EelException cause = new EelRuntimeException("expected");
         Executor backing = s -> { throw cause; };
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
 
@@ -162,7 +162,7 @@ public class EelRuntimeTest {
         RuntimeException cause = new ArithmeticException("expected");
         Executor backing = s -> { throw cause; };
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
 
@@ -189,7 +189,7 @@ public class EelRuntimeTest {
         };
 
         Executor wrapped = new EelRuntime(context).apply(backing);
-        SymbolsTable table = mock(SymbolsTable.class);
+        SymbolsTable table = mock();
 
         Runnable runner = () -> {
             try {

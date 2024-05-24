@@ -20,7 +20,7 @@ public class SourceTest {
     public void test_empty() {
         Source source = buildSource("");
 
-        assertSource(1, source, 0, Source.END, Source.END);
+        assertSource(1, source, 0, Input.END, Input.END);
     }
 
     /**
@@ -31,10 +31,10 @@ public class SourceTest {
         int index = 0;
         Source source = buildSource("x");
 
-        assertSource(++index, source, 1, 'x', Source.END);
+        assertSource(++index, source, 1, 'x', Input.END);
 
         source.read();
-        assertSource(++index, source, 2, Source.END, Source.END);
+        assertSource(++index, source, 2, Input.END, Input.END);
     }
 
     /**
@@ -48,10 +48,10 @@ public class SourceTest {
         assertSource(++index, source, 1, 'x', 'y');
 
         source.read();
-        assertSource(++index, source, 2, 'y', Source.END);
+        assertSource(++index, source, 2, 'y', Input.END);
 
         source.read();
-        assertSource(++index, source, 3, Source.END, Source.END);
+        assertSource(++index, source, 3, Input.END, Input.END);
     }
 
     /**
@@ -68,10 +68,10 @@ public class SourceTest {
         assertSource(++index, source, 2, 'y', 'z');
 
         source.read();
-        assertSource(++index, source, 3, 'z', Source.END);
+        assertSource(++index, source, 3, 'z', Input.END);
 
         source.read();
-        assertSource(++index, source, 4, Source.END, Source.END);
+        assertSource(++index, source, 4, Input.END, Input.END);
     }
 
     /**
@@ -82,16 +82,16 @@ public class SourceTest {
         int index = 0;
         Source source = buildSource("?");
 
-        assertSource(++index, source, 1, '?', Source.END);
+        assertSource(++index, source, 1, '?', Input.END);
 
         source.read();
-        assertSource(++index, source, 2, Source.END, Source.END);
+        assertSource(++index, source, 2, Input.END, Input.END);
 
         source.read();
-        assertSource(++index, source, 2, Source.END, Source.END);
+        assertSource(++index, source, 2, Input.END, Input.END);
 
         source.read();
-        assertSource(++index, source, 2, Source.END, Source.END);
+        assertSource(++index, source, 2, Input.END, Input.END);
     }
 
     /**

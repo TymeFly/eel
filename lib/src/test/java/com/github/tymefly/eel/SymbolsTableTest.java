@@ -112,11 +112,29 @@ public class SymbolsTableTest {
     @Test
     public void test_fromEnvironment() {
         Map.Entry<String, String> variable = System.getenv().entrySet().iterator().next();
+        String key = variable.getKey();
+        String value = variable.getValue();
 
         SymbolsTable table = SymbolsTable.fromEnvironment();
 
-        Assert.assertEquals("Failed to read env", variable.getValue(), table.read(variable.getKey()));
+        Assert.assertEquals("Failed to read env", value, table.read(key));
     }
+
+    /**
+     * Unit test {@link SymbolsTable#fromEnvironment(String)}
+     */
+    @Test
+    public void test_fromEnvironment_scoped() {
+        Map.Entry<String, String> variable = System.getenv().entrySet().iterator().next();
+        String key = variable.getKey();
+        String value = variable.getValue();
+
+        SymbolsTable table = SymbolsTable.fromEnvironment("env");
+
+        Assert.assertEquals("Failed to read env", value, table.read("env." + key));
+        Assert.assertNotEquals("read without scope", table.read(key));
+    }
+
 
     /**
      * Unit test {@link SymbolsTable#fromProperties()}
@@ -131,6 +149,20 @@ public class SymbolsTableTest {
     }
 
     /**
+     * Unit test {@link SymbolsTable#fromProperties()}
+     */
+    @Test
+    public void test_fromProperties_scoped() {
+        SymbolsTable table = SymbolsTable.fromProperties("prop");
+
+        Assert.assertEquals("Failed to read property",
+            System.getProperty("file.separator"),
+            table.read("prop.file.separator"));
+        Assert.assertNotEquals("read without scope", table.read("file.separator"));
+    }
+
+
+    /**
      * Unit test {@link SymbolsTable#from(Map)}
      */
     @Test
@@ -143,6 +175,20 @@ public class SymbolsTableTest {
     }
 
     /**
+     * Unit test {@link SymbolsTable#from(Map)}
+     */
+    @Test
+    public void test_fromMap_scoped() {
+        Map<String, String> map = Map.of("Key", "value", "Key2", "Value2");
+
+        SymbolsTable table = SymbolsTable.from("map", map);
+
+        Assert.assertEquals("Failed to read map", "value", table.read("map.Key"));
+        Assert.assertNotEquals("read without scope", table.read("Key"));
+    }
+
+
+    /**
      * Unit test {@link SymbolsTable#from(Function)}
      */
     @Test
@@ -150,6 +196,17 @@ public class SymbolsTableTest {
         SymbolsTable table = SymbolsTable.from(k -> new StringBuilder(k).reverse().toString());
 
         Assert.assertEquals("Failed to read via callback", "yeK", table.read("Key"));
+    }
+
+    /**
+     * Unit test {@link SymbolsTable#from(Function)}
+     */
+    @Test
+    public void test_fromLookup_scoped() {
+        SymbolsTable table = SymbolsTable.from("func", k -> new StringBuilder(k).reverse().toString());
+
+        Assert.assertEquals("Failed to read via callback", "yeK", table.read("func.Key"));
+        Assert.assertNotEquals("read without scope", table.read("Key"));
     }
 
     /**

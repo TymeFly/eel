@@ -6,6 +6,6 @@ package com.github.tymefly.eel;
  * a date.
  * The client is free to use the most appropriate type and the Result will attempt to convert it as required.
  */
-public non-sealed interface Result extends ValueAccessor {
+public non-sealed interface Result extends ValueConvertor {
 
 }

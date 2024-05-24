@@ -20,6 +20,7 @@ public class EelMetadata {
      * The EEL syntax for this function is <code>eel.version()</code>
      * @param context   The Eel Context
      * @return the Eel version
+     * @since 2.0.0
      */
     @Nonnull
     @EelFunction(name = "eel.version")
@@ -34,6 +35,7 @@ public class EelMetadata {
      * The EEL syntax for this function is <code>eel.buildDate()</code>
      * @param context   The Eel Context
      * @return the Eel build date
+     * @since 2.0.0
      */
     @Nonnull
     @EelFunction(name = "eel.buildDate")

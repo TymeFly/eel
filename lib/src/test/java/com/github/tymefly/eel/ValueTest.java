@@ -205,6 +205,21 @@ public class ValueTest {
     }
 
     /**
+     * Unit test {@link Value#asChar()}
+     */
+    @Test
+    public void test_AsChar() {
+        Assert.assertEquals("From String of 1 character", 'X', Value.of("X").asChar());
+        Assert.assertEquals("From String with multiple characters", 'a', Value.of("abc").asChar());
+        Assert.assertEquals("From Number", '1', Value.of(12.34).asChar());
+        Assert.assertEquals("From Logic", 't', Value.of(true).asChar());
+        Assert.assertEquals("From Date", '1', Value.of(EelContext.FALSE_DATE).asChar());
+
+        Assert.assertThrows("Empty String", EelConvertException.class, () -> Value.of("").asChar());
+    }
+
+
+    /**
      * Unit test {@link Value#equals(Object)}
      */
     @Test

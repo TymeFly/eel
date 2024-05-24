@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
-import com.github.tymefly.eel.utils.BigDecimals;
 
 /**
  * An EEL function that returns the sign of a numeric {@code value}
@@ -25,16 +24,6 @@ public class Sgn {
      */
     @EelFunction(name = "sgn")
     public int sgn(@Nonnull BigDecimal value) {
-        int result;
-
-        if (BigDecimals.eq(value, BigDecimal.ZERO)) {
-            result = 0;
-        } else if (BigDecimals.lt(value, BigDecimal.ZERO)) {
-            result = -1;
-        } else {
-            result = 1;
-        }
-
-        return result;
+        return value.signum();
     }
 }

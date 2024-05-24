@@ -1,7 +1,5 @@
 package com.github.tymefly.eel;
 
-import java.util.function.Function;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -13,9 +11,17 @@ import javax.annotation.Nonnull;
 interface Compiler {
     /** Transformations on values read from the symbols table */
     @FunctionalInterface
-    @SuppressWarnings("checkstyle:interfaceistype")             // methods are inherited from Function
-    interface SymbolTransformation extends Function<String, String> {
-        SymbolTransformation LENGTH = t -> String.valueOf(t.length());
+    interface SymbolTransformation {
+        SymbolTransformation IDENTITY = (s, t) -> t;
+        SymbolTransformation LENGTH = (s, t) -> String.valueOf(t.length());
+
+        @Nonnull
+        String transform(@Nonnull SymbolsTable symbols, @Nonnull String text);
+
+        @Nonnull
+        default SymbolTransformation andThen(@Nonnull SymbolTransformation after) {
+            return (SymbolsTable s, String t) -> after.transform(s, transform(s, t));
+        }
     }
 
     /** Fluent interface used to read values from the Symbols Table. Multiple SymbolTransformation can be set */

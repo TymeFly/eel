@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.function.date.DateFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,13 +19,20 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link FormatDate}
  */
 public class FormatDateTest {
+    private EelContext context;
+
     private FormatDate formatDate;
+
 
 
     @Before
     public void setUp() {
-        DateFactory dateFactory = mock(DateFactory.class);
+        context = EelContext.factory().build();
 
+        DateFactory dateFactory = mock();
+
+        when(dateFactory.start(any(EelContext.class), anyString(), any(String[].class)))
+            .thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("UTC")));
         when(dateFactory.utc(any(String[].class)))
             .thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("UTC")));
         when(dateFactory.local(any(String[].class)))
@@ -36,6 +44,15 @@ public class FormatDateTest {
     }
 
 
+    /**
+     * Unit test {@link FormatDate#formatStart(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_FormatStart() {
+        Assert.assertEquals("UTC Format",
+            "12/03/2007 17:15 +0000",
+            formatDate.formatStart(context, "MM/dd/yyy HH:mm Z", "UTC"));
+    }
 
     /**
      * Unit test {@link FormatDate#formatDate(String, ZonedDateTime, String...)}

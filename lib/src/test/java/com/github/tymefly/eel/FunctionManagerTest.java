@@ -60,8 +60,8 @@ public class FunctionManagerTest {
 
     @Before
     public void setUp() {
-        symbolsTable = mock(SymbolsTable.class);
-        context = mock(EelContextImpl.class);
+        symbolsTable = mock();
+        context = mock();
 
         MathContext mathContext = new MathContext(2, RoundingMode.HALF_UP);
 

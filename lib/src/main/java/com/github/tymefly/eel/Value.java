@@ -13,7 +13,6 @@ import javax.annotation.concurrent.Immutable;
 
 import com.github.tymefly.eel.exception.EelConvertException;
 import com.github.tymefly.eel.utils.BigDecimals;
-import com.github.tymefly.eel.utils.Convert;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -33,7 +32,6 @@ class Value implements EelValue, Result {
     private static final Value FALSE = new Value(Type.LOGIC, "false", BigDecimal.ZERO, false, EelContext.FALSE_DATE);
     private static final Value EPOCH_START_UTC =
         new Value(Type.DATE, null, BigDecimal.ZERO, false, EelContext.FALSE_DATE);
-
 
     private static final Map<String, Value> TEXT_POOL = new WeakHashMap<>();
     private static final Map<BigDecimal, Value> NUMBER_POOL = new WeakHashMap<>();
@@ -110,6 +108,7 @@ class Value implements EelValue, Result {
         return DATE_POOL.computeIfAbsent(value, v -> new Value(Type.DATE, null, null, null, v));
     }
 
+
     @Override
     @Nonnull
     public Type getType() {
@@ -121,8 +120,8 @@ class Value implements EelValue, Result {
     public String asText() {
         if (text == null) {
             text = switch (type) {
-                case NUMBER -> Convert.to(number, String.class);
-                case DATE -> Convert.to(date, String.class);
+                case NUMBER -> Convert.toText(number);
+                case DATE -> Convert.toText(date);
                 default -> null;    // ValueImpl.TRUE and ValueImpl.FALSE were created with text values => no conversion
             };
         }
@@ -140,8 +139,8 @@ class Value implements EelValue, Result {
         if (number == null) {
             try {
                 number = switch (type) {
-                    case TEXT -> Convert.to(text, BigDecimal.class);
-                    case DATE -> Convert.to(date, BigDecimal.class);
+                    case TEXT -> Convert.toNumber(text);
+                    case DATE -> Convert.toNumber(date);
                     default -> null;    // Value.TRUE and Value.FALSE were created with numeric values => no conversion
                 };
             } catch (RuntimeException e) {
@@ -155,6 +154,60 @@ class Value implements EelValue, Result {
 
         return number;
     }
+
+
+    @Override
+    public boolean asLogic() {
+        if (logic == null) {
+            logic = switch (type) {
+                case TEXT -> Convert.toLogic(text);
+                case NUMBER -> Convert.toLogic(number);
+                case DATE -> Convert.toLogic(date);
+                default -> null;    // ValueImpl.TRUE and ValueImpl.FALSE already have the correct logic value
+            };
+        }
+
+        if (logic == null) {        // Should not happen - all types can be converted to Logic
+            throw new EelConvertException("Can not convert %s to LOGIC", this);
+        }
+
+        return logic;
+    }
+
+
+    @Override
+    @Nonnull
+    public ZonedDateTime asDate() {
+        if (date == null) {
+            try {
+                date = switch (type) {
+                    case TEXT -> Convert.toDate(text);
+                    case NUMBER -> Convert.toDate(number);
+                    default -> null;    // Value.TRUE and Value.FALSE were created with date values => no conversion
+                };
+            } catch (RuntimeException e) {
+                // Following code will generate a better exception.
+            }
+        }
+
+        if (date == null) {
+            throw new EelConvertException("Can not convert %s to DATE", this);
+        }
+
+        return date;
+    }
+
+    @Override
+    public char asChar() {
+        String text = asText();
+
+        if (text.isEmpty()) {
+            throw new EelConvertException("Empty text can not be converted to a char");
+        }
+
+        return text.charAt(0);
+    }
+
 
     /**
      * Convenience method to return a numeric value as a {@link BigInteger}.
@@ -175,47 +228,6 @@ class Value implements EelValue, Result {
         return asNumber().intValue();
     }
 
-
-    @Override
-    public boolean asLogic() {
-        if (logic == null) {
-            logic = switch (type) {
-                case TEXT -> Convert.to(text, Boolean.class);
-                case NUMBER -> Convert.to(number, Boolean.class);
-                case DATE -> Convert.to(date, Boolean.class);
-                default -> null;    // ValueImpl.TRUE and ValueImpl.FALSE already have the correct logic value
-            };
-        }
-
-        if (logic == null) {        // Should not happen - all types can be converted to Logic
-            throw new EelConvertException("Can not convert %s to LOGIC", this);
-        }
-
-        return logic;
-    }
-
-
-    @Override
-    @Nonnull
-    public ZonedDateTime asDate() {
-        if (date == null) {
-            try {
-                date = switch (type) {
-                    case TEXT -> Convert.to(text, ZonedDateTime.class);
-                    case NUMBER -> Convert.to(number, ZonedDateTime.class);
-                    default -> null;    // Value.TRUE and Value.FALSE were created with date values => no conversion
-                };
-            } catch (RuntimeException e) {
-                // Following code will generate a better exception.
-            }
-        }
-
-        if (date == null) {
-            throw new EelConvertException("Can not convert %s to DATE", this);
-        }
-
-        return date;
-    }
 
     @Override
     public boolean equals(Object other) {

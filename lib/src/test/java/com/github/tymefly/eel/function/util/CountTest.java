@@ -26,7 +26,7 @@ public class CountTest {
 
     @Nonnull
     private FunctionalResource mockResourceManager() {
-        FunctionalResource manager = mock(FunctionalResource.class);
+        FunctionalResource manager = mock();
 
         when(manager.getResource(anyString(), any(Function.class)))
             .thenAnswer(a -> counters.computeIfAbsent(manager, k -> new HashMap<>())

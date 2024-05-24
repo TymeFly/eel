@@ -6,7 +6,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
- * Builder class used to generate a flexible SymbolsTable that can return values from multiple sources.
+ * Builder class used to generate a SymbolsTable that can return values from multiple anonymous sources.
  * If the key exists in multiple sources then the source that is added to the table first takes priority.
  * Typical usage is:
  * <pre>{@code SymbolsTable.factory()

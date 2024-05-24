@@ -32,7 +32,6 @@ import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.EelLambda;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
-import com.github.tymefly.eel.utils.Convert;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
@@ -241,8 +240,8 @@ class FunctionManager {
         entry(BigInteger.class, v -> v.asNumber().toBigInteger()),
         entry(BigDecimal.class, Value::asNumber),
         entry(ZonedDateTime.class, Value::asDate),
-        entry(Character.class, Convert::toChar),
-        entry(char.class, Convert::toChar)
+        entry(Character.class, Value::asChar),
+        entry(char.class, Value::asChar)
     );
 
 
@@ -344,7 +343,7 @@ class FunctionManager {
             } else if (parameter.getType() == FunctionalResource.class) {
                 actual[paramIndex] = new FunctionalResourceImpl(context, entryPoint.getDeclaringClass());
             } else if (isVarArgs) {
-                actual[paramIndex] = varArgs(name, symbols, argumentList, argumentIndex, paramType.componentType());
+                actual[paramIndex] = varArgs(name, symbols, argumentList, argumentIndex, paramType.getComponentType());
                 argumentIndex++;
             } else if (argumentIndex < argumentList.size()) {
                 actual[paramIndex] = convertArgument(name, symbols, argumentList, argumentIndex, paramType);
@@ -376,14 +375,19 @@ class FunctionManager {
         } else {
             Value value = argument.execute(symbols);
 
-            result = ARGUMENT_CONVERSIONS.getOrDefault(targetType, (k) -> {
-                    throw new EelFunctionException("Argument %d for function '%s' is of unsupported type %s",
-                        index, name, targetType.getName());
-                }
-            ).apply(value);
+            result = convert(name, index, targetType, value);
         }
 
         return result;
+    }
+
+    @Nonnull
+    private static Object convert(@Nonnull String name, int index, @Nonnull Class<?> targetType, @Nonnull Value value) {
+        return ARGUMENT_CONVERSIONS.getOrDefault(targetType, (k) -> {
+                throw new EelFunctionException("Argument %d for function '%s' is of unsupported type %s",
+                    index, name, targetType.getName());
+            }
+        ).apply(value);
     }
 
     @Nonnull
@@ -401,11 +405,12 @@ class FunctionManager {
         }
 
         String to = annotation.value();
+        Value value = Value.of(to);
 
         if (parameter.getType() == EelLambda.class) {
-            argument = new EelLambdaImpl(s -> Value.of(to), symbols);
+            argument = new EelLambdaImpl(s -> value, symbols);
         } else {
-            argument = Convert.to(to, targetType);
+            argument = convert(name, index, targetType, value);
         }
 
         return argument;

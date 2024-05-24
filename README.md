@@ -46,100 +46,7 @@ While there is support for conditions, neither iteration nor recursion is suppor
 
 ---
 ## What's new
-### 1.0.0
-* Everything
-
-### 1.1.0
-#### Lib
-* Reduced default execution timeout from 10 seconds to 2 seconds.
-* Fully define the type conversions used by the `=` and `!=` operators, in a way that is consistent with the inequality operators for dates  
-* Characters `[` and `]` can be part of an identifier. This is so that Symbols tables can use these characters to read structured data types.  
-* All positive numbers can be converted to logic value `true` while zero and negative numbers values can be converted to 
-  logic `false`. Previously only numbers `0` and `1` could be converted to logic values. This change means functions 
-  that return `-1` to indicate a non-value can also be considered as returning `false`. 
-* Dates can be converted to Logic values and vice versa. 
-  * Dates before or at `1970-01-01 00:00Z` are converted to logic `false`, all other dates are converted to logic `true`.
-  * Logic `false` can be converted to date `1970-01-01 00:00:00Z` and logic `true` to `1970-01-01 00:00:01Z`  
-  This are the same values that would be returned if an explicit conversion to NUMBER is used as an intermediate step. 
-  This change means that functions that return `1970-01-01 00:00:00Z` to indicate a non-value can also be considered as 
-  returning `false`
-* Cleanup exceptions 
-* Add _c_, the speed of light, as a constant 
-* Add interface `com.github.tymefly.eel.EelValue` to create and read immutable EEL values.
-* UDFs can accept and return `EelValue`'s and `chars`'s  
-* Function prefixes _'text'_, _'logic'_, _'number'_ and _'date'_ are now reserved.
-* Add functions to search for files in a directory. These are `fileCount()`, `firstCreated()`, `lastCreated()`, 
- `firstAccessed()`, `lastAccessed()`, `firstModified()` and `lastModified()`
-* Add function `isBlank()` to check is text is blank
-* Add function `printf()` to format text
-* Add function `title()` to convert text to title case
-* Add functions `padLeft()` and `padRight()` to pad text
-* Add functions `char()` and `codepoint()` to convert between characters and unicode codepoints  
-* Add functions `number.round()` and `number.truncate()` to convert fractional numbers to non-fraction numbers
-* `format.date()` now accepts offsets as optional arguments
-* `dirName()` will no longer canonicalize the path
-* `extension()` returns the extensions without a leading `.`
-* `exists()` can now accept a glob pattern as part of the file name 
-
-#### Evaluate
-* Added the `--defs` option to read multiple definitions from a properties file. The values in this properties file 
-  are EEL expressions in their own right, and will be evaluated as the file is loaded.
-* Added the `--timeout` option to set the EEL execution timeout
-
-
-### 2.0.0
-#### Lib
-* **Breaking Change: Some operator Symbols have been changed to match Python**
-
-  | Operator       |      Ver 1.x.x      |     Ver 2.0.0+      |
-  |----------------|:-------------------:|:-------------------:|
-  | logical-not    |         `!`         |        `not`        |
-  | logical-and    |         `&`         |        `and`        |
-  | logical-or     | <code>&#124;</code> |        `or`         | 
-  | bitwise-not    |        `NOT`        |         `~`         | 
-  | bitwise-and    |        `AND`        |         `&`         | 
-  | bitwise-or     |        `OR`         | <code>&#124;</code> |
-  | bitwise-xor    |        `XOR`        |         `^`         |
-  | exponentiation |         `^`         |        `**`         | 
-
-* **Breaking Change: Remove non-short-circuited logical operators** - They are not required as EEL functions do not have external side effects 
-* **Breaking Change: Type conversion functions are now in lower case** 
-* **Breaking Change: `DefaultArgument` annotation no longer has an _"of"_ attribute - _"value"_ is used instead**
-* **Breaking Change: Remove _pi_, _e_ and _c_ as a predefined constants, replacing them with the functions
-  `number.pi()`, `number.e()` and `number.c()`**
-* **Breaking Change: By default `count()` is now a zero based; previously it was 1 based.** Named counters are also supported 
-* EelContext can be used to read build time information including the current version of the language
-* Add functions `eel.version()` and `eel.buildDate()`
-* Added Function interpolation to simplify expressions that only contain a single function call
-* Added support for Functional expressions; EEL functions and UDFs can accept `EelLambda` objects as parameters 
-* Functions `indexOf()`, `lastIndexOf()`, `fileSize()`, `createAt()` and `accessedAt()` have an extra optional argument;
-  a function that returns the default value.
-* Functions `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()` and 
- `lastModified()` have two extra optional arguments. The first is a zero based index in the directory listing of the
- required file. The second additional optional argument is a function to determine the default value if no file can be found
-* UDFs can accept a `FunctionalResource` object as a parameter, so they can manage stateful resources
-* The Symbols Table supports 'scopes' to disambiguate keys from different sources that have the same name
-* Numeric literals can contain the `_` character
-* Empty text is converted to logic false 
-* Value interpolation supports multiple case change operators
-* Value interpolation supports substrings
-* Added the `isBefore` and `isAfter` operators
-* Added the "divide-floor" (`//`) and "divide-truncate" (`-/`) operators
-* Add functions `number.ceil()` and `number.floor()`
-* Add functions `before()`, `after()`, `between()` to extract text based on a delimiter
-* Add function `contains()` to count the number of instances of some text 
-* Functions `afterFirst()` and `afterLast()` will return an empty string if the delimiter is empty
-* The value returned by the logging functions is the last parameter passed. Previously the value was always converted to Text
-* Added constants in `EelValue` for commonly used values
-* Bug Fix: All value interpolations evaluate to text. Previously Text length operator would evaluate to a Number
-  which caused inconsistencies. 
-* Bug Fix: Previously `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()` and 
-  `lastModified()` did not always return absolute paths.  
-
-#### Evaluate
-* **Breaking Change: Change return codes**
-* Display return codes on the help page
-* Add `--version` option.
+See [What's new](WhatsNew.md)
 
 ---
 ## Building EEL
@@ -161,11 +68,11 @@ The API for EEL is based around four components. These are:
 
 #### EEL Context
 
-The EEL Context manages the compile time settings and any state information. An EelContext can be used to compile
-multiple EEL Expressions.
+The EEL Context manages the compile time settings and any state information. An EelContext can be used by many 
+EEL Expressions.
 
-The client can use the Context to:
-* Read information about the current version of EEL 
+The EEL Context can:
+* Return information about the current version of EEL 
 * Set the precision for maths operations
 * Import **U**ser **D**efined **F**unctions (UDFs).
 * Guard against rogue expressions causing Denial Of Service (DOS) attacks by:
@@ -173,7 +80,7 @@ The client can use the Context to:
   * setting a timeout for evaluating the expression
 
 In addition, the Context also manages EEL state that can be shared across invocations. These are
-* accessor functions to read the time the Context was created 
+* the time the Context was created 
 * the values returned by the `count()` function  
 
 All the Context settings have defaults; if these are acceptable then the Default EelContext can be used.
@@ -187,7 +94,7 @@ This is where the source expression is compiled. Like any other program, a compi
 times. This could be useful if an expression makes use of functions that return different values each time 
 the expression is evaluated, for example reading the current date/time, examining the file system, generating random 
 numbers or reading a counter. 
-Alternatively, the expression could be evaluated with a different Symbols Table (see below) which could also cause 
+Alternatively, the expression could be evaluated with a different SymbolsTable (see below) which could also cause 
 EEL to return a different Result (see below). 
 
 EEL Expressions are built using a fluent API; the entry point is `Eel.factory()`. In addition, there are
@@ -196,34 +103,32 @@ convenience methods in `Eel` that can be used to compile expressions with the de
 
 #### Symbols Table
 
-The Symbols Table is lookup mechanism that maps a name in an expression to values that are provided at runtime.
+The SymbolsTable is lookup mechanism that maps a name in an expression to a value that is provided at runtime.
 These values can come from any, all or none of the following sources:
 - The environment variables
 - The JVM properties
 - One or more `java.util.Map` objects 
-- One or more lambda functions 
-- A single hardcoded string which is associated with **all** value names in all scopes. This is usually used to set a default value. 
+- One or more Java lambda functions 
+- A single hardcoded string which is associated with **all** names. This is usually used to set a default value. 
 
-If the client needs to read a key from multiple sources without risking a name clash the Symbols Table can be 
-created with named _"scopes"_. Each data source is defined with a unique scope name along with the data. 
+If the client needs to read a key from multiple sources without risking a name clash the SymbolsTable can be 
+created with named _"scopes"_. When each data source set a unique scope name is also provided. 
 When the data is read the EEL expression prefixes the key with the scope name and a delimiter.
 
-If there are no scopes defined and a key exists in multiple sources, then the first source added to the Symbols Table
+If there are no scopes defined and a key exists in multiple sources, then the first source added to the SymbolsTable
 takes priority. Because of this, no further data sources can be defined after a hardcoded string has been added.
 
-Once defined, a Symbols Table can be used to evaluate multiple EEL Expressions. However, there is no requirement that
-an EEL Expression has to use a Symbols Table when it is evaluated.      
+Once defined, a SymbolsTable can be used to evaluate multiple EEL Expressions. However, there is no requirement that
+an EEL Expression has to use a SymbolsTable when it is evaluated.      
 
-Symbols Table objects are built using a fluent API; the entry point is `SymbolsTable.factory()`. In addition, there are 
+SymbolsTable objects are built using a fluent API; the entry point is `SymbolsTable.factory()`. In addition, there are 
 convenience methods in:
-- `SymbolsTable` - used to build a Symbols Table that reads from a single data source
-- `Eel` - used to evaluate a compiled expression with a one-off Symbols Table that reads from a single data source
+- `SymbolsTable` - used to build a SymbolsTable that reads from a single data source
+- `Eel` - used to evaluate a compiled expression with a one-off SymbolsTable that reads from a single data source
 
-EEL always reads values from the Symbols Table as Text, however in most cases it will correctly convert the value to the 
+EEL always reads values from the SymbolsTable as Text, however in most cases it will correctly convert the value to the 
 type required by the operator that uses it. If this is insufficient then explicit conversion functions can be used to
 ensure the correct type (see [Data types](#data-types-))
-
-
 
 #### Result
 
@@ -232,26 +137,27 @@ A Result object represents the output from an EEL Expression. Each Result contai
 - The evaluated value which the client can read via a type specific getter method. If the getter method doesn't
 match the Result type, then the Result will try to convert it using the rules [described below](#types-conversions). 
 
+
 #### Exceptions
 The EEL compiler and runtime can throw the following Exceptions:
 
-| Exception                 | Purpose                                            | Extends              |
-|---------------------------|----------------------------------------------------|----------------------|
-| EelException              | Base class for all EEL exceptions                  | RuntimeException     |
-| EelInternalException      | The EEL core failed. This should never be seen     | EelException         |
+| Exception                 | Purpose                                             | Extends              |
+|---------------------------|-----------------------------------------------------|----------------------|
+| EelException              | Base class for all EEL exceptions                   | RuntimeException     |
+| EelInternalException      | The EEL core failed. This should never be seen      | EelException         |
 |                           |
-| EelCompileException       | Base class for all compile time exceptions         | EelException         |
-| EelSourceException        | The expression source could not be read            | EelCompileException  |
-| EelSyntaxException        | The source expression has a syntax error           | EelCompileException  |
-| EelSymbolsTableException  | The Symbols Table is misconfigured                 | EelCompileException  |
+| EelCompileException       | Base class for all compile time exceptions          | EelException         |
+| EelSourceException        | The expression source could not be read             | EelCompileException  |
+| EelSyntaxException        | The source expression has a syntax error            | EelCompileException  |
+| EelSymbolsTableException  | The SymbolsTable is misconfigured                   | EelCompileException  |
 |                           |
-| EelRuntimeException       | Base class for all runtime exceptions              | EelException         |
-| EelInterruptedException   | The evaluating thread was interrupted              | EelRuntimeException  | 
-| EelTimeoutException       | The expression took too long to evaluate           | EelRuntimeException  | 
-| EelUnknownSymbolException | The Symbols Table did not contain a required value | EelRuntimeException  |
-| EelConvertException       | An EEL type conversion failed                      | EelRuntimeException  |
-| EelFunctionException      | A function failed or could not be invoked          | EelRuntimeException  |
-| EelFailException          | The expression executed the `fail()` function      | EelRuntimeException  | 
+| EelRuntimeException       | Base class for all runtime exceptions               | EelException         |
+| EelInterruptedException   | The evaluating thread was interrupted               | EelRuntimeException  | 
+| EelTimeoutException       | The expression took too long to evaluate            | EelRuntimeException  | 
+| EelUnknownSymbolException | The SymbolsTable did not contain a required value   | EelRuntimeException  |
+| EelConvertException       | An EEL type conversion failed                       | EelRuntimeException  |
+| EelFunctionException      | A function failed or could not be invoked           | EelRuntimeException  |
+| EelFailException          | The expression executed the `fail()` function       | EelRuntimeException  | 
 
 **Note:** All of these exceptions are unchecked.
 
@@ -266,7 +172,7 @@ In its simplest form, EEL can be invoked as:
       .asText();
 
 In this example the default EelContext is used to compile the expression, it is then executed without reference to a 
-Symbols Table and the result is returned as String. 
+SymbolsTable and the result is returned as String. 
 If this is enough for the client application then nothing more complex is required.
 
 **Inline EelContext**
@@ -280,7 +186,7 @@ If this is enough for the client application then nothing more complex is requir
 In this example the fluent API provided by `Eel.factory()` creates a new EelContext as the Expression is compiled;
 in this case to set the maths precision.
 
-Inlining the Context makes for concise code but does not allow the EelContext to be reused.
+Inlining the Context makes for concise code but does not allow the EelContext to be reused by other expressions.
 
 **Explicit EelContext**
 
@@ -291,23 +197,21 @@ Inlining the Context makes for concise code but does not allow the EelContext to
       .evaluate()
       .asText();
 
-This example uses the fluent API provided by `EelContext.factory()` to create an EelContext object, and then uses
+This example uses the fluent API provided by `EelContext.factory()` to create an EelContext, and then uses
 it to compile an Expression. 
 The EelContext object can be reused in as many calls to `Eel.compile()` as need.
 
 **Inline Symbols Table**
 
-    Map<String, String> symTab = ... 
+    Map<String, String> symTable = ... 
     String result = Eel.compile(  ...some expression...  )
-      .evaluate(symTab)
+      .evaluate(symTable)
       .asText();
   
-In this example the fluent API provided by `Eel.compile()` creates a new Symbols Table as the Expression is evaluated;
-in this case the data comes from a map of values, but `evaluate` is overloaded to read from all other supported sources.
+In this example the fluent API provided by `Eel.compile()` creates a new SymbolsTable as the Expression is evaluated;
+in this case the data comes from a map of values, but `evaluate` is overloaded to read from all the other supported sources.
 
-Inlining the Symbols Table makes for concise code but does not allow the Symbols Table to be reused.
-Because the Symbols Table can only read data from a single source there is no need to disambiguate keys and therefore no 
-need to define a scope name.  
+Inlining the SymbolsTable makes for concise code but does not allow the SymbolsTable to be reused.
 
 
 **Explicit Symbols Table**
@@ -323,8 +227,9 @@ need to define a scope name.
 
 This example uses the fluent API provided by `SymbolsTable.factory()` to create a SymbolsTable object which is then
 used to evaluate an Expression. 
-There are several advantages to creating Symbols Table objects; the table can read multiple sources, define scopes, 
-provide a default value if an identifier is undefined, and it can be reused in as many calls to `Eel.evaluate()` as needed.
+There are several advantages to creating SymbolsTable objects; the table can read multiple sources while also
+providing a default value if an identifier is undefined, the scope delimiter can be set, and it can be reused in as
+many calls to `Eel.evaluate()` as needed.
 The disadvantage is the code is more verbose.
 
 
@@ -341,7 +246,7 @@ The disadvantage is the code is more verbose.
       .evaluate(symbols)
       .asText();   
 
-This example shows how to use an explicit EelContext and an explicit Symbols Table with scopes.
+This example shows how to use an explicit EelContext and an explicit SymbolsTable with scopes.
 This is EEL at its most flexible but also its most verbose.
 
 **Using the result**
@@ -365,7 +270,7 @@ For example:
 In this example the type of the data in the Result object is checked and then read using an appropriate getter
 method. 
 
-If the data does not match the type expected by the getter method, then the Result object will try to convert the
+If the data does not match the type expected by the getter method the Result object will try to convert the
 data to the required type. As all data can be represented as text it will always be possible read the result using
 `asText()`. The rules for converting values are described in the [Data types](#data-types-) section of this document.
 
@@ -395,16 +300,16 @@ migration path for systems that are already configured with these strings.
 
 Where EEL becomes more useful is with the interpolation mechanisms it supports. These are substrings in 
 the parsed expression. The interpolation mechanisms are:
-1. **[Value interpolation](#value-interpolation)** which is written in the form `${...}` and is used to read values from the Symbols Table
+1. **[Value interpolation](#value-interpolation)** which is written in the form `${...}` and is used to read values from the SymbolsTable
 2. **[Function interpolation](#function-interpolation)** which is written in the form `$functionName(...)` and is used to call a [function](#Standard-functions)
 3. **[Expression interpolation](#expression-interpolation)** which is written in the form `$(...)` and is used to perform calculations which may include function calls 
 
 These interpolation mechanisms can be nested. This is most commonly seen when an Expression interpolation uses a 
-Value interpolation to read a value from the Symbols Table.
+Value interpolation to read a value from the SymbolsTable.
 
 
 #### Identifiers
-Identifiers are used in Value interpolations to look up data from the symbols table. Function interpolation and Expression
+Identifiers are used in Value interpolations to look up data from the SymbolsTable. Function interpolation and Expression
 interpolation use identifiers as function names. 
 
 The first letter of an identifier must be either: 
@@ -426,11 +331,11 @@ It should be noted that valid EEL identifiers are usually not valid Java identif
 
 #### Data types 
 
-EEL natively supports 4 data types. These are named differently from their Java equivalents to distinguish between
-data that is in the EEL and Java domains. These types are:
+EEL natively supports 4 data types. They are named differently from their Java equivalents to distinguish between
+data that is in the EEL and Java domains. The EEL data types are:
 ##### Text
 
-  Text literals can be written in the form `"..."` or `'...'`. The opening quote can be either a single or a double
+  Text literals can be written in the form `"..."` or `'...'`; the opening quote can be either a single or a double
   quote, but the associated closing quote must match the opening quote. This allows a double-quoted text literal
   to contain single quote characters and vice versa. Additionally, escape sequences can be used to embed special
   characters, including what would have been the closing quote.   
@@ -451,13 +356,19 @@ data that is in the EEL and Java domains. These types are:
 
   The numeric literals can be expressed in any of the following ways:
   - Decimal integers (e.g. `1234`)
-  - Hexadecimal integers (e.g. `0x89ab`)
+  - Binary integers (e.g. `0b1010`). Binary numbers are prefixed with `0b`
+  - Octal integers (e.g. `0c1234567`). Octal numbers are prefixed with `0c`
+  - Hexadecimal integers (e.g. `0x89ab`). Hex numbers are prefixed with `0x`
   - Decimals with fractional parts (e.g. `123.456789`)
-  - Scientific format (e.g. `2.99792e8`)
+  - Scientific format (e.g. `2.99792e8`) where exponents may be negative  
  
-  The underscore character (`_`) may appear between digits in a numerical literal for grouping purposes. This is  
-  to make numbers more readable, but otherwise they have no effect. For example:
+  Letters in numeric literals are case-insensitive.
+
+  The underscore character (`_`) may appear between digits in a numerical literal for grouping purposes. This is to make
+  numbers more readable, but otherwise they have no effect. For example:
   - Decimal integers (e.g. `1_234`)
+  - Binary integers (e.g. `0b10_10`)
+  - Octal integers (e.g. `0c123_4567`)
   - Hexadecimal integers (e.g. `0x89_ab`)
   - Decimals with fractional parts (e.g. `123.456_789`)
   - Scientific format (e.g. `2.997_92e8`)
@@ -467,7 +378,7 @@ data that is in the EEL and Java domains. These types are:
 
 ##### Date
 
-  EEL expressions support Date-Time stamps, to a precision of a second. There are no Date literals, but Dates can be 
+  EEL expressions support Date-Time values, to a precision of a second. There are no Date-Time literals, but they can be 
   generated by: 
   - Calling a function that returns a date, such as `date.utc()`, `date.local()`, `date.at()` or `date.start()`
   - [Converting](#types-conversions) another data type to a date
@@ -478,7 +389,7 @@ data that is in the EEL and Java domains. These types are:
 ##### Null
 
 EEL is a Null Hostile language. As a consequence:
-  - Value interpolations will throw an `EelUnknownSymbolException` if a value cannot be read from the Symbols Table
+  - [Value interpolations](#value-interpolation) will throw an `EelUnknownSymbolException` if a value cannot be read from the SymbolsTable
   - If a [UDF](#user-defined-functions-udfs) returns null then an `EelFunctionException` is thrown 
   - It is guaranteed that [UDF](#user-defined-functions-udfs)'s will never be passed `null` values 
   - It is guaranteed that the [Result](#result) getters will never return `null`
@@ -488,12 +399,8 @@ EEL is a Null Hostile language. As a consequence:
 
 Values in EEL Expressions are loosely typed; EEL will silently convert values as required. The conversion rules are:
 
-* Text values are converted to Numbers if they can be parsed as either:
-  - Decimal integer (e.g. `1234`)
-  - Hexadecimal integer (e.g. `0x89ab`)
-  - Decimal with a fractional part (e.g. `123.456`)
-  - Scientific format (e.g. `2.997e8`)
-  
+* Text values are converted to Numbers if they are in the same form as any of the numeric literals. 
+
   Leading spaces, trailing spaces and case will be ignored.
 * Text values `"true"` and `"1"` are converted to the Logic value `true`.
   Text values `"false"`, `"0"` and empty text are converted to the Logic value `false`
@@ -508,13 +415,13 @@ Values in EEL Expressions are loosely typed; EEL will silently convert values as
   * Leading and trailing spaces will be ignored.
 * Number values are converted to Text as their plain (non-scientific) decimal representation
 * Positive numbers are converted to Logical `true`. Negative numbers and zero are converted to Logical `false`
-* Numbers are converted to Dates as the number of elapsed seconds since 1970-01-01 00:00:00 in the UTC zone.  
+* Number values are converted to Dates as the number of elapsed seconds since 1970-01-01 00:00:00 in the UTC zone.  
 * Logic values `true` and `false` are converted to Text values `"true"` and `"false"` respectively
 * Logic values `true` and `false` are converted to numeric values `1` and `0` respectively
-* Logic values `true` and `false` are converted to date values `1970-01-01 00:00:00Z` and `1970-01-01 00:00:01Z` respectively
-* Dates are converted to Text in the format `yyyy-MM-dd'T'HH:mm:ssX`
-* Dates are converted to Numbers by taking the number of elapsed seconds since `1970-01-01 00:00:00` in the UTC zone.
-* Date values `1970-01-01 00:00:00` and earlier are converted to `false`. All other dates are converted to `true`
+* Logic values `true` and `false` are converted to date values `1970-01-01 00:00:01Z` and `1970-01-01 00:00:00Z` respectively
+* Date values are converted to Text in the format `yyyy-MM-dd'T'HH:mm:ssX`
+* Date values are converted to Numbers by taking the number of elapsed seconds since `1970-01-01 00:00:00` in the UTC zone.
+* Date values `1970-01-01 00:00:00` and earlier are converted to logic value `false`. All other dates are converted to logic `true`
 
 All other conversions are illegal and will cause EEL to throw an `EelConvertException`. 
 For example the Text value `"true"` can be converted to a Logical value, but `"positive"` will throw an exception.
@@ -530,7 +437,7 @@ was in the local time zone but the result will be in UTC. The number of seconds 
 1970-01-01 00:00:00 in the UTC zone is maintained.
  - `text( number( '0x1234' ) )` will convert text to a number to and back again, but the result will be in decimal rather 
 than the original hex
- - `date( logic( date.local() ) )` will convert a date to a logic value and then convert it back to a date. 
+ - `date( logic( date.local() ) )` will convert the current date to a logic value and back to a date again. 
 The conversion to a logic value will lose precision, so the resulting date is always `1970:01:01 00:00:01` in UTC
  - `text( date( '2000-01-01' ) )` will convert text to a date and back to text again, but the result will contain time 
 fields that were absent in the original text. The undefined fields default to the start of their respective periods.
@@ -542,86 +449,89 @@ There are also occasions when the rules are not transitive. For example:
 
 #### Value interpolation
 
-Value interpolation is written in the form **_${identifier}_** which should be familiar to somebody who is familiar
+Value interpolation is written in the form **_${key}_** which should be familiar to somebody who is familiar
 with shell scripting. Unlike shell scripting, the braces in EEL are mandatory.
 
-The purpose of value interpolation is used to read values from the Symbols Table and apply some optional modifiers. 
+The purpose of value interpolation is used to read values from the SymbolsTable and apply some optional modifiers. 
 
-For unscoped Symbols Tables, the _identifier_ is the name used by the backing data source. If the Symbols Table is scoped 
-then the _identifier_ is prefixed by the scope name and the scope delimiter. For example, given:
+For an unscoped SymbolsTable, the _key_ is the name used by the backing data source. If the SymbolsTable is scoped 
+then the _key_ is prefixed by the scope name and the scope delimiter. For example, given:
 
     SymbolsTable symbols = SymbolsTable.factory(".")
         .withValues("m1", Map.ofEntries(Map.entry("a", "Map1 value a"), Map.entry("b", "Map1 value b")))
         .withValues("m2", Map.ofEntries(Map.entry("a", "Map2 value a"), Map.entry("b", "Map2 value b")))
-        .build()
+        .build();
 
 then:
 * **${a}** - is not defined
-* **${m1.a}** - is mapped to the value "_Map1 value a_"
-* **${m2.b}** - is mapped to the value "_Map2 value b_"
+* **${m1.a}** - is "_Map1 value a_"
+* **${m2.b}** - is "_Map2 value b_"
 
 
-EEL Values support similar modifiers to bash:
-- `${identifier}` - the text value associated with _identifier_ with no changes
-- `${#identifier}` - the length of the text value associated with _identifier_. This is given as text
-- `${identifier^}` - the text value associated with _identifier_, but with the first character in upper case
-- `${identifier^^}` - the text value associated with _identifier_, but with all the characters in upper case
-- `${identifier,}` - the text value associated with _identifier_, but with the first character in lower case
-- `${identifier,,}` - the text value associated with _identifier_, but with all the characters in lower case
-- `${identifier~}` - the text value associated with _identifier_, but with the case of the first character toggled
-- `${identifier~~}` - the text value associated with _identifier_, but with the case of the all the characters toggled
-- `${identifier:offset:count}` - a substring of the text value associated with _identifier_ where
-  `offset` and `count` are non-fractional numeric literals
-- `${identifier-default}` - if there is no value in the Symbols Table associated with the _identifier_ then the `default` is used
+Value interpolation support similar modifiers to bash:
+- `${key}` - the text value associated with _key_ with no changes
+- `${#key}` - the length of the text value associated with _key_. This is returned as text
+- `${key^}` - the text value associated with _key_, but with the first character in upper case
+- `${key^^}` - the text value associated with _key_, but with all the characters in upper case
+- `${key,}` - the text value associated with _key_, but with the first character in lower case
+- `${key,,}` - the text value associated with _key_, but with all the characters in lower case
+- `${key~}` - the text value associated with _key_, but with the case of the first character toggled
+- `${key~~}` - the text value associated with _key_, but with the case of the all the characters toggled
+- `${key:offset:count}` - a substring of the text value associated with _key_ where `offset` and `count` are EEL expressions 
+  that generate numeric values
+- `${key-default}` - if there is no value in the SymbolsTable associated with the _key_ then the `default` is used
 
 EEL allows these modifiers to be combined. For example:
 
-- `${identifier,,^}` - the value associated with _identifier_ with the first character in upper case and subsequent 
-characters in lowercase 
-- `${identifier^^-default}` - if there is a value associated with _identifier_ then use the value in uppercase.
-  If there is no value associated with _identifier_ then use the literal `default`
-- `${identifier:0:3,,}` - the first 3 characters of the value associated with _identifier_ in lower case
-- `${#identifier-default}` - if there is a value associated with _identifier_ then use its length.
-  If there is no value associated with _identifier_ then use the literal `default`
+- `${key,,^}` - the value associated with _key_ with the first character in upper case and subsequent 
+characters in lowercase.  
+- `${key^^-default}` - if there is a value associated with _key_ then use its value in uppercase.
+  If there is no value associated with _key_ then use the literal `default`
+- `${key:0:3,,}` - the first 3 characters of the value associated with _key_ in lower case
+- `${key:2:3^}` - 3 characters from the middle of the value associated with _key_. The first character returned will be in upper case
+- `${#key-default}` - if there is a value associated with _key_ then use its length.
+  If there is no value associated with _key_ then use the literal `default`
 
-The order the optional modifiers must be specified in is:
+The order the modifiers are specified is:
 
-| Order | Modifier                       | Modified Name  | Note                                  |
-|-------|--------------------------------|----------------|---------------------------------------| 
-| First | `#`                            | String length  | This is not applied to default values |
-|       | `:`                            | Substring      |                                       |
-|       | `^` `^^` `,` `,,` `~` `~~` `:` | Case change    |                                       |
-| last  | `-`                            | Default values |                                       |
+| Order | Modifier                    | Function                                                                  |
+|-------|-----------------------------|---------------------------------------------------------------------------| 
+| First | `#`                         | Take the length of text after applying all modifiers (except the default) |
+|       | `:`                         | Substring                                                                 |
+|       | `^` `^^` `,` `,,` `~` `~~`  | Case change                                                               |
+| last  | `-`                         | Default values                                                            |
 
-Default values are EEL Expressions in their own right, so the following Value interpolations are valid:
+Because default values and indexes/lengths for substrings are EEL Expressions in their own right, the following 
+Value Interpolations are valid:
 
-- `${undefined-defaultText}` - if _undefined_ is not in the Symbols Table then use the literal text `defaultText`
-- `${undefined-}` - if _undefined_ is not in the Symbols Table then use empty text 
-- `${first-${second}}` - if _first_ is not in the Symbols Table then use the value associated with _second_ instead 
-- `${first-${second-defaultText}}` - if _first_ is not in the Symbols Table then try _second_. 
-  If _second_ also not in the Symbols Table then use the literal text `defaultText`
-- `${undefined-$myFunction()}` - if _undefined_ is not in the Symbols Table then call _myFunction_ 
-- `${undefined-$( expression )}` - if _undefined_ is not in the Symbols Table then evaluate _expression_
+- `${undefined-defaultText}` - if _undefined_ is not in the SymbolsTable then use the literal text `defaultText`
+- `${undefined-}` - if _undefined_ is not in the SymbolsTable then use empty text 
+- `${first-${second}}` - if _first_ is not in the SymbolsTable then use the value associated with _second_ instead 
+- `${first-${second-defaultText}}` - if _first_ is not in the SymbolsTable then try _second_. 
+  If _second_ is also not in the SymbolsTable then use the literal text `defaultText`
+- `${undefined-$myFunction()}` - if _undefined_ is not in the SymbolsTable then call _myFunction_ 
+- `${undefined-$( expression )}` - if _undefined_ is not in the SymbolsTable then evaluate _expression_
+- `${STR:$(indexOf(${STR}, '~', fail()) + 1):1}` - return the character in _STR_ that immediately follows the first `~`.
+  If there are no `~` characters then fail the expression.
 
 **Undefined values**
 
-There are several ways to handle identifiers do not have an associated value in the Symbols Table. These are:
+There are several ways to handle keys do not have an associated value in the SymbolsTable. These are:
 1. Use defaults with all Value interpolations 
-2. Use the [isDefined operator](#operators) (`?`) to check the identifier is defined in the Symbols Table before reading it 
-3. Configure the Symbols Table to return a hardcoded value if the value is undefined (e.g. empty text)
+2. Use the [isDefined operator](#operators) (`?`) to check the key is defined in the SymbolsTable before reading it 
+3. Configure the SymbolsTable to return a hardcoded value if the key is undefined (e.g. empty text)
 4. Have the client code handle the [EelUnknownSymbolException](#exceptions)
 5. Have the interpolation throw an exception with a custom message. This is achieved by using
    [Function interpolation](#function-interpolation) to fail the expression. For example, `${undefined-$fail('custom error message')}` 
 
 
 #### Function interpolation
-Function interpolation is written in the form **_$functionName(...)_**, which is just short for:
+Function interpolation is written in the form **_$functionName(...)_**. This is the equivalent of:
 
     $( functionName(...) )
 
-That is, an Expression interpolation that only calls a function. The arguments passed to the function
-can contain Value interpolation sequences and any of the constant literals, values or operators that are available
-in the Expression interpolation sequences.
+that is, an Expression interpolation that only calls a function. The arguments passed to the function
+can contain all the Value interpolations, literals, functions or expressions that an Expression interpolation could use.
 
 
 #### Expression interpolation
@@ -648,13 +558,13 @@ a value.
 
 ###### Naming conventions
 - Reserved words are all lowerCamelCase. For example `text` and `logic`, `and`, `or`, `true` and `isAfter`,  
-- The function names (see below) are also in lowerCamelCase. Dots (`.`) are sometimes included in function names to create
+- [Function names](#standard-functions) are also in lowerCamelCase. Dots (`.`) are sometimes included in function names to create
   prefixes. These are used to logically group functions and avoid namespace clashes much as packages do in Java. 
   Otherwise, they have no special meaning. 
   Example function names are `count`, `cos`, `isEmpty`, `system.home`, `date.local`, `log.warn` and `format.hex`
-- Value names are typically in a format that is appropriate to the data source. For example, environment variables
-  are usually in _UPPERCASE_WITH_UNDERSCORES_ while JVM properties are in _lower.case.with.dots_. The requirements for
-  value keys are described in the [identifiers](#identifiers) section.
+- SymbolsTable keys are typically in a format that is appropriate to the data source. For example, environment variables
+  are usually in _UPPERCASE_WITH_UNDERSCORES_ while JVM properties are in _lower.case.with.dots_. 
+- The [identifiers](#identifiers) section describes for format of an identifier
 
 ##### Constants
 EEL defines the following constants:
@@ -668,8 +578,7 @@ EEL supports the following operators:
 
 | Precedence | Operators Symbols                                      | Operators Name(s)                                                                                   |
 |------------|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| Highest    | `()`                                                   | Parentheses                                                                                         |
-|            | `?`                                                    | isDefined                                                                                           |
+| Highest    | `()`, `?`                                              | Parentheses, isDefined                                                                              |
 |            | `-` `not` `~` conversions, function-call               | negation, logical-not, bitwise-not, type-conversions, function-calls                                |
 |            | `**` `~>`                                              | exponentiation, string-concatenation                                                                |
 |            | `*` `/` `//` `-/` `%` `and` `&`                        | multiply, divide, divide-floor, divide-truncate, modulus, logical-and, bitwise-and                  |
@@ -679,16 +588,16 @@ EEL supports the following operators:
 | Lowest     | `? :`                                                  | conditional                                                                                         |
 
 
-Most operators require their operands to be a particular type, so EEL will automatically convert their operands using the standard rules defined above.
+Most operators require their operands to be a particular type, so EEL will automatically convert their operands using the [type conversion rules](#types-conversions).
 The expected types for the operators are: 
 
 | Operator Group   | Operators Symbols                                       | Operand type(s)                                                |
 |------------------|---------------------------------------------------------|----------------------------------------------------------------|
 | Text             | `~>`                                                    | Text                                                           |
 | Logical          | `not`, `and`, `or`                                      | Logic                                                          |
-| Bitwise          | `~` `&` <code>&#124;</code> `^` `<<` `>>`               | Number with fractional values truncated                        |
-| Maths            | `+` `-` (minus and negation) `*` `/` `//` `-/` `%` `**` | Number                                                         |
-| Numeric relation | `>` `>=` `<` `<=`                                       | Number                                                         |
+| Bitwise          | `~` `&` <code>&#124;</code> `^` `<<` `>>`               | Number (with any fractional part truncated)                    |
+| Maths            | `+` `-` (minus and negation) `*` `/` `//` `-/` `%` `**` | Number (complete with any optional fractional part)            |
+| Numeric relation | `>` `>=` `<` `<=`                                       | Number (complete with any optional fractional part)            |
 | Date relation    | `isBefore`, `isAfter`                                   | Date                                                           |
 | Symbols          | `?`                                                     | identifier                                                     |
 | Conditional      | `?  :`                                                  | first operand is Logic, operands two and three can be any type |  
@@ -703,23 +612,23 @@ The equals and not-equal operators compare their operands based on the following
 | **Logic**    | Convert Logic to Text   | Convert Logic to Number   | Compare two Logic values       | Convert both values to Numbers   |
 | **Date**     | Convert Date to Text    | Convert Date to Number    | Convert both values to Numbers | Compare two instances in time[1] |
 
-[1] Two dates will be considered equal if they represent the same instant of time, even if they are in different zones.  
+[1] Two dates will be considered equal if they represent the same instant of time, even if they are in different zones.
+
+These rules are defined this way so that it is always possible convert the values. 
   
 ##### Operators Details
 
-- The `+` operator is purely a numeric operator; the `~>` operator is used for string concatenation. This removes
-  the need to call a conversion function when reading values from the Symbols Table that are expected to be numeric.
-  
-  `${A} ~> {B}` will concatenate the Text operands whereas `${A} + {B}` will convert the values to numbers and then add them together. 
-- The isDefined operator (`?`) is used to check if an identifier has an associated value in the Symbols Table. 
+- Operator names (`not`, `and`, `or`, `isBefore` and `isAfter`) are case-sensitive.
+- The `+` operator is purely a numeric operator; the `~>` operator is used for string concatenation.
+  This removes the need to call a conversion function when adding values from the SymbolsTable that are expected to be numeric.
+- The isDefined operator (`?`) is used to check if an identifier has an associated value in the SymbolsTable. 
   If the identifier is defined the operator returns `true`, otherwise it returns `false`. 
-  The operator is written after the name of the Symbols Table identifier (it has right associativity).
+  The operator is written after the name of the SymbolsTable identifier (it has right associativity).
 
   For example, `myIdentifier?` will return _true_ only if `${myIdentifier}` returns a value rather than throwing an `EelUnknownSymbolException`.
-- To match other languages, the not-equal operator exists in two forms; `!=` and `<>`. This is purely cosmetic; they both
-  symbols behave in the same way and have the same priority.
-- The logic operator names (`not`, `and`, and `or`) are case-sensitive.
-- The logic operators (`not`, `and`, and `or`) and the Bitwise operators (`~`, `&`, `|` and `^`) convert their operands to different types.
+- To match other languages, the not-equal operator exists in two forms; `!=` and `<>`. The difference is purely cosmetic - they both
+  behave in the same way and have the same priority.
+- The logic operators (`not`, `and`, and `or`) and the Bitwise operators (`~`, `&`, `|` and `^`) operate on different data types.
 - The logic operators are always short-circuited. 
 - The Bitwise operators will silently truncate any fractional parts of their operands. 
 
@@ -753,8 +662,7 @@ The equals and not-equal operators compare their operands based on the following
 
 ### Standard functions
 
-EEL has a large library of standard functions that are automatically made available to expressions without the client having
-to explicitly import them.
+EEL has a number of standard functions that are automatically made available to expressions.
 
 Some of these functions can accept a variable number of arguments where the final argument can be passed zero, one or
 more times. This is denoted in the list below by the `...` after the last argument. 
@@ -766,22 +674,56 @@ add a default value. This is denoted in the list below by surrounding the option
 For example, `random( { minValue { , maxValue } } )` can be called as `random()`, `random( minValue )` 
 or `random( minValue, maxValue )`.
 
-#### EEL Metadata
+
+#### Function prefixes
+The standard functions have prefixes that describe their purpose and prevent name space clashes.
+
+| Prefix    | Group                               | Example        |
+|-----------|-------------------------------------|----------------|
+| < none >  | General utility functions           | count()        |
+| eel       | Eel system functions                | eel.version()  |
+| system    | Host system information functions   | system.home()  |
+| format    | Data formatting functions           | format.local() | 
+| log       | Logging functions                   | log.error()    |
+| text      | Reserved for future Text functions  |                |
+| logic     | Reserved for future Logic functions |                |
+| number    | Number functions                    | number.pi()    |
+| date      | Date functions                      | date.utc()     |
+
+
+#### EEL system functions
 - **eel.version()** - returns the EEL version number.
 - **eel.buildDate()** - returns the date and time the EEL compiler was built
 
 
 #### Text processing
+##### Case conversions
 - **lower( text )** - returns the _text_ as lower case
 - **upper( text )** - returns the _text_ as upper case
 - **title( text )** - returns the _text_ as title case
 
 
+##### Querying text
+- **len( text )** - returns the length of the _text_, including leading and trailing whitespace
+- **isEmpty( text )** - returns `true` only if the _text_ is empty. This is a more concise version of `len( text ) = 0`
+- **isBlank( text )** - returns `true` only if the _text_ is empty or whitespace. This is a more concise version of `isEmpty( trim(text) )`
+- **matches( text, regEx )** - returns `true` only if the _text_ matches the regular expression _regEx_
+- **indexOf( text, subString { , defaultFunc } )** - 
+    returns the zero based index of the first occurrence of _subString_ in _text_, or the result of _defaultFunc_ if _subString_ is not present.
+    If not specified, _defaultFunc_ returns _-1_ 
+- **lastIndexOf( text, subString { , defaultFunc } )** - 
+    returns the zero based of the last occurrence of _subString_ in _text_, or the result of _defaultFunc_ if _subString_ is not present.
+    If not specified, _defaultFunc_ returns _-1_ 
+- **contains( text, subtext )** - returns the number of times that the _subtext_ occurs in _text_
+
+
+##### Splitting text on indexes
 - **left( text, count )** - returns up to _count_ characters from the start of the _text_
 - **mid( text, offset, count )** - returns up to _count_ characters from the _text_ starting from the zero based _offset_
 - **right( text, count )** - returns up to _count_ characters from the end of the _text_
 
 
+##### Splitting text on delimiters
 - **before( text, delimiter, count )** - returns all the text before the _count_'th occurrence of the _delimiter_
 - **between( between, delimiter, start, end )** - returns all the text between the _start_'th and the _end_'th occurrence of the _delimiter_
 - **after( text, delimiter, count )** - returns all the text after the _count_'th occurrence of the _delimiter_- 
@@ -791,27 +733,15 @@ or `random( minValue, maxValue )`.
 - **afterFirst( text, delimiter )** - returns all the text after the first occurrence of the _delimiter_
 - **beforeLast( text, delimiter )** - returns all the text before the last occurrence of the _delimiter_
 - **afterLast( text, delimiter )** - returns all the text after the last occurrence of the _delimiter_
-- **contains( text, subtext )** - returns the number of times that the _subtext_ occurs in _text_
 
-
+##### Extracting text
 - **trim( text )** - returns the _text_ with all leading and trailing whitespaces removed
-- **matches( text, regEx )** - returns `true` only if the _text_ matches the regular expression _regEx_
 - **extract( text, regEx )** - returns the grouped characters from the _text_ based on a regular expression
 - **replace( text, from, to )** - returns the _text_ with all instances of the literal text _from_ replaced by _to_
 - **replaceEx( text, regEx, to )** - returns the _text_ with all matches of the regular expression _regEx_ replaced by _to_
 
 
-- **len( text )** - returns the length of the _text_, including leading and trailing whitespace
-- **isEmpty( text )** - returns `true` only if the _text_ is empty. This is a more concise version of `len( text ) = 0`
-- **isBlank( text )** - returns `true` only if the _text_ is empty or whitespace. This is a more concise version of `isEmpty( trim(text) )`
-- **indexOf( text, subString { , defaultFunc } )** - 
-    returns the zero based index of the first occurrence of _subString_ in _text_, or the result of _defaultFunc_ if _subString_ is not present.
-    If not specified, _defaultFunc_ returns _-1_ 
-- **lastIndexOf( text, subString { , defaultFunc } )** - 
-    returns the zero based of the last occurrence of _subString_ in _text_, or the result of _defaultFunc_ if _subString_ is not present.
-    If not specified, _defaultFunc_ returns _-1_ 
-
-
+##### Text to Unicode codepoints
 - **char( codepoint )** - return a text value containing the single character given by the unicode _codepoint_
 - **codepoint( text )** - returns the unicode codepoint of the first character in the _text_ 
 
@@ -821,6 +751,17 @@ or `random( minValue, maxValue )`.
 - **number.pi()** - returns an approximate value for _pi_
 - **number.e()** - returns an approximate value for _e_
 - **number.c()** - returns the value for _c_, the speed of light in meters per second.  
+
+##### Rounding and conversion functions
+- **number.round( number )** - returns the _number_ rounded to the closest non-fractional value.
+- **number.truncate( number )** - returns the _number_ with its fractional part discarded 
+- **number.ceil( number )** - returns the nearest value that is greater than or equal to _number_ and is non-fractional
+- **number.floor( number )** - returns the nearest value that is less than or equal to _number_ and is non-fractional
+
+
+- **toDegrees( radians )** - returns the _radians_ value expressed in degrees
+- **toRadians( degrees )** - returns the _degrees_ value expressed in radians
+
 
 ##### Trigonometric functions
 - **sin( value )** - returns the sine of the radian _value_
@@ -832,13 +773,12 @@ or `random( minValue, maxValue )`.
 - **acos( value )** - returns the arc cosine (inverted cosine) of _value_
 - **atan( value )** - returns the arc tangens (inverted tangens) of _value_ 
 
-
-##### Other maths functions
+##### Statistics functions
 - **max( value, values... )** - returns the largest value of all the numbers passed
 - **min( value, values... )** - returns the smallest value of all the numbers passed
 - **avg( value, values... )** - returns the average value of all the numbers passed
- 
- 
+
+##### Other maths functions
 - **abs( value )** - returns the absolute value of a number
 - **exp( value )** - returns the natural exponent of value (e<sup>value</sup>)
 - **factorial( value )** - returns the factorial of _value_
@@ -847,21 +787,18 @@ or `random( minValue, maxValue )`.
 - **root( value { , n } )** - returns the n'th root of _value_. The default value of _n_ is 2, which gives square roots
 - **sgn( value )** - returns the sign of a numeric _value_; -1 for negative, 0 for zero and 1 for positive
  
- 
-- **number.round( number )** - returns the _number_ rounded to the closest non-fractional value.
-- **number.truncate( number )** - returns the _number_ with its fractional part discarded 
-- **number.ceil( number )** - returns the nearest value that is greater than or equal to _number_ and is an integer
-- **number.floor( number )** - returns the nearest value that is less than or equal to _number_ and is an integer
 
 The precision of the numeric functions is set in the [EelContext](#eel-context).
 
 #### Date functions
-- **date.start( { zone } )** - returns the date-time when the EelContext was created. _zone_ defaults to UTC
+##### Reading dates 
+- **date.start( { zone {, offsets... } } )** - returns the date-time when the EelContext was created plus any optional 
+    offsets. _zone_ defaults to UTC
 - **date.utc( offsets... )** - returns the current UTC date-time plus any optional offsets
 - **date.local( offsets... )** - returns the current local date-time plus any optional offsets
 - **date.at( zone, offsets... )** - returns the current date-time in the specified zone plus any optional offsets
 
-
+##### Modifying  dates 
 - **date.offset( date, offsets... )** - returns the _date_ after adding one or more offsets
 - **date.set( date, specifier... )** - returns the _date_ after setting one or more periods
 - **date.setZone( date, zone )** - returns the _date_ after setting the time zone
@@ -900,11 +837,14 @@ passed.
 
 In order of priority, from highest to lowest, the logging functions are:
 
-- **log.error( { message, } args... )** - log the optional message and the _args_ at error level
-- **log.warn( { message, } args... )** - log the optional message and the _args_ at warn level. 
-- **log.info( { message, } args... )** - log the optional message and the _args_ at info level. 
-- **log.debug( { message, } args... )** - log the optional message and the _args_ at debug level. 
-- **log.trace( { message, } args... )** - log the optional message and the _args_ at trace level. 
+- **log.error( { message, } arg, args... )** - log the optional message and the _args_ at error level
+- **log.warn( { message, } arg, args... )** - log the optional message and the _args_ at warn level. 
+- **log.info( { message, } arg, args... )** - log the optional message and the _args_ at info level. 
+- **log.debug( { message, } arg, args... )** - log the optional message and the _args_ at debug level. 
+- **log.trace( { message, } arg, args... )** - log the optional message and the _args_ at trace level. 
+
+
+**Note:** The EEL expression must pass at least one argument to the logging function.
 
 **Note:** The client's logging framework is responsible for enabling logging. EEL writes all its messages to the
 `com.github.tymefly.eel.log` logger, so it is recommended that it is configured with **trace** level
@@ -919,19 +859,23 @@ return characters to prevent EEL logging text that that might be mistaken for an
 
  
 #### Data formatting functions
-- **printf( format, arguments... )** - returns formatted text using the specified format string and arguments.
+##### Formatting text
+- **printf( format, arguments... )** - returns formatted text using the specified [format string](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) and arguments.
 - **padLeft( text, width {, pad } )** - adds _pad_ characters to the start of the _text_ so that it is at least _width_ characters long.
    _pad_ defaults to a space
 - **padRight( text, width {, pad } )** - adds _pad_ characters to the end of the _text_ so that it is at least _width_ characters long.
    _pad_ defaults to a space
 
-
-- **format.octal( value )** - returns the _value_ as octal Text. 
+##### Formatting numbers
+- **format.binary( value )** - returns the _value_ as binary Text without a leading _"0b"_
+- **format.octal( value )** - returns the _value_ as octal Text without a leading _"0c"_
 - **format.hex( value )** - returns the _value_ as hexadecimal Text without a leading _"0x"_
 - **format.number( value, radix )** - returns the number as Text in the given radix. The maximum _radix_ is 36 
 
-
+##### Formatting dates
 - **format.date( format, date, offsets... )** - returns the _date_, plus optional offsets, as Text in a custom format.
+- **format.start( format { , zone { , offsets... } } )** - returns instant the EEL Context was created, plus optional offsets, 
+      as Text in a custom format. _zone_ defaults to UTC.
 - **format.utc( format, offsets... )** - returns the current UTC time, plus optional offsets, as Text in a custom format.
 - **format.local( format, offsets... )** - returns the current local time, plus optional offsets, as Text in a custom format.
 - **format.at( zone, format, offsets... )** - returns the current time in the specified zone, plus optional offsets, as Text in a custom format.
@@ -942,15 +886,14 @@ documentation
 
 
 #### File system functions
+##### Filename and path manipulation
 - **baseName( path { , extension } )** - returns the _path_ with the leading directory components and the optional _extension_ removed
 - **dirName( path )** - returns _path_ with its last non-slashed component and trailing slash removed
 - **extension( path, { , max } )** - returns up to _max_ of the right most file extensions from the _path_. The default is to return all extensions
 - **realPath( path )** - returns _path_ in a canonicalised format based on current operating system
 
-
+##### File information
 - **exists( path )** - returns _true_ only if the file at the specified _path_ exists
-- **fileCount( dir {, glob } )** - returns the number of files in the _dir_ that match the _glob_ expression. 
-  _glob_ defaults to `*` so that all files are counted   
 - **fileSize( path { , defaultSizeFunc } )** - returns the size of the file in bytes. 
   If the file does not exist then _defaultSizeFunc_ is evaluated. -1 is returned if the  _defaultSizeFunc_ is not specified 
 - **createAt( path {, defaultTimeFunc } )** - returns the local date on which file was created. 
@@ -960,7 +903,9 @@ documentation
 - **modifiedAt( path {, defaultTimeFunc } )** - returns the local date on which file was last modified. 
   If the file does not exist then _defaultTimeFunc_ is evaluated. 1970-01-01 00:00:00Z is returned if the  _defaultTimeFunc_ is not specified 
 
-
+##### Directory information
+- **fileCount( dir {, glob } )** - returns the number of files in the _dir_ that match the _glob_ expression. 
+  _glob_ defaults to `*` so that all files are counted   
 - **firstCreated( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file that matches the 
   _glob_ expression in the _dir_ where the files are ordered from the first created to the last created. 
   _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and defaults to throwing an IOException 
@@ -1045,19 +990,19 @@ which will write `Hello` to standard out.
 
     java -jar evaluate/target/evaluate-<version>.jar --env 'Your HOME directory is ${HOME}'
 
-will add all the environment variables to the Symbols Table and use one of them in the expression. 
+will add all the environment variables to the SymbolsTable and use one of them in the expression. 
 
 To add [UDF](#user-defined-functions-udfs) classes and packages ensure the implementing classes are on the classpath
 and execute **evaluate** using the `--udf-class` and `--udf-package` options.
 
 ---
 ## Querying the EEL version
-As of version 2.0, it is possible to query what version of EEL it is running.  
+As of version 2.0, it is possible to query the version of EEL that's running.  
 
-- **EEL Expressions** - The function `eel.version()` will return the version as Text. 
+- **EEL expressions** - The function `eel.version()` will return the version as Text. 
 - **Evaluate** - launch the evaluate JAR with the command line argument `--version`
-- **Java API** - call `Eel.metadata().version()` 
-- **UDF Implementers** - ensure that one of the parameters passed to the function is of type `EelContext` and 
+- **Java client API** - call `Eel.metadata().version()` 
+- **UDF implementers** - ensure that one of the parameters passed to the function is of type `EelContext` and 
  then call `context.metadata().version()`
 
 The version is always a pair of numbers separated by a decimal point (`.`), which means that the version text can
@@ -1129,23 +1074,8 @@ A valid UDF must meet the following requirements:
   * For Date values this is at or before `1970-01-01 00:00:00Z`. For convenience the constant`EelContext.FALSE_DATE` can be used.
 
 ### Function names
-The name EEL uses to refer to the UDF is given in the EelFunction annotation. 
-
-The following prefixes have been reserved for the standard functions:
-
-| Prefix    | Purpose                             | Example        |
-|-----------|-------------------------------------|----------------|
-| < none >  | Utility functions                   | count()        |
-| eel       | Eel system functions                | eel.version()  |
-| system    | Host system information functions   | system.home()  |
-| format    | Data formatting functions           | format.local() | 
-| log       | Logging functions                   | log.error()    |
-| text      | Reserved for future Text functions  |                |
-| logic     | Reserved for future Logic functions |                |
-| number    | Number functions                    | number.pi()    |
-| date      | Date functions                      | date.utc()     |
-
-EEL will throw a [EelFunctionException](#exceptions) if a UDF name uses one of the reserved prefixes. 
+All the prefixes used by the [Standard Functions](#function-prefixes) are reserved. EEL will throw a [EelFunctionException](#exceptions)
+if a UDF uses one of the reserved prefixes. 
 
 Because UDFs must have at least one dot (`.`) delimited prefix UDF names are never valid Java identifiers.
 
@@ -1155,9 +1085,9 @@ EEL allows functions to be called with default arguments.
 The default value is set by annotating the Java argument with `com.github.tymefly.eel.udf.DefaultArgument`.
 For example:
 
-    @EelFunction(name = "my.random")
-    public int random(@DefaultArgument("0") int min, 
-                      @DefaultArgument("99") int max) {
+    @com.github.tymefly.eel.udf.EelFunction(name = "my.random")
+    public int random(@com.github.tymefly.eel.udf.DefaultArgument("0") int min, 
+                      @com.github.tymefly.eel.udf.DefaultArgument("99") int max) {
        // implement me
     }
 
@@ -1171,14 +1101,14 @@ additional context information. This exception will then be thrown back to the c
 
 
 ### Stateful functions
-Because EEL may reuse instances of the implementing UDF classes they must be stateless. This is to prevent state leaking 
-across compiled expressions, which can cause subtle problems for the client.
+Because EEL may reuse instances of the implementing UDF classes they **must** always be stateless. 
 
-If a UDF needs to maintain state then the solution is to get EEL to manage the state for the function.
+In the very rare occasions that a function has to be stateful then the solution is to get EEL to manage the state
+for the function.
 This is achieved by declaring the UDF function with an additional parameter of type `FunctionalResource`. This is an 
 EEL aware object that is used to manage shared data objects. For example:
 
-    @EelFunction(name = "my.stateful")
+    @com.github.tymefly.eel.udf.EelFunction(name = "my.stateful")
     public String stateful(FunctionalResource functionalResource) {
         DTO myDto = functionalResource.getResource("myName", DTO::new);
 
@@ -1187,18 +1117,18 @@ EEL aware object that is used to manage shared data objects. For example:
 
 The parameters passed to `getResource` are:
 1. **_name_**: The name of the resource. UDFs can have multiple managed resource so long as they have unique names.
-2. **_constructor_**: A function that is used to return a new instance of the resource, typically a constructor. 
+2. **_supplier-function_**: A function that is used to return a new instance of a stateful object, typically a constructor. 
 Eel will pass the name of the resource to this function as a String
 
-The first time `getResource` is called for the named resource the constructor function will be called to create the 
+The first time `getResource` is called for the named resource the supplier-function will be called to create the 
 resource. For subsequent invocations the existing resource will be returned.
 
 **Important Note:** As the returned object is a shared resource, the UDF is responsible for synchronizing access to it
 in multi-threaded environments.  
 
-The FunctionalResource is associated with both the [EelContext](#eel-context) and the implementing class. This means that:
- * If the expression is recompiled with a new Context then a new set of resources will be allocated. 
- * If another expression is compiled with the same Context then the resources will be shared.
+The FunctionalResource is associated with both the [EelContext](#eel-context) and the implementing class. Consequently:
+ * If the EEL expression is recompiled with a new Context then new resources will be allocated. 
+ * If another EEL expression is compiled with the same Context then the resources will be shared.
  * If the implementing class supports more than one UDF then the resources can be shared between the UDFs
  * UDFs that are in different implementing classes can not interfere with each other's resources, even if they 
 request resources with the same name
@@ -1222,13 +1152,13 @@ Because it can get repetitive registering every class with the Context, EEL prov
 package of UDFs classes. First annotate each UDF class with `com.github.tymefly.eel.udf.PackagedEelFunction`.
 For example:
 
-    @PackagedEelFunction
-    public class MyFunctions {
+    @com.github.tymefly.eel.udf.PackagedEelFunction
+    public class MyClass1 { {
 
 Then create the Context using:
 
     EelContext context = EelContext.factory()
-        .withUdfPackage(MyFunctions.class.getPackage())    // Any of the classes in the package could have been used
+        .withUdfPackage(MyClass1.class.getPackage())    // Any of the classes in the package could have been used
         .build();
 
 **Note:** Child packages are not automatically added. If a child package is also required then it must be added
@@ -1248,7 +1178,7 @@ As there are no interpolated sequences the expression will be passed through as-
 
     Your HOME directory is ${HOME}
 
-Assuming the EEL is running on a *nix operating system and that the [Symbols Table](#symbols-table) contains the environment 
+Assuming the EEL is running on a *nix operating system and that the [SymbolsTable](#symbols-table) contains the environment 
 variables then the [Result](#result) object will have a type of `text` and a value of that starts with `Your HOME directory is ` 
 followed by the user's home directory.
 
@@ -1261,14 +1191,15 @@ An alternative expression that works on both operating systems is:
 
      Your HOME directory is ${HOME-${HOMEDRIVE}${HOMEPATH}}
 
-Because reading locating the users home directory is common requirement, a simpler and cleaner way to get this
+However, because reading locating the users home directory is common requirement, a simpler and cleaner way to get this
 information is via the [standard EEL function](#operating-system-information-functions):
 
      Your HOME directory is $system.home()
 
 ### Forcing the result type
 
-Function interpolation can be used to guarantee the [Result](#result) object has the required type. For example: 
+Using Function interpolation to call a conversion function can be used to guarantee the [Result](#result) object has the
+required type. For example: 
 
     $number( ${#myValue--1} )
 
@@ -1283,13 +1214,13 @@ Given the following two expressions:
     ${root}/config
     ${root}/template
 
-If the value for `${root}` is in a common [Symbols Table](#symbols-table) then these expressions will evaluate paths that
+If the value for `${root}` is in a common [SymbolsTable](#symbols-table) then these expressions will return paths that
 share a common root. `${root}` might even be determined by a previously evaluated an EEL expression.
 
 
 ### Calling functions
 
-[Function interpolation](#function-interpolation) is used to call a function. For example: 
+[Function interpolation](#function-interpolation) can be used to call a function. For example: 
 
     Last week was $date.local( "-7d" )
 
@@ -1299,12 +1230,14 @@ week's date and time.
 Function calls can be nested. For example, the following expression will truncate last week's local date to the start of
 the day:
 
-    Last week is was $date.truncate( date.local( "-7d" ), "d" )
+    Last week was $date.truncate( date.local( "-7d" ), "d" )
 
 It is worth noting that because the nested function is already part of the function interpolation, it is not prefixed with
-a `$`. If the requirement is to display the date without any time fields then use:
+a `$`. 
 
-    Last week is was $format.local( "yyyy-MM-dd", "-7d" )
+If the requirement is to display the date without any time fields then use:
+
+    Last week was $format.local( "yyyy-MM-dd", "-7d" )
 
 
 ### Counters
@@ -1314,7 +1247,7 @@ a `$`. If the requirement is to display the date without any time fields then us
 will return a [Result](#result) object that will have a type of `number` and value from an anonymous zero based counter. 
 If the expression is reevaluated _with the same Context_ then the next value from the counter is returned.
 
-Named counters can be used if all the expressions that use the [Context](#eel-context) require multiple, independent, counters. 
+Named counters can be used if the expressions that use the [Context](#eel-context) require multiple, independent, counters. 
 For example:   
 
     First: $count( "first" ), Second: $count( "second" )
@@ -1323,7 +1256,7 @@ will return a [Result](#result) object that will have a type of `text` and the v
 If the expression is reevaluated _with the same Context_ then the next value from each counter is returned.
 
 
-### Creating a sequence of files
+### Creating a sequence of file name
 
 If the EEL repeatedly evaluates
 
@@ -1331,6 +1264,8 @@ If the EEL repeatedly evaluates
 
 **_with the same [Context](#eel-context)_** then each returned [Result](#result) object will have a type of `text`
 and a value that forms a sequence of files in the system temp directory with a common optional prefix.
+
+EEL will not create the files, but the client application could.
 
 To reset the sequence, recompile the expression with a new Context.
 
@@ -1349,12 +1284,12 @@ directory structure to a new location.
 
 ### Converting paths
 
-To convert a path to *nix format use
+To convert the path separator characters in some text to *nix format use
 
     $replace( ${root-}, "\\", "/")
 
 The [Result](#result) object will have a type of `text` and a value based on the optional _root_ value from the 
-[Symbols Table](#symbols-table), but with forwards slashes instead of Windows style backslashes.
+[SymbolsTable](#symbols-table), but with forwards slashes instead of Windows style backslashes.
 
 To force the path to the format used by the underlying operating system then use: 
 
@@ -1366,9 +1301,9 @@ ensure that the returned path is formatted correctly.
     $realPath( ${root-} ~> "/" ~> format.local("yyyy/MM/dd/HH/") )
 
 
-### Listing directories
+### Directories listings 
 
-Assuming that `${myPath}` is in the [Symbols Table](#symbols-table) and references a valid directory then
+Assuming that `${myPath}` is in the [SymbolsTable](#symbols-table) and references a valid directory then
 
     $firstModified( ${myPath} )
 
@@ -1411,7 +1346,7 @@ To log a single value at _info_ level use
 
     $log.info( ${myValue-Not Set} )
 
-The [Result](#result) object will have a type of `text` and a value that either comes from the Symbols Table, or the literal
+The [Result](#result) object will have a type of `text` and a value that either comes from the SymbolsTable, or the literal
 Text _'Not Set'_. The returned value will be written to the system log at INFO level. For example:
 
     [INFO ] com.github.tymefly.eel.log - Logged EEL Message: Not Set
@@ -1438,10 +1373,10 @@ and will return a [Result](#result) object with a type of number and a value of 
 
 If the requirement to only log values if they are not set then use:
 
-    ${myValue-$log.warn( "myValue is not set" ) }
+    ${myValue-$log.warn( "myValue is not set" )}
 
 This works because the Function interpolation for the default value, which includes the logging, will only be executed if 
-_myValue_ is not in the [Symbols Table](#symbols-table).
+_myValue_ is not in the [SymbolsTable](#symbols-table).
 
 Finally, it is worth noting that the final value passed to a logging function doesn't have to be logged. For example:
 
@@ -1462,7 +1397,7 @@ To fail an expression if a precondition is not met then use `fail` inside a cond
 
 `isEmpty( ${myValue-} )` will return `true` if the value associated with _myValue_ is undefined or an empty string.
 If this is the case then `fail()` will be executed which will terminate the expression with an [EelFailException](#exceptions). 
-If there is text then `${myValue}` is read from the [Symbols Table](#symbols-table) and returned to the client as Text
+If there is text then `${myValue}` is read from the [SymbolsTable](#symbols-table) and returned to the client as Text
 
 If the requirement is to fail an EEL expression with a custom message if a value is not defined then use:
 
@@ -1474,7 +1409,7 @@ If the requirement is to fail an EEL expression if multiple values are not defin
 
 It is also possible to fail an expression if an old version of EEL is being used
 
-    $( eel.version() >= 2.0 ? 0 : fail("Invalid EEL Version") )
+    $( eel.version() >= 99.9 ? 0 : fail("Invalid EEL Version") )
 
 
 ### Functions that return default values
@@ -1514,7 +1449,7 @@ Finally, it's worth noting that:
 
     $indexOf( 'abcdef', 'd', fail() )
 
-will return _3_, which is the index of 'd' without evaluating `fail()` so no exception is thrown. 
+will return _3_, which is the index of 'd'. `fail()` is not evaluated and no exception is thrown. 
 
 
 ### Dates operations
@@ -1540,7 +1475,7 @@ If seconds is too fine-grained then a time difference can be returned in minutes
 
 Building on this, an expression to check if a file is out of date could look something like:
 
-    $( duration( modifiedAt("/path/to/my/file.txt"), date.local(), "months" ) > 6 )
+    $( duration( modifiedAt( ${myFile} ), date.local(), "months" ) > 6 )
 
 In this case the Result object will have a type of logic and a value that is `true` only if the referenced file is
 more than 6 months old.

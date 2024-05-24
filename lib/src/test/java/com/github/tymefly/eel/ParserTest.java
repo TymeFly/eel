@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyChar;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -36,11 +36,11 @@ public class ParserTest {
 
     @Before
     public void setUp() {
-        FunctionManager functionManager = mock(FunctionManager.class);
+        FunctionManager functionManager = mock();
 
-        symbolsTable = mock(SymbolsTable.class);
-        tokenizer = mock(Tokenizer.class);
-        context = mock(EelContextImpl.class);
+        symbolsTable = mock();
+        tokenizer = mock();
+        context = mock();
 
         terminals = new LinkedList<>();
         compiler = new LambdaCompiler(context);
@@ -50,7 +50,7 @@ public class ParserTest {
         when(context.getFunctionManager())
             .thenReturn(functionManager);
 
-        when(tokenizer.next(any(Tokenizer.Mode.class)))
+        when(tokenizer.next(any(Tokenizer.Mode.class), anyChar()))
             .thenAnswer(i -> terminals.remove());
 
         when(functionManager.compileCall(anyString(), any(EelContext.class), anyList()))
@@ -59,7 +59,7 @@ public class ParserTest {
                 List<Executor> argList = i.getArgument(2);
                 List<Value> values = argList.stream()
                     .map(a -> a.execute(symbolsTable))
-                    .collect(Collectors.toList());
+                    .toList();
                 Value value = Value.of(functionName + "(" + values + ")");
                 Executor result = r -> value;
 
@@ -87,23 +87,17 @@ public class ParserTest {
 
     private void mockToken(@Nonnull BigDecimal value) {
         BigDecimal rounded = value.setScale(0, RoundingMode.UP);
-        boolean fractional = (rounded.compareTo(value) != 0);
 
-        mockToken(Token.NUMBER, value.toString(), value, fractional);
+        mockToken(Token.NUMBER, value.toString(), value);
     }
 
     private void mockToken(@Nonnull Token token, @Nonnull String lexeme, @Nullable BigDecimal value) {
-        mockToken(token, lexeme, value, false);
-    }
-
-    private void mockToken(@Nonnull Token token, @Nonnull String lexeme, @Nullable BigDecimal value, boolean fractional) {
-        Tokenizer.Terminal terminal = mock(Tokenizer.Terminal.class);
+        Tokenizer.Terminal terminal = mock();
 
         when(terminal.token()).thenReturn(token);
         when(terminal.lexeme()).thenReturn(lexeme);
         when(terminal.value()).thenReturn(value);
         when(terminal.position()).thenReturn(terminals.size() + 1);
-        when(terminal.isFractional()).thenReturn(fractional);
 
         terminals.add(terminal);
     }
@@ -305,56 +299,67 @@ public class ParserTest {
         mockToken(Token.VALUE_INTERPOLATION);
         mockToken(Token.IDENTIFIER, "myStr");
         mockToken(Token.COLON);
-        mockToken(new BigDecimal("6.5"));
+        mockToken(new BigDecimal("6.5"));                       // fraction will truncated
         mockToken(Token.COLON);
         mockToken(5);
         mockToken(Token.RIGHT_BRACE);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected message", "Error at position 4: '6.5' has unexpected fractional part", actual.getMessage());
+        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
     }
 
     /**
      * Unit test {@link Parser#parse()}
      */
     @Test
-    public void test_substring_rangeError_start() {
+    public void test_substring_start_expression() {
         mockToken(Token.VALUE_INTERPOLATION);
         mockToken(Token.IDENTIFIER, "myStr");
         mockToken(Token.COLON);
-        mockToken(new BigDecimal(Integer.MAX_VALUE).add(BigDecimal.ONE));
+        mockToken(Token.EXPRESSION_INTERPOLATION);
+        mockToken(2);
+        mockToken(Token.PLUS);
+        mockToken(4);
+        mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.COLON);
-        mockToken(0);
+        mockToken(5);
         mockToken(Token.RIGHT_BRACE);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected message", "Error at position 4: '2147483648' is out of range", actual.getMessage());
+        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
     }
 
     /**
      * Unit test {@link Parser#parse()}
      */
     @Test
-    public void test_substring_rangeError_count() {
+    public void test_substring_count_expression() {
         mockToken(Token.VALUE_INTERPOLATION);
         mockToken(Token.IDENTIFIER, "myStr");
         mockToken(Token.COLON);
-        mockToken(new BigDecimal(Integer.MAX_VALUE));
+        mockToken(6);
         mockToken(Token.COLON);
-        mockToken(1);
+        mockToken(Token.EXPRESSION_INTERPOLATION);
+        mockToken(2);
+        mockToken(Token.PLUS);
+        mockToken(3);
+        mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.RIGHT_BRACE);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .execute(symbolsTable);
 
-        Assert.assertEquals("Unexpected message", "Error at position 6: count is out of range", actual.getMessage());
+        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
     }
 
     /**
@@ -1635,7 +1640,7 @@ public class ParserTest {
      */
     @Test
     public void test_changeSymbolsTable() {
-        SymbolsTable symbolsTable2 = mock(SymbolsTable.class);
+        SymbolsTable symbolsTable2 = mock();
 
         when(symbolsTable2.read("myStr"))
             .thenReturn("otherValue");

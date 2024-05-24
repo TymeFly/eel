@@ -3,7 +3,6 @@ package com.github.tymefly.eel.function.date;
 import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +52,7 @@ class DateHelper {
         date = switch (period) {
             case YEAR -> date.plusYears(offset);
             case MONTH -> date.plusMonths(offset);
-            case WEEK -> date.plus(offset, ChronoUnit.WEEKS);
+            case WEEK -> date.plusWeeks(offset);
             case DAY -> date.plusDays(offset);
             case HOUR -> date.plusHours(offset);
             case MINUTE -> date.plusMinutes(offset);

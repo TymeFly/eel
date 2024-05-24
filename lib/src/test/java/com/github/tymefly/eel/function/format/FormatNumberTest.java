@@ -18,6 +18,19 @@ public class FormatNumberTest {
     }
 
     /**
+     * Unit test {@link FormatNumber#formatBinary(BigInteger)}
+     */
+    @Test
+    public void test_formatBinary() {
+        Assert.assertEquals("#1 Binary",
+            "101001011010",
+            formatter.formatBinary(BigInteger.valueOf(0xa5a)));
+        Assert.assertEquals("#2 Binary",
+            "-101001011010",
+            formatter.formatBinary(BigInteger.valueOf(-0xa5a)));
+    }
+
+    /**
      * Unit test {@link FormatNumber#formatOctal(BigInteger)}
      */
     @Test

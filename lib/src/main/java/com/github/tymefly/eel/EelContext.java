@@ -12,7 +12,7 @@ import com.github.tymefly.eel.builder.EelContextBuilder;
 /**
  * Context in which EEL expressions are compiled and executed.
  */
-public interface EelContext {
+public sealed interface EelContext permits EelContextImpl {
     /**
      * A date which can be converted to the logic value {@literal false}.
      * Other dates with a {@literal 0} second offset in the current epoch but with a different ZoneOffset can
@@ -53,8 +53,8 @@ public interface EelContext {
     String contextId();
 
     /**
-     * Returns returns the time stamp indicating when this context was created. This is always in the UTC Zone
-     * @return returns the time stamp indicating when this context was created.
+     * Returns the time stamp indicating when this context was created. This is always in the UTC Zone
+     * @return the time stamp indicating when this context was created.
      */
     @Nonnull
     ZonedDateTime getStartTime();

@@ -22,7 +22,7 @@ public class FunctionalResourceImplTest {
 
     @Before
     public void setUp() {
-        context = mock(EelContextImpl.class);
+        context = mock();
 
         when(context.getResource(any(Class.class), anyString(), any(Function.class)))
             .thenReturn("myResource");

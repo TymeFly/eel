@@ -17,9 +17,16 @@ import com.github.tymefly.eel.builder.EelContextBuilder;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
- * The only implementation of the EelContext interface
+ * The only implementation of the EelContext interface.
+ * <br>
+ * Unfortunately sealed interfaces can be difficult to mock, so:
+ * <ul>
+ *  <li>Unit tests in this package should mock this class as the only instance of EelContext</li>
+ *  <li>Unit tests in other package will have to call {@code EelContext.factory().build()} to create concrete instances
+ *      of EelContext. These instances can they be wrapped in spies to mock behaviours</li>
+ * </ul>
  */
-class EelContextImpl implements EelContext {
+final class EelContextImpl implements EelContext {
     private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
 
 
