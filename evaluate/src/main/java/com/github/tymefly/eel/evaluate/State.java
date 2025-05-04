@@ -10,7 +10,8 @@ public enum State {
     HELP("Help page requested", 1),                                     // 1 -> 9 => terminated for expected reasons
     VERSION("Version information requested", 2),
     BAD_COMMAND_LINE("Invalid command line options passed", 10),        // 10 + => error conditions;
-    EXPRESSION_FAILED("EEL expression failed to evaluate", 11);
+    EXPRESSION_FAILED("EEL expression failed to evaluate", 11),
+    SCRIPT_NOT_FOUND("Script file can not be read", 12);
 
     private final String description;
     private final int returnCode;

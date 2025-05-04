@@ -15,5 +15,5 @@ public @interface EelFunction {
      * Returns the EEL name for this function.
      * @return the EEL name for this function.
      */
-    String name();
+    String value();
 }

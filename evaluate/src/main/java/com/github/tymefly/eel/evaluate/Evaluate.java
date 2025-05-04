@@ -1,8 +1,16 @@
 package com.github.tymefly.eel.evaluate;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.Eel;
 import com.github.tymefly.eel.EelContext;
@@ -34,28 +42,56 @@ public class Evaluate {
 
     @Nonnull
     private State run() {
+        String expression = config.getExpression();
+        File scriptFile = config.getScriptFile();
         State state;
-        String source = config.getExpression();
 
-        try {
-            Result result = Eel.factory()
-                .withContext(createContext())
-                .compile(source)
-                .evaluate(createSymbolsTable());
-
-            String type = config.verbose() ? "[" + result.getType() + "] " : "";
-
-            System.out.printf("%s%s%n", type, result.asText());
-
-            state = State.EVALUATED;
-        } catch (EelException e) {
-            System.err.println("Failed to evaluate : " + source);
-            e.printStackTrace();
-            state = State.EXPRESSION_FAILED;
+        if (expression != null) {
+            state = run(expression, null, ": " + expression);
+        } else if ((scriptFile != null) && !scriptFile.isFile()) {
+            System.err.println("Can not find script file " + scriptFile.getPath());
+            state = State.SCRIPT_NOT_FOUND;
+        } else if (scriptFile != null) {
+            state = run(null, scriptFile, "script '" + scriptFile.getPath() + "'");
+        } else { // Should not happen - Config guards against it
+            throw new RuntimeException("Internal Error: No expression or script provided");
         }
 
         return state;
     }
+
+    @Nonnull
+    private State run(@Nullable String expression, @Nullable File scriptFile, @Nonnull String message) {
+        State state;
+
+        try (
+            InputStream source = (expression != null ?
+                new ByteArrayInputStream(expression.getBytes(StandardCharsets.UTF_8)) :
+                new FileInputStream(scriptFile));
+            InputStream buffered = new BufferedInputStream(source)
+        ) {
+            Result result = Eel.factory()
+                .withContext(createContext())
+                .compile(buffered)
+                .evaluate(createSymbolsTable());
+            String type = config.verbose() ? "[" + result.getType() + "] " : "";
+
+            System.out.println(type + result.asText());
+
+            state = State.EVALUATED;
+        } catch (EelException e) {
+            System.err.println("Failed to evaluate " + message);
+            e.printStackTrace();
+            state = State.EXPRESSION_FAILED;
+        } catch (IOException e) {
+            System.err.println("Failed to read script file " + scriptFile.getPath());
+            e.printStackTrace();
+            state = State.SCRIPT_NOT_FOUND;
+        }
+
+        return state;
+    }
+
 
     @Nonnull
     private State showVersion() {
@@ -72,7 +108,10 @@ public class Evaluate {
     private EelContext createContext() {
         EelContextBuilder builder = EelContext.factory()
             .withPrecision(config.precision())
-            .withTimeout(config.timeout());
+            .withTimeout(config.timeout())
+            .withIoLimit(config.ioLimit())
+            .withStartOfWeek(config.startOfWeek())
+            .withMinimalDaysInFirstWeek(config.daysInFirstWeek());
 
         for (var function : config.functionList()) {
             builder = builder.withUdfClass(function);

@@ -10,7 +10,7 @@ public class Test2 {
     }
 
 
-    @EelFunction(name = "test.2")
+    @EelFunction("test.2")
     public int test2() {
         return -1;
     }

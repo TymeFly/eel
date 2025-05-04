@@ -3,13 +3,15 @@ package com.github.tymefly.eel;
 import java.time.Duration;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 import static java.util.Map.entry;
 
@@ -19,10 +21,10 @@ import static java.util.Map.entry;
  */
 public class VariableExpansionIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
     private EelContext context;
 
@@ -39,11 +41,38 @@ public class VariableExpansionIntegrationTest {
      */
     @Test
     public void test_withDefault() {
-        String actual = Eel.compile(context, "${hello-???}")
-            .evaluate("myDefaultValue")
-            .asText();
+        SymbolsTable symbols = SymbolsTable.from(Map.ofEntries(
+            Map.entry("defined", "value"),
+            Map.entry("blank", "")));
 
-        Assert.assertEquals("Failed to read Map", "myDefaultValue", actual);
+        Assert.assertEquals("undefined",
+            "???",
+            Eel.compile(context, "${undefined-???}").evaluate(symbols).asText());
+        Assert.assertEquals("blank",
+            "",
+            Eel.compile(context, "${blank-???}").evaluate(symbols).asText());
+        Assert.assertEquals("defined",
+            "value",
+            Eel.compile(context, "${defined-???}").evaluate(symbols).asText());
+    }
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_withBlankDefault() {
+        SymbolsTable symbols = SymbolsTable.from(Map.ofEntries(
+            Map.entry("defined", "value"),
+            Map.entry("blank", "")));
+
+        Assert.assertEquals("undefined",
+            "???",
+            Eel.compile(context, "${undefined:-???}").evaluate(symbols).asText());
+        Assert.assertEquals("blank",
+            "???",
+            Eel.compile(context, "${blank:-???}").evaluate(symbols).asText());
+        Assert.assertEquals("defined",
+            "value",
+            Eel.compile(context, "${defined:-???}").evaluate(symbols).asText());
     }
 
     /**
@@ -239,137 +268,58 @@ public class VariableExpansionIntegrationTest {
         Assert.assertEquals("Unexpected value", "6", actual.asText());
     }
 
+
     /**
      * Integration test {@link Eel}
      */
     @Test
     public void test_substring() {
-        Result actual = Eel.compile(context, "${key:3:2}")
-            .evaluate(SymbolsTable.from(Map.of("key", "0123456789")));
+        substringHelper("just index", "${key:3}", "3456789");
+        substringHelper("index and length", "${key:3:2}", "34");
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "34", actual.asText());
+        substringHelper("positive index", "${key:+3:2}", "34");
+        substringHelper("positive index with space", "${key: +3:2}", "34");
+        substringHelper("negative index", "${key: -3:2}", "78");
+        substringHelper("positive count", "${key:3:+2}", "34");
+        substringHelper("positive count with space", "${key:3: +2}", "34");
+        substringHelper("negative count", "${key:3: -2}", "34567");
+        substringHelper("negative index and count with space", "${key: -3: -2}", "7");
+
+        substringHelper("index is value", "${text:${index}:4}", "DEFG");
+        substringHelper("index is expression", "${text:$( 1 + 2 ):4}", "DEFG");
+        substringHelper("index is term", "${text:(1+2):4}", "DEFG");
+        substringHelper("index is function", "${text:$indexOf('123456789', '4'):4}", "DEFG");
+
+        substringHelper("count is value", "${text:3:${count}}", "DEFG");
+        substringHelper("count is expression", "${text:3:$(5 - 1)}", "DEFG");
+        substringHelper("count is term", "${text:3:(5 - 1)}", "DEFG");
+        substringHelper("count is function", "${text:3:$indexOf('123456789', '5')}", "DEFG");
+
+        substringHelper("with default (unused)", "${key:3:2-undefined}", "34");
+        substringHelper("with default (used)", "${unknown:3:2-undefined}", "undefined");
+        substringHelper("with default (used) + negativeIndex", "${unknown:3: -2^^-undefined}", "undefined");
+        substringHelper("case change + default", "${text:2:4,,~-undefined}", "Cdef");
+
+        substringHelper("just index and default (unused)", "${key:3:-default}", "3456789");
+        substringHelper("just index and default (used)", "${unknown:3-default}", "default");
+        substringHelper("just index and empty/default (empty)", "${empty:3:-default}", "default");
+        substringHelper("just index and empty/default (default)", "${unknown:3:-default}", "default");
     }
 
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_substring_WithDefault_unused() {
-        Result actual = Eel.compile(context, "${key:3:2-undefined}")
-            .evaluate(SymbolsTable.from(Map.of("key", "0123456789")));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "34", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_substring_WithDefault_used() {
-        Result actual = Eel.compile(context, "${key:3:2^^-undefined}")
-            .evaluate();
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "undefined", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_substring_caseChange_and_default() {
-        Result actual = Eel.compile(context, "${key:2:4,,~-undefined}")
-            .evaluate(SymbolsTable.from(Map.of("key", "ABCDEFGHI")));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "Cdef", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_index_value() {
-        Result actual = Eel.compile(context, "${key:${index}:4}")
+    private void substringHelper(@Nonnull String message, @Nonnull String expression, @Nonnull String expected) {
+        Result actual = Eel.compile(context, expression)
             .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("index", "3"))));
+                entry("empty", ""),
+                entry("key", "0123456789"),
+                entry("text", "ABCDEFGHI"),
+                entry("index", "3"),
+                entry("count", "4"))
+            ));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
+        Assert.assertEquals(message + ": Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals(message + ": Unexpected value", expected, actual.asText());
     }
 
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_index_expression() {
-        Result actual = Eel.compile(context, "${key:$( 1 + 2 ):4}")
-            .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("index", "3"))));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_index_function() {
-        Result actual = Eel.compile(context, "${key:$indexOf('123456789', '4'):4}")
-            .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("index", "3"))));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_count_value() {
-        Result actual = Eel.compile(context, "${key:3:${count}}")
-            .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("count", "4"))));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_count_expression() {
-        Result actual = Eel.compile(context, "${key:3:$(5 - 1)}")
-            .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("count", "4"))));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
-    }
-
-    /**
-     * Integration test {@link Eel}
-     */
-    @Test
-    public void test_count_function() {
-        Result actual = Eel.compile(context, "${key:3:$indexOf('123456789', '5')}")
-            .evaluate(SymbolsTable.from(Map.ofEntries(
-                entry("key", "ABCDEFGHI"),
-                entry("count", "4"))));
-
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "DEFG", actual.asText());
-    }
 
     /**
      * Integration test {@link Eel}

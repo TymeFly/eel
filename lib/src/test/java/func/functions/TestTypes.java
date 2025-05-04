@@ -1,5 +1,6 @@
 package func.functions;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.ZonedDateTime;
@@ -7,140 +8,139 @@ import java.time.ZonedDateTime;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.EelContext;
-import com.github.tymefly.eel.EelValue;
-import com.github.tymefly.eel.FunctionalResource;
+import com.github.tymefly.eel.Value;
 import com.github.tymefly.eel.udf.EelFunction;
-import com.github.tymefly.eel.udf.EelLambda;
+import com.github.tymefly.eel.udf.FunctionalResource;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class TestTypes {
-    @EelFunction(name = "types.functionalResource")
+    @EelFunction("types.functionalResource")
     public String types(@Nonnull FunctionalResource in) {
         return in.getResource("resourceName", n -> "resourceValue!!");
     }
 
-    @EelFunction(name = "types.context")
+    @EelFunction("types.context")
     public String types(@Nonnull EelContext in) {
         return in.contextId();
     }
 
-    @EelFunction(name = "types.value")
-    public EelValue types(@Nonnull EelValue in) {
+    @EelFunction("types.value")
+    public Value types(@Nonnull Value in) {
         return in;
     }
 
-    @EelFunction(name = "types.str")
+    @EelFunction("types.str")
     public String types(@Nonnull String in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Bool")
+    @EelFunction("types.Bool")
     public Boolean types(@Nonnull Boolean in) {
         return in;
     }
 
-    @EelFunction(name = "types.bool")
+    @EelFunction("types.bool")
     public boolean types(boolean in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Byte")
+    @EelFunction("types.Byte")
     public Byte types(@Nonnull Byte in) {
         return in;
     }
 
-    @EelFunction(name = "types.byte")
+    @EelFunction("types.byte")
     public byte types(byte in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Short")
+    @EelFunction("types.Short")
     public Short types(@Nonnull Short in) {
         return in;
     }
 
-    @EelFunction(name = "types.short")
+    @EelFunction("types.short")
     public short types(short in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Int")
+    @EelFunction("types.Int")
     public Integer types(@Nonnull Integer in) {
         return in;
     }
 
-    @EelFunction(name = "types.int")
+    @EelFunction("types.int")
     public int types(int in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Long")
+    @EelFunction("types.Long")
     public Long types(@Nonnull Long in) {
         return in;
     }
 
-    @EelFunction(name = "types.long")
+    @EelFunction("types.long")
     public long types(long in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Float")
+    @EelFunction("types.Float")
     public Float types(@Nonnull Float in) {
         return in;
     }
 
-    @EelFunction(name = "types.float")
+    @EelFunction("types.float")
     public float types(float in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.Double")
+    @EelFunction("types.Double")
     public Double types(@Nonnull Double in) {
         return in;
     }
 
-    @EelFunction(name = "types.double")
+    @EelFunction("types.double")
     public double types(double in) {
         return in;
     }
 
 
-    @EelFunction(name = "types.BigInt")
+    @EelFunction("types.BigInt")
     public BigInteger types(@Nonnull BigInteger in) {
         return in;
     }
 
-    @EelFunction(name = "types.BigDec")
+    @EelFunction("types.BigDec")
     public BigDecimal types(@Nonnull BigDecimal in) {
         return in;
     }
 
-    @EelFunction(name = "types.date")
+    @EelFunction("types.date")
     public ZonedDateTime types(@Nonnull ZonedDateTime in) {
         return in;
     }
 
-    @EelFunction(name = "types.char")
+    @EelFunction("types.char")
     public char types(char in) {
         return in;
     }
 
-    @EelFunction(name = "types.Character")
+    @EelFunction("types.Character")
     public Character types(@Nonnull Character in) {
         return in;
     }
 
-    @EelFunction(name = "types.Lambda")
-    public String types(@Nonnull EelLambda in) {
-        return in.get().asText() + "!!";
+    @EelFunction("types.File")
+    public String types(@Nonnull File in) {
+        return in.getPath();
     }
 }
 

@@ -19,7 +19,8 @@ import com.github.tymefly.eel.utils.CharUtils;
  *  <li>Decimals with fractional parts (e.g. `123.456789`)</li>
  *  <li>Scientific format (e.g. `2.99792e8`)</li>
  * </ul>
- * All numbers may be proceeded by either a positive or negative sign
+ * All numbers may be proceeded by either a positive or negative sign and may include a single underscore character
+ * ( {@literal _} ) in between pairs of digits
  */
 class NumberParser {
     private static class StringInput implements Input {
@@ -87,23 +88,28 @@ class NumberParser {
 
 
     private final Input input;
-    private final StringBuilder text;
+    private final StringBuilder raw;                // All characters read from input to parse the number
+    private final StringBuilder text;               // chars used to parse value. No base modifiers or groupings
+    private BigDecimal value;
+    private boolean isDecimal;
 
 
     private NumberParser(@Nonnull Input input) {
         this.input = input;
+        this.raw = new StringBuilder();
         this.text = new StringBuilder();
+        this.isDecimal = true;
     }
 
 
     /**
-     * Parse a numeric value from the input. If is not required that all the data from the inpurt is read.
+     * Parse a numeric value from the input. If is not required that all the data from the input is read.
      * @param input     Numeric input to parse in any of the supported formats
-     * @return          The numeric value of the string
+     * @return          The parsed value
      * @throws NumberFormatException if the {@code text} is not a valid number
      */
     @Nonnull
-    static BigDecimal parse(@Nonnull Input input) throws NumberFormatException {
+    static NumberParser parse(@Nonnull Input input) throws NumberFormatException {
         return new NumberParser(input)
             .parseNumber();
     }
@@ -111,31 +117,56 @@ class NumberParser {
     /**
      * Parse all the text from a string.
      * @param text      numeric string to parse in any of the supported formats
-     * @return          The numeric value of the string
+     * @return          The parsed value
      * @throws NumberFormatException if the {@code text} is not a valid number
      */
     @Nonnull
-    static BigDecimal parse(@Nonnull String text) throws NumberFormatException {
+    static NumberParser parse(@Nonnull String text) throws NumberFormatException {
         StringInput input = new StringInput(text);
-        BigDecimal value = parse(input);
+        NumberParser parser = parse(input);
 
         if (!input.atEnd()) {
             throw new NumberFormatException("For input string: \"" + text + "\"");
         }
 
+        return parser;
+    }
+
+
+    /**
+     * Returns the parsed value
+     * @return the parsed value
+     */
+    @Nonnull
+    BigDecimal getValue() {
         return value;
+    }
+
+    /**
+     * Returns {@literal true} only if the number is a decimal literal. This is defined as being in base 10 with no
+     * fractional part and is not in scientific notation
+     * @return {@literal true} only of the number is a decimal literal
+     */
+    boolean isDecimal() {
+        return isDecimal;
     }
 
 
     @Nonnull
-    private BigDecimal parseNumber() {
+    String getText() {
+        return raw.toString();
+    }
+
+
+    @Nonnull
+    private NumberParser parseNumber() {
         BigDecimal value;
         char current = input.current();
 
         if (current == '+') {
-            current = input.read();
+            current = readNext();
         } else if (current == '-') {
-            current = appendInput();
+            current = appendText();
         } else {
             // no special action required
         }
@@ -154,13 +185,17 @@ class NumberParser {
             value = parseDecimal();
         }
 
-        return value;
+        this.value = value;
+
+        return this;
     }
 
     @Nonnull
     private BigDecimal parseBase(@Nonnull Base base) {
-        input.read();                               // skip leading 0 and base quantifier character
-        input.read();
+        isDecimal = false;
+
+        readNext();                               // skip leading 0 and base quantifier character
+        readNext();
 
         int digits = parseDigits(base.digits);
 
@@ -176,7 +211,8 @@ class NumberParser {
         char current = parseInt();
 
         if (current == '.') {
-            current = appendInput();
+            isDecimal = false;
+            current = appendText();
 
             if (current == '_') {
                 unexpectedCharacter();
@@ -204,12 +240,12 @@ class NumberParser {
         int count = 0;
 
         while (digits.contains(current)) {
-            current = appendInput();
+            current = appendText();
             count++;
 
             if (current == '_') {
                 if (digits.contains(input.next())) {
-                    current = input.read();
+                    current = readNext();
                 } else {
                     unexpectedCharacter();
                 }
@@ -220,10 +256,12 @@ class NumberParser {
     }
 
     private void parseExponent() {
-        char current = appendInput();
+        isDecimal = false;
+
+        char current = appendText();
 
         if (current == '-') {
-            current = appendInput();
+            current = appendText();
         }
 
         if (!DECIMAL_DIGITS.contains(current)) {
@@ -233,11 +271,20 @@ class NumberParser {
         parseInt();
     }
 
-    private char appendInput() {
+    /** Append current char to {@link #text} and {@link #raw} then read next char from {@link #input} */
+    private char appendText() {
         text.append(input.current());
+
+        return readNext();
+    }
+
+    /** Append current char to {@link #raw} and read next char from the {@link #input}. {@link #raw is not updated} */
+    private char readNext() {
+        raw.append(input.current());
 
         return input.read();
     }
+
 
     private void unexpectedCharacter() {
         char current = input.current();

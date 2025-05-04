@@ -1,6 +1,7 @@
 package com.github.tymefly.eel.utils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
@@ -76,8 +77,22 @@ public class BigDecimals {
     public static BigDecimal toBigDecimal(@Nonnull Number value) {
         BigDecimal result;
 
-        if (value instanceof BigDecimal) {
-            result = (BigDecimal) value;
+        if (value instanceof BigDecimal bigDecimal) {
+            result = bigDecimal;
+        } else if (value instanceof BigInteger bigInteger) {
+            result = new BigDecimal(bigInteger);
+        } else if (value instanceof Long longValue) {
+            result = BigDecimal.valueOf(longValue);
+        } else if (value instanceof Integer intValue) {
+            result = BigDecimal.valueOf(intValue);
+        } else if (value instanceof Short shortValue) {
+            result = BigDecimal.valueOf(shortValue);
+        } else if (value instanceof Byte byteValue) {
+            result = BigDecimal.valueOf(byteValue);
+        } else if (value instanceof Double doubleValue) {
+            result = BigDecimal.valueOf(doubleValue);                   // Scale will always be at least 1
+        } else if (value instanceof Float floatValue) {
+            result = new BigDecimal(Float.toString(floatValue));        // Scale will always be at least 1
         } else {
             result = new BigDecimal(value.toString());
         }

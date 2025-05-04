@@ -16,7 +16,7 @@ import com.github.tymefly.eel.exception.EelRuntimeException;
 
 /**
  * Manages build time information.
- * This class is an accessor to the {@literal eel.properties} file which is written by Maven at build time.
+ * This class is an accessor to the {@literal eel.properties} file which Maven writes at build time.
  */
 class BuildTime implements Metadata {
     private static class Loader {
@@ -109,11 +109,13 @@ class BuildTime implements Metadata {
         return INSTANCE;
     }
 
+    @Override
     @Nonnull
     public String version() {
         return version;
     }
 
+    @Override
     @Nonnull
     public ZonedDateTime buildDate() {
         return buildDate;

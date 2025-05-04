@@ -38,18 +38,36 @@ public class EelRuntimeTest {
                 //*** No timeout ***//
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_noTimeout_happyPath() {
         when(context.getTimeout())
             .thenReturn(Duration.of(0, ChronoUnit.SECONDS));
 
-        Executor backing = s -> Value.of(1);
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> Constant.of(1);
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        Value actual = wrapped.execute(table);
+        Result actual = wrapped.evaluate(table);
+
+        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
+        Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
+    }
+
+    /**
+     * Unit test {@link EelRuntime#wrap(Term)}
+     */
+    @Test
+    public void test_noTimeoutRequired_happyPath() {
+        when(context.getTimeout())
+            .thenReturn(Duration.of(1, ChronoUnit.MICROS));
+
+        Term backing = Constant.of(1);                  // Constants don't need timeouts
+        Expression wrapped = new EelRuntime(context).wrap(backing);
+        SymbolsTable table = mock();
+
+        Result actual = wrapped.evaluate(table);
 
         Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
         Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
@@ -57,7 +75,7 @@ public class EelRuntimeTest {
 
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_noTimeout_eelException() {
@@ -65,11 +83,11 @@ public class EelRuntimeTest {
             .thenReturn(Duration.of(0, ChronoUnit.SECONDS));
 
         EelException cause = new EelRuntimeException("expected");
-        Executor backing = s -> { throw cause; };
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> { throw cause; };
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
+        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
         Assert.assertSame("Unexpected cause", cause, actual);
         assertStack(actual, "test_noTimeout_eelException", false);
@@ -77,7 +95,7 @@ public class EelRuntimeTest {
 
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_noTimeout_otherException() {
@@ -85,11 +103,11 @@ public class EelRuntimeTest {
             .thenReturn(Duration.of(0, ChronoUnit.SECONDS));
 
         RuntimeException cause = new ArithmeticException("expected");
-        Executor backing = s -> { throw cause; };
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> { throw cause; };
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
+        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
         Assert.assertEquals("Unexpected message", "EEL execution failed", actual.getMessage());
         Assert.assertEquals("Unexpected cause", cause, actual.getCause());
@@ -99,15 +117,15 @@ public class EelRuntimeTest {
                 //*** With timeout ***//
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_withTimeout_happyPath() {
-        Executor backing = s -> Value.of(1);
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> Constant.of(1);
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        Value actual = wrapped.execute(table);
+        Result actual = wrapped.evaluate(table);
 
         Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
         Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
@@ -115,11 +133,11 @@ public class EelRuntimeTest {
 
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_withTimeout_timedOut() {
-        Executor backing = s -> {
+        Term backing = s -> {
             try {
                 Thread.sleep(5_000);
             } catch (Exception e) {
@@ -127,10 +145,10 @@ public class EelRuntimeTest {
 
             return Value.of("");
         };
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelTimeoutException.class, () -> wrapped.execute(table));
+        EelRuntimeException actual = Assert.assertThrows(EelTimeoutException.class, () -> wrapped.evaluate(table));
 
         Assert.assertEquals("Unexpected message", "EEL Timeout after 2 second(s)", actual.getMessage());
         assertStack(actual, "test_withTimeout_timedOut", false);
@@ -138,16 +156,16 @@ public class EelRuntimeTest {
 
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_withTimeout_eelException() {
         EelException cause = new EelRuntimeException("expected");
-        Executor backing = s -> { throw cause; };
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> { throw cause; };
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
+        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
         Assert.assertSame("Unexpected cause", cause, actual);
         assertStack(actual, "test_withTimeout_eelException", false);
@@ -155,16 +173,16 @@ public class EelRuntimeTest {
 
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_withTimeout_otherException() {
         RuntimeException cause = new ArithmeticException("expected");
-        Executor backing = s -> { throw cause; };
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Term backing = s -> { throw cause; };
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.execute(table));
+        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
         Assert.assertEquals("Unexpected message", "EEL execution failed", actual.getMessage());
         Assert.assertEquals("Unexpected cause", cause, actual.getCause());
@@ -175,11 +193,11 @@ public class EelRuntimeTest {
     private Exception exception;
 
     /**
-     * Unit test {@link EelRuntime#apply(Executor)}
+     * Unit test {@link EelRuntime#wrap(Term)}
      */
     @Test
     public void test_withTimeout_interruptThread() throws InterruptedException {
-        Executor backing = s -> {
+        Term backing = s -> {
             try {
                 Thread.sleep(5_000);
             } catch (Exception e) {
@@ -188,12 +206,12 @@ public class EelRuntimeTest {
             return Value.of(true);
         };
 
-        Executor wrapped = new EelRuntime(context).apply(backing);
+        Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
         Runnable runner = () -> {
             try {
-                wrapped.execute(table);
+                wrapped.evaluate(table);
             } catch (Exception e) {
                 exception = e;
             }

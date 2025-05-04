@@ -1,7 +1,10 @@
 package com.github.tymefly.eel;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.DayOfWeek;
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class EelTest {
     private EelContextImpl context;
     private SymbolsTable symbolsTable;
-    private Executor executor;
+    private Term term;
     private BuildTime buildTime;
 
 
@@ -41,7 +44,7 @@ public class EelTest {
     public void setUp() {
         context = mock();
         symbolsTable = mock();
-        executor = mock();
+        term = mock();
         buildTime = mock();
 
         when(context.maxExpressionLength())
@@ -51,6 +54,9 @@ public class EelTest {
             .thenReturn("mockedVersion");
         when(buildTime.buildDate())
             .thenReturn(EelContext.FALSE_DATE);
+
+        when(term.evaluate(any(SymbolsTable.class)))
+            .thenReturn(Constant.of(1234));
     }
 
 
@@ -61,7 +67,7 @@ public class EelTest {
 
     private void mockParser(@Nonnull Parser mock) {
         when(mock.parse())
-            .thenReturn(executor);
+            .thenReturn(term);
     }
 
 
@@ -88,19 +94,58 @@ public class EelTest {
      * Unit test {@link Eel#compile(String)}
      */
     @Test
-    public void test_compile_basic() {
+    public void test_compile_basic_text() {
+        Term parsed = Constant.of("Test me");
+
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
         ) {
-            Eel.compile("Test me");
+            Eel.compile("Test expression");
 
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
             Assert.assertEquals("Unexpected expression",
-                "Test me",
+                "Test expression",
+                expression);
+            Assert.assertEquals("Unexpected expression length",
+                EelContextSettingBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
+                source.getMaxLength());
+            Assert.assertSame("Inconsistent context",
+                compilerMock.getArgument(0, EelContext.class),
+                parserMock.getArgument(0, EelContext.class));
+            Assert.assertSame("Unexpected tokenizer",
+                tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class));
+            Assert.assertSame("Unexpected compiler",
+                compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class));
+        }
+    }
+
+    /**
+     * Unit test {@link Eel#compile(String)}
+     */
+    @Test
+    public void test_compile_basic_stream() throws Exception {
+        Term parsed = Constant.of("Test me");
+
+        try (
+            InputStream sourceStream = new ByteArrayInputStream("Test Expression".getBytes());
+
+            MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
+            MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
+        ) {
+            Eel.compile(sourceStream);
+
+            Source source = tokenizerMock.getArgument(0, Source.class);
+            String expression = readExpression(source);
+
+            Assert.assertEquals("Unexpected expression",
+                "Test Expression",
                 expression);
             Assert.assertEquals("Unexpected expression length",
                 EelContextSettingBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
@@ -123,13 +168,15 @@ public class EelTest {
      */
     @Test
     public void test_compile_basic_reuseContext() {
+        Term firstParsed = Constant.of("First");
+        Term secondParsed = Constant.of("Second");
         EelContext first;
         EelContext second;
 
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(firstParsed))
         ) {
             Eel.compile("First");
 
@@ -139,7 +186,7 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(secondParsed))
         ) {
             Eel.compile("Second");
 
@@ -153,7 +200,7 @@ public class EelTest {
      * Unit test {@link Eel#compile(EelContext, String)}
      */
     @Test
-    public void test_compile_customContext() {
+    public void test_compile_customContext_text() {
         EelContextImpl context = mock();
 
         when(context.maxExpressionLength())
@@ -191,6 +238,49 @@ public class EelTest {
     }
 
     /**
+     * Unit test {@link Eel#compile(EelContext, String)}
+     */
+    @Test
+    public void test_compile_customContext_stream() throws Exception {
+        EelContextImpl context = mock();
+
+        when(context.maxExpressionLength())
+            .thenReturn(100);
+
+        try (
+            InputStream sourceStream = new ByteArrayInputStream("Test Expression".getBytes());
+
+            MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
+            MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
+        ) {
+            Eel.compile(context, sourceStream);
+
+            Source source = tokenizerMock.getArgument(0, Source.class);
+            String expression = readExpression(source);
+
+            Assert.assertEquals("Unexpected expression",
+                "Test Expression",
+                expression);
+            Assert.assertEquals("Unexpected expression length",
+                100,
+                source.getMaxLength());
+            Assert.assertSame("Unexpected context passed to compiler",
+                context,
+                compilerMock.getArgument(0, EelContext.class));
+            Assert.assertSame("Unexpected context passed to parser",
+                context,
+                parserMock.getArgument(0, EelContext.class));
+            Assert.assertSame("Unexpected tokenizer",
+                tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class));
+            Assert.assertSame("Unexpected compiler",
+                compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class));
+        }
+    }
+
+    /**
      * Unit test {@link Eel#factory()}
      */
     @Test
@@ -198,7 +288,7 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class);
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
         ) {
             Eel.factory()
                 .withContext(context)
@@ -238,11 +328,13 @@ public class EelTest {
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
             MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class);
             MockConstructor<EelContextImpl.Builder> contextFactory =
-                new MockConstructor<>(EelContextImpl.Builder.class, this::mockContextBuilder);
+                new MockConstructor<>(EelContextImpl.Builder.class, this::mockContextBuilder)
         ) {
             Eel.factory()
                 .withMaxExpressionSize(123)
                 .withPrecision(6)
+                .withIoLimit(128)
+                .withStartOfWeek(DayOfWeek.WEDNESDAY)
                 .withUdfPackage(Plus1.class.getPackage())
                 .withUdfClass(Test1.class)
                 .compile("Test me");
@@ -268,6 +360,8 @@ public class EelTest {
 
             verify(contextFactory.getMock()).withMaxExpressionSize(123);
             verify(contextFactory.getMock()).withPrecision(6);
+            verify(contextFactory.getMock()).withIoLimit(128);
+            verify(contextFactory.getMock()).withStartOfWeek(DayOfWeek.WEDNESDAY);
             verify(contextFactory.getMock()).withUdfPackage(Plus1.class.getPackage());
             verify(contextFactory.getMock()).withUdfClass(Test1.class);
         }
@@ -279,10 +373,12 @@ public class EelTest {
      */
     @Test
     public void test_factory_fromStream() {
+        Term parsed = Constant.of("myStream");
+
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class)
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
         ) {
             Eel.factory()
                 .compile(new ByteArrayInputStream("myStream".getBytes(StandardCharsets.UTF_8)));
@@ -321,7 +417,7 @@ public class EelTest {
             Eel.compile("${myVar}")
                 .evaluate();
 
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", SymbolsTable.EMPTY, captor.getValue());
         }
@@ -343,7 +439,7 @@ public class EelTest {
             Eel.compile("${myVar}")
                 .evaluate(actual);
 
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", actual, captor.getValue());
         }
@@ -370,7 +466,7 @@ public class EelTest {
                 .evaluate(backing);
 
             symbolsMock.verify(() -> SymbolsTable.from(backing));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -397,7 +493,7 @@ public class EelTest {
                 .evaluate("map", backing);
 
             symbolsMock.verify(() -> SymbolsTable.from("map", backing));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -424,7 +520,7 @@ public class EelTest {
                 .evaluate(backing);
 
             symbolsMock.verify(() -> SymbolsTable.from(backing));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -451,7 +547,7 @@ public class EelTest {
                 .evaluate("func", backing);
 
             symbolsMock.verify(() -> SymbolsTable.from("func", backing));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -477,7 +573,7 @@ public class EelTest {
                 .evaluateEnvironment();
 
             symbolsMock.verify(SymbolsTable::fromEnvironment);
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -503,7 +599,7 @@ public class EelTest {
                 .evaluateEnvironment("env");
 
             symbolsMock.verify(() -> SymbolsTable.fromEnvironment("env"));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -529,7 +625,7 @@ public class EelTest {
                 .evaluateProperties();
 
             symbolsMock.verify(SymbolsTable::fromProperties);
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -551,11 +647,19 @@ public class EelTest {
             symbolsMock.when(() -> SymbolsTable.fromProperties("prop"))
                 .thenReturn(symbolsTable);
 
-            Eel.compile("${prop.myVar}")
-                .evaluateProperties("prop");
+
+
+
+when(context.getTimeout())
+    .thenReturn(Duration.ofSeconds(0));
+Eel.compile(context, "${prop.myVar}")
+    .evaluateProperties("prop");
+
+//            Eel.compile("${prop.myVar}")
+//                .evaluateProperties("prop");
 
             symbolsMock.verify(() -> SymbolsTable.fromProperties("prop"));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }
@@ -581,7 +685,7 @@ public class EelTest {
                 .evaluate("defaultValue");
 
             symbolsMock.verify(() -> SymbolsTable.from("defaultValue"));
-            verify(executor).execute(captor.capture());
+            verify(term).evaluate(captor.capture());
 
             Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
         }

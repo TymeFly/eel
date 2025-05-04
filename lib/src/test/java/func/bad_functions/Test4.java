@@ -7,13 +7,13 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Test4 {
-    @EelFunction(name = "test.4_1")
+    @EelFunction("test.4_1")
     @Nonnull
     public String Test4_1() {
         return "execute1";
     }
 
-    @EelFunction(name = "test.4_2")
+    @EelFunction("test.4_2")
     @Nonnull
     public String Test4_2() {
         return "execute2";

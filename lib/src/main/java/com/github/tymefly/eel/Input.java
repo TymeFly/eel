@@ -1,10 +1,10 @@
 package com.github.tymefly.eel;
 
 /**
- * The contract for parsing data
+ * The contract for reading data
  */
 interface Input {
-    char END = (char) -1;
+    char END = (char) 0;
 
     /**
      * Returns the current character from the input. This was previously the {@link #next} character

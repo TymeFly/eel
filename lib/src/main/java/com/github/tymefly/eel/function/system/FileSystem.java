@@ -44,7 +44,7 @@ public class FileSystem {
      * @return the current users home directory
      */
     @Nonnull
-    @EelFunction(name = "system.fileSeparator")
+    @EelFunction("system.fileSeparator")
     public String fileSeparator() {
         if (fileSeparator == null) {
             fileSeparator = properties.getProperty("file.separator");
@@ -61,7 +61,7 @@ public class FileSystem {
      * The EEL syntax for this function is <code>pwd()</code>
      * @return      a canonicalised {@code path}
      */
-    @EelFunction(name = "system.pwd")
+    @EelFunction("system.pwd")
     @Nonnull
     public String pwd() {
         if (pwd == null) {
@@ -81,7 +81,7 @@ public class FileSystem {
      * @return the current users home directory
      */
     @Nonnull
-    @EelFunction(name = "system.home")
+    @EelFunction("system.home")
     public String home() {
         if (home == null) {
             home = readPath("user.home");
@@ -100,7 +100,7 @@ public class FileSystem {
      * @return the system temp directory
      */
     @Nonnull
-    @EelFunction(name = "system.temp")
+    @EelFunction("system.temp")
     public String temp() {
         if (temp == null) {
             temp = readPath("java.io.tmpdir");

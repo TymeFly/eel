@@ -7,18 +7,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Tests on the EEL Symbols Table
  */
 public class SymbolsTableIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
     private EelContext context;
 
@@ -124,5 +124,62 @@ public class SymbolsTableIntegrationTest {
 
         Assert.assertEquals("First", "#1: Foo", expression1.evaluate(table).asText());
         Assert.assertEquals("Second", "#2: Bar", expression2.evaluate(table).asText());
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_UseAnotherSymbolsTable() {
+        SymbolsTable table1 = SymbolsTable.from(Map.of("a", "1"));
+        SymbolsTable table2 = SymbolsTable.from(Map.of("a", "2"));
+
+        Eel expression = Eel.compile(context, "result #$random( ${a}, ${a})");
+
+        Assert.assertEquals("First", "result #1", expression.evaluate(table1).asText());
+        Assert.assertEquals("Second", "result #2", expression.evaluate(table2).asText());
+    }
+
+
+    /**
+     * Integration test {@link Eel}.
+     * Test symbols table can contain reserved words and standard functions names
+     */
+    @Test
+    public void test_reservedWords() {
+        String[] reserved = {
+            "true",                         // reserved words
+            "false",
+            "text",
+            "number",
+            "logic",
+            "date",
+            "not",
+            "and",
+            "or",
+            "xor",
+            "isBefore",
+            "isAfter",
+            "in",
+            "lower",
+            "eel.version",                  // Standard functions
+            "system.home",
+            "system.home",
+            "io.head",
+            "number.pi",
+            "date.start",
+            "log.error",
+            "format.binary"
+        };
+
+        int loop = 0;
+        for (var key : reserved) {
+            String value = Integer.toString(loop);
+            SymbolsTable table = SymbolsTable.from(Map.of(key, value));
+            Eel expression = Eel.compile(context, key + " is mapped to ${" + key + "}" );
+
+            Assert.assertEquals(key, key + " is mapped to " + value, expression.evaluate(table).asText());
+        }
     }
 }

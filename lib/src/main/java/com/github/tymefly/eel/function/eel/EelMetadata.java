@@ -23,7 +23,7 @@ public class EelMetadata {
      * @since 2.0.0
      */
     @Nonnull
-    @EelFunction(name = "eel.version")
+    @EelFunction("eel.version")
     public String version(@Nonnull EelContext context) {
         return context.metadata().version();
     }
@@ -38,7 +38,7 @@ public class EelMetadata {
      * @since 2.0.0
      */
     @Nonnull
-    @EelFunction(name = "eel.buildDate")
+    @EelFunction("eel.buildDate")
     public ZonedDateTime buildDate(@Nonnull EelContext context) {
         return context.metadata().buildDate();
     }

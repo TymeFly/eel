@@ -11,18 +11,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Functional testing of each of the EEL operators
  */
 public class OperatorsIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
     private EelContext context;
 
@@ -39,11 +39,11 @@ public class OperatorsIntegrationTest {
      */
     @Test
     public void test_bitwise() {
+        Assert.assertEquals("not", (byte) 0xf5, Eel.compile(context, "$( ~ 0xA )").evaluate().asNumber().byteValue());
+        Assert.assertEquals("Double not", (byte) 0x0a, Eel.compile(context, "$( ~ ~ 0xA )").evaluate().asNumber().byteValue());
         Assert.assertEquals("and", 0x8, Eel.compile(context, "$( 0xc & 0xA )").evaluate().asNumber().byteValue());
         Assert.assertEquals("or", 0xe, Eel.compile(context, "$( 0xc | 0xA )").evaluate().asNumber().byteValue());
         Assert.assertEquals("xor", 0x6, Eel.compile(context, "$( 0xc ^ 0xA )").evaluate().asNumber().byteValue());
-        Assert.assertEquals("not", (byte) 0xf5, Eel.compile(context, "$( ~ 0xA )").evaluate().asNumber().byteValue());
-        Assert.assertEquals("Double not", (byte) 0x0a, Eel.compile(context, "$( ~ ~ 0xA )").evaluate().asNumber().byteValue());
         Assert.assertEquals("Combined",
             (byte) 0x5,
             Eel.compile(context, "$( (0xc & ~ 0xA) | 0x1 )").evaluate().asNumber().byteValue());
@@ -54,10 +54,11 @@ public class OperatorsIntegrationTest {
      */
     @Test
     public void test_logic() {
-        Assert.assertFalse("AND", Eel.compile(context, "$( true and false )").evaluate().asLogic());
-        Assert.assertTrue("OR", Eel.compile(context, "$( true or false )").evaluate().asLogic());
-        Assert.assertTrue("NOT", Eel.compile(context, "$( not false )").evaluate().asLogic());
-        Assert.assertFalse("Double NOT", Eel.compile(context, "$( not not false )").evaluate().asLogic());
+        Assert.assertTrue("not", Eel.compile(context, "$( not false )").evaluate().asLogic());
+        Assert.assertFalse("Double not", Eel.compile(context, "$( not not false )").evaluate().asLogic());
+        Assert.assertFalse("and", Eel.compile(context, "$( true and false )").evaluate().asLogic());
+        Assert.assertTrue("or", Eel.compile(context, "$( true or false )").evaluate().asLogic());
+        Assert.assertTrue("xor", Eel.compile(context, "$( true xor false )").evaluate().asLogic());
         Assert.assertTrue("Combined", Eel.compile(context, "$( not false or false)").evaluate().asLogic());
     }
 
@@ -103,6 +104,10 @@ public class OperatorsIntegrationTest {
 
         Assert.assertTrue("isAfter positive", Eel.compile(context, "$( date.utc() + 5 isAfter date.utc() )").evaluate().asLogic());
         Assert.assertFalse("isAfter negative", Eel.compile(context, "$( date.utc() isAfter date.utc() + 5 )").evaluate().asLogic());
+
+        Assert.assertTrue("in positive", Eel.compile(context, "$( 1 in { 2, random(5, 9), (2 - 1) } )").evaluate().asLogic());
+        Assert.assertFalse("in negative", Eel.compile(context,"$( 1 in { 2, random(5, 9), number.e(), false } )").evaluate().asLogic());
+        Assert.assertTrue("in nested", Eel.compile(context, "$( true in { 1 in { 1 }, 99 } )").evaluate().asLogic());
     }
 
     /**
@@ -110,13 +115,13 @@ public class OperatorsIntegrationTest {
      */
     @Test
     public void test_bitShifts_positive() {
-        Assert.assertEquals("left 1", 0x0020, Eel.compile(context, "$( 16 << 1 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("left 2", 0x0040, Eel.compile(context, "$( 16 << 2 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("left 5", 0x0200, Eel.compile(context, "$( 16 << 5 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("left 1", 0x0020, Eel.compile(context, "$( 16 << 1 )").evaluate().asInt());
+        Assert.assertEquals("left 2", 0x0040, Eel.compile(context, "$( 16 << 2 )").evaluate().asInt());
+        Assert.assertEquals("left 5", 0x0200, Eel.compile(context, "$( 16 << 5 )").evaluate().asInt());
 
-        Assert.assertEquals("right 1", 0x0008, Eel.compile(context, "$( 16 >> 1 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("right 2", 0x0004, Eel.compile(context, "$( 16 >> 2 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("right 5", 0x0000, Eel.compile(context, "$( 16 >> 5 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("right 1", 0x0008, Eel.compile(context, "$( 16 >> 1 )").evaluate().asInt());
+        Assert.assertEquals("right 2", 0x0004, Eel.compile(context, "$( 16 >> 2 )").evaluate().asInt());
+        Assert.assertEquals("right 5", 0x0000, Eel.compile(context, "$( 16 >> 5 )").evaluate().asInt());
     }
 
     /**
@@ -149,13 +154,13 @@ public class OperatorsIntegrationTest {
      */
     @Test
     public void test_bitShifts_negative() {
-        Assert.assertEquals("left -1", -226, Eel.compile(context, "$( -113 << 1 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("left -2", -452, Eel.compile(context, "$( -113 << 2 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("left -5", -3616, Eel.compile(context, "$( -113 << 5 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("left -1", -226, Eel.compile(context, "$( -113 << 1 )").evaluate().asInt());
+        Assert.assertEquals("left -2", -452, Eel.compile(context, "$( -113 << 2 )").evaluate().asInt());
+        Assert.assertEquals("left -5", -3616, Eel.compile(context, "$( -113 << 5 )").evaluate().asInt());
 
-        Assert.assertEquals("right 1", -57, Eel.compile(context, "$( -113 >> 1 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("right 2", -29, Eel.compile(context, "$( -113 >> 2 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("right 5", -4, Eel.compile(context, "$( -113 >> 5 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("right 1", -57, Eel.compile(context, "$( -113 >> 1 )").evaluate().asInt());
+        Assert.assertEquals("right 2", -29, Eel.compile(context, "$( -113 >> 2 )").evaluate().asInt());
+        Assert.assertEquals("right 5", -4, Eel.compile(context, "$( -113 >> 5 )").evaluate().asInt());
     }
 
     /**
@@ -163,16 +168,16 @@ public class OperatorsIntegrationTest {
      */
     @Test
     public void test_maths() {
-        Assert.assertEquals("Plus", 26, Eel.compile(context, "$( 5 + 21 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("Minus", -16, Eel.compile(context, "$( 5 - 21 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("Multiply", 42, Eel.compile(context, "$( 6 * 7 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("Plus", 26, Eel.compile(context, "$( 5 + 21 )").evaluate().asInt());
+        Assert.assertEquals("Minus", -16, Eel.compile(context, "$( 5 - 21 )").evaluate().asInt());
+        Assert.assertEquals("Multiply", 42, Eel.compile(context, "$( 6 * 7 )").evaluate().asInt());
         Assert.assertEquals("Divide", new BigDecimal("4.5"), Eel.compile(context, "$( 31.5 / 7 )").evaluate().asNumber());
         Assert.assertEquals("Divide Floor", new BigDecimal("4"), Eel.compile(context, "$( 31.5 // 7 )").evaluate().asNumber());
         Assert.assertEquals("Divide Truncate", new BigDecimal("4"), Eel.compile(context, "$( 31.5 -/ 7 )").evaluate().asNumber());
-        Assert.assertEquals("Modulus", 3, Eel.compile(context, "$( 45 % 7 )").evaluate().asNumber().intValue());
-        Assert.assertEquals("Power", 4, Eel.compile(context, "$( 0.5 ** -2 )").evaluate().asNumber().intValue());
+        Assert.assertEquals("Modulus", 3, Eel.compile(context, "$( 45 % 7 )").evaluate().asInt());
+        Assert.assertEquals("Power", 4, Eel.compile(context, "$( 0.5 ** -2 )").evaluate().asInt());
         Assert.assertEquals("Root", new BigDecimal("8.000000000000000"), Eel.compile(context, "$( 64 ** 0.5 )").evaluate().asNumber());
-        Assert.assertEquals("combined", 18, Eel.compile(context, "$( (8/2) ** (3-1) + 2)").evaluate().asNumber().intValue());
+        Assert.assertEquals("combined", 18, Eel.compile(context, "$( (8/2) ** (3-1) + 2)").evaluate().asInt());
     }
 
     /**

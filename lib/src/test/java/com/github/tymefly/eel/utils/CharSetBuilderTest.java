@@ -14,6 +14,18 @@ public class CharSetBuilderTest {
      * Unit test {@link CharSetBuilder}
      */
     @Test
+    public void test_ConstructAndAdd() {
+        Set<Character> source = Set.of('A', 'B');
+
+        Assert.assertEquals("Expected single char",
+            Set.of('A', 'B', 'C'),
+            new CharSetBuilder(source).with('C').immutable());
+    }
+
+    /**
+     * Unit test {@link CharSetBuilder}
+     */
+    @Test
     public void test_empty() {
         Assert.assertEquals("Expected empty set",
             Collections.emptySet(),
@@ -121,4 +133,18 @@ public class CharSetBuilderTest {
         Assert.assertThrows(UnsupportedOperationException.class, () -> actual.add('@'));
     }
 
+    /**
+     * Unit test {@link CharSetBuilder#asString()}
+     */
+    @Test
+    public void test_asString() {
+        String actual = new CharSetBuilder().range('A', 'Z').asString();
+
+        Assert.assertEquals("Unexpected Length: " + actual, 26, actual.length());
+
+        for (char test = 'A'; test <= 'Z'; test++) {
+            Assert.assertTrue(actual + " is missing expected character '" + test + "'",
+                actual.indexOf(test) != -1);
+        }
+    }
 }

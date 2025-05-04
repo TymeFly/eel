@@ -16,6 +16,7 @@ import static java.lang.Math.max;
  * Class to manage the expression source with a single character lookahead.
  */
 class Source implements Input {
+    private static final char UNDEFINED = (char) -1;
     private final int maxLength;
     private final InputStreamReader data;
 
@@ -27,6 +28,8 @@ class Source implements Input {
     private Source(@Nonnull InputStream source, int maxLength) {
         this.data = new InputStreamReader(source, StandardCharsets.UTF_8);
         this.maxLength = max(maxLength, 2);     // make sure we can always read 'current' and 'next'
+        this.current = UNDEFINED;
+        this.next = UNDEFINED;
     }
 
     /** Initialise this class outside the constructor */
@@ -70,7 +73,8 @@ class Source implements Input {
             current = this.next;
 
             try {
-                this.next = (char) data.read();
+                next = (char) data.read();
+                next = (next == UNDEFINED ? END : this.next);
             } catch (IOException e) {
                 throw new EelSourceException("Failed to read source after position " + position, e);
             }

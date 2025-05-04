@@ -1,5 +1,7 @@
 package com.github.tymefly.eel;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -22,18 +25,25 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.exception.EelRuntimeException;
+import com.github.tymefly.eel.exception.EelUnknownFunctionException;
 import com.github.tymefly.eel.function.date.DateFactory;
 import com.github.tymefly.eel.function.eel.EelMetadata;
 import com.github.tymefly.eel.function.format.FormatDate;
-import com.github.tymefly.eel.function.number.Abs;
+import com.github.tymefly.eel.function.general.Text;
+import com.github.tymefly.eel.function.io.FileIo;
+import com.github.tymefly.eel.function.log.EelLogger;
+import com.github.tymefly.eel.function.number.Constants;
 import com.github.tymefly.eel.function.system.FileSystem;
-import com.github.tymefly.eel.function.util.Text;
+import com.github.tymefly.eel.function.text.RandomText;
 import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
-import com.github.tymefly.eel.udf.EelLambda;
+import com.github.tymefly.eel.udf.FunctionalResource;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +51,7 @@ import static java.util.Map.entry;
 
 /**
  * Manager that is used to call any of the registered EEL functions.
- * Essentially, this is a mini IoC container
+ * This is a mini IoC container
  */
 class FunctionManager {
     /**
@@ -65,24 +75,25 @@ class FunctionManager {
             "",
             "eel",
             "system",
-            "format",
-            "log",
+            "io",
             "text",
-            "logic",
             "number",
-            "date"
+            "logic",
+            "date",
+            "log",
+            "format"
             );
 
-        private static final Collection<Class<?>> FUNCTION_CLASSES = Set.of(
-            ConvertEelValue.class
-        );
         private static final Collection<Package> FUNCTION_PACKAGES = Set.of(
-            EelMetadata.class.getPackage(),                     // EEL
-            Text.class.getPackage(),                            // Utils
-            FileSystem.class.getPackage(),                      // System
-            FormatDate.class.getPackage(),                      // Format
-            Abs.class.getPackage(),                             // Number
-            DateFactory.class.getPackage()                      // Date
+            Text.class.getPackage(),                            // General utility functions
+            EelMetadata.class.getPackage(),                     // EEL system functions
+            FileSystem.class.getPackage(),                      // Host System
+            FileIo.class.getPackage(),                          // Io functions
+            RandomText.class.getPackage(),                      // Text functions
+            Constants.class.getPackage(),                       // Number functions
+            DateFactory.class.getPackage(),                     // Date functions
+            EelLogger.class.getPackage(),                       // Log functions
+            FormatDate.class.getPackage()                       // Formatting
         );
 
         private static final Map<String, Description> STANDARD_FUNCTIONS;
@@ -93,7 +104,6 @@ class FunctionManager {
         static {
             Map<String, Description> standard = new HashMap<>();
 
-            FUNCTION_CLASSES.forEach(location -> addClass(standard, location, false));
             FUNCTION_PACKAGES.forEach(location -> addPackage(standard, location, false));
 
             STANDARD_FUNCTIONS = Collections.unmodifiableMap(standard);
@@ -140,8 +150,22 @@ class FunctionManager {
                 @Nonnull Package location,
                 boolean validateName) {
             Set<Class<?>> implementations = PACKAGE_CACHE.computeIfAbsent(location,
-                  l -> new Reflections(l.getName(), Scanners.TypesAnnotated)
-                        .getTypesAnnotatedWith(PackagedEelFunction.class));
+                p -> {
+                    String name = location.getName();
+                    String regEx = name.replace(".", "\\.")
+                        .replace("$", "\\$") +
+                            "\\.[^.]+\\.class$";
+                    FilterBuilder filter = new FilterBuilder()
+                        .includePattern(regEx);
+                    ConfigurationBuilder configuration = new ConfigurationBuilder()
+                        .filterInputsBy(filter)
+                        .setUrls(ClasspathHelper.forPackage(name))
+                        .setScanners(Scanners.TypesAnnotated);
+                    Set<Class<?>> classes = new Reflections(configuration)
+                        .getTypesAnnotatedWith(PackagedEelFunction.class);
+
+                    return classes;
+                });
 
             implementations.forEach(implementation -> addClass(functions, implementation, validateName));
         }
@@ -167,8 +191,8 @@ class FunctionManager {
             for (Description d : descriptions) {
                 Description old = functions.put(d.name(), d);
 
-                if (old != null) {
-                    throw new EelFunctionException("Function '%s' has multiple implementations", old.name());
+                if ((old !=  null) && !d.equals(old)) {
+                    throw new EelFunctionException("Function '%s' has multiple implementations", d.name());
                 }
             }
 
@@ -188,10 +212,10 @@ class FunctionManager {
                 } else if ((entryPoint.getModifiers() & Modifier.PUBLIC) == 0) {
                     LOGGER.error("Method '{}.{}' is not public", function.getName(), entryPoint.getName());
                 } else {
-                    String name = annotation.name();
+                    String name = annotation.value();
 
-                    if (validateName) {
-                        validateName(name);
+                    if (validateName && !hasValidName(name)) {
+                        throw new EelFunctionException("Invalid UDF name '%s'", name);
                     }
 
                     Description description = new Description(name, entryPoint);
@@ -203,25 +227,23 @@ class FunctionManager {
             return found;
         }
 
-        private static void validateName(@Nonnull String name) {
+        private static boolean hasValidName(@Nonnull String name) {
             int index = name.indexOf('.');
             String prefix = (index < 1 ? "" : name.substring(0, index));
             boolean valid = !RESERVED_PREFIX.contains(prefix);
 
             valid = valid && UDF_NAME.matcher(name).matches();
 
-            if (!valid) {
-                throw new EelFunctionException("Invalid UDF name '%s'", name);
-            }
+            return valid;
         }
     }
 
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final Map<Class<?>, Object> INSTANCE_CACHE = new HashMap<>();
+    private static final Map<Class<?>, Object> INSTANCE_CACHE = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Function<Value, Object>> ARGUMENT_CONVERSIONS = Map.ofEntries(
-        entry(EelValue.class, v -> v),
+        entry(Value.class, v -> v),
         entry(String.class, Value::asText),
         entry(Boolean.class, Value::asLogic),
         entry(boolean.class, Value::asLogic),
@@ -229,19 +251,20 @@ class FunctionManager {
         entry(byte.class, v -> v.asNumber().byteValue()),
         entry(Short.class, v -> v.asNumber().shortValue()),
         entry(short.class, v -> v.asNumber().shortValue()),
-        entry(Integer.class, v -> v.asNumber().intValue()),
-        entry(int.class, v -> v.asNumber().intValue()),
-        entry(Long.class, v -> v.asNumber().longValue()),
-        entry(long.class, v -> v.asNumber().longValue()),
+        entry(Integer.class, Value::asInt),
+        entry(int.class, Value::asInt),
+        entry(Long.class, Value::asLong),
+        entry(long.class, Value::asLong),
         entry(Float.class, v -> v.asNumber().floatValue()),
         entry(float.class, v -> v.asNumber().floatValue()),
-        entry(Double.class, v -> v.asNumber().doubleValue()),
-        entry(double.class, v -> v.asNumber().doubleValue()),
-        entry(BigInteger.class, v -> v.asNumber().toBigInteger()),
+        entry(Double.class, Value::asDouble),
+        entry(double.class, Value::asDouble),
+        entry(BigInteger.class, Value::asBigInteger),
         entry(BigDecimal.class, Value::asNumber),
         entry(ZonedDateTime.class, Value::asDate),
         entry(Character.class, Value::asChar),
-        entry(char.class, Value::asChar)
+        entry(char.class, Value::asChar),
+        entry(File.class, FunctionManager::asFile)
     );
 
 
@@ -254,20 +277,20 @@ class FunctionManager {
 
 
     @Nonnull
-    Executor compileCall(@Nonnull String functionName,
-                         @Nonnull EelContext context,
-                         @Nonnull List<Executor> argumentList) {
+    Term compileCall(@Nonnull String functionName,
+                     @Nonnull EelContext context,
+                     @Nonnull List<Term> argumentList) {
         Description description = descriptions.get(functionName);
 
         if (description == null) {
-            throw new EelFunctionException("Undefined function '%s'", functionName);
+            throw new EelUnknownFunctionException("Undefined function '%s'", functionName);
         }
 
         Method entryPoint = description.entryPoint();
         Class<?> implementation = entryPoint.getDeclaringClass();
         Object instance = INSTANCE_CACHE.computeIfAbsent(implementation, this::createInstance);
 
-        return s -> compileCall(functionName, instance, entryPoint, s, context, argumentList);
+        return s -> invokeFunction(functionName, instance, entryPoint, s, context, argumentList);
     }
 
 
@@ -279,7 +302,8 @@ class FunctionManager {
             instance = function.getConstructor()
                 .newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new EelFunctionException("Failed to execute default constructor for '" + function.getName()+  "'", e);
+            throw new EelFunctionException("Failed to execute default constructor for '" + function.getName() +  "'",
+                e);
         }
 
         return instance;
@@ -287,18 +311,17 @@ class FunctionManager {
 
 
     @Nonnull
-    private Value compileCall(@Nonnull String name,
-                              @Nonnull Object instance,
-                              @Nonnull Method entryPoint,
-                              @Nonnull SymbolsTable symbols,
-                              @Nonnull EelContext context,
-                              @Nonnull List<Executor> argumentList) {
-        Object[] arguments = evaluateArguments(name, entryPoint, symbols, context, argumentList);
-        Object result;
-        Value value;
+    private Value invokeFunction(@Nonnull String name,
+                                 @Nonnull Object instance,
+                                 @Nonnull Method entryPoint,
+                                 @Nonnull SymbolsTable symbols,
+                                 @Nonnull EelContext context,
+                                 @Nonnull List<Term> argumentList) {
+        Object[] arguments = buildArguments(name, entryPoint, symbols, context, argumentList);
+        Object returned;
 
         try {
-            result = entryPoint.invoke(instance, arguments);
+            returned = entryPoint.invoke(instance, arguments);
         } catch (RuntimeException | ReflectiveOperationException e) {
             Throwable cause = e.getCause();
 
@@ -313,18 +336,16 @@ class FunctionManager {
             throw new EelFunctionException("Failed to execute function '" + name + "'", cause);
         }
 
-        value = convertResult(name, result);
-
-        return value;
+        return convertReturned(name, returned);
     }
 
 
     @Nonnull
-    private Object[] evaluateArguments(@Nonnull String name,
-            @Nonnull Method entryPoint,
-            @Nonnull SymbolsTable symbols,
-            @Nonnull EelContext context,
-            @Nonnull List<Executor> argumentList) {
+    private Object[] buildArguments(@Nonnull String name,
+                                    @Nonnull Method entryPoint,
+                                    @Nonnull SymbolsTable symbols,
+                                    @Nonnull EelContext context,
+                                    @Nonnull List<Term> argumentList) {
         Parameter[] params = entryPoint.getParameters();
         int actualSize = entryPoint.getParameterCount();
         Object[] actual = new Object[actualSize];
@@ -349,7 +370,7 @@ class FunctionManager {
                 actual[paramIndex] = convertArgument(name, symbols, argumentList, argumentIndex, paramType);
                 argumentIndex++;
             } else {
-                actual[paramIndex] = defaultArgument(name,  symbols, parameter, paramIndex, paramType);
+                actual[paramIndex] = defaultArgument(name, parameter, paramIndex, paramType);
             }
         }
 
@@ -363,26 +384,26 @@ class FunctionManager {
 
     @Nonnull
     private Object convertArgument(@Nonnull String name,
-                                   SymbolsTable symbols,
-                                   List<Executor> argumentList,
+                                   @Nonnull SymbolsTable symbols,
+                                   @Nonnull List<Term> argumentList,
                                    int index,
                                    @Nonnull Class<?> targetType) {
-        Executor argument = argumentList.get(index);
-        Object result;
+        Term argument = argumentList.get(index);
+        Object converted;
 
-        if (targetType == EelLambda.class) {            // Don't execute the argument - it may be a fail() function
-            result = new EelLambdaImpl(argument, symbols);
+        if (targetType == Value.class) {            // Don't execute the argument - we may never need its value
+            converted = new ValueArgument(argument, symbols);
         } else {
-            Value value = argument.execute(symbols);
+            Value value = argument.evaluate(symbols);
 
-            result = convert(name, index, targetType, value);
+            converted = convert(name, index, targetType, value);
         }
 
-        return result;
+        return converted;
     }
 
     @Nonnull
-    private static Object convert(@Nonnull String name, int index, @Nonnull Class<?> targetType, @Nonnull Value value) {
+    private Object convert(@Nonnull String name, int index, @Nonnull Class<?> targetType, @Nonnull Value value) {
         return ARGUMENT_CONVERSIONS.getOrDefault(targetType, (k) -> {
                 throw new EelFunctionException("Argument %d for function '%s' is of unsupported type %s",
                     index, name, targetType.getName());
@@ -390,13 +411,28 @@ class FunctionManager {
         ).apply(value);
     }
 
+
+    @Nonnull
+    private static File asFile(@Nonnull Value fileName) {
+        String path = fileName.asText();
+        File result;
+
+        try {
+            result = FileFactory.from(path);
+        } catch (IOException e) {
+            throw new EelFunctionException("File '" + path + "' accesses a sensitive part of the filesystem", e);
+        }
+
+        return result;
+    }
+
+
+
     @Nonnull
     private Object defaultArgument(@Nonnull String name,
-                                   @Nonnull SymbolsTable symbols,
                                    @Nonnull Parameter parameter,
                                    int index,
                                    @Nonnull Class<?> targetType) {
-        Object argument;
         DefaultArgument annotation = parameter.getAnnotation(DefaultArgument.class);
 
         if (annotation == null) {
@@ -406,12 +442,7 @@ class FunctionManager {
 
         String to = annotation.value();
         Value value = Value.of(to);
-
-        if (parameter.getType() == EelLambda.class) {
-            argument = new EelLambdaImpl(s -> value, symbols);
-        } else {
-            argument = convert(name, index, targetType, value);
-        }
+        Object argument = convert(name, index, targetType, value);
 
         return argument;
     }
@@ -420,7 +451,7 @@ class FunctionManager {
     @Nonnull
     private Object varArgs(@Nonnull String name,
                            @Nonnull SymbolsTable symbols,
-                           @Nonnull List<Executor> argumentList,
+                           @Nonnull List<Term> argumentList,
                            int passedIndex,
                            @Nonnull Class<?> targetType) {
         int size = argumentList.size() - passedIndex;
@@ -437,30 +468,29 @@ class FunctionManager {
         return varArgs;
     }
 
-
     @Nonnull
-    private Value convertResult(@Nonnull String name, @Nullable Object result) {
-        Value value;
+    private Value convertReturned(@Nonnull String name, @Nullable Object returned) {
+        Value result;
 
-        if (result == null) {
+        if (returned == null) {
             throw new EelFunctionException("Function '%s' returned null", name);
-        } else if (result instanceof Value val) {
-            value = val;
-        } else if (result instanceof String str) {
-            value = Value.of(str);
-        } else if (result instanceof Number num) {
-            value = Value.of(num);
-        } else if (result instanceof Boolean bool) {
-            value = Value.of(bool);
-        } else if (result instanceof ZonedDateTime date) {
-            value = Value.of(date);
-        } else if (result instanceof Character character) {
-            value = Value.of(Character.toString(character));
+        } else if (returned instanceof Value value) {
+            result = value;
+        } else if (returned instanceof String str) {
+            result = Constant.of(str);
+        } else if (returned instanceof Number num) {
+            result = Constant.of(num);
+        } else if (returned instanceof Boolean bool) {
+            result = Constant.of(bool);
+        } else if (returned instanceof ZonedDateTime date) {
+            result = Constant.of(date);
+        } else if (returned instanceof Character character) {
+            result = Constant.of(Character.toString(character));
         } else {
             throw new EelFunctionException("Function '%s' returned unexpected type '%s'",
-                name, result.getClass().getName());
+                name, returned.getClass().getName());
         }
 
-        return value;
+        return result;
     }
 }

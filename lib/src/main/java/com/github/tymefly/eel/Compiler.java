@@ -1,10 +1,12 @@
 package com.github.tymefly.eel;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 /**
  * Defines the contract of a Compiler in the EEL language. The root operations are
- * {@link #readSymbol(String)}, {@link #textConstant(String)}, {@link #numericConstant(Number)} and
+ * {@link #read(String)}, {@link #textConstant(String)}, {@link #numericConstant(Number)} and
  * {@link #logicConstant(boolean)}. The remaining operations are created by combining and encapsulating previously
  * generated operations.
  */
@@ -27,119 +29,145 @@ interface Compiler {
     /** Fluent interface used to read values from the Symbols Table. Multiple SymbolTransformation can be set */
     interface SymbolBuilder {
         @Nonnull
-        SymbolBuilder withDefault(@Nonnull Executor defaultValue);
+        SymbolBuilder withDefault(@Nonnull Term defaultValue);
+
+        @Nonnull
+        SymbolBuilder withBlankDefault(@Nonnull Term defaultValue);
 
         @Nonnull
         SymbolBuilder withTransformation(@Nonnull SymbolTransformation transformation);
 
         @Nonnull
-        Executor build();
+        Term build();
     }
 
-
+    
     @Nonnull
-    Executor isDefined(@Nonnull String identifier);
-
-    @Nonnull
-    SymbolBuilder readSymbol(@Nonnull String identifier);
+    Term cached(@Nonnull Term term);
 
 
     @Nonnull
-    Executor textConstant(@Nonnull String value);
+    Term isDefined(@Nonnull String identifier);
 
     @Nonnull
-    Executor logicConstant(boolean value);
-
-    @Nonnull
-    Executor numericConstant(@Nonnull Number value);
+    SymbolBuilder read(@Nonnull String identifier);
 
 
     @Nonnull
-    Executor conditional(@Nonnull Executor condition, @Nonnull Executor first, @Nonnull Executor second);
+    Term textConstant(@Nonnull String value);
+
+    @Nonnull
+    Term logicConstant(boolean value);
+
+    @Nonnull
+    Term numericConstant(@Nonnull Number value);
 
 
     @Nonnull
-    Executor equal(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor notEqual(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor greaterThan(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor greaterThenEquals(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor lessThan(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor lessThanEquals(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor isBefore(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor isAfter(@Nonnull Executor left, @Nonnull Executor right);
+    Term conditional(@Nonnull Term condition, @Nonnull Term first, @Nonnull Term second);
 
 
     @Nonnull
-    Executor negate(@Nonnull Executor value);
+    Term equal(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor plus(@Nonnull Executor left, @Nonnull Executor right);
+    Term notEqual(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor minus(@Nonnull Executor left, @Nonnull Executor right);
+    Term greaterThan(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor multiply(@Nonnull Executor left, @Nonnull Executor right);
+    Term greaterThenEquals(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor divide(@Nonnull Executor left, @Nonnull Executor right);
+    Term lessThan(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor divideFloor(@Nonnull Executor left, @Nonnull Executor right);
+    Term lessThanEquals(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor divideTruncate(@Nonnull Executor left, @Nonnull Executor right);
+    Term isBefore(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor modulus(@Nonnull Executor left, @Nonnull Executor right);
+    Term isAfter(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor power(@Nonnull Executor left, @Nonnull Executor right);
-
-
-    @Nonnull
-    Executor logicalNot(@Nonnull Executor value);
-
-    @Nonnull
-    Executor logicalAnd(@Nonnull Executor left, @Nonnull Executor right);
-
-    @Nonnull
-    Executor logicalOr(@Nonnull Executor left, @Nonnull Executor right);
+    Term in(@Nonnull Term left, @Nonnull List<Term> terms);
 
 
     @Nonnull
-    Executor bitwiseNot(@Nonnull Executor value);
+    Term negate(@Nonnull Term value);
 
     @Nonnull
-    Executor bitwiseAnd(@Nonnull Executor left, @Nonnull Executor right);
+    Term add(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor bitwiseOr(@Nonnull Executor left, @Nonnull Executor right);
+    Term subtract(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor bitwiseXor(@Nonnull Executor left, @Nonnull Executor right);
+    Term multiply(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor leftShift(@Nonnull Executor value, @Nonnull Executor shift);
+    Term divide(@Nonnull Term left, @Nonnull Term right);
 
     @Nonnull
-    Executor rightShift(@Nonnull Executor value, @Nonnull Executor shift);
+    Term divideFloor(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term divideTruncate(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term modulus(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term power(@Nonnull Term left, @Nonnull Term right);
 
 
     @Nonnull
-    Executor concatenate(@Nonnull Executor first, @Nonnull Executor second);
+    Term logicalNot(@Nonnull Term value);
+
+    @Nonnull
+    Term logicalAnd(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term logicalOr(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term logicalXor(@Nonnull Term left, @Nonnull Term right);
+
+
+    @Nonnull
+    Term bitwiseNot(@Nonnull Term value);
+
+    @Nonnull
+    Term bitwiseAnd(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term bitwiseOr(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term bitwiseXor(@Nonnull Term left, @Nonnull Term right);
+
+    @Nonnull
+    Term leftShift(@Nonnull Term value, @Nonnull Term shift);
+
+    @Nonnull
+    Term rightShift(@Nonnull Term value, @Nonnull Term shift);
+
+
+    @Nonnull
+    Term concatenate(@Nonnull Term first, @Nonnull Term second);
+
+
+    @Nonnull
+    Term callText(@Nonnull Term operand);
+
+    @Nonnull
+    Term callNumber(@Nonnull Term operand);
+
+    @Nonnull
+    Term callLogic(@Nonnull Term operand);
+
+    @Nonnull
+    Term callDate(@Nonnull Term operand);
 }

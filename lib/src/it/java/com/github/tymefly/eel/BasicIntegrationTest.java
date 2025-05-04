@@ -2,6 +2,7 @@ package com.github.tymefly.eel;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -9,18 +10,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Basic set of integration Tests
  */
 public class BasicIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
     private EelContext context;
 
@@ -48,24 +49,68 @@ public class BasicIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
-    public void test_SingleString_nixPath() {
-        String actual = Eel.compile(context, "/path/to/my/file.txt")
-            .evaluate()
-            .asText();
+    public void test_String_Paths() {
+        Assert.assertEquals("*nix path",
+            "/path/to/my/file.txt",
+             Eel.compile(context, "/path/to/my/file.txt")
+                .evaluate()
+                .asText());
 
-        Assert.assertEquals("Unexpected String", "/path/to/my/file.txt", actual);
+        Assert.assertEquals("DOS path",
+            "c:\\path\\to\\my\\file.txt",
+            Eel.compile(context, "c:\\\\path\\\\to\\\\my\\\\file.txt")
+                .evaluate()
+                .asText());
     }
 
     /**
      * Integration test {@link Eel}
      */
     @Test
-    public void test_SingleString_dosPath() {
-        String actual = Eel.compile(context, "c:\\path\\to\\my\\file.txt")
-            .evaluate()
-            .asText();
+    public void test_String_EscapedChars() {
+        Assert.assertEquals("Escaped $",
+            "$My $Text",
+            Eel.compile(context, "\\$My \\$Text")
+                .evaluate()
+                .asText());
 
-        Assert.assertEquals("Unexpected String", "c:\\path\\to\\my\\file.txt", actual);
+        Assert.assertEquals("Tab in expression",
+            "Hello\tWorld",
+            Eel.compile(context, "Hello\\tWorld")
+                .evaluate()
+                .asText());
+
+        Assert.assertEquals("Tab in string",
+            "Hello\tWorld",
+            Eel.compile(context, "$( 'Hello\\tWorld' )")
+                .evaluate()
+                .asText());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_InterpolationInText() {
+        Map<String, String> symbols = Map.ofEntries(Map.entry("a", "first"), Map.entry("b", "second"));
+
+        Assert.assertEquals("Symbols",
+            "Value: first, second",
+            Eel.compile(context, "$( 'Value: ${a}, ${b}' )")
+                .evaluate(symbols)
+                .asText());
+
+        Assert.assertEquals("Function",
+            "Value: 9",
+            Eel.compile(context, "$( 'Value: $random(9, 9)' )")
+                .evaluate(symbols)
+                .asText());
+
+        Assert.assertEquals("Expression",
+            "Value: 18",
+            Eel.compile(context, "$( 'Value: $(9 + 9)' )")
+                .evaluate(symbols)
+                .asText());
     }
 
     /**
@@ -73,10 +118,6 @@ public class BasicIntegrationTest {
      */
     @Test
     public void test_NumericValues() {
-        BigDecimal actual = Eel.compile(context, "$(123)")
-            .evaluate()
-            .asNumber();
-
         Assert.assertEquals("+ve Decimal Integer", BigDecimal.valueOf(1234), Eel.compile("$(1234)").evaluate().asNumber());
         Assert.assertEquals("-ve Decimal Integer", BigDecimal.valueOf(-123), Eel.compile("$(-123)").evaluate().asNumber());
         Assert.assertEquals("+ve Fractional Decimal", BigDecimal.valueOf(123.456), Eel.compile("$(123.456)").evaluate().asNumber());
@@ -131,6 +172,19 @@ public class BasicIntegrationTest {
         Assert.assertEquals("Unexpected value", "~~~ 101 ~~~", actual);
     }
 
+     /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_EmbeddedFunctionInterpolation() {
+        boolean actual = Eel.compile(context, "$( $date.plus(${unknown-2000-01-02T12:00}, '5m') isAfter 0 )")
+            .evaluate()
+            .asLogic();
+
+        Assert.assertTrue("Unexpected value", actual);
+    }
+
+
     /**
      * Integration test {@link Eel}
      */
@@ -145,15 +199,6 @@ public class BasicIntegrationTest {
         Assert.assertEquals("Spaces",
             "$  random(99,99)",
             Eel.compile(context, "$  random(99,99)").evaluate().asText());
-        Assert.assertEquals("Double $",
-            "$99",
-            Eel.compile(context, "$$random(99,99)").evaluate().asText());
-        Assert.assertEquals("Nested in Expression",
-            "$99",
-            Eel.compile(context, "$$( $random(99,99) )").evaluate().asText());
-        Assert.assertEquals("Nested in Value",
-            "def:$99$",
-            Eel.compile(context, "${UNDEFINED-def:$$random(99,99)$}").evaluate().asText());
     }
 
     /**
@@ -167,5 +212,53 @@ public class BasicIntegrationTest {
         Assert.assertEquals("First", "Result is 0", compiled.evaluate().asText());
         Assert.assertEquals("Second", "Result is 1", compiled.evaluate().asText());
         Assert.assertEquals("Third", "Result is 2", compiled.evaluate().asText());
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_lazyEvaluation() {
+        Result result = Eel.compile(context, "$indexOf('abcd', 'c', log.debug('test', fail('Never evaluated') ) )")
+            .evaluate();
+
+        // The real test is that fail() is returned from log.debug(), but never evaluated
+
+        Assert.assertEquals("Unexpected Index", 2, result.asInt());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_SingleEvaluation() {
+        Eel compiled = Eel.compile(context, "$count()");
+        Result result1 = compiled.evaluate();
+        Result result2 = compiled.evaluate();
+
+        int expected1 = result1.asInt();
+
+        Assert.assertEquals("expression re-read",  expected1, result1.asInt());             // should not change
+        Assert.assertEquals("expression re-evaluated",  (expected1 + 1), result2.asInt());  // should have changed
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_SingleEvaluation_LookBack() {
+        Eel compiled = Eel.compile(context, "$count()");
+
+        // Bump counter to 3
+        compiled.evaluate();
+        compiled.evaluate();
+        compiled.evaluate();
+
+        Result actual = Eel.compile(context, "$( 2 ; count() ; $[1] + $[2] + $[2] )")    // $[2] should be consistently 3
+            .evaluate();
+
+        Assert.assertEquals("Unexpected result", 8, actual.asInt());
     }
 }

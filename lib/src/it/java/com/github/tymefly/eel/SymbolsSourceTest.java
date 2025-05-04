@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Unit test for {@link SymbolsSource}
+ * Integration test for {@link SymbolsSource}
  */
 public class SymbolsSourceTest {
     private Map<String, String> backing;
@@ -22,7 +22,7 @@ public class SymbolsSourceTest {
     }
 
     /**
-     * Unit test {@link SymbolsSource#unscoped}
+     * Integration test {@link SymbolsSource#unscoped}
      */
     @Test
     public void test_unscoped() {
@@ -33,7 +33,7 @@ public class SymbolsSourceTest {
     }
 
     /**
-     * Unit test {@link SymbolsSource#scoped}
+     * Integration test {@link SymbolsSource#scoped}
      */
     @Test
     public void test_scoped() {

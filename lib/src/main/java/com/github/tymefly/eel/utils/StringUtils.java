@@ -140,72 +140,92 @@ public class StringUtils {
 
 
     /**
-     * Returns the left most part of a String containing at most {@code count} characters.
-     * If Count is negative return an empty string
+     * Returns the left most part of a String containing at most {@code length} characters.
      * @param text      Text to take character from
-     * @param count     the maximum number of characters to take
+     * @param length    If positive this is the maximum number of characters to return.
+     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
      * @return the specified substring
      */
     @Nonnull
-    public static String left(@Nonnull String text, int count) {
+    public static String left(@Nonnull String text, int length) {
+        int count = text.length();
         String result;
 
-        if (count <= 0) {
-            result = "";
-        } else if (count > text.length()) {
+        if (length < 0) {
+            length = Math.max(count + length, 0);
+        }
+
+        if (length > count) {
             result = text;
         } else {
-            result = text.substring(0, count);
+            result = text.substring(0, length);
         }
 
         return result;
     }
 
     /**
-     * Returns the middle part of a String starting from index {@code start} and terminating at index {@code end}
-     * If the {@code start} is beyond {@code end} then return an empty string.
-     * If {@code start} is negative cap it to the start of the {@code text}
-     * If {@code end} is beyond the length of the text then cap it to the end of the {@code text}
-     * @param text      Text to take character from
-     * @param start     zero based index of first character to return
-     * @param count     maximum number of characters to return
+     * Returns the middle part of a String starting from index {@code start} and containing at most {@code length}
+     * characters. The specification of this method deliberately matches the one used by bash
+     * @param text      Text to take characters from
+     * @param position  If positive this is a zero-based index of start of the {@code text}.
+     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
+     * @param length    If positive this is the maximum number of characters to return.
+     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
      * @return          the specified substring
+     * @see <a href=https://tldp.org/LDP/abs/html/abs-guide.html#SUBSTREXTR01>tldp.org</a>
      */
     @Nonnull
-    public static String mid(@Nonnull String text, int start, int count) {
+    public static String mid(@Nonnull String text, int position, int length) {
         String result;
-        int length = text.length();
+        int stringLength = text.length();
+        long start = position;                              // longs ensure (position + length) never overflow
+        long longLength = length;
+        long end;
 
-        start = Math.max(start, 0);
-        int end = Math.min(start + count, length);
+        if ((start < 0 ) && (longLength < 0)) {             // position and length are both -ve
+            longLength = -position + length;
+            start = stringLength + position;
+        } else if (longLength < 0) {                        // position is +ve, length is -ve.
+            longLength = stringLength + length - start;         // length is an index from the end of text
+        } else if (start < 0) {                             // position is -ve, length is positive
+            start = stringLength + position;                    // position is neg 1-based index from the end
+        } else {                                            // position and length are both +ve
+            // No special action required
+        }
 
-        if (end < start) {
+        end = (int) Math.min(start + longLength, stringLength);
+
+        if ((start < 0) || (end < start)) {
             result = "";
         } else {
-            result = text.substring(start, end);
+            result = text.substring((int) start, (int) end);
         }
 
         return result;
     }
 
     /**
-     * Returns the right most part of a String containing at most {@code count} characters.
+     * Returns the right most part of a String containing at most {@code length} characters.
      * If Count is negative return an empty string
      * @param text      Text to take character from
-     * @param count     the maximum number of characters to take
+     * @param length    If positive this is the maximum number of characters to return.
+     *                  If negative this is an index from the start of the {@code text} where -1 is the first character
      * @return          the specified substring
      */
     @Nonnull
-    public static String right(@Nonnull String text, int count) {
+    public static String right(@Nonnull String text, int length) {
         String result;
-        int length = text.length();
+        int count = text.length();
 
-        if (count <= 0) {
-            result = "";
-        } else if (count > length) {
+        if (length < 0) {
+            length = Math.max(count + length, 0);
+        }
+
+        if (length > count) {
             result = text;
         } else {
-            result = text.substring(length - count);
+            result = text.substring(count - length);
         }
 
         return result;

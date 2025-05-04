@@ -5,7 +5,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Sum {
-    @EelFunction(name = "test.sum")
+    @EelFunction("test.sum")
     public long sum(int first, int... rest) {
         long result = first;
 

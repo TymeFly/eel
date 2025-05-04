@@ -4,23 +4,24 @@ import java.time.Duration;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.exception.EelUnknownFunctionException;
 import func.functions2.Half;
 import func.functions2.Times2;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Test to demonstrate UDFs don't leak across contexts
  */
 public class UdfIsolationIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
@@ -62,7 +63,7 @@ public class UdfIsolationIntegrationTest {
             "15",
             Eel.compile(withUdf, "$( test.half(30) )").evaluate().asText());
 
-        EelFunctionException failure = Assert.assertThrows(EelFunctionException.class,
+        EelUnknownFunctionException failure = Assert.assertThrows(EelUnknownFunctionException.class,
             () -> Eel.compile(withoutUdf, "$( test.half(40) )").evaluate().asText());
         Assert.assertEquals("Unexpected exception",
             "Undefined function 'test.half'",

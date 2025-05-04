@@ -1,5 +1,6 @@
 package com.github.tymefly.eel.builder;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,12 @@ public interface EelContextSettingBuilder<T> {
     Duration DEFAULT_TIMEOUT = Duration.ofSeconds(2);
 
     /**
+     * This is the default maximum length of time an EEL Expression can take to evaluate
+     * @see #withTimeout(Duration)
+     */
+    Duration NO_TIMEOUT = Duration.ofSeconds(0);
+
+    /**
      * Sets the maximum maxLength of an EEL expression. If EEL tries to parse an expression that is longer than
      * this limit then an {@link com.github.tymefly.eel.EelSourceException} will be thrown.
      * The purpose of this setting is to prevent the client mounting a Denial Of Service (DOS) attack by defining an
@@ -43,7 +50,8 @@ public interface EelContextSettingBuilder<T> {
      * that never terminates or depends on an external resource that has locked up.
      * By default, this is {@link #DEFAULT_TIMEOUT}. EEL expression that used only the Standard Functions
      * should complete less than a second, so this setting should rarely need to be changed.
-     * @param timeout   maximum time taken to evaluate an expression. A duration of 0 will disable timeouts.
+     * @param timeout   maximum time taken to evaluate an expression.
+     *                  A duration of {@link #NO_TIMEOUT} will disable timeouts.
      * @return          a fluent interface
      */
     @Nonnull
@@ -57,6 +65,35 @@ public interface EelContextSettingBuilder<T> {
      */
     @Nonnull
     T withPrecision(int precision);
+
+    /**
+     * Sets the maximum number of bytes that an EEL function can read.
+     * By default, this is {@link com.github.tymefly.eel.EelContext#DEFAULT_IO_LIMIT} bytes
+     * @param bytes     maximum number of bytes that can be read by a single operation
+     * @return          a fluent interface
+     * @since 3.0.0
+     */
+    @Nonnull
+    T withIoLimit(int bytes);
+
+    /**
+     * Sets the first day of the week, which is used in date-based calculations.
+     * By default, this is {@link DayOfWeek#MONDAY} to match ISO-8601
+     * @param startOfWeek   the first day of the calendar week
+     * @return              a fluent interface
+     * @since 3.0.0
+     */
+    T withStartOfWeek(@Nonnull DayOfWeek startOfWeek);
+
+    /**
+     * Sets the minimal number of days in the first week, from 1 to 7
+     * By default, this is {@literal 4} to match ISO-8601
+     * @param minimalDaysInFirstWeek    the minimum number of days in the first week of a year
+     * @return            a fluent interface
+     * @since 3.0.0
+     */
+    @Nonnull
+    T withMinimalDaysInFirstWeek(int minimalDaysInFirstWeek);
 
 
     /**

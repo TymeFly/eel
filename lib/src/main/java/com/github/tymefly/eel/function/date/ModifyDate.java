@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
@@ -17,21 +18,21 @@ public class ModifyDate {
     /**
      * Entry point for the {@code set} function that return a copy of DATE passed in, but individual fields set
      * to specified values.
-     * <br>
-     * <b>Note:</b> Week is not a supported field.
-     * <br>
      * The EEL syntax for this function is <code>date.set( date, specifier... )</code>
+     * @param context       The current EEL Context
      * @param date          date to format
-     * @param specifiers    Field specifiers
-     * @return the date at a reduced accuracy.
+     * @param spec          Field specifiers
+     * @return the date with specific fields changed
      * @throws DateTimeException if one of the {@code specifiers} is not valid
      * @see #setZone(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.set")
-    public ZonedDateTime set(@Nonnull ZonedDateTime date, @Nonnull String... specifiers) throws DateTimeException {
-        for (var specifier : specifiers) {
-            date = DateHelper.setField(date, specifier);
+    @EelFunction("date.set")
+    public ZonedDateTime set(@Nonnull EelContext context,
+                             @Nonnull ZonedDateTime date,
+                             @Nonnull String... spec) throws DateTimeException {
+        for (var specifier : spec) {
+            date = DateHelper.setField(context, date, specifier);
         }
 
         return date;
@@ -48,13 +49,13 @@ public class ModifyDate {
      * The EEL syntax for this function is <code>date.setZone( date, zone )</code>
      * @param date  date to format
      * @param zone  Zone Id
-     * @return the date at a reduced accuracy.
+     * @return the date with a different zone
      * @throws DateTimeException if the {@code zone} is not valid
-     * @see #set(ZonedDateTime, String...)
+     * @see #set(EelContext, ZonedDateTime, String...)
      * @see #moveZone(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.setZone")
+    @EelFunction("date.setZone")
     public ZonedDateTime setZone(@Nonnull ZonedDateTime date, @Nonnull String zone) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
 
@@ -71,59 +72,16 @@ public class ModifyDate {
      * The EEL syntax for this function is <code>date.moveZone( date, zone )</code>
      * @param date  date to format
      * @param zone  Zone Id
-     * @return the date at a reduced accuracy.
+     * @return the same instant given by the {@code date} but in a different zone
      * @throws DateTimeException if the {@code zone} is not valid
      * @see #setZone(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.moveZone")
+    @EelFunction("date.moveZone")
     public ZonedDateTime moveZone(@Nonnull ZonedDateTime date, @Nonnull String zone) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
 
         date = date.withZoneSameInstant(zoneId);
-
-        return date;
-    }
-
-
-    /**
-     * Entry point for the {@code truncate} function that reduces the accuracy of a DATE.
-     * This is done by setting the least significant DATE fields to their lowest value. These are:
-     * <ul>
-     *  <li><i>year</i> - The month is set to January, the day to the 1st and the time to midnight</li>
-     *  <li><i>month</i> - The day to the 1st of the month and the time to midnight</li>
-     *  <li><i>day</i> - The time to midnight</li>
-     *  <li><i>hour</i> - The minutes, seconds and fractions of a second are set to 0</li>
-     *  <li><i>minute</i> - The seconds and fractions of a second are set to 0</li>
-     *  <li><i>seconds</i> - The fractions of a second are set to 0</li>
-     * </ul>
-     * <br>
-     * <b>Note:</b> Week is not a supported accuracy.
-     * <br>
-     * The EEL syntax for this function is <code>date.truncate( date, accuracy )</code>
-     * @param date      date to format
-     * @param accuracy  The required accuracy of the date
-     * @return the date at a reduced accuracy.
-     * @throws DateTimeException if the {@code accuracy} is not valid
-     */
-    @Nonnull
-    @EelFunction(name = "date.truncate")
-    public ZonedDateTime truncate(@Nonnull ZonedDateTime date, @Nonnull String accuracy) throws DateTimeException {
-        Period period = Period.lookup(accuracy);
-
-        // Suspend Checkstyle rule FallThrough for 20 lines: Fall through will clear high precision fields
-        switch (period) {
-            case YEAR: date = date.withMonth(1);
-            case MONTH: date = date.withDayOfMonth(1);
-            case DAY: date = date.withHour(0);
-            case HOUR: date = date.withMinute(0);
-            case MINUTE: date = date.withSecond(0);
-            case SECOND: date = date.withNano(0);
-                break;
-
-            default:            // Period.WEEK
-                throw new DateTimeException("Unsupported date period '" + accuracy + "'");
-        }
 
         return date;
     }

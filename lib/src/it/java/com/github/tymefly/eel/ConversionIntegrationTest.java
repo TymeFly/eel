@@ -10,8 +10,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Test for type conversions
@@ -19,11 +19,10 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 public class ConversionIntegrationTest {
     private static final ZonedDateTime DATE_TRUE = ZonedDateTime.of(1970, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC);
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
-
+    public SystemErrRule stdErr = new SystemErrRule();
     private EelContext context;
 
 
@@ -78,7 +77,7 @@ public class ConversionIntegrationTest {
 
         Assert.assertEquals("Unexpected type", Type.DATE, actual.getType());
         Assert.assertTrue("Unexpected value: " + text,
-            actual.asText().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z"));
+            actual.asText().matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?Z"));
     }
 
     /**
@@ -122,7 +121,7 @@ public class ConversionIntegrationTest {
         Result actual = Eel.compile(context, "$( date.utc() )").evaluate();
 
         Assert.assertEquals("Unexpected type", Type.DATE, actual.getType());
-        Assert.assertTrue("Unexpected value", actual.asNumber().longValue() > 100);
+        Assert.assertTrue("Unexpected value", actual.asLong() > 100);
     }
 
     /**
@@ -235,6 +234,19 @@ public class ConversionIntegrationTest {
         Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
         Assert.assertEquals("Unexpected value",
             ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 0, ZoneOffset.UTC),
+            actual.asDate());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_Text_To_Date_WithMicro() {
+        Result actual = Eel.compile(context, "$( '2000-01-02' ~> 'T' ~> '03:04:05.6789Z' )").evaluate();
+
+        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
+        Assert.assertEquals("Unexpected value",
+            ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 678_900_000, ZoneOffset.UTC),
             actual.asDate());
     }
 

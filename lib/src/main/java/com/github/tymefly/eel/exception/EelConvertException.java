@@ -5,7 +5,7 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Thrown by the EEL to indicate that data can not be converted as required
+ * Thrown by the EEL to indicate that data cannot be converted as required
  */
 public class EelConvertException extends EelRuntimeException {
     @Serial

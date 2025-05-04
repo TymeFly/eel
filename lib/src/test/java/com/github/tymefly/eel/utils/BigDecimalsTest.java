@@ -2,6 +2,7 @@ package com.github.tymefly.eel.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,5 +101,7 @@ public class BigDecimalsTest {
         Assert.assertEquals("float", new BigDecimal("5.6"), BigDecimals.toBigDecimal(5.6f));
         Assert.assertEquals("double", new BigDecimal("7.8"), BigDecimals.toBigDecimal(7.8));
         Assert.assertEquals("decimal", new BigDecimal("99"), BigDecimals.toBigDecimal(new BigInteger("99")));
+
+        Assert.assertEquals("other Number", new BigDecimal("1234"), BigDecimals.toBigDecimal(new AtomicLong(1234)));
     }
 }

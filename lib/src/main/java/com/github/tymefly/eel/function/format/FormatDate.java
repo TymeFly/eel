@@ -14,7 +14,7 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL functions that converts DATE to TEXT with a custom format
+ * EEL function that converts DATE to TEXT with a custom format
  */
 @PackagedEelFunction
 public class FormatDate {
@@ -42,6 +42,7 @@ public class FormatDate {
      * Entry point for the {@code format.date} function, which returns any given DATE in a customised formatted
      * <br>
      * The EEL syntax for this function is <code>format.date( date, format, offsets... )</code>
+     * @param context   The current EEL Context
      * @param format    Format of the returned string.
      * @param date      date to format
      * @param offsets   optional offsets.
@@ -51,9 +52,12 @@ public class FormatDate {
      *  Java DateTimeFormatter</a>
      */
     @Nonnull
-    @EelFunction(name = "format.date")
-    public String formatDate(@Nonnull String format, @Nonnull ZonedDateTime date, @Nonnull String... offsets) {
-        date = dateOffsets.offset(date, offsets);
+    @EelFunction("format.date")
+    public String formatDate(@Nonnull EelContext context,
+                             @Nonnull String format,
+                             @Nonnull ZonedDateTime date,
+                             @Nonnull String... offsets) {
+        date = dateOffsets.plus(context, date, offsets);
 
         return DateTimeFormatter.ofPattern(format)
             .format(date);
@@ -77,21 +81,21 @@ public class FormatDate {
      * @param offsets   optional offsets.
      * @return the formatted date
      * @see DateFactory#start(EelContext, String, String...)
-     * @see #formatDate(String, ZonedDateTime, String...)
+     * @see #formatDate(EelContext, String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
      * @since 2.1.0
      */
     @Nonnull
-    @EelFunction(name = "format.start")
+    @EelFunction("format.start")
     public String formatStart(@Nonnull EelContext context,
                               @Nonnull String format,
                               @DefaultArgument("UTC") @Nonnull String zone,
                               @DefaultArgument("") @Nonnull String... offsets) {
         ZonedDateTime date = dateFactory.start(context, zone, offsets);
 
-        return formatDate(format, date);
+        return formatDate(context, format, date);
     }
 
     /**
@@ -103,21 +107,22 @@ public class FormatDate {
      *  <li><code>format.utc( format )</code> - format the current time in the UTC Zone</li>
      *  <li><code>format.utc( format, offsets... )</code> - format the time in the UTC Zone after applying offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param format    Format of the returned string.
      * @param offsets   optional offsets.
      * @return the formatted date
-     * @see DateFactory#utc(String...)
-     * @see #formatDate(String, ZonedDateTime, String...)
+     * @see DateFactory#utc(EelContext, String...)
+     * @see #formatDate(EelContext, String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
      */
     @Nonnull
-    @EelFunction(name = "format.utc")
-    public String formatUtc(@Nonnull String format, @Nonnull String... offsets) {
-        ZonedDateTime date = dateFactory.utc(offsets);
+    @EelFunction("format.utc")
+    public String formatUtc(@Nonnull EelContext context, @Nonnull String format, @Nonnull String... offsets) {
+        ZonedDateTime date = dateFactory.utc(context, offsets);
 
-        return formatDate(format, date);
+        return formatDate(context, format, date);
     }
 
 
@@ -131,21 +136,22 @@ public class FormatDate {
      *  <li><code>format.local( format, offsets... )</code>
      *          - format the time in the local Zone after applying offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param format    Format of the returned string.
      * @param offsets   optional offsets.
      * @return the formatted date
-     * @see DateFactory#local(String...) (String...)
-     * @see #formatDate(String, ZonedDateTime, String...)
+     * @see DateFactory#local(EelContext, String...)
+     * @see #formatDate(EelContext, String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
      */
     @Nonnull
-    @EelFunction(name = "format.local")
-    public String formatLocal(@Nonnull String format, @Nonnull String... offsets) {
-        ZonedDateTime date = dateFactory.local(offsets);
+    @EelFunction("format.local")
+    public String formatLocal(@Nonnull EelContext context, @Nonnull String format, @Nonnull String... offsets) {
+        ZonedDateTime date = dateFactory.local(context, offsets);
 
-        return formatDate(format, date);
+        return formatDate(context, format, date);
     }
 
 
@@ -160,21 +166,25 @@ public class FormatDate {
      *  <li><code>format.at( zone, format, offsets... )</code>
      *          - format the time in the specified Zone after applying offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param zone      A time Zone
      * @param format    Format of the returned string.
      * @param offsets   optional offsets.
      * @return the formatted date
-     * @see DateFactory#at(String, String...) (String...)
-     * @see #formatDate(String, ZonedDateTime, String...)
+     * @see DateFactory#at(EelContext, String, String...)
+     * @see #formatDate(EelContext, String, ZonedDateTime, String...)
      * @see <a
      *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
      *  Java DateTimeFormatter</a>
      */
     @Nonnull
-    @EelFunction(name = "format.at")
-    public String formatAt(@Nonnull String zone, @Nonnull String format, @Nonnull String... offsets) {
-        ZonedDateTime date = dateFactory.at(zone, offsets);
+    @EelFunction("format.at")
+    public String formatAt(@Nonnull EelContext context,
+                           @Nonnull String zone,
+                           @Nonnull String format,
+                           @Nonnull String... offsets) {
+        ZonedDateTime date = dateFactory.at(context, zone, offsets);
 
-        return formatDate(format, date);
+        return formatDate(context, format, date);
     }
 }

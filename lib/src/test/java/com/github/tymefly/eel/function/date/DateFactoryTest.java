@@ -1,11 +1,13 @@
 package com.github.tymefly.eel.function.date;
 
 import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 
 import javax.annotation.Nonnull;
 
@@ -35,6 +37,8 @@ public class DateFactoryTest {
 
         when(context.getStartTime())
             .thenReturn(date);
+        when(context.getWeek())
+            .thenReturn(WeekFields.of(DayOfWeek.SUNDAY, 1));
     }
 
 
@@ -73,114 +77,257 @@ public class DateFactoryTest {
         Assert.assertEquals("-5 Zone", ZoneOffset.ofHours(-5), minus5.getOffset());
     }
 
+    /**
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
+     */
+    @Test
+    public void test_start_snap() {
+        ZonedDateTime expected = ZonedDateTime.of(date.getYear(),
+            date.getMonthValue(),
+            date.getDayOfMonth(),
+            0,
+            0,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().start(context, "UTC", "@d");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
 
     /**
-     * Unit test {@link DateFactory#utc(String...)}
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
+     */
+    @Test
+    public void test_start_singleOffset() {
+        ZonedDateTime actual = new DateFactory().start(context, "UTC", "2h");
+        Duration duration = Duration.ofHours(2);
+        long difference = date.plus(duration).until(actual, ChronoUnit.MILLIS);
+
+        difference = Math.abs(difference);
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
+    /**
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
+     */
+    @Test
+    public void test_start_multipleOffsets() {
+        ZonedDateTime expected = ZonedDateTime.of(date.getYear(),
+            date.getMonthValue(),
+            date.getDayOfMonth(),
+            1,
+            37,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().start(context, "UTC", "@d", "1h", "37m");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
+
+    /**
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
      */
     @Test
     public void test_utc_NoOffsets() {
-        ZonedDateTime actual = new DateFactory().utc();
+        ZonedDateTime actual = new DateFactory().utc(context);
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
         Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#utc(String...)}
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
+     */
+    @Test
+    public void test_utc_snap() {
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            now.getMonthValue(),
+            now.getDayOfMonth(),
+            0,
+            0,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().utc(context, "@d");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
+    /**
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
      */
     @Test
     public void test_utc_singleOffset() {
-        ZonedDateTime actual = new DateFactory().utc("2h");
+        ZonedDateTime actual = new DateFactory().utc(context, "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#utc(String...)}
+     * Unit test {@link DateFactory#utc(EelContext, String...)}
      */
     @Test
     public void test_utc_multipleOffsets() {
-        ZonedDateTime actual = new DateFactory().utc("1h", "37m");
-        long difference = difference(actual, 97, ChronoUnit.MINUTES);
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            now.getMonthValue(),
+            now.getDayOfMonth(),
+            1,
+            37,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().utc(context, "@d", "1h", "37m");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
 
     /**
-     * Unit test {@link DateFactory#local(String...)}
+     * Unit test {@link DateFactory#local(EelContext, String...)}
      */
     @Test
     public void test_local_NoOffsets() {
-        ZonedDateTime actual = new DateFactory().local();
+        ZonedDateTime actual = new DateFactory().local(context);
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
         Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#local(String...)}
+     * Unit test {@link DateFactory#local(EelContext, String...)}
+     */
+    @Test
+    public void test_local_snap() {
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            now.getMonthValue(),
+            now.getDayOfMonth(),
+            now.getHour(),
+            0,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().local(context, "@h");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
+    /**
+     * Unit test {@link DateFactory#local(EelContext, String...)}
      */
     @Test
     public void test_local_singleOffset() {
-        ZonedDateTime actual = new DateFactory().local("2h");
+        ZonedDateTime actual = new DateFactory().local(context, "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#local(String...)}
+     * Unit test {@link DateFactory#local(EelContext, String...)}
      */
     @Test
     public void test_local_multipleOffsets() {
-        ZonedDateTime actual = new DateFactory().local("1h", "37m");
-        long difference = difference(actual, 97, ChronoUnit.MINUTES);
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            now.getMonthValue(),
+            now.getDayOfMonth(),
+            now.getHour(),
+            37,
+            0,
+            0,
+            ZoneOffset.UTC);
+        ZonedDateTime actual = new DateFactory().local(context, "@h", "37m");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
 
     /**
-     * Unit test {@link DateFactory#at(String, String...)}
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
      */
     @Test
     public void test_at_NoOffsets() {
-        ZonedDateTime actual = new DateFactory().at("+02");
+        ZonedDateTime actual = new DateFactory().at(context, "+02");
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
         Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#at(String, String...)}
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
+     */
+    @Test
+    public void test_at_snap() {
+        ZonedDateTime nowInZone = now.withZoneSameInstant(ZoneId.of("+02"));
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            nowInZone.getMonthValue(),
+            nowInZone.getDayOfMonth(),
+            nowInZone.getHour(),
+            0,
+            0,
+            0,
+            ZoneOffset.ofHours(2));
+        ZonedDateTime actual = new DateFactory().at(context, "+02", "@h");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
+    /**
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
      */
     @Test
     public void test_at_singleOffset() {
-        ZonedDateTime actual = new DateFactory().at("+02", "2h");
+        ZonedDateTime actual = new DateFactory().at(context, "+02", "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#at(String, String...)}
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
      */
     @Test
     public void test_at_multipleOffsets() {
-        ZonedDateTime actual = new DateFactory().at("+02", "1h", "37m");
-        long difference = difference(actual, 97, ChronoUnit.MINUTES);
+        ZonedDateTime nowInZone = now.withZoneSameInstant(ZoneId.of("+02"));
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            nowInZone.getMonthValue(),
+            nowInZone.getDayOfMonth(),
+            1,
+            37,
+            0,
+            0,
+            ZoneOffset.ofHours(2));
+        ZonedDateTime actual = new DateFactory().at(context, "+02", "@d", "1h", "37m");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
 
     /**
-     * Unit test {@link DateFactory#at(String, String...)}
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
      */
     @Test
     public void test_at_badZone() {
-        Assert.assertThrows(DateTimeException.class, () -> new DateFactory().at("badZone"));
+        Assert.assertThrows(DateTimeException.class, () -> new DateFactory().at(context, "badZone"));
     }
 
 
@@ -188,6 +335,6 @@ public class DateFactoryTest {
         Duration duration = Duration.of(expectedDifference, timeUnit);
         long difference = now.plus(duration).until(actual, ChronoUnit.MILLIS);
 
-        return difference;
+        return Math.abs(difference);
     }
 }

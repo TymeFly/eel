@@ -1,6 +1,7 @@
 package com.github.tymefly.eel.exception;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Base class for all EEL exceptions.
@@ -23,8 +24,8 @@ public abstract sealed class EelException
      * @param args          formatting arguments
      * @see java.util.Formatter
      */
-    EelException(@Nonnull String message, @Nonnull Object... args) {
-        super(String.format(message, args));
+    EelException(@Nonnull String message, Object... args) {
+        super(message.formatted(args), optionalCause(args));
     }
 
 
@@ -35,5 +36,21 @@ public abstract sealed class EelException
      */
     EelException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);
+    }
+
+
+    @Nullable
+    private static Throwable optionalCause(Object... args) {
+        Throwable cause;
+
+        if (args.length == 0) {
+            cause = null;
+        } else if (args[args.length - 1] instanceof Throwable throwable) {
+            cause = throwable;
+        } else {
+            cause = null;
+        }
+
+        return cause;
     }
 }

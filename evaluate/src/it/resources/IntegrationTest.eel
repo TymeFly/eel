@@ -1,0 +1,7 @@
+$(
+1 + 2;                      ## evaluates to 3
+count();                    ## evaluates to 0
+count();                    ## evaluates to 1
+$[1] + $[2] + $[2] + $[3]   ## 3 + 0 + 0 + 1 evaluates to 4
+)
+

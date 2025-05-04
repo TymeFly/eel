@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,8 +38,12 @@ import org.reflections.util.ConfigurationBuilder;
 /**
  * Command Line Argument parser.
  */
+@SuppressWarnings({"PMD.UnusedPrivateMethod", "PMD.ImmutableField"})            // accessed by reflection
 class Config {
     private static final int SCREEN_WIDTH_CHARACTERS = 120;
+    private static final int DEFAULT_MIN_DAYS_FIRST_WEEK = 4;                   // See java.time.temporal.WeekFields.ISO
+    private static final DayOfWeek DEFAULT_START_OF_WEEK = DayOfWeek.MONDAY;    // See java.time.temporal.WeekFields.ISO
+
 
     // Evaluate application options
     @Option(name = "-?", aliases = {"--help", "-h"},
@@ -76,6 +81,24 @@ class Config {
         usage = "Default precision used in calculations")
     private int precision = EelContext.DEFAULT_PRECISION;
 
+    @Option(name = "--io-limit",
+        metaVar = "number",
+        usage = "Maximum number of bytes an EEL function can read")
+    private int ioLimit = EelContext.DEFAULT_IO_LIMIT;
+
+    private DayOfWeek startOfWeek = DEFAULT_START_OF_WEEK;
+
+    @Option(name = "--days-in-first-week",
+        metaVar = "[1 -> 7]",
+        usage = "Sets the minimal number of days in the first week of the year")
+    private int daysInFirstWeek = DEFAULT_MIN_DAYS_FIRST_WEEK;
+
+    @Option(name = "--script",
+        metaVar = "script",
+        usage = "File containing an EEL expression to evaluate")
+    private File scriptFile;
+
+
     @Option(name = "--version",
         usage = "Write EEL version and exit")
     private boolean version = false;
@@ -83,10 +106,10 @@ class Config {
 
     // EEL Symbol table options
     private final List<Class<?>> functionList = new ArrayList<>();
-
     private final List<Package> packageList = new ArrayList<>();
 
-    // Evaluate Arguments
+    // Expression to evaluate.
+    // This is not annotated "required = true" because user could ask for --version or --help
     @Argument(metaVar = "Expression", usage = "The expression to evaluate")
     private String expression;
 
@@ -121,7 +144,8 @@ class Config {
     private Config parseArgs(@Nonnull String[] args) {
         try {
             parser.parseArgument(args);
-            isValid = (help || version || (expression != null));
+            isValid = (help || version);
+            isValid |= (expression != null) ^ (scriptFile != null);
         } catch (CmdLineException e) {
             isValid = false;
             System.err.println("Error: " + e.getMessage());
@@ -143,7 +167,7 @@ class Config {
         Properties extra;
 
         try (
-            FileInputStream source = new FileInputStream(propertiesFile);
+            FileInputStream source = new FileInputStream(propertiesFile)
         ) {
             extra = new EelProperties().load(source);
         } catch (IOException e) {
@@ -155,6 +179,18 @@ class Config {
             Object value = entry.getValue();
 
             setDefinition(key.toString(), value.toString());
+        }
+    }
+
+    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification = "Called by args4J via reflection")
+    @Option(name = "--start-of-week",
+        metaVar = "day",
+        usage = "Sets the first day of the week (default: MONDAY)")
+    private void setStartOfWeek(@Nonnull String name) throws CmdLineException {
+        try {
+            this.startOfWeek = DayOfWeek.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CmdLineException("Invalid DayOfWeek: " + name);
         }
     }
 
@@ -322,6 +358,33 @@ class Config {
     }
 
     /**
+     * Returns the maximum number of bytes that an EEL function can read.
+     * If undefined the default is {@link EelContext#DEFAULT_IO_LIMIT}
+     * @return the maximum number of bytes that an EEL function can read.
+     */
+    int ioLimit() {
+        return ioLimit;
+    }
+
+    /**
+     * Returns the first day of the week, which is used in date-based calculations.
+     * @return the first day of the week
+     */
+    @Nonnull
+    DayOfWeek startOfWeek() {
+        return startOfWeek;
+    }
+
+    /**
+     * Sets the minimal number of days in the first week. This must be in the range from 1 to 7
+     * By default, this is {@literal 4} to match ISO-8601
+     * @return the minimal number of days in the first week.
+     */
+    int daysInFirstWeek() {
+        return daysInFirstWeek;
+    }
+
+    /**
      * Returns an immutable list of all the ad-hoc functions added to EEL.
      * This is in addition to packages that have been added
      * @return an immutable list of all the ad-hoc functions added to EEL.
@@ -343,12 +406,22 @@ class Config {
         return Collections.unmodifiableList(packageList);
     }
 
+
     /**
-     * Returns the expression to evaluate
-     * @return the expression to evaluate
+     * Returns an optional file containing the expression to evaluate
+     * @return an optional file containing the expression to evaluate
      */
-    @Nonnull
+    @Nullable
+    public File getScriptFile() {
+        return scriptFile;
+    }
+
+    /**
+     * Returns the optional expression to evaluate
+     * @return the optional expression to evaluate
+     */
+    @Nullable
     String getExpression() {
-        return (expression == null ? "" : expression);
+        return expression;
     }
 }

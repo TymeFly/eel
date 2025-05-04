@@ -2,6 +2,7 @@ package com.github.tymefly.eel;
 
 
 import java.io.InputStream;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
@@ -66,6 +67,32 @@ public class Eel {
             return this;
         }
 
+        @Nonnull
+        @Override
+        public EelBuilder withIoLimit(int bytes) {
+            contextBuilder.withIoLimit(bytes);
+            context = null;
+
+            return this;
+        }
+
+        @Override
+        public EelBuilder withStartOfWeek(@Nonnull DayOfWeek startOfWeek) {
+            contextBuilder.withStartOfWeek(startOfWeek);
+            context = null;
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public EelBuilder withMinimalDaysInFirstWeek(int minimalDaysInFirstWeek) {
+            contextBuilder.withMinimalDaysInFirstWeek(minimalDaysInFirstWeek);
+            context = null;
+
+            return this;
+        }
+
         @Override
         @Nonnull
         public EelBuilder withUdfPackage(@Nonnull Package location) {
@@ -122,8 +149,7 @@ public class Eel {
 
     private static final EelContextImpl DEFAULT_CONTEXT = new EelContextImpl.Builder().build();
 
-    private final Executor expression;
-
+    private final Expression expression;
 
     private Eel(@Nonnull EelContextImpl context, @Nonnull Source source) {
         Tokenizer tokenizer = new Tokenizer(source);
@@ -131,7 +157,7 @@ public class Eel {
         Parser parser = new Parser(context, tokenizer, compiler);
 
         this.expression = new EelRuntime(context)
-            .apply(parser.parse());
+            .wrap(parser.parse());
     }
 
 
@@ -169,6 +195,18 @@ public class Eel {
     }
 
     /**
+     * Public entry point for an Expression with a default, shared, context
+     * @param expression    The expression to be evaluated
+     * @return              A generated expression
+     * @see #factory()
+     * @since 3.0.0
+     */
+    @Nonnull
+    public static Eel compile(@Nonnull InputStream expression) {
+        return compile(DEFAULT_CONTEXT, expression);
+    }
+
+    /**
      * Public entry point for Expression with a custom context
      * @param expression    The expression to be evaluated
      * @param context       A custom context
@@ -185,6 +223,24 @@ public class Eel {
         return new Eel(contextImpl, Source.build(expression, contextImpl.maxExpressionLength()));
     }
 
+    /**
+     * Public entry point for Expression with a custom context
+     * @param expression    The expression to be evaluated
+     * @param context       A custom context
+     * @return              A generated expression
+     * @see #factory()
+     * @since 3.0.0
+     */
+    @Nonnull
+    public static Eel compile(@Nonnull EelContext context, @Nonnull InputStream expression) {
+        Preconditions.checkNotNull(context, "Can not compile with a null context");
+        Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
+
+        EelContextImpl contextImpl = (EelContextImpl) context;
+
+        return new Eel(contextImpl, Source.build(expression, contextImpl.maxExpressionLength()));
+    }
+
 
     /**
      * Evaluate this expression without reference to a SymbolsTable
@@ -192,9 +248,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate() {
-        return expression.execute(SymbolsTable.EMPTY);
+        return expression.evaluate(SymbolsTable.EMPTY);
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code symbolsTable}
@@ -206,9 +261,8 @@ public class Eel {
     public Result evaluate(@Nonnull SymbolsTable symbolsTable) {
         Preconditions.checkNotNull(symbolsTable, "Can not evaluate with a null symbolsTable");
 
-        return expression.execute(symbolsTable);
+        return expression.evaluate(symbolsTable);
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code values} as an anonymous {@link SymbolsTable}
@@ -219,9 +273,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate(@Nonnull Map<String, String> values) {
-        return expression.execute(SymbolsTable.from(values));
+        return expression.evaluate(SymbolsTable.from(values));
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code values} as a scoped {@link SymbolsTable} with the
@@ -234,9 +287,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate(@Nonnull String scopeName, @Nonnull Map<String, String> values) {
-        return expression.execute(SymbolsTable.from(scopeName, values));
+        return expression.evaluate(SymbolsTable.from(scopeName, values));
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code lookup} function as an anonymous {@link SymbolsTable}
@@ -247,9 +299,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate(@Nonnull Function<String, String> lookup) {
-        return expression.execute(SymbolsTable.from(lookup));
+        return expression.evaluate(SymbolsTable.from(lookup));
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code lookup} function as a scoped {@link SymbolsTable} with the
@@ -262,10 +313,9 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate(@Nonnull String scopeName, @Nonnull Function<String, String> lookup) {
-        return expression.execute(SymbolsTable.from(scopeName, lookup));
+        return expression.evaluate(SymbolsTable.from(scopeName, lookup));
     }
 
-    
     /**
      * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
      * @return the result of evaluating this expression
@@ -274,7 +324,7 @@ public class Eel {
      */
     @Nonnull
     public Result evaluateEnvironment() {
-        return expression.execute(SymbolsTable.fromEnvironment());
+        return expression.evaluate(SymbolsTable.fromEnvironment());
     }
 
     /**
@@ -287,9 +337,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluateEnvironment(@Nonnull String scopeName) {
-        return expression.execute(SymbolsTable.fromEnvironment(scopeName));
+        return expression.evaluate(SymbolsTable.fromEnvironment(scopeName));
     }
-
 
     /**
      * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
@@ -299,7 +348,7 @@ public class Eel {
      */
     @Nonnull
     public Result evaluateProperties() {
-        return expression.execute(SymbolsTable.fromProperties());
+        return expression.evaluate(SymbolsTable.fromProperties());
     }
     
     /**
@@ -312,9 +361,8 @@ public class Eel {
      */
     @Nonnull
     public Result evaluateProperties(@Nonnull String scopeName) {
-        return expression.execute(SymbolsTable.fromProperties(scopeName));
+        return expression.evaluate(SymbolsTable.fromProperties(scopeName));
     }
-
 
     /**
      * Evaluate this expression using the supplied {@code defaultValue} for all values in the {@code symbolsTable}
@@ -325,6 +373,6 @@ public class Eel {
      */
     @Nonnull
     public Result evaluate(@Nonnull String defaultValue) {
-        return expression.execute(SymbolsTable.from(defaultValue));
+        return expression.evaluate(SymbolsTable.from(defaultValue));
     }
 }

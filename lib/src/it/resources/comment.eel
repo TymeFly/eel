@@ -1,0 +1,4 @@
+$( random(1, 10);        ## first random number
+   random(20, 30);       ## second random number
+   ($[1] + $[2]) / 2     ## average of the random numbers
+)

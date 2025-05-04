@@ -7,7 +7,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Delay {
-    @EelFunction(name = "test.sleep")
+    @EelFunction("test.sleep")
     public String sleep(long value) throws Exception {
         Thread.sleep(value * 1000);
 
@@ -15,7 +15,7 @@ public class Delay {
     }
 
 
-    @EelFunction(name = "test.delay")
+    @EelFunction("test.delay")
     public String delay(long value) {
         Instant end = Instant.now().plusSeconds(value);
         Instant now;

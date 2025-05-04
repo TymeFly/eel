@@ -2,10 +2,12 @@ package com.github.tymefly.eel;
 
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
@@ -102,6 +104,49 @@ public class EelContextImplTest {
     public void test_withMaxLength_negative() {
         Assert.assertThrows(IllegalArgumentException.class, () -> new EelContextImpl.Builder()
             .withMaxExpressionSize(-123));
+    }
+
+
+    /**
+     * Unit test {@link EelContext#getIoLimit()}
+     */
+    @Test
+    public void test_withStartOfWeek() {
+        Assert.assertEquals("default",
+            32768,
+            new EelContextImpl.Builder().build().getIoLimit());
+        Assert.assertEquals("custom",
+            101,
+            new EelContextImpl.Builder().withIoLimit(101).build().getIoLimit());
+    }
+
+
+    /**
+     * Unit test {@link EelContext#getWeek()}
+     */
+    @Test
+    public void test_getWeek() {
+        Assert.assertEquals("default",
+            WeekFields.of(DayOfWeek.MONDAY, 4),
+            new EelContextImpl.Builder().build().getWeek());
+        Assert.assertEquals("custom",
+            WeekFields.of(DayOfWeek.THURSDAY, 4),
+            new EelContextImpl.Builder().withStartOfWeek(DayOfWeek.THURSDAY).build().getWeek());
+    }
+
+
+
+    /**
+     * Unit test {@link EelContext#getWeek()}
+     */
+    @Test
+    public void test_withMinimalDaysInFirstWeek() {
+        Assert.assertEquals("default",
+            WeekFields.of(DayOfWeek.MONDAY, 4),
+            new EelContextImpl.Builder().build().getWeek());
+        Assert.assertEquals("custom",
+            WeekFields.of(DayOfWeek.MONDAY, 1),
+            new EelContextImpl.Builder().withMinimalDaysInFirstWeek(1).build().getWeek());
     }
 
 

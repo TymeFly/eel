@@ -19,7 +19,7 @@ import com.github.tymefly.eel.validate.Preconditions;
 
 /**
  * The symbols table is a look-up mechanism which allows a compiled {@link Eel} to read external values.
- * The symbols table can be something as simple as a lookup from a map (see {@link #from(Map)}, a callback
+ * The symbols table can be as simple as a lookup from a map (see {@link #from(Map)}, a callback
  * function (see {@link #from(Function)}), or a fully fledged lookup strategy that can read values from multiple
  * sources (see {@link #factory()}) with priorities and defaults.
  */
@@ -147,6 +147,7 @@ public class SymbolsTable {
     /** Default delimiter used by the convenience factory methods. */
     public static final String DEFAULT_DELIMITER = ".";
 
+    /** A symbols table that contains no data */
     static final SymbolsTable EMPTY = new SymbolsTable(Collections.emptyList());
 
     private final List<SymbolsSource> sources;

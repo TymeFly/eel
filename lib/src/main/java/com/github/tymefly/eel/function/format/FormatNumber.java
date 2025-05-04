@@ -27,7 +27,7 @@ public class FormatNumber {
      * @since 2.1.0
      */
     @Nonnull
-    @EelFunction(name = "format.binary")
+    @EelFunction("format.binary")
     public String formatBinary(@Nonnull BigInteger value) {
         return formatNumber(value, BINARY_RADIX);
     }
@@ -42,7 +42,7 @@ public class FormatNumber {
      * @see #formatNumber(BigInteger, int)
      */
     @Nonnull
-    @EelFunction(name = "format.octal")
+    @EelFunction("format.octal")
     public String formatOctal(@Nonnull BigInteger value) {
         return formatNumber(value, OCTAL_RADIX);
     }
@@ -58,7 +58,7 @@ public class FormatNumber {
      * @see #formatNumber(BigInteger, int)
      */
     @Nonnull
-    @EelFunction(name = "format.hex")
+    @EelFunction("format.hex")
     public String formatHex(@Nonnull BigInteger value) {
         return formatNumber(value, HEX_RADIX);
     }
@@ -75,7 +75,7 @@ public class FormatNumber {
      * @throws IllegalArgumentException if the radix is out of range
      */
     @Nonnull
-    @EelFunction(name = "format.number")
+    @EelFunction("format.number")
     public String formatNumber(@Nonnull BigInteger value,
                                int radix) throws IllegalArgumentException {
         if ((radix < Character.MIN_RADIX) || (radix > Character.MAX_RADIX)) {

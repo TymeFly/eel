@@ -7,7 +7,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class SameValue {
-    @EelFunction(name = "test.sameValue")
+    @EelFunction("test.sameValue")
     public boolean sameValue(byte b, short s, int i, long l, BigDecimal big) {
         boolean sameValue = (b == s);
 

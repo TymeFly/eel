@@ -7,18 +7,18 @@ import func.functions.Plus1;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Tests on the EEL Context
  */
 public class ContextIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
@@ -37,7 +37,7 @@ public class ContextIntegrationTest {
 
         Assert.assertEquals("Exp2",
             37,
-            Eel.compile(context, "$( test.plus1(test.sum(11, 12, 13)) )").evaluate().asNumber().intValue());
+            Eel.compile(context, "$( test.plus1(test.sum(11, 12, 13)) )").evaluate().asInt());
     }
 
 
@@ -110,12 +110,8 @@ public class ContextIntegrationTest {
         Eel expression = Eel.factory()
             .withTimeout(Duration.ofSeconds(0))
             .compile("$( count() )");
-        int first = expression.evaluate()
-            .asNumber()
-            .intValue();
-        int second = expression.evaluate()
-            .asNumber()
-            .intValue();
+        int first = expression.evaluate().asInt();
+        int second = expression.evaluate().asInt();
 
         Assert.assertEquals("Default Context was not reused", (first + 1), second);
     }

@@ -19,6 +19,14 @@ public class CharSetBuilder {
         backing = new HashSet<>();
     }
 
+    /**
+     * Constructor. This is the equivalent of {@code new CharSetBuilder().withAll(content);}
+     * @param content    initial characters in the set
+     */
+    public CharSetBuilder(@Nonnull Set<Character> content) {
+        backing = new HashSet<>(content);
+    }
+
 
     /**
      * Adds a single character to the set defined by this builder
@@ -80,5 +88,19 @@ public class CharSetBuilder {
     @Nonnull
     public Set<Character> immutable() {
         return Collections.unmodifiableSet(mutable());
+    }
+
+    /**
+     * Builder method that returns a String containing all the characters defined by this builder.
+     * The order of the characters is undefined
+     * @return a string containing all the characters all the characters defined by this builder.
+     */
+    @Nonnull
+    public String asString() {
+        StringBuilder result = new StringBuilder(backing.size());
+
+        backing.forEach(result::append);
+
+        return result.toString();
     }
 }

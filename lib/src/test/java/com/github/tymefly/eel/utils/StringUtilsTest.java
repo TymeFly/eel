@@ -90,25 +90,98 @@ public class StringUtilsTest {
     @Test
     public void test_left() {
         Assert.assertEquals("Happy Path", "abc", StringUtils.left("abcdef", 3));
+        Assert.assertEquals("Zero length", "", StringUtils.left("abcdef", 0));
         Assert.assertEquals("Empty String", "", StringUtils.left("", 3));
-        Assert.assertEquals("Count is negative", "", StringUtils.left("abcdef", -3));
         Assert.assertEquals("Count is complete string", "abcdef", StringUtils.left("abcdef", 6));
         Assert.assertEquals("Count is beyond string", "abcdef", StringUtils.left("abcdef", 7));
+        Assert.assertEquals("Count is negative", "a", StringUtils.left("abcdef", -5));
+        Assert.assertEquals("Count is negative all string", "", StringUtils.left("abcdef", -6));
+        Assert.assertEquals("Count is negative beyond end", "", StringUtils.left("abcdef", -7));
+    }
+
+
+    /**
+     * Unit test {@link StringUtils#mid(String, int, int)}
+     */
+    @Test
+    public void test_mid_positiveStart_positiveLength() {
+        Assert.assertEquals("Happy Path", "bcd", StringUtils.mid("abcdef", 1, 3));
+        Assert.assertEquals("single char", "b", StringUtils.mid("abcdef", 1, 1));
+        Assert.assertEquals("Empty String", "", StringUtils.mid("", 2, 5));
+        Assert.assertEquals("Complete string", "abcdef", StringUtils.mid("abcdef", 0, 6));
+        Assert.assertEquals("Beyond string", "abcdef", StringUtils.mid("abcdef", 0, 7));
+        Assert.assertEquals("Beyond string", "bcdef", StringUtils.mid("abcdef", 1, 7));
+        Assert.assertEquals("large end position", "cdef", StringUtils.mid("abcdef", 2, Integer.MAX_VALUE));
+    }
+
+
+    /**
+     * Unit test {@link StringUtils#mid(String, int, int)}
+     */
+    @Test
+    public void test_mid_positiveStart_negativeLength() {
+        Assert.assertEquals("Happy Path", "bc", StringUtils.mid("abcdef", 1, -3));
+        Assert.assertEquals("single char", "bcde", StringUtils.mid("abcdef", 1, -1));
+        Assert.assertEquals("Empty String", "", StringUtils.mid("", 2, -5));
+        Assert.assertEquals("Complete string", "", StringUtils.mid("abcdef", 0, -6));
+        Assert.assertEquals("Beyond string", "", StringUtils.mid("abcdef", 0, -7));
+        Assert.assertEquals("Beyond string", "", StringUtils.mid("abcdef", 1, -7));
+        Assert.assertEquals("large end position", "", StringUtils.mid("abcdef", 2, Integer.MIN_VALUE));
     }
 
     /**
      * Unit test {@link StringUtils#mid(String, int, int)}
      */
     @Test
-    public void test_mid() {
-        Assert.assertEquals("Happy Path", "bcd", StringUtils.mid("abcdef", 1, 3));
-        Assert.assertEquals("single char", "b", StringUtils.mid("abcdef", 1, 1));
-        Assert.assertEquals("Empty String", "", StringUtils.mid("", 2, 5));
-        Assert.assertEquals("Start is negative", "abcd", StringUtils.mid("abcdef", -2, 4));
-        Assert.assertEquals("Complete string", "abcdef", StringUtils.mid("abcdef", 0, 6));
-        Assert.assertEquals("Beyond string", "abcdef", StringUtils.mid("abcdef", 0, 7));
-        Assert.assertEquals("Beyond string", "bcdef", StringUtils.mid("abcdef", 1, 7));
+    public void test_mid_negativeStart_positiveLength() {
+        Assert.assertEquals("Happy Path", "cde", StringUtils.mid("abcdef", -4, 3));
+        Assert.assertEquals("single char", "f", StringUtils.mid("abcdef", -1, 1));
+        Assert.assertEquals("Empty String", "", StringUtils.mid("", -2, 5));
+        Assert.assertEquals("Beyond end", "f", StringUtils.mid("abcdef", -1, 7));
+        Assert.assertEquals("Beyond start", "", StringUtils.mid("abcdef", -7, 3));      // to be consistent with Bash
+        Assert.assertEquals("large end position", "ef", StringUtils.mid("abcdef", -2, Integer.MAX_VALUE));
     }
+
+
+    /**
+     * Unit test {@link StringUtils#mid(String, int, int)}.
+     * The test data was double-checked against the same strings in a bash shell; the only difference is that
+     * {@code mid} returns empty strings when bash would fail
+     */
+    @Test
+    public void test_mid_negativeStart_negativeLength() {
+        Assert.assertEquals("mid(-1, -1)", "", StringUtils.mid("abcdef", -1, -1));
+        Assert.assertEquals("mid(-1, -2)", "", StringUtils.mid("abcdef", -1, -2));
+
+        Assert.assertEquals("mid(-2, -1)", "e", StringUtils.mid("abcdef", -2, -1));
+        Assert.assertEquals("mid(-2, -2)", "", StringUtils.mid("abcdef", -2, -2));
+        Assert.assertEquals("mid(-2, -3)", "", StringUtils.mid("abcdef", -2, -3));
+
+        Assert.assertEquals("mid(-3, -1)", "de", StringUtils.mid("abcdef", -3, -1));
+        Assert.assertEquals("mid(-3, -2)", "d", StringUtils.mid("abcdef", -3, -2));
+        Assert.assertEquals("mid(-3, -3)", "", StringUtils.mid("abcdef", -3, -3));
+        Assert.assertEquals("mid(-3, -4)", "", StringUtils.mid("abcdef", -3, -4));
+
+        Assert.assertEquals("mid(-4, -1)", "cde", StringUtils.mid("abcdef", -4, -1));
+        Assert.assertEquals("mid(-4, -2)", "cd", StringUtils.mid("abcdef", -4, -2));
+        Assert.assertEquals("mid(-4, -3)", "c", StringUtils.mid("abcdef", -4, -3));
+        Assert.assertEquals("mid(-4, -4)", "", StringUtils.mid("abcdef", -4, -4));
+        Assert.assertEquals("mid(-4, -5)", "", StringUtils.mid("abcdef", -4, -5));
+
+        Assert.assertEquals("mid(-5, -1)", "bcde", StringUtils.mid("abcdef", -5, -1));
+        Assert.assertEquals("mid(-5, -2)", "bcd", StringUtils.mid("abcdef", -5, -2));
+        Assert.assertEquals("mid(-5, -3)", "bc", StringUtils.mid("abcdef", -5, -3));
+        Assert.assertEquals("mid(-5, -4)", "b", StringUtils.mid("abcdef", -5, -4));
+        Assert.assertEquals("mid(-5, -5)", "", StringUtils.mid("abcdef", -5, -5));
+        Assert.assertEquals("mid(-5, -6)", "", StringUtils.mid("abcdef", -5, -6));
+
+        Assert.assertEquals("mid(-6, -1)", "abcde", StringUtils.mid("abcdef", -6, -1));
+        Assert.assertEquals("mid(-7, -1)", "", StringUtils.mid("abcdef", -7, -1));
+        Assert.assertEquals("mid(-7, -1)", "", StringUtils.mid("abcdef", -8, -1));
+
+        Assert.assertEquals("large end position", "", StringUtils.mid("abcdef", -2, Integer.MIN_VALUE));
+    }
+
 
     /**
      * Unit test {@link StringUtils#right(String, int)}
@@ -116,9 +189,12 @@ public class StringUtilsTest {
     @Test
     public void test_right() {
         Assert.assertEquals("Happy Path", "def", StringUtils.right("abcdef", 3));
+        Assert.assertEquals("Zero length", "", StringUtils.right("abcdef", 0));
         Assert.assertEquals("Empty String", "", StringUtils.right("", 3));
-        Assert.assertEquals("Count is negative", "", StringUtils.right("abcdef", -3));
         Assert.assertEquals("Count is complete string", "abcdef", StringUtils.right("abcdef", 6));
         Assert.assertEquals("Count is beyond string", "abcdef", StringUtils.right("abcdef", 7));
+        Assert.assertEquals("Count is negative", "f", StringUtils.right("abcdef", -5));
+        Assert.assertEquals("Count is negative all string", "", StringUtils.right("abcdef", -6));
+        Assert.assertEquals("Count is negative beyond end", "", StringUtils.right("abcdef", -7));
     }
 }

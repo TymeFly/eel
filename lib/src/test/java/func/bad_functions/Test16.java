@@ -7,7 +7,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Test16 {
-    @EelFunction(name = "test.16")
+    @EelFunction("test.16")
     public String test16() throws IOException {
         throw new IOException("This message was thrown by test.16");
     }

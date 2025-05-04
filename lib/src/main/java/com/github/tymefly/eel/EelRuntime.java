@@ -3,7 +3,6 @@ package com.github.tymefly.eel;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +11,7 @@ import java.util.concurrent.TimeoutException;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.exception.EelException;
+import com.github.tymefly.eel.exception.EelInternalException;
 import com.github.tymefly.eel.exception.EelInterruptedException;
 import com.github.tymefly.eel.exception.EelRuntimeException;
 import com.github.tymefly.eel.exception.EelTimeoutException;
@@ -28,19 +28,20 @@ class EelRuntime {
 
 
     @Nonnull
-    Executor apply(@Nonnull Executor wrapped) {
+    Expression wrap(@Nonnull Term wrapped) {
         Duration timeout = context.getTimeout();
-        Executor result = (timeout.isZero() ? withoutTimeout(wrapped) : withTimeout(wrapped, timeout));
+        boolean skipTimeOut = (timeout.isZero() || wrapped.isConstant());
+        Expression expression = (skipTimeOut ? withoutTimeout(wrapped) : withTimeout(wrapped, timeout));
 
-        return result;
+        return expression;
     }
 
 
     @Nonnull
-    private Executor withoutTimeout(@Nonnull Executor wrapped) {
+    private Expression withoutTimeout(@Nonnull Term wrapped) {
         return s -> {
             try {
-                return wrapped.execute(s);
+                return execute(wrapped, s);
             } catch (EelException e) {
                 throw e;
             } catch (Exception e) {
@@ -49,12 +50,11 @@ class EelRuntime {
         };
     }
 
-
     @Nonnull
-    private Executor withTimeout(@Nonnull Executor wrapped, @Nonnull Duration timeout) {
+    private Expression withTimeout(@Nonnull Term wrapped, @Nonnull Duration timeout) {
         return s -> {
             Instant start = Instant.now();
-            CompletableFuture<Value> future = CompletableFuture.supplyAsync(() -> wrapped.execute(s))
+            CompletableFuture<Result> future = CompletableFuture.supplyAsync(() -> execute(wrapped, s))
                 .orTimeout(timeout.toMillis(), TimeUnit.MILLISECONDS);
 
             try {
@@ -69,19 +69,26 @@ class EelRuntime {
 
                     throw new EelTimeoutException("EEL Timeout after %d second(s)", duration);
                 } else if (cause instanceof EelException eelException) {
-                    // It is more important to the client that the stack trace reports where EEL was called rather than
-                    // the EEL internals, which is largely a timer thread calling anonymous lambda functions
-
-                    StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-                    stack = Arrays.copyOfRange(stack, 1, stack.length);     // remove call to getStackTrace()
-
-                    eelException.setStackTrace(stack);
-
                     throw eelException;
                 } else {
                     throw new EelRuntimeException("EEL execution failed", cause);
                 }
             }
         };
+    }
+
+    @Nonnull
+    private static Result execute(@Nonnull Term wrapped, @Nonnull SymbolsTable symbols) {
+        Value value = wrapped.evaluate(symbols);
+
+        if (value instanceof ValueArgument executor) {
+            value = executor.evaluate(symbols);
+        }
+
+        if (value instanceof Constant constant) {
+            return constant;
+        } else {                // Should not happen
+            throw new EelInternalException("Unexpected type evaluated: " + value.getClass().getName());
+        }
     }
 }

@@ -8,7 +8,7 @@ public class Test1 {
     public Test1(int x) {           // No 0 argument constructor
     }
 
-    @EelFunction(name = "test.1")
+    @EelFunction("test.1")
     public int test1() {
         return -1;
     }

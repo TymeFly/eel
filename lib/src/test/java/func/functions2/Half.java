@@ -10,7 +10,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Half {
-    @EelFunction(name = "test.half")
+    @EelFunction("test.half")
     public BigDecimal half(@Nonnull BigDecimal value) {
         return value.divide(BigDecimal.valueOf(2), RoundingMode.HALF_UP);
     }

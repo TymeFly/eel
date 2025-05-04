@@ -8,22 +8,29 @@ import com.github.tymefly.eel.validate.Preconditions;
  * All the token that can exist within an expression
  */
 public enum Token {
-    NUMBER,                                         // Literals
-    STRING,
+    NUMERIC,                                        // Literals
+    TEXT_LITERAL,
     IDENTIFIER,
 
     VALUE_INTERPOLATION("${"),                      // Interpolated tokens
     EXPRESSION_INTERPOLATION("$("),
     FUNCTION_INTERPOLATION("$"),
+    LOOK_BACK("$"),
 
     TRUE("true"),                                   // Predefined constants
     FALSE("false"),
 
+    TEXT("text"),                                   // Convert Ops
+    NUMBER("number"),
+    LOGIC("logic"),
+    DATE("date"),
+
     CONCATENATE("~>"),                              // Text Ops
 
-    LOGICAL_AND("and"),                             // Logic Ops
+    LOGICAL_NOT("not"),                             // Logic Ops
+    LOGICAL_AND("and"),
     LOGICAL_OR("or"),
-    LOGICAL_NOT("not"),
+    LOGICAL_XOR("xor"),
 
     PLUS("+"),                                      // Numeric Ops
     MINUS("-"),
@@ -34,7 +41,7 @@ public enum Token {
     MODULUS("%"),
     EXPONENTIATION("**"),
 
-    EQUAL("="),                                     // Relations
+    EQUAL("="),                                     // Relational Ops
     NOT_EQUAL("<>"),
     GREATER_THAN(">"),
     LESS_THAN("<"),
@@ -42,6 +49,7 @@ public enum Token {
     LESS_THAN_EQUAL("<="),
     IS_BEFORE("isBefore"),
     IS_AFTER("isAfter"),
+    IN("in"),
 
     BITWISE_AND("&"),                               // BitWise Ops
     BITWISE_OR("|"),
@@ -50,12 +58,18 @@ public enum Token {
 
     LEFT_PARENTHESES("("),                          // Brackets
     RIGHT_PARENTHESES(")"),
+    LEFT_BRACKET("["),
+    RIGHT_BRACKET("]"),
     LEFT_BRACE("{"),
     RIGHT_BRACE("}"),
 
-    COMMA(","),                                     // Misc
+    SINGLE_QUOTE("'"),                              // Misc
+    DOUBLE_QUOTE("\""),
+    COMMA(","),
     QUESTION_MARK("?"),
+    SEMICOLON(";"),
     COLON(":"),
+    BLANK_DEFAULT(":-"),
     HASH("#"),
     TILDE("~"),
     ALL_TOGGLE("~~"),
@@ -84,6 +98,16 @@ public enum Token {
 
     @Nonnull
     String lexeme() {
-        return Preconditions.checkNotNull(lexeme, "Internal error: %s has undefined lexeme", this);
+        Preconditions.checkState((lexeme != null), "Internal error: %s has undefined lexeme", this);
+
+        return lexeme;
+    }
+
+    char start() {
+        String lexeme = lexeme();
+
+        Preconditions.checkState((this.lexeme.length() == 1), "Internal error: %s has unexpected length", this);
+
+        return lexeme.charAt(0);
     }
 }

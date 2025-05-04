@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.udf.FunctionalResource;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**

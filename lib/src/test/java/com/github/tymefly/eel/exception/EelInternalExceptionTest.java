@@ -30,6 +30,18 @@ public class EelInternalExceptionTest {
     }
 
     /**
+     * Unit test {@link EelSyntaxException}
+     */
+    @Test
+    public void test_FormattedMessage_withCause() {
+        Exception cause = new Exception("cause");
+        Exception actual = new EelInternalException("Hello %s - %d", "World", 12, cause);
+
+        Assert.assertEquals("Unexpected message", "Hello World - 12", actual.getMessage());
+        Assert.assertSame("Unexpected cause", cause, actual.getCause());
+    }
+
+    /**
      * Unit test {@link EelInternalException}
      */
     @Test

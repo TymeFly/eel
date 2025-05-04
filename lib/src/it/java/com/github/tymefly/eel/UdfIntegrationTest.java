@@ -2,6 +2,7 @@ package com.github.tymefly.eel;
 
 import java.time.Duration;
 
+import com.github.tymefly.eel.exception.EelUnknownFunctionException;
 import func.functions.Plus1;
 import func.functions.Sum;
 import func.functions2.Half;
@@ -9,18 +10,18 @@ import func.functions2.Times2;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Tests for adding User Defined Functions
  */
 public class UdfIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
@@ -28,7 +29,7 @@ public class UdfIntegrationTest {
      */
     @Test
     public void test_NotExtended() {
-        EelFunctionException actual = Assert.assertThrows(EelFunctionException.class,
+        EelUnknownFunctionException actual = Assert.assertThrows(EelUnknownFunctionException.class,
             () -> Eel.factory()
                 .withTimeout(Duration.ofSeconds(0))
                 .compile("Result is $( Plus1( 5 ) )"));

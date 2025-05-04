@@ -2,25 +2,26 @@ package com.github.tymefly.eel;
 
 import java.time.Duration;
 
+import com.github.tymefly.eel.function.general.Count;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Integration Test for the counter function
  */
 public class CounterIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.function.util.Count}
+     * Integration test for {@link Count}
      */
     @Test
     public void test_singleContext_OneCount() {
@@ -36,7 +37,7 @@ public class CounterIntegrationTest {
     }
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.function.util.Count}
+     * Integration test for {@link Count}
      */
     @Test
     public void test_singleContext_MultipleCounts() {
@@ -52,7 +53,7 @@ public class CounterIntegrationTest {
     }
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.function.util.Count}
+     * Integration test for {@link Count}
      */
     @Test
     public void test_singleContext_NamedCounts() {
@@ -68,7 +69,7 @@ public class CounterIntegrationTest {
     }
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.function.util.Count}
+     * Integration test for {@link Count}
      */
     @Test
     public void test_MultipleContext_MultipleCounts() {
@@ -94,7 +95,7 @@ public class CounterIntegrationTest {
     }
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.function.util.Count}
+     * Integration test for {@link Count}
      */
     @Test
     public void test_MultipleImplicitContext_MultipleCounts() {

@@ -3,16 +3,16 @@ package com.github.tymefly.eel.evaluate;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
 import test.functions1.Plus1;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 public class EvaluateIntegrationTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
@@ -23,7 +23,24 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "", stdOut.getLinesNormalized());
+    }
+
+
+    /**
+     * Functional test {@link Evaluate}
+     */
+    @Test
+    public void test_script() {
+        String testScript = this.getClass()
+            .getClassLoader()
+            .getResource("IntegrationTest.eel")
+            .getFile();
+
+        State actual = Evaluate.execute(new String[] { "-v", "--script", testScript });
+
+        Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
+        Assert.assertEquals("Unexpected result", "[NUMBER] 4\n", stdOut.getLinesNormalized());
     }
 
 
@@ -35,7 +52,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "/path/to/my.file" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "/path/to/my.file\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "/path/to/my.file\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -46,7 +63,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "$( 6 * 7 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "42\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "42\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -57,7 +74,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--verbose", "$( 6 * 7 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "[NUMBER] 42\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "[NUMBER] 42\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -68,7 +85,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "$( max( 1, 2, 3) )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "3\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "3\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -79,7 +96,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { ">>> $( max( 1, 2, 3) ) <<<" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", ">>> 3 <<<\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", ">>> 3 <<<\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -90,7 +107,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-v", ">>> $( max( 1, 2, 3) ) <<<" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "[TEXT] >>> 3 <<<\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "[TEXT] >>> 3 <<<\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -101,7 +118,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--props", "${java.version}" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", System.getProperty("java.version") + "\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", System.getProperty("java.version") + "\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -112,7 +129,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "${java.version-???}" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "???\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "???\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -123,7 +140,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-D", "key=value", "${key-???}" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "value\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "value\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -134,7 +151,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-D", "key2=value", "${key-???}" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "???\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "???\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -145,7 +162,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "$( 1 /3 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "0.3333333333333333\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "0.3333333333333333\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -156,7 +173,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--precision", "15", "$( 1 /3 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "0.333333333333333\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "0.333333333333333\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -167,7 +184,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--precision", "5", "$( 1 /3 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "0.33333\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "0.33333\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -178,7 +195,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--udf-class", Plus1.class.getName(), "$( test.plus1( 10 ) )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "11\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "11\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -189,7 +206,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--udf-package", "test.functions2", "$( test.plus2( 10 ) )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "12\n", stdOut.getLogWithNormalizedLineSeparator());
+        Assert.assertEquals("Unexpected result", "12\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -200,7 +217,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "$(" });
 
         Assert.assertEquals("Unexpected State", State.EXPRESSION_FAILED, actual);
-        Assert.assertTrue("Unexpected result", stdErr.getLogWithNormalizedLineSeparator().startsWith("Failed to evaluate : $("));
+        Assert.assertTrue("Unexpected result", stdErr.getLinesNormalized().startsWith("Failed to evaluate : $("));
     }
 
     /**
@@ -211,7 +228,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-unknown", "Hello" });
 
         Assert.assertEquals("Unexpected State", State.BAD_COMMAND_LINE, actual);
-        Assert.assertTrue("Unexpected result", stdErr.getLogWithNormalizedLineSeparator().startsWith("Error: \"-unknown\" is not a valid option"));
+        Assert.assertTrue("Unexpected result", stdErr.getLinesNormalized().startsWith("Error: \"-unknown\" is not a valid option"));
     }
 
     /**
@@ -222,6 +239,6 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--help" });
 
         Assert.assertEquals("Unexpected State", State.HELP, actual);
-        Assert.assertTrue("Unexpected result", stdOut.getLogWithNormalizedLineSeparator().startsWith("Usage:"));
+        Assert.assertTrue("Unexpected result", stdOut.getLinesNormalized().startsWith("Usage:"));
     }
 }

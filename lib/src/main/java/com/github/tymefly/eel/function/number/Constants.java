@@ -24,7 +24,7 @@ public class Constants {
      * @return the value for {@code pi}
      * @since 2.0.0
      */
-    @EelFunction(name = "number.pi")
+    @EelFunction("number.pi")
     @Nonnull
     public BigDecimal pi(@Nonnull EelContext context) {
         return BigDecimalMath.pi(context.getMathContext());
@@ -38,7 +38,7 @@ public class Constants {
      * @return the value for {@code e}
      * @since 2.0.0
      */
-    @EelFunction(name = "number.e")
+    @EelFunction("number.e")
     @Nonnull
     public BigDecimal e(@Nonnull EelContext context) {
         return BigDecimalMath.e(context.getMathContext());
@@ -51,7 +51,7 @@ public class Constants {
      * @return the value for {@code c}
      * @since 2.0.0
      */
-    @EelFunction(name = "number.c")
+    @EelFunction("number.c")
     public long c() {
         return SPEED_OF_LIGHT;
     }

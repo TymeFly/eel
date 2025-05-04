@@ -40,7 +40,7 @@ public class DateFactory {
      * @throws DateTimeException if the {@code zone} is not valid
      */
     @Nonnull
-    @EelFunction(name = "date.start")
+    @EelFunction("date.start")
     public ZonedDateTime start(@Nonnull EelContext context,
                                @DefaultArgument("UTC") @Nonnull String zone,
                                @DefaultArgument("") @Nonnull String... offsets) throws DateTimeException {
@@ -48,9 +48,7 @@ public class DateFactory {
         ZonedDateTime result = context.getStartTime()
             .withZoneSameInstant(zoneId);
 
-        for (var offset : offsets) {
-            result = DateHelper.applyOffset(result, offset);
-        }
+        result = plusOffsets(context, result, offsets);
 
         return result;
     }
@@ -64,18 +62,16 @@ public class DateFactory {
      *  <li><code>date.utc()</code> - the current time in the UTC Zone</li>
      *  <li><code>date.utc( offsets... )</code> - the time in the UTC Zone after applying the offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param offsets   optional offsets.
      * @return the time in the UTC zone
-     * @see DateHelper#applyOffset(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.utc")
-    public ZonedDateTime utc(@Nonnull String... offsets) {
+    @EelFunction("date.utc")
+    public ZonedDateTime utc(@Nonnull EelContext context, @Nonnull String... offsets) {
         ZonedDateTime result = ZonedDateTime.now(UTC);
 
-        for (var offset : offsets) {
-            result = DateHelper.applyOffset(result, offset);
-        }
+        result = plusOffsets(context, result, offsets);
 
         return result;
     }
@@ -90,46 +86,57 @@ public class DateFactory {
      *  <li><code>date.local()</code> - the current time in the Local Zone</li>
      *  <li><code>date.local( offsets... )</code> - the time in the Local Zone after applying the offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param offsets   optional offsets.
      * @return the time in the Local Time zone
-     * @see DateHelper#applyOffset(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.local")
-    public ZonedDateTime local(@Nonnull String... offsets) {
+    @EelFunction("date.local")
+    public ZonedDateTime local(@Nonnull EelContext context, @Nonnull String... offsets) {
         ZonedDateTime result = ZonedDateTime.now();
 
-        for (var offset : offsets) {
-            result = DateHelper.applyOffset(result, offset);
-        }
+        result = plusOffsets(context, result, offsets);
 
         return result;
     }
 
 
     /**
-     * Entry point for the {@code date.at} function, which returns a DATE in the specified zone with optional offsets
+     * Entry point for the {@code date.at} function, which returns the current DATE in the specified zone
+     * with optional offsets
      * <br>
      * The EEL syntax for this function is:
      * <ul>
      *  <li><code>date.at( zone )</code> - the current time in the specified Zone</li>
      *  <li><code>date.at( zone, offsets... )</code> - the time in the specified Zone after applying the offsets</li>
      * </ul>
+     * @param context   The current EEL Context
      * @param zone      A time Zone
      * @param offsets   optional offsets.
      * @return the time in the UTC zone
      * @throws DateTimeException if the {@code zone} is not valid
      * @see ZoneId#of(String)
-     * @see DateHelper#applyOffset(ZonedDateTime, String)
      */
     @Nonnull
-    @EelFunction(name = "date.at")
-    public ZonedDateTime at(@Nonnull String zone, @Nonnull String... offsets) throws DateTimeException {
+    @EelFunction("date.at")
+    public ZonedDateTime at(@Nonnull EelContext context,
+                            @Nonnull String zone,
+                            @Nonnull String... offsets) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
         ZonedDateTime result = ZonedDateTime.now(zoneId);
 
+        result = plusOffsets(context, result, offsets);
+
+        return result;
+    }
+
+
+    @Nonnull
+    private static ZonedDateTime plusOffsets(@Nonnull EelContext context,
+                                             @Nonnull ZonedDateTime result,
+                                             @Nonnull String... offsets) {
         for (var offset : offsets) {
-            result = DateHelper.applyOffset(result, offset);
+            result = DateHelper.plus(context, result, offset);
         }
 
         return result;

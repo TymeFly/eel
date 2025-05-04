@@ -16,5 +16,5 @@ interface CompileBinaryOp {
      * @return the compiled binary operation
      */
     @Nonnull
-    Executor apply(@Nonnull Compiler compiler, @Nonnull Executor left, @Nonnull Executor right);
+    Term apply(@Nonnull Compiler compiler, @Nonnull Term left, @Nonnull Term right);
 }

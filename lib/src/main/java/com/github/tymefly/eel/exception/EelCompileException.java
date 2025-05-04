@@ -5,7 +5,7 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Base class of all exception that are thrown if EEL failed to compile an expression.
+ * Base class of all exceptions that are thrown if EEL failed to compile an expression.
  */
 public abstract non-sealed class EelCompileException extends EelException {
     @Serial

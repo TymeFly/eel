@@ -5,7 +5,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 @PackagedEelFunction
 public class Test12 {
-    @EelFunction(name = "eel.test12")
+    @EelFunction("eel.test12")
     public String test12() {
         return null;
     }

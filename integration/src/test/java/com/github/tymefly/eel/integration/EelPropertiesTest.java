@@ -10,18 +10,18 @@ import com.github.tymefly.eel.EelContext;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemErrRule;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import uk.org.webcompere.systemstubs.rules.SystemErrRule;
+import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 /**
  * Unit test for {@link EelProperties}
  */
 public class EelPropertiesTest {
     @Rule
-    public SystemOutRule stdOut = new SystemOutRule().enableLog().muteForSuccessfulTests();
+    public SystemOutRule stdOut = new SystemOutRule();
 
     @Rule
-    public SystemErrRule stdErr = new SystemErrRule().enableLog().muteForSuccessfulTests();
+    public SystemErrRule stdErr = new SystemErrRule();
 
 
     /**
@@ -39,6 +39,7 @@ public class EelPropertiesTest {
         expected.setProperty("sub2", "/root/3/data/sub2");
         expected.setProperty("log", "/root/3/data/log/2001/02/03/04/");
         expected.setProperty("math", "3.141592920353982");
+        expected.setProperty("chained", "3");
 
         Properties actual = new EelProperties().load(stream);
 
@@ -61,6 +62,7 @@ public class EelPropertiesTest {
         expected.setProperty("sub2", "/root/3/data/sub2");
         expected.setProperty("log", "/root/3/data/log/2001/02/03/04/");
         expected.setProperty("math", "3.141592920353982");
+        expected.setProperty("chained", "3");
 
         Properties actual = new EelProperties().load(reader);
 
@@ -87,6 +89,7 @@ public class EelPropertiesTest {
         expected.setProperty("sub2", "/root/3/data/sub2");
         expected.setProperty("log", "/root/3/data/log/2001/02/03/04/");
         expected.setProperty("math", "3.141593");
+        expected.setProperty("chained", "3");
 
         Properties actual = new EelProperties(context).load(reader);
 

@@ -5,7 +5,7 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Exception thrown if the parser can not read a value from the Symbols Table and there is no default
+ * Exception thrown if the parser cannot read a value from the Symbols Table and there is no default
  */
 public class EelUnknownSymbolException extends EelRuntimeException {
     @Serial

@@ -2,9 +2,11 @@ package com.github.tymefly.eel;
 
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.WeekFields;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,19 +29,20 @@ import com.github.tymefly.eel.validate.Preconditions;
  * </ul>
  */
 final class EelContextImpl implements EelContext {
-    private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
-
 
     /**
      * Builder for {@link EelContext} objects
      */
     static class Builder implements EelContextBuilder {
-        private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(EelContext.DEFAULT_PRECISION, ROUNDING);
+        private static final RoundingMode ROUNDING = RoundingMode.HALF_UP;
+        private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(DEFAULT_PRECISION, ROUNDING);
 
         private final FunctionManager.Builder functionManager;
         private MathContext mathContext = DEFAULT_MATH_CONTEXT;
-        private int maxLength = DEFAULT_MAX_EXPRESSION_LENGTH;
+        private int ioLimit = DEFAULT_IO_LIMIT;
+        private int maxExpressionLength = DEFAULT_MAX_EXPRESSION_LENGTH;
         private Duration timeout = DEFAULT_TIMEOUT;
+        private WeekFields week = WeekFields.ISO;
 
 
         Builder() {
@@ -51,7 +54,7 @@ final class EelContextImpl implements EelContext {
         public EelContextBuilder withMaxExpressionSize(int maxLength) {
             Preconditions.checkArgument((maxLength >= 0), "Invalid length: %d", maxLength);
 
-            this.maxLength = maxLength;
+            this.maxExpressionLength = maxLength;
 
             return this;
         }
@@ -74,6 +77,35 @@ final class EelContextImpl implements EelContext {
 
             return this;
         }
+
+
+        @Nonnull
+        @Override
+        public EelContextBuilder withIoLimit(int bytes) {
+            this.ioLimit = bytes;
+
+            return this;
+        }
+
+
+        @Nonnull
+        @Override
+        public EelContextBuilder withStartOfWeek(@Nonnull DayOfWeek startOfWeek) {
+            Preconditions.checkNotNull(startOfWeek, "Can not set a null startOfWeek");
+
+            week = WeekFields.of(startOfWeek, week.getMinimalDaysInFirstWeek());
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public EelContextBuilder withMinimalDaysInFirstWeek(int minimalDaysInFirstWeek) {
+            week = WeekFields.of(week.getFirstDayOfWeek(), minimalDaysInFirstWeek);
+
+            return this;
+        }
+
 
         @Nonnull
         @Override
@@ -114,21 +146,26 @@ final class EelContextImpl implements EelContext {
     }
 
     private final String id;
-    private final ZonedDateTime startTime;
-    private final MathContext mathContext;
-    private final int maxLength;
+    private final int maxExpressionLength;
     private final Duration timeout;
+    private final ZonedDateTime startTime;
+    private final int ioLimit;
+    private final WeekFields week;
+    private final MathContext mathContext;
     private final FunctionManager functionManager;
-    private final Map<ResourceKey, Object> resources = Collections.synchronizedMap(new HashMap<>());
+    private final Map<ResourceKey, Object> resources;
 
 
     private EelContextImpl(@Nonnull Builder builder) {
         this.id = "_id" + CONTEXT_COUNT.incrementAndGet();
-        this.startTime = ZonedDateTime.now(ZoneId.of("UTC"));
-        this.mathContext = builder.mathContext;
-        this.maxLength = builder.maxLength;
+        this.maxExpressionLength = builder.maxExpressionLength;
         this.timeout = builder.timeout;
+        this.ioLimit = builder.ioLimit;
+        this.startTime = ZonedDateTime.now(ZoneId.of("UTC"));
+        this.week = builder.week;
+        this.mathContext = builder.mathContext;
         this.functionManager = builder.functionManager.build();
+        this.resources = Collections.synchronizedMap(new HashMap<>());
     }
 
 
@@ -156,6 +193,17 @@ final class EelContextImpl implements EelContext {
         return startTime;
     }
 
+    @Override
+    public int getIoLimit() {
+        return ioLimit;
+    }
+
+    @Override
+    @Nonnull
+    public WeekFields getWeek() {
+        return week;
+    }
+
     @Nonnull
     FunctionManager getFunctionManager() {
         return functionManager;
@@ -172,7 +220,7 @@ final class EelContextImpl implements EelContext {
     }
 
     int maxExpressionLength() {
-        return maxLength;
+        return maxExpressionLength;
     }
 
     @Nonnull
