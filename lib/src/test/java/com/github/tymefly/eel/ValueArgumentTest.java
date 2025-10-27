@@ -201,15 +201,4 @@ public class ValueArgumentTest {
 
         Assert.assertThrows("empty", EelConvertException.class, () -> empty.evaluate(symbolsTable).asChar());
     }
-
-
-    /**
-     * Unit test {@link Constant#asFile()}
-     */
-    @Test
-    public void test_asFile() throws Exception {
-        Assert.assertEquals("Happy path",
-            "myFile.txt",
-            new ValueArgument(s -> Value.of("myFile.txt"), symbolsTable).asFile().getName());
-    }
 }

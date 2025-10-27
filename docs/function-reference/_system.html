@@ -1,0 +1,243 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - system
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                System
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">System group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    system
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Functions that are host-specific.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#system.fileSeparator">system.fileSeparator()</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns the operating system path separator as text.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#system.home">system.home()</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns the canonicalised path representing the current user&#x27;s home directory.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#system.pwd">system.pwd()</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns the canonicalised path of the current working directory.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#system.temp">system.temp()</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns the canonicalised path of the temporary directory.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">system</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Functions that are host-specific. For example, this group contains functions that return information about the local file system.
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="system.fileSeparator">system.fileSeparator()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the operating system path separator as text. This usually is either a forward slash (<span class="literal"> &#x27;/&#x27;</span>) or a backslash (<span class="literal"> &#x27;\&#x27;</span>).
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>system.fileSeparator()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The operating system path separator as text</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="system.home">system.home()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the canonicalised path representing the current user&#x27;s home directory. The result always includes a trailing <a href="#system.fileSeparator">system.fileSeparator()</a>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>system.home()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The canonicalised path of the current user&#x27;s home directory.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="system.pwd">system.pwd()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the canonicalised path of the current working directory. The result always includes a trailing <a href="#system.fileSeparator">system.fileSeparator()</a>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>system.pwd()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The canonicalised path of the current working directory.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="system.temp">system.temp()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the canonicalised path of the temporary directory. The result always includes a trailing <a href="#system.fileSeparator">system.fileSeparator()</a>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>system.temp()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The canonicalised path of the temporary directory.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

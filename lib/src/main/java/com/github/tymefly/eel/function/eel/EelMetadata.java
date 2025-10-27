@@ -14,12 +14,10 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class EelMetadata {
     /**
-     * Entry point for the {@code eel.version} function, which returns the EEL version. This is in the format
-     * {@code majorVersion.minorVersion}, where both values are numeric
-     * <br>
-     * The EEL syntax for this function is <code>eel.version()</code>
-     * @param context   The Eel Context
-     * @return the Eel version
+     * Returns the EEL version as text in the format {@code major.minor}, where both parts are numeric.
+     * This format can be easily converted to a number if required.
+     * @param context    the context
+     * @return           the version text
      * @since 2.0.0
      */
     @Nonnull
@@ -30,11 +28,9 @@ public class EelMetadata {
 
 
     /**
-     * Entry point for the {@code eel.buildDate} function, which returns the date and time the EEL compiler was built
-     * <br>
-     * The EEL syntax for this function is <code>eel.buildDate()</code>
-     * @param context   The Eel Context
-     * @return the Eel build date
+     * Returns the date and time the EEL compiler was built.
+     * @param context    the EEL context
+     * @return           the EEL build date and time
      * @since 2.0.0
      */
     @Nonnull

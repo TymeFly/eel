@@ -12,36 +12,36 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class Padding {
     /**
-     * Entry point for the {@code padLeft} function, which adds {@code pad} characters to the start of the
-     * {@code text} so that it is at least {@code width} characters long
-     * <br>
-     * The EEL syntax for this function is <code>padLeft( text, width {, pad } )</code>
-     * @param text      Text to pad
-     * @param width     minimum length of the return text
+     * Returns the specified {@code text} with {@code pad} characters added to the start
+     * so that it is at least {@code width} characters long.
+     * @param text      the text to pad
+     * @param width     the minimum length of the returned text; must be at least {@literal 1}
      * @param pad       the padding character
-     * @return          text that is at least {@code width} characters long.
+     * @return          the {@code text} padded to be at least {@code width} characters long
      * @since 1.1
      */
     @EelFunction("padLeft")
     @Nonnull
-    public String padLeft(@Nonnull String text, int width, @DefaultArgument(" ") char pad) {
+    public String padLeft(@Nonnull String text,
+                          int width,
+                          @DefaultArgument(value = " ", description = "A single space") char pad) {
         return pad(text, width, pad, true);
     }
 
     /**
-     * Entry point for the {@code padRight} function, which adds {@code pad} characters to the end of the
-     * {@code text} so that it is at least {@code width} characters long
-     * <br>
-     * The EEL syntax for this function is <code>padRight( text, width {, pad } )</code>
-     * @param text      Text to pad
-     * @param width     minimum length of the return text
+     * Returns the specified {@code text} with {@code pad} characters added to the end
+     * so that it is at least {@code width} characters long.
+     * @param text      the text to pad
+     * @param width     the minimum length of the returned text; must be at least {@literal 1}
      * @param pad       the padding character
-     * @return          text that is at least {@code width} characters long.
+     * @return          the {@code text} padded to be at least {@code width} characters long
      * @since 1.1
      */
     @EelFunction("padRight")
     @Nonnull
-    public String padRight(@Nonnull String text, int width, @DefaultArgument(" ") char pad) {
+    public String padRight(@Nonnull String text,
+                           int width,
+                           @DefaultArgument(value = " ", description = "A single space") char pad) {
         return pad(text, width, pad, false);
     }
 

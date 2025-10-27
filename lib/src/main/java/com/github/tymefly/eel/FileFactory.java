@@ -29,10 +29,12 @@ class FileFactory {
             "/usr/lib/",
             "/lib/",
             "/sbin/",
-            "/var/",
+            "/var/log/",
+            "/var/lock/",
             "/boot/",
             "/proc/",
             "/root/"),
+
         WINDOWS("\\",
                 System.getenv("ProgramData"),
                 System.getenv("ProgramFiles"),

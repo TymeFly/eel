@@ -4,7 +4,7 @@
 
     <groupId>com.github.tymefly</groupId>
     <artifactId>eel</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <name>Extensible Expression Language</name>
     <packaging>pom</packaging>
 
@@ -13,5 +13,7 @@
         <module>lib</module>
         <module>integration</module>
         <module>evaluate</module>
+        <module>doclet</module>
+        <module>docs</module>
     </modules>
 </project>

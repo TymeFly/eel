@@ -22,26 +22,17 @@ public class RandomText {
 
 
     /**
-     * Entry point for the {@code text.random} function
-     * <br>
-     * The EEL syntax for this function is
-     * <ul>
-     *  <code>text.random()</code>
-     *  <code>text.random( width )</code>
-     *  <code>text.random( width, valid-characters )</code>
-     * </ul>
-     * <b>Note:</b> This function does not guarantee that a character is chosen from any ranges within the
-     * {@code valid-characters} or the number unique characters in the generated text.
-     * @param width                 length of the returned text. This defaults to 10
-     * @param validCharacters       characters that may be in the returned text. This can contain ranges of chars
-     *                              which are written by separating the first and last character with a dash
-     *                              ({@literal -}). For example {@code a-z} or {@code 0-9}. A literal dash {@literal -})
-     *                              can be passed if it either the first or last character in the text.
-     *                              This defaults to {@code A-Za-z0-9}
-     *
-     * @return some random text
+     * Generates random text of the specified length, using a set of valid characters which may be customised.
+     * This function does not guarantee that a character is chosen from each of the ranges within
+     * {@code validCharacters} or that all characters in the generated text are unique.
+     * @param width           the length of the returned text.
+     * @param validCharacters the characters that may appear in the returned text. Ranges can be specified
+     *                        using a dash ({@code -}), for example {@code a-z} or {@code 0-9}. A literal
+     *                        dash ({@code -}) can be included if it is the first or last character.
+     * @return                random text of the specified length.
      * @since 3.0.0
      */
+
     @EelFunction("text.random")
     @Nonnull
     public String random(@DefaultArgument("10") int width,

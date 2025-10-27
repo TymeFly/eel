@@ -8,15 +8,14 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL function that returns a new UUID
- * <br>
- * The EEL syntax for this function is <code>uuid()</code>
+ * An EEL functions for universally unique identifiers (UUIDs)
  */
 @PackagedEelFunction
 public class Uuid {
     /**
-     * Entry point for the {@code guid} function
-     * @return a new random UUID
+     * Returns a new pseudo-randomly generated UUID, created using a cryptographically strong
+     * pseudo-random number generator.
+     * @return  a new pseudo-randomly generated UUID
      */
     @EelFunction("uuid")
     @Nonnull

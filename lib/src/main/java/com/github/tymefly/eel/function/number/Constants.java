@@ -16,12 +16,11 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 public class Constants {
     private static final int SPEED_OF_LIGHT = 299_792_458;
 
+
     /**
-     * Entry point for the {@code pi} function
-     * <br>
-     * The EEL syntax for this function is <code>number.pi()</code>
-     * @param context   The current EEL Context
-     * @return the value for {@code pi}
+     * Returns the value of {@code pi} to the precision specified by the {@code context}.
+     * @param context    the current EEL context.
+     * @return           the value of {@code pi}.
      * @since 2.0.0
      */
     @EelFunction("number.pi")
@@ -31,11 +30,9 @@ public class Constants {
     }
 
     /**
-     * Entry point for the {@code e} function
-     * <br>
-     * The EEL syntax for this function is <code>number.e()</code>
-     * @param context   The current EEL Context
-     * @return the value for {@code e}
+     * Returns the value of {@code e} to the precision specified by the {@code context}.
+     * @param context    the current EEL context.
+     * @return           the value of {@code e}.
      * @since 2.0.0
      */
     @EelFunction("number.e")
@@ -45,10 +42,8 @@ public class Constants {
     }
 
     /**
-     * Entry point for the {@code c} function, which returns the speed of light in meters/second
-     * <br>
-     * The EEL syntax for this function is <code>number.c()</code>
-     * @return the value for {@code c}
+     * Returns the speed of light in metres per second.
+     * @return           the value of {@code c}.
      * @since 2.0.0
      */
     @EelFunction("number.c")

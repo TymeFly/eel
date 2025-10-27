@@ -8,7 +8,7 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL functions that converts NUMBER to TEXT in different bases
+ * EEL functions that convert numbers to text in different bases
  */
 @PackagedEelFunction
 public class FormatNumber {
@@ -17,12 +17,11 @@ public class FormatNumber {
     private static final int HEX_RADIX = 16;
 
     /**
-     * Entry point for the {@code format.binary} function that converts a number to binary Text.
-     * Logically this is the same as the more verbose {@code format.number( <value>, 2) }
-     * <br>
-     * The EEL syntax for this function is <code>format.binary( value )</code>
-     * @param value     Value to convert
-     * @return the number in binary.
+     * Returns the binary representation of the given {@code value} as text.
+     * The result does not include a leading {@code 0b}.
+     * This is equivalent to {@code $format.number(value, 2)}.
+     * @param value     the value to convert.
+     * @return          the number in binary text.
      * @see #formatNumber(BigInteger, int)
      * @since 2.1.0
      */
@@ -33,12 +32,11 @@ public class FormatNumber {
     }
 
     /**
-     * Entry point for the {@code format.octal} function that converts a number to octal Text.
-     * Logically this is the same as the more verbose {@code format.number( <value>, 8) }
-     * <br>
-     * The EEL syntax for this function is <code>format.octal( value )</code>
-     * @param value     Value to convert
-     * @return the number in octal.
+     * Returns the octal representation of the given {@code value} as text.
+     * The result does not include a leading {@code 0c}.
+     * This is equivalent to {@code $format.number(value, 8)}.
+     * @param value     the value to convert.
+     * @return          the number in octal text.
      * @see #formatNumber(BigInteger, int)
      */
     @Nonnull
@@ -48,13 +46,11 @@ public class FormatNumber {
     }
 
     /**
-     * Entry point for the {@code format.hex} function that converts a number to Hex Text. This will not have a
-     * leading {@literal 0x}
-     * Logically this is the same as the more verbose {@code format.number( <value>, 16) }
-     * <br>
-     * The EEL syntax for this function is <code>format.hex( value )</code>
-     * @param value     Value to convert
-     * @return the number in hex.
+     * Returns the hexadecimal representation of the given {@code value} as text. The result does not include a
+     * leading {@code 0x}.
+     * This is equivalent to {@code $format.number(value, 16)}.
+     * @param value     the value to convert.
+     * @return          the number in hexadecimal text.
      * @see #formatNumber(BigInteger, int)
      */
     @Nonnull
@@ -65,14 +61,12 @@ public class FormatNumber {
 
 
     /**
-     * Entry point for the {@code format.hex} function that converts a number to Text in the given radix.
-     * <br>
-     * The EEL syntax for this function is <code>format.number( value { , radix } )</code>
-     * @param value     Value to convert
-     * @param radix     radix of the String representation. This is in the range {@link Character#MIN_RADIX} to
-     *                  {@link Character#MAX_RADIX} inclusive.
-     * @return the number in hex.
-     * @throws IllegalArgumentException if the radix is out of range
+     * Returns the representation of the given {@code value} as text in the specified {@code radix}.
+     * @param value     the value to convert.
+     * @param radix     the radix of the text representation. This must be in the range
+     *                  {@value Character#MIN_RADIX} to {@value Character#MAX_RADIX}, inclusive.
+     * @return          the number as text in the specified radix.
+     * @throws IllegalArgumentException if the radix is out of range.
      */
     @Nonnull
     @EelFunction("format.number")

@@ -21,29 +21,21 @@ public class DateFactory {
 
 
     /**
-     * Entry point for the {@code start} function, which returns the DATE the EelContext was created in the
-     * UTC time Zone.
-     * The purpose of this function is to provide a time stamp that doesn't change across repeated invocations of an
-     * expression or several related expressions.
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>date.start()</code> - the start time in the UTC Zone</li>
-     *  <li><code>date.start( zone )</code> - the start time in the specified Zone</li>
-     *  <li><code>date.start( zone, offsets )</code> - the start time in the specified Zone after applying the
-     *                          offsets</li>
-     * </ul>
-     * @param context   The EEL Context
-     * @param zone      The optional zone name. This defaults to UTC
-     * @param offsets   optional offsets.
-     * @return a timestamp at which the {@code context} was created
-     * @throws DateTimeException if the {@code zone} is not valid
+     * Returns the DATE at which the given {@code context} was created in the UTC time zone.
+     * This provides a timestamp that does not change across repeated invocations of an expression or related
+     * expressions that use the same context.
+     * @param context   the EEL context.
+     * @param zone      the time zone name.
+     * @param offsets   offsets to apply.
+     * @return          a timestamp indicating when the {@code context} was created.
+     * @throws DateTimeException if the {@code zone} is not valid.
      */
     @Nonnull
     @EelFunction("date.start")
     public ZonedDateTime start(@Nonnull EelContext context,
                                @DefaultArgument("UTC") @Nonnull String zone,
-                               @DefaultArgument("") @Nonnull String... offsets) throws DateTimeException {
+                               @DefaultArgument(value = "", description = "No offsets")
+                                   @Nonnull String... offsets) throws DateTimeException {
         ZoneId zoneId = DateHelper.toZone(zone);
         ZonedDateTime result = context.getStartTime()
             .withZoneSameInstant(zoneId);
@@ -55,16 +47,10 @@ public class DateFactory {
 
 
     /**
-     * Entry point for the {@code time.utc} function, which returns a DATE in the UTC zone with optional offsets
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>date.utc()</code> - the current time in the UTC Zone</li>
-     *  <li><code>date.utc( offsets... )</code> - the time in the UTC Zone after applying the offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param offsets   optional offsets.
-     * @return the time in the UTC zone
+     * Returns the current date in the UTC zone with optional offsets applied.
+     * @param context   the current EEL context.
+     * @param offsets   offsets to apply.
+     * @return          the current time in the UTC zone.
      */
     @Nonnull
     @EelFunction("date.utc")
@@ -78,17 +64,10 @@ public class DateFactory {
 
 
     /**
-     * Entry point for the {@code time.local} function, which returns a DATE in the local time zone with
-     * optional offsets
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>date.local()</code> - the current time in the Local Zone</li>
-     *  <li><code>date.local( offsets... )</code> - the time in the Local Zone after applying the offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param offsets   optional offsets.
-     * @return the time in the Local Time zone
+     * Returns the current date in the local time zone with optional offsets applied.
+     * @param context   the current EEL context.
+     * @param offsets   offsets to apply.
+     * @return          the current time in the local time zone.
      */
     @Nonnull
     @EelFunction("date.local")
@@ -102,19 +81,12 @@ public class DateFactory {
 
 
     /**
-     * Entry point for the {@code date.at} function, which returns the current DATE in the specified zone
-     * with optional offsets
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>date.at( zone )</code> - the current time in the specified Zone</li>
-     *  <li><code>date.at( zone, offsets... )</code> - the time in the specified Zone after applying the offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param zone      A time Zone
-     * @param offsets   optional offsets.
-     * @return the time in the UTC zone
-     * @throws DateTimeException if the {@code zone} is not valid
+     * Returns the current date in the specified {@code zone} with optional offsets applied.
+     * @param context   the current EEL context.
+     * @param zone      the time zone.
+     * @param offsets   offsets to apply.
+     * @return          the current time in the specified zone.
+     * @throws DateTimeException if the {@code zone} is not valid.
      * @see ZoneId#of(String)
      */
     @Nonnull

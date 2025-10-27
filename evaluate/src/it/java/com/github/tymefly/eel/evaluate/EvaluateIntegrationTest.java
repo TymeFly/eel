@@ -40,7 +40,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-v", "--script", testScript });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "[NUMBER] 4\n", stdOut.getLinesNormalized());
+        Assert.assertEquals("Unexpected result", "[Number] 4\n", stdOut.getLinesNormalized());
     }
 
 
@@ -74,7 +74,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "--verbose", "$( 6 * 7 )" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "[NUMBER] 42\n", stdOut.getLinesNormalized());
+        Assert.assertEquals("Unexpected result", "[Number] 42\n", stdOut.getLinesNormalized());
     }
 
     /**
@@ -107,7 +107,7 @@ public class EvaluateIntegrationTest {
         State actual = Evaluate.execute(new String[] { "-v", ">>> $( max( 1, 2, 3) ) <<<" });
 
         Assert.assertEquals("Unexpected State", State.EVALUATED, actual);
-        Assert.assertEquals("Unexpected result", "[TEXT] >>> 3 <<<\n", stdOut.getLinesNormalized());
+        Assert.assertEquals("Unexpected result", "[Text] >>> 3 <<<\n", stdOut.getLinesNormalized());
     }
 
     /**

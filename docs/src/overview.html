@@ -1,0 +1,23 @@
+<p>
+  This manual describes the standard EEL $eel.version() functions that are automatically available to all expressions
+  without needing to explicitly add them via the EEL Context.
+</p>
+<p>
+  Many EEL functions can accept a variable number of arguments. The final argument can appear zero, one, or multiple
+  times.
+  This is indicated in the list below by <code>...</code> after the last argument.
+  For example, <code>date.plus(date, offsets...)</code> requires a <em>date</em> but can accept any number of
+  <em>offsets</em>, including none.
+</p>
+<p>
+  Some functions support default arguments. If a value is not explicitly provided, EEL will automatically use the default.
+  When a parameter can be defaulted, this documentation will describe the default value.
+  For example, the <code>random</code> function can be called as <code>random()</code>, <code>random(min)</code>, or
+  <code>random(min, max)</code>,
+  where <code>min</code> defaults to <code>0</code> and <code>max</code> defaults to <code>100</code>.
+</p>
+<p>
+  As EEL is a lazy language, parameters are evaluated only when they are used. Consequently, functions such as
+  <code>count()</code>, <code>fail()</code>, and the logging functions can be safely passed as parameters, as
+  there will be no side effects if they are not used.
+</p>

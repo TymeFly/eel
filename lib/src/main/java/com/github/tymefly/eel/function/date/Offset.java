@@ -14,13 +14,11 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class Offset {
     /**
-     * Entry point for the {@code date.plus} function.
-     * <br>
-     * The EEL syntax for this function is <code>date.plus( date, offsets... )</code>
-     * @param context   The current EEL Context
-     * @param date      date to modify
-     * @param offsets   offsets to apply
-     * @return the {@code date} with all the offsets applied
+     * Returns a copy of the given {@code date} with all specified {@code offsets} added.
+     * @param context   the current EEL context.
+     * @param date      the date to modify.
+     * @param offsets   the offsets to apply.
+     * @return          the {@code date} with all offsets applied.
      */
     @Nonnull
     @EelFunction("date.plus")
@@ -33,13 +31,11 @@ public class Offset {
     }
 
     /**
-     * Entry point for the {@code date.minus} function.
-     * <br>
-     * The EEL syntax for this function is <code>date.minus( date, offsets... )</code>
-     * @param context   The current EEL Context
-     * @param date      date to modify
-     * @param offsets   offsets to apply
-     * @return the {@code date} with all the offsets applied
+     * Returns a copy of the given {@code date} with all specified {@code offsets} subtracted.
+     * @param context   the current EEL context.
+     * @param date      the date to modify.
+     * @param offsets   the offsets to apply.
+     * @return          the {@code date} with all offsets applied.
      */
     @Nonnull
     @EelFunction("date.minus")

@@ -1,0 +1,162 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - text
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Text
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">Text group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    text
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate text.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#text.random">text.random(width, validCharacters)</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Generates random text of the specified length, using a set of valid characters which may be customised.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">text</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Functions that manipulate or generate text.
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="text.random">text.random(width, validCharacters)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Generates random text of the specified length, using a set of valid characters which may be customised. This function does not guarantee that a character is chosen from each of the ranges within <code>validCharacters</code> or that all characters in the generated text are unique.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>text.random()</code></div>
+                            <div><code>text.random(width)</code></div>
+                            <div><code>text.random(width, validCharacters)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>width</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">10</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The length of the returned text.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>validCharacters</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">A-Za-z0-9</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The characters that may appear in the returned text. Ranges can be specified using a dash (<code> -</code>), for example <code>a-z</code> or <code>0-9</code>. A literal dash (<code> -</code>) can be included if it is the first or last character.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">Random text of the specified length.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">3.0.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

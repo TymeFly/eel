@@ -7,17 +7,15 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 import com.github.tymefly.eel.utils.StringUtils;
 
 /**
- * Case conversion function
+ * Text case conversion function
  */
 @PackagedEelFunction
 public class CaseConversion {
 
     /**
-     * Entry point for the {@code upper} function, which returns the {@code text} converted to upper case
-     * <br>
-     * The EEL syntax for this function is <code>upper( text )</code>
+     * Converts all the characters in the supplied text to upper case.
      * @param text  to convert to upper case
-     * @return text in upper case
+     * @return      the {@code text} in upper case
      * @see #lower(String)
      * @see #title(String)
      */
@@ -28,11 +26,9 @@ public class CaseConversion {
     }
 
     /**
-     * Entry point for the {@code lower} function, which returns the {@code text} converted to lower case
-     * <br>
-     * The EEL syntax for this function is <code>lower( text )</code>
+     * Converts all the characters in the supplied text to lower case.
      * @param text  to convert to lower case
-     * @return text in lower case
+     * @return      the {@code text} in lower case
      * @see #upper(String)
      * @see #title(String)
      */
@@ -44,11 +40,9 @@ public class CaseConversion {
 
 
     /**
-     * Entry point for the {@code title} function, which returns the {@code text} converted to title case.
-     * <br>
-     * The EEL syntax for this function is <code>title( text )</code>
-     * @param text  to convert to lower case
-     * @return text in title case
+     * Converts all the characters in the supplied text to title case.
+     * @param text  to convert to title case
+     * @return      the {@code text} in title case
      * @see #upper(String)
      * @see #lower(String)
      * @since 1.1
@@ -58,6 +52,4 @@ public class CaseConversion {
     public String title(@Nonnull String text) {
         return StringUtils.toTitleCase(text);
     }
-
-
 }

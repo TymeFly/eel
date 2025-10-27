@@ -8,14 +8,17 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
+import java.util.TimeZone;
 
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.EelContext;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -25,12 +28,17 @@ import static org.mockito.Mockito.when;
 public class DateFactoryTest {
     private static final long TOLERANCE = 100;
 
+    private static final TimeZone LOCAL_TIME_ZONE = TimeZone.getDefault();
+
     private EelContext context;
     private ZonedDateTime now;
     private ZonedDateTime date;
 
+
     @Before
     public void setUp() {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));      // Something that isn't UTC
+
         context = spy(EelContext.factory().build());
         now = ZonedDateTime.now(ZoneId.of("UTC"));
         date = ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC);
@@ -42,6 +50,11 @@ public class DateFactoryTest {
     }
 
 
+    /** Restore the time zone */
+    @After
+    public void tearDown() {
+        TimeZone.setDefault(LOCAL_TIME_ZONE);
+    }
 
     /**
      * Unit test {@link DateFactory#start}
@@ -51,12 +64,12 @@ public class DateFactoryTest {
         ZonedDateTime first = new DateFactory().start(context, "UTC");
         ZonedDateTime second = new DateFactory().start(context, "UTC", "3days");
 
-        Assert.assertEquals("UTC Instant", date.toInstant(), first.toInstant());
-        Assert.assertEquals("UTC Zone", ZoneOffset.ofHours(0), first.getOffset());
-        Assert.assertEquals("-5 Instant", date.plusDays(3).toInstant(), second.toInstant());
+        assertEquals("UTC Instant", date.toInstant(), first.toInstant());
+        assertEquals("UTC Zone", ZoneOffset.ofHours(0), first.getOffset());
+        assertEquals("-5 Instant", date.plusDays(3).toInstant(), second.toInstant());
 
          // Check it's always the same
-        Assert.assertEquals("#2 Unexpected time returned", first, new DateFactory().start(context, "UTC"));
+        assertEquals("#2 Unexpected time returned", first, new DateFactory().start(context, "UTC"));
     }
 
     /**
@@ -68,13 +81,13 @@ public class DateFactoryTest {
         ZonedDateTime plus1 = new DateFactory().start(context, "+1");
         ZonedDateTime minus5 = new DateFactory().start(context, "-5");
 
-        Assert.assertEquals("UTC Instant", date.toInstant(), utc.toInstant());
-        Assert.assertEquals("+1 Instant", date.toInstant(), plus1.toInstant());
-        Assert.assertEquals("-5 Instant", date.toInstant(), minus5.toInstant());
+        assertEquals("UTC Instant", date.toInstant(), utc.toInstant());
+        assertEquals("+1 Instant", date.toInstant(), plus1.toInstant());
+        assertEquals("-5 Instant", date.toInstant(), minus5.toInstant());
 
-        Assert.assertEquals("UTC Zone", ZoneOffset.ofHours(0), utc.getOffset());
-        Assert.assertEquals("+1 Zone", ZoneOffset.ofHours(1), plus1.getOffset());
-        Assert.assertEquals("-5 Zone", ZoneOffset.ofHours(-5), minus5.getOffset());
+        assertEquals("UTC Zone", ZoneOffset.ofHours(0), utc.getOffset());
+        assertEquals("+1 Zone", ZoneOffset.ofHours(1), plus1.getOffset());
+        assertEquals("-5 Zone", ZoneOffset.ofHours(-5), minus5.getOffset());
     }
 
     /**
@@ -321,6 +334,33 @@ public class DateFactoryTest {
 
         Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
     }
+
+
+    /**
+     * Unit test {@link DateFactory#at(EelContext, String, String...)}
+     */
+    @Test
+    public void test_local_multipleOffsets_fractionalZone() {
+        TimeZone timeZone = TimeZone.getTimeZone("Asia/Kolkata");           // Kolkata has a fractional offset from UTC
+        TimeZone.setDefault(timeZone);
+
+        now = ZonedDateTime.now();
+
+        ZonedDateTime expected = ZonedDateTime.of(now.getYear(),
+            now.getMonthValue(),
+            now.getDayOfMonth(),
+            1,
+            37,
+            0,
+            0,
+            timeZone.toZoneId().getRules().getOffset(now.toInstant()));
+        ZonedDateTime actual = new DateFactory().local(context, "@d", "1h", "37m");
+        Duration duration = Duration.between(expected, actual);
+        long difference = Math.abs(duration.toMillis());
+
+        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+    }
+
 
     /**
      * Unit test {@link DateFactory#at(EelContext, String, String...)}

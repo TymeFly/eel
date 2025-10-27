@@ -2,7 +2,6 @@ package com.github.tymefly.eel;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.Properties;
 import java.util.function.Function;
@@ -25,27 +24,20 @@ class BuildTime implements Metadata {
 
         @Nonnull
         Loader load(@Nonnull String fileName) {
-            URL url = Thread.currentThread()
-                .getContextClassLoader()
-                .getResource(fileName);
+            try (
+                InputStream stream = BuildTime.class.getClassLoader()
+                    .getResourceAsStream(fileName)
+            ) {
+                Properties properties = new Properties();
 
-            if (url == null) {
-                throw new EelRuntimeException("Can not find build time information");
-            } else {
-                try (
-                    InputStream stream = url.openStream()
-                ) {
-                    Properties properties = new Properties();
+                properties.load(stream);
 
-                    properties.load(stream);
-
-                    version = read("version", properties, "build.version", VERSION_PATTERN);
-                    buildDate = read("date", properties, "build.date", DATE_PATTERN, Convert::toDate);
-                } catch (EelRuntimeException e) {
-                    throw e;
-                } catch (RuntimeException | IOException e) {
-                    throw new EelRuntimeException("Failed to load EEL build time information", e);
-                }
+                version = read("version", properties, "build.version", VERSION_PATTERN);
+                buildDate = read("date", properties, "build.date", DATE_PATTERN, Convert::toDate);
+            } catch (EelRuntimeException e) {
+                throw e;
+            } catch (RuntimeException | IOException e) {
+                throw new EelRuntimeException("Can not find build time information", e);
             }
 
             return this;

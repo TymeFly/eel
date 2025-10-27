@@ -4,7 +4,7 @@
 
     <groupId>com.github.tymefly.eel</groupId>
     <artifactId>parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <name>EEL Parent POM</name>
     <packaging>pom</packaging>
 
@@ -18,10 +18,10 @@
         <version.java>17</version.java>
 
         <version.slf4j>2.0.17</version.slf4j>
-        <version.logback>1.5.18</version.logback>
+        <version.logback>1.5.20</version.logback>
 
         <version.junit>4.13.2</version.junit>
-        <version.mockito>5.17.0</version.mockito>
+        <version.mockito>5.20.0</version.mockito>
     </properties>
 
     <dependencyManagement>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
-                <version>4.9.3</version>
+                <version>4.9.8</version>
             </dependency>
 
             <!-- Logging -->
@@ -76,7 +76,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.14.0</version>
+                    <version>3.14.1</version>
                     <configuration>
                         <source>${version.java}</source>
                         <target>${version.java}</target>
@@ -87,7 +87,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                     <executions>
                         <execution>
                             <id>integration-test-source</id>
@@ -121,7 +121,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.3</version>
+                    <version>3.5.4</version>
                     <executions>
                         <execution>
                             <id>default-test</id>
@@ -130,7 +130,6 @@
                                 <goal>test</goal>
                             </goals>
                             <configuration>
-                                <failIfNoTests>true</failIfNoTests>
                                 <excludes>
                                     <include>**/*IntegrationTest.java</include>
                                 </excludes>
@@ -142,7 +141,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.5.3</version>
+                    <version>3.5.4</version>
                     <executions>
                         <execution>
                             <goals>
@@ -150,7 +149,6 @@
                                 <goal>verify</goal>
                             </goals>
                             <configuration>
-                                <failIfNoTests>true</failIfNoTests>
                                 <includes>
                                     <include>**/*IntegrationTest.java</include>
                                 </includes>
@@ -162,7 +160,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                     <executions>
                         <execution>
                             <phase>package</phase>
@@ -188,7 +186,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.11.2</version>
+                    <version>3.12.0</version>
                     <executions>
                         <execution>
                             <phase>site</phase>
@@ -203,8 +201,8 @@
                         <windowtitle>${project.name}</windowtitle>
                         <doctitle>${project.name}</doctitle>
                         <version>false</version>
-
-                        <footer>Built on ${maven.build.timestamp}</footer>
+                        <doclint>all,-missing</doclint>
+                        <top>Built on ${maven.build.timestamp}</top>
                         <failOnError>false</failOnError>
                     </configuration>
                 </plugin>
@@ -222,7 +220,6 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <outputEncoding>UTF-8</outputEncoding>
                         <enableRulesSummary>false</enableRulesSummary>
                         <outputFileFormat>xml</outputFileFormat>
                         <includeResources>false</includeResources>
@@ -233,7 +230,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.9.3.0</version>
+                    <version>4.9.8.1</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -250,7 +247,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.26.0</version>
+                    <version>3.28.0</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -271,7 +268,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.13</version>
+                    <version>0.8.14</version>
                     <executions>
                         <execution>
                             <id>default-prepare-agent</id>

@@ -15,7 +15,7 @@ import com.github.tymefly.eel.utils.StringUtils;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
- * Functions that manipulate Text.
+ * General purpose Text functions
  */
 @PackagedEelFunction
 public class Text {
@@ -30,15 +30,14 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code left} function, which returns the first part of some text
-     * <br>
-     * The EEL syntax for this function is <code>left( text, length )</code>
-     * @param text      Text from which the left most characters are returned
-     * @param length    If positive this is the maximum number of characters to return.
-     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
-     * @return          Up to {@code length} characters from the start of {@code text}
-     * @see #mid(String, int, int) 
-     * @see #right(String, int) 
+     * Returns the first portion of the specified {@code text} according to the given {@code length}.
+     * If {@code length} is positive, up to that many characters are returned from the start;
+     * if {@code length} is negative, that many characters are returned from the end of the {@code text}.
+     * @param text      the text from which characters are obtained
+     * @param length    the number of characters to return (positive from start, negative from end)
+     * @return          a portion of the specified {@code text} according to the given {@code length}
+     * @see #mid(String, int, int)
+     * @see #right(String, int)
      * @see #before(String, String, int)
      */
     @EelFunction("left")
@@ -48,16 +47,15 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code right} function, which returns the last part of some text
-     * <br>
-     * The EEL syntax for this function is <code>right( text, length )</code>
-     * @param text      Text from which the right most characters are returned
-     * @param length    If positive this is the maximum number of characters to return.
-     *                  If negative this is an index from the start of the {@code text} where -1 is the first character
-     * @return          up to {@code length} characters from the end of {@code text}
+     * Returns the last portion of the specified {@code text} according to the given {@code length}.
+     * If {@code length} is positive, up to that many characters are returned from the end;
+     * if {@code length} is negative, that many characters are returned from the start of the {@code text}.
+     * @param text      the text from which characters are obtained
+     * @param length    the number of characters to return (positive from end, negative from start)
+     * @return          a portion of the specified {@code text} according to the given {@code length}
      * @see #left(String, int)
-     * @see #mid(String, int, int) 
-     * @see #after(String, String, int) 
+     * @see #mid(String, int, int)
+     * @see #after(String, String, int)
      */
     @EelFunction("right")
     @Nonnull
@@ -66,41 +64,36 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code mid} function, which returns the middle part of some text
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>mid( text, position )</code></li>
-     *  <li><code>mid( text, position, length )</code></li>
-     * </ul>
-     *
-     * The specification of this method deliberately matches the one used by bash
-     * @param text      Text to take characters from
-     * @param position  If positive this is a zero-based index of start of the {@code text}.
-     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
-     * @param length    If positive this is the maximum number of characters to return.
-     *                  If negative this is an index from the end of the {@code text} where -1 is the last character
-     * @return          up to {@code length} characters from the middle of {@code text}
+     * Returns the middle portion of the specified {@code text}.
+     * <p>
+     * The specification of this function deliberately matches the behaviour used by bash.
+     * @param text      the text from which characters are obtained
+     * @param position  if positive, the zero-based index of the start of the {@code text};
+     *                  if negative, the start index is counted from the end of the {@code text}
+     * @param length    if positive, the maximum number of characters to return;
+     *                  if negative, the end index is counted from the end of the {@code text}
+     * @return          a portion of the specified {@code text} starting at {@code position} and spanning up to
+     *                      {@code length} characters
      * @see #left(String, int)
      * @see #right(String, int)
-     * @see #between(String, String, int, int) 
+     * @see #between(String, String, int, int)
      */
     @EelFunction("mid")
     @Nonnull
-    public String mid(@Nonnull String text, int position, @DefaultArgument(REMAINING_TEXT) int length) {
+    public String mid(@Nonnull String text,
+                      int position,
+                      @DefaultArgument(value = REMAINING_TEXT, description = "The remaining text") int length) {
         return StringUtils.mid(text, position, length);
     }
 
 
     /**
-     * Entry point for the {@code beforeFirst} function, which returns all the text before the first occurrence
-     * of the {@code delimiter}
-     * <br>
-     * The EEL syntax for this function is <code>beforeFirst( text, delimiter )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @return          The text before the first occurrence of the {@code delimiter}
-     *                  If the {@code delimiter} does not occur in the {@code text} then {@code text} is returned
+     * Returns all the text before the first occurrence of the {@code delimiter}.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @return          the text before the first occurrence of the {@code delimiter};
+     *                      if the {@code delimiter} does not occur in the {@code text}, the full
+     *                      {@code text} is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #afterFirst(String, String)
@@ -117,14 +110,12 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code afterFirst} function, which returns all the text after the first occurrence
-     * of the {@code delimiter}
-     * <br>
-     * The EEL syntax for this function is <code>afterFirst( text, delimiter )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @return          The text after the first occurrence of the {@code delimiter}
-     *                  If the {@code delimiter} does not occur in the {@code text} then an empty string is returned
+     * Returns all the text after the first occurrence of the {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @return          the text after the first occurrence of the {@code delimiter};
+     *                  if the {@code delimiter} does not occur in the {@code text}, an empty
+     *                  string is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
@@ -142,14 +133,12 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code beforeLast} function, which returns all the text before the last occurrence
-     * of the {@code delimiter}
-     * <br>
-     * The EEL syntax for this function is <code>beforeLast( text, delimiter )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @return          The text before the last occurrence of the {@code delimiter}
-     *                  If the {@code delimiter} does not occur in the {@code text} then the {@code text} is returned
+     * Returns all the text before the last occurrence of the {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @return          the text before the last occurrence of the {@code delimiter};
+     *                  if the {@code delimiter} does not occur in the {@code text}, the full
+     *                  {@code text} is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
@@ -166,14 +155,12 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code beforeFirst} function, which returns all the text after the last occurrence
-     * of the {@code delimiter}
-     * <br>
-     * The EEL syntax for this function is <code>afterLast( text, delimiter )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @return          The text after the last occurrence of the {@code delimiter}
-     *                  If the {@code delimiter} does not occur in the {@code text} then an empty string is returned
+     * Returns all the text after the last occurrence of the {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @return          the text after the last occurrence of the {@code delimiter};
+     *                  if the {@code delimiter} does not occur in the {@code text}, an empty
+     *                  text is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
@@ -192,15 +179,12 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code before} function, which returns all the text before the {@code count}'th occurrence
-     * of the {@code delimiter}.
-     * <br>
-     * The EEL syntax for this function is <code>before( text, delimiter, count )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @param count     The occurrence count of {@code delimiter} in the {@code text}. This must not be negative
-     * @return          The text before the {@code count}'th occurrence of the {@code delimiter}.
-     *                  If the {@code delimiter} does not occur in the {@code text} {@code count} times then
+     * Returns all the text before the {@code count}'th occurrence of the {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @param count     the occurrence count of {@code delimiter} in the {@code text}; must not be negative
+     * @return          the text before the {@code count}'th occurrence of the {@code delimiter};
+     *                  if the {@code delimiter} does not occur {@code count} times, the full
      *                  {@code text} is returned
      * @see #after(String, String, int)
      * @see #between(String, String, int, int)
@@ -212,6 +196,7 @@ public class Text {
      * @see #left(String, int)
      * @since 2.0.0
      */
+
     @EelFunction("before")
     @Nonnull
     public String before(@Nonnull String text, @Nonnull String delimiter, int count) {
@@ -221,16 +206,13 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code after} function, which returns all the text after the {@code count}'th occurrence
-     * of the {@code delimiter}.
-     * <br>
-     * The EEL syntax for this function is <code>after( text, delimiter, count )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @param count     The occurrence count of {@code delimiter} in the {@code text}. This must not be negative
-     * @return          The text before the last occurrence of the {@code delimiter}.
-     *                  If the {@code delimiter} does not occur in the {@code text} {@code count} times then
-     *                  an empty string is returned
+     * Returns all the text after the {@code count}'th occurrence of the {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @param count     the occurrence count of {@code delimiter} in the {@code text}; must not be negative
+     * @return          the text after the {@code count}'th occurrence of the {@code delimiter};
+     *                  if the {@code delimiter} does not occur {@code count} times, an empty string
+     *                  is returned
      * @see #before(String, String, int)
      * @see #between(String, String, int, int)
      * @see #beforeFirst(String, String)
@@ -250,16 +232,14 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code after} function, which returns all the text between the {@code start}'th
-     * and the {@code end}'th occurrence of the {@code delimiter}.
-     * <br>
-     * The EEL syntax for this function is <code>between( between, delimiter, start, end )</code>
-     * @param text      Text from which characters are returned
-     * @param delimiter The delimiter which should appear in the {@code test}
-     * @param start     The first occurrence of {@code delimiter} in the {@code text}. This must not be negative
-     * @param end       The last occurrence count of {@code delimiter} in the {@code text}. This must not be negative
-     * @return          The text before the last occurrence of the {@code delimiter}.
-     *                  If the {@code delimiter} does not occur in the {@code text} {@code count} times then
+     * Returns all the text between the {@code start}'th and the {@code end}'th occurrence of the
+     * {@code delimiter} text.
+     * @param text      the text from which characters are returned
+     * @param delimiter the delimiter which should appear in the {@code text}
+     * @param start     the first occurrence of {@code delimiter} in the {@code text}; must not be negative
+     * @param end       the last occurrence count of {@code delimiter} in the {@code text}; must not be negative
+     * @return          the text between the {@code start}'th and {@code end}'th occurrences of the
+     *                  {@code delimiter}; if the {@code delimiter} does not occur {@code end} times,
      *                  an empty string is returned
      * @see #before(String, String, int)
      * @see #after(String, String, int)
@@ -281,14 +261,11 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code contains} function, which returns the number of times that the {@code find}
-     * occurs in the {@code text}.
-     * <br>
-     * The EEL syntax for this function is <code>contains( text, find )</code>
-     * @param text      Text to be searched
-     * @param find      The text to be counted
-     * @return          The number of instances of {@code find} in {@code text}.
-     *                  If {@code find} is empty text then the value returned is the length of the {@code text}.
+     * Returns the number of times that the {@code search} phrase occurs in the {@code text}.
+     * @param text      the text to be searched
+     * @param search    the phrase to be counted
+     * @return          the number of instances of {@code search} in {@code text};
+     *                  if {@code search} is empty text, the value returned is the length of the {@code text}
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
      * @see #afterFirst(String, String)
@@ -298,20 +275,20 @@ public class Text {
      * @since 2.0.0
      */
     @EelFunction("contains")
-    public int contains(@Nonnull String text, @Nonnull String find) {
+    public int contains(@Nonnull String text, @Nonnull String search) {
         int count;
 
-        if (find.isEmpty()) {
+        if (search.isEmpty()) {
             count = text.length();
         } else {
             count = 0;
 
             int start = 0;
             while (start >= 0) {
-                start = text.indexOf(find, start);
+                start = text.indexOf(search, start);
 
                 if (start > 0) {
-                    start += find.length();
+                    start += search.length();
 
                     count++;
                 }
@@ -323,11 +300,9 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code extract} function that extracts data from some text based on a {@code regEx}
-     * <br>
-     * The EEL syntax for this function is <code>extract( text, regEx )</code>
-     * @param text      Full string
-     * @param regEx     the regular expression which should contain some matching groups
+     * Extracts characters from the specified {@code text} based on a Java Regular Expression.
+     * @param text      the full text from which to extract data
+     * @param regEx     the regular expression which should contain matching groups
      * @return          the extracted text
      * @see #matches(String, String)
      */
@@ -357,13 +332,11 @@ public class Text {
 
     
     /**
-     * Entry point for the {@code matches} function that checks to see if the {@code text} matches a {@code regEx}
-     * <br>
-     * The EEL syntax for this function is <code>matches( text, regEx )</code>
-     * @param text      Text to check
-     * @param regEx     the regular expression to which the {@code text} checked
+     * Checks whether the specified {@code text} matches a Java regular expression.
+     * @param text      the text to check
+     * @param regEx     the regular expression against which the {@code text} is checked
      * @return          {@literal true} only if the {@code text} matches the {@code regEx}
-     * @see #extract(String, String) 
+     * @see #extract(String, String)
      */
     @EelFunction("matches")
     public boolean matches(@Nonnull String text, @Nonnull String regEx) {
@@ -372,14 +345,12 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code replace} function that replaces all instances of {@code from} in the
-     * {@code text} with {@code to}
-     * <br>
-     * The EEL syntax for this function is <code>replace( text, from, to )</code>
-     * @param text      Text to check
-     * @param from      Text to replace
-     * @param to        Text to substitute
-     * @return          the original {@code text} with all instances of {@code from} replaced by {@code to}
+     * Replaces all instances of the literal {@code from} in the specified {@code text} with the literal {@code to}.
+     * @param text      the text in which replacements will be made
+     * @param from      the literal text to be replaced
+     * @param to        the literal text to substitute
+     * @return          the original {@code text} with all instances of {@code from} replaced by
+     *                  {@code to}
      * @see #replaceEx(String, String, String)
      */
     @EelFunction("replace")
@@ -390,15 +361,14 @@ public class Text {
 
     
     /**
-     * Entry point for the {@code replace} function that replaces all instances of {@code regEx} in the
-     * {@code text} with {@code to}
-     * <br>
-     * The EEL syntax for this function is <code>replaceEx( text, regEx, to )</code>
-     * @param text      Text to check
-     * @param regEx     Regular Expression to search for
-     * @param to        Text to substitute
-     * @return          the original {@code text} with all instances of {@code from} replaced by {@code to}
-     * @see #replace(String, String, String) 
+     * Replaces each part of the specified {@code text} that matches the Java regular expression
+     * {@code regEx} with the literal text {@code to}.
+     * @param text      the text in which replacements will be made
+     * @param regEx     the regular expression to search for
+     * @param to        the literal text to substitute
+     * @return          the original {@code text} with all instances matching {@code regEx} replaced by
+     *                  {@code to}
+     * @see #replace(String, String, String)
      */
     @EelFunction("replaceEx")
     @Nonnull
@@ -408,12 +378,9 @@ public class Text {
     
 
     /**
-     * Entry point for the {@code trim} function, which returns the {@code text} with any leading and
-     * trailing spaces removed
-     * <br>
-     * The EEL syntax for this function is <code>trim( text )</code>
-     * @param text  to convert to upper case
-     * @return text with no leading or trailing spaces
+     * Returns the {@code text} with any leading and trailing spaces removed.
+     * @param text      the text to trim
+     * @return          the {@code text} with no leading or trailing spaces
      */
     @EelFunction("trim")
     @Nonnull
@@ -423,12 +390,9 @@ public class Text {
 
 
     /**
-     * Entry point for the {@code len} function, which returns the length of a string, including leading and 
-     * trailing spaces
-     * <br>
-     * The EEL syntax for this function is <code>len( text )</code>
-     * @param text  text to check
-     * @return the length of {@code text}, including leading and trailing spaces
+     * Returns the length of the specified {@code text}, including any leading and trailing spaces.
+     * @param text      the text to measure
+     * @return          the length of {@code text}, including leading and trailing spaces
      * @see #isEmpty(String)
      * @see #isBlank(String)
      */
@@ -438,11 +402,10 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code isEmpty} function, which returns the true only if the {@code text} is empty
-     * <br>
-     * The EEL syntax for this function is <code>isEmpty( text )</code>
-     * @param text  text to check
-     * @return the {@literal true} only if the {@code text} is empty
+     * Returns {@literal true} only if the specified {@code text} is empty.
+     * Text that contains one or more spaces is not considered empty.
+     * @param text      the text to check
+     * @return          {@literal true} only if the {@code text} is empty
      * @see #len(String)
      * @see #isBlank(String)
      */
@@ -452,12 +415,10 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code isEmpty} function, which returns the true only if the {@code text} is empty or
-     * contains whitespace
-     * <br>
-     * The EEL syntax for this function is <code>isBlank( text )</code>
-     * @param text  text to check
-     * @return the {@literal true} only if the {@code text} is empty or contains whitespace
+     * Returns {@literal true} if the specified {@code text} is empty
+     * or contains only whitespace.
+     * @param text      the text to check
+     * @return          {@literal true} if {@code text} is empty or contains only whitespace
      * @see #len(String)
      * @see #isEmpty(String)
      * @since 1.1
@@ -468,16 +429,14 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code indexOf} function, which returns the 0 based index of the first occurrence of
-     * {@code subString} in {@code text}, or a value given by {@code defaultValue} if {@code text} does not
-     * contain {@code subString}
-     * <br>
-     * The EEL syntax for this function is <code>indexOf( text, subString )</code>
-     * @param text          text to check
-     * @param subString     The substring to search for
-     * @param defaultValue  function that returns the value returned if {@code text} does not contain {@code subString}
-     * @return returns the 0 based index of the first occurrence of {@code subString} in {@code text}
+     * Returns the 0-based index of the first occurrence of {@code subString} in the specified {@code text},
+     * or the {@code defaultValue} if {@code subString} does not occur.
+     * @param text          the text to check
+     * @param subString     the text to search for
+     * @param defaultValue  the value to return if {@code subString} is not found
+     * @return              the 0-based index of the first occurrence of {@code subString} in {@code text}
      * @see #len(String)
+     * @see #lastIndexOf(String, String, Value)
      */
     @EelFunction("indexOf")
     public int indexOf(@Nonnull String text,
@@ -489,15 +448,14 @@ public class Text {
     }
 
     /**
-     * Entry point for the {@code indexOf} lastIndexOf that returns the 0 based index of the last occurrence of
-     * {@code subString} in {@code text}, or -1 if {@code text} does not contain {@code subString}
-     * <br>
-     * The EEL syntax for this function is <code>lastIndexOf( text, subString )</code>
-     * @param text      text to check
-     * @param subString The substring to search for
-     * @param defaultValue  function that returns the value returned if {@code text} does not contain {@code subString}
-     * @return returns the 0 based index of the last occurrence of {@code subString} in {@code text}
+     * Returns the 0-based index of the last occurrence of {@code subString} in the specified {@code text},
+     * or the {@code defaultValue} if {@code subString} does not occur.
+     * @param text          the text to check
+     * @param subString     the text to search for
+     * @param defaultValue  the value to return if {@code subString} is not found
+     * @return              the 0-based index of the last occurrence of {@code subString} in {@code text}
      * @see #len(String)
+     * @see #indexOf(String, String, Value)
      */
     @EelFunction("lastIndexOf")
     public int lastIndexOf(@Nonnull String text,

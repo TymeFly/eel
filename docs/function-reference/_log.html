@@ -1,0 +1,396 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - log
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Log
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">Log group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    log
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Writes messages to the system logs. The value returned by the function is the last argument passed.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#log.debug">log.debug(first, others...)</a></code>
+                                    </td>
+                                    <td>Value</td>
+                                    <td>
+                                        Writes a message to the logger at the DEBUG level.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#log.error">log.error(first, others...)</a></code>
+                                    </td>
+                                    <td>Value</td>
+                                    <td>
+                                        Writes a message to the logger at the ERROR level.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#log.info">log.info(first, others...)</a></code>
+                                    </td>
+                                    <td>Value</td>
+                                    <td>
+                                        Writes a message to the logger at the INFO level.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#log.trace">log.trace(first, others...)</a></code>
+                                    </td>
+                                    <td>Value</td>
+                                    <td>
+                                        Writes a message to the logger at the TRACE level.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#log.warn">log.warn(first, others...)</a></code>
+                                    </td>
+                                    <td>Value</td>
+                                    <td>
+                                        Writes a message to the logger at the WARN level.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">log</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Writes messages to the system logs. The value returned by the function is the last argument passed. Logging functions, in order of priority from highest to lowest, are: <ul><li>log.error(first, others...)</li><li>log.warn(first, others...)</li><li>log.info(first, others...)</li><li>log.debug(first, others...)</li><li>log.trace(first, others...)</li></ul> At least one argument must be passed to the logging function. <p> Logging can be used by the client to debug problematic expressions or monitor values generated by an expression. For example: <pre> $log.debug(1 + 2 + 3)</pre> calculates <span class="literal">6</span>, logs it at debug level, and returns it as <code>NUMBER</code> to the client application. Logging hardcoded values is rarely useful; however, EEL can log values read from the symbols table. For example: <pre> Hello: $log.info(${userName})</pre> reads a value from the symbols table, logs it, and uses it as part of a friendly message. <p> EEL also supports conditional logging. For example: <pre> The Result is: ${key-$log.info(&quot;defaulting to {}&quot;, &quot;defaultValue&quot;)}</pre> If <span class="literal">key</span> exists in the symbols table, its value is returned without logging. If the value cannot be read, a warning is logged and <span class="literal">defaultValue</span> is returned. This works because a variable&#x27;s default value is an EEL expression and can contain embedded function calls. <p><b>Notes:</b><ol><li>The client&#x27;s logging framework is responsible for enabling logging.</li><li>All messages are written to the <code>com.github.tymefly.eel.log</code> logger, which should be configured with <b>trace</b> level logging enabled.</li><li>To prevent log repudiation attacks: <ul><li>All logged messages are prefixed with the literal text <code>Logged EEL Message:</code> to indicate they are generated by EEL. This prefix cannot be changed or removed.</li><li>Only printable characters and tabs are logged. Control characters, including new lines and Unicode characters outside the printable range, are silently filtered out.</li></ul></li></ol>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="log.debug">log.debug(first, others...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Writes a message to the logger at the DEBUG level.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>log.debug(first)</code></div>
+                            <div><code>log.debug(first, others...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>first</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to be logged or the formatting string.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>others...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description"></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Additional arguments for logging.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Value</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The last <code>value</code> logged.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="log.error">log.error(first, others...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Writes a message to the logger at the ERROR level.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>log.error(first)</code></div>
+                            <div><code>log.error(first, others...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>first</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to be logged or the formatting string.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>others...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description"></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Additional arguments for logging.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Value</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The last <code>value</code> logged.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="log.info">log.info(first, others...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Writes a message to the logger at the INFO level.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>log.info(first)</code></div>
+                            <div><code>log.info(first, others...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>first</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to be logged or the formatting string.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>others...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description"></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Additional arguments for logging.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Value</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The last <code>value</code> logged.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="log.trace">log.trace(first, others...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Writes a message to the logger at the TRACE level.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>log.trace(first)</code></div>
+                            <div><code>log.trace(first, others...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>first</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to be logged or the formatting string.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>others...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description"></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Additional arguments for logging.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Value</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The last <code>value</code> logged.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="log.warn">log.warn(first, others...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Writes a message to the logger at the WARN level.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>log.warn(first)</code></div>
+                            <div><code>log.warn(first, others...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>first</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to be logged or the formatting string.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>others...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description"></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Additional arguments for logging.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Value</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The last <code>value</code> logged.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

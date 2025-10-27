@@ -1,10 +1,16 @@
 # What's New
 
+* [3.1.0](#310)
 * [3.0.0](#300)
 * [2.1.0](#210)
 * [2.0.0](#200)
 * [1.1.0](#110)
 * [1.0.0](#100)
+
+
+# 3.1.0
+## General
+* Add Doclet module. This is used to generate HTML documentation for EEL functions.
 
 
 # 3.0.0
@@ -30,7 +36,7 @@
   `date.minus()` support snapping date modifiers. Snaps are written in the form `@<period>`. 
   For example `date.set(<date>, '@h'`), `date.plus(<date>, '@day'`), `date.minus(<date>, '@month'`) will truncate 
   _<date>_ to the start of the hour, day and month respectively.
-* Added support for chained expressions. This allows Expression interpolations to evaluate a term once and reuse the
+* Added support for compound expressions. This allows Expression interpolations to evaluate a term once and reuse the
   generated value without evaluating it. 
   This can be used to simplify expressions by reducing DRY code in the expression, or ensure side effects only 
   happen once

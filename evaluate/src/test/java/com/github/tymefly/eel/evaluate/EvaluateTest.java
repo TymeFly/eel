@@ -25,7 +25,6 @@ import org.mockito.MockedStatic;
 import test.functions1.Plus1;
 import test.functions2.Plus2;
 import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemExitRule;
 import uk.org.webcompere.systemstubs.rules.SystemOutRule;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,9 +41,6 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link Evaluate}
  */
 public class EvaluateTest {
-    @Rule
-    public final SystemExitRule exit = new SystemExitRule();
-
     @Rule
     public SystemOutRule stdOut = new SystemOutRule();
 
@@ -175,12 +171,12 @@ public class EvaluateTest {
             staticSymbolsTable.when(SymbolsTable::factory)
                 .thenReturn(symbolsTableBuilder);
 
-            exit.execute(() -> Evaluate.main(new String[] { "Hello", "World" }));
+            int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 0, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 0, exitCode);
         }
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[LOGIC] Generated Text"));
+        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
     }
 
     /**
@@ -227,7 +223,7 @@ public class EvaluateTest {
         verify(eelBuilder).compile(any(InputStream.class));
         verify(eel).evaluate(symbolTable);
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[LOGIC] Generated Text"));
+        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
     }
 
     /**
@@ -262,7 +258,7 @@ public class EvaluateTest {
             Evaluate.execute(new String[] { "Hello", "World" });
         }
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[LOGIC] Generated Text"));
+        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
     }
 
     /**
@@ -285,9 +281,9 @@ public class EvaluateTest {
             staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
-            exit.execute(() -> Evaluate.main(new String[] { "Hello", "World" }));
+            int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 12, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 12, exitCode);
         }
     }
 
@@ -305,9 +301,9 @@ public class EvaluateTest {
             staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
-            exit.execute(() -> Evaluate.main(new String[] { "Hello", "World" }));
+            int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 1, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 1, exitCode);
         }
     }
 
@@ -325,9 +321,9 @@ public class EvaluateTest {
             staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
-            exit.execute(() -> Evaluate.main(new String[] { "--version" }));
+            int exitCode = Evaluate.testEntry(new String[] { "--version" });
 
-            Assert.assertEquals("Unexpected return code", 2, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 2, exitCode);
         }
     }
 
@@ -355,9 +351,9 @@ public class EvaluateTest {
             staticSymbolsTable.when(SymbolsTable::factory)
                 .thenReturn(symbolsTableBuilder);
 
-            exit.execute(() -> Evaluate.main(new String[] { "Hello", "World" }));
+            int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 11, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 11, exitCode);
         }
     }
 
@@ -376,9 +372,9 @@ public class EvaluateTest {
             staticConfig.when(() -> Config.parse(any(String[].class)))
                 .thenReturn(config);
 
-            exit.execute(() -> Evaluate.main(new String[] { "Hello", "World" }));
+            int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 10, (int) exit.getExitCode());
+            Assert.assertEquals("Unexpected return code", 10, exitCode);
         }
     }
 }

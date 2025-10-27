@@ -39,17 +39,15 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.date} function, which returns any given DATE in a customised formatted
-     * <br>
-     * The EEL syntax for this function is <code>format.date( date, format, offsets... )</code>
-     * @param context   The current EEL Context
-     * @param format    Format of the returned string.
-     * @param date      date to format
-     * @param offsets   optional offsets.
-     * @return the formatted date
-     * @see <a
-     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
-     *  Java DateTimeFormatter</a>
+     * Returns the given {@code date} formatted according to the specified {@code format} and optional offsets.
+     * @param context   the current EEL context.
+     * @param format    the format of the returned string.
+     * @param date      the date to format.
+     * @param offsets   optional offsets to apply.
+     * @return          the formatted date.
+     * @see
+     * <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *              Java DateTimeFormatter</a>
      */
     @Nonnull
     @EelFunction("format.date")
@@ -65,26 +63,19 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.start} function, which returns a DATE with optional offsets
-     * in a customised formatted. This function is the equivalent of {@code format.date( date.start(), format ) }
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>format.start( format )</code> - format the current time in the UTC Zone</li>
-     *  <li><code>format.start( format, zone )</code> - format the current time in the specified Zone</li>
-     *  <li><code>format.start( format, zone, offsets... )</code> - format the time in the specified Zone after
-     *               applying offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param format    Format of the returned string.
-     * @param zone      time zone
-     * @param offsets   optional offsets.
-     * @return the formatted date
+     * Returns a formatted date with optional offsets, formatted according to the specified {@code format}
+     * and {@code zone}.
+     * This function is equivalent to {@code $format.date(format, date.start(), offsets)}.
+     * @param context   the current EEL context.
+     * @param format    the format of the returned text.
+     * @param zone      the time zone.
+     * @param offsets   optional offsets to apply.
+     * @return          the formatted date.
      * @see DateFactory#start(EelContext, String, String...)
      * @see #formatDate(EelContext, String, ZonedDateTime, String...)
-     * @see <a
-     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
-     *  Java DateTimeFormatter</a>
+     * @see
+     * <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *              Java DateTimeFormatter</a>
      * @since 2.1.0
      */
     @Nonnull
@@ -92,30 +83,26 @@ public class FormatDate {
     public String formatStart(@Nonnull EelContext context,
                               @Nonnull String format,
                               @DefaultArgument("UTC") @Nonnull String zone,
-                              @DefaultArgument("") @Nonnull String... offsets) {
+                              @DefaultArgument(value = "") @Nonnull String... offsets) {
         ZonedDateTime date = dateFactory.start(context, zone, offsets);
 
         return formatDate(context, format, date);
     }
 
+
     /**
-     * Entry point for the {@code format.utc} function, which returns a DATE in the UTC zone with optional offsets
-     * in a customised formatted. This function is the equivalent of {@code format.date( date.utc(), format ) }
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>format.utc( format )</code> - format the current time in the UTC Zone</li>
-     *  <li><code>format.utc( format, offsets... )</code> - format the time in the UTC Zone after applying offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param format    Format of the returned string.
-     * @param offsets   optional offsets.
-     * @return the formatted date
+     * Returns a formatted date in the UTC zone with optional offsets, formatted according to the specified
+     * {@code format} text.
+     * This function is equivalent to {@code $format.date(format, date.utc(), offsets)}.
+     * @param context   the current EEL context.
+     * @param format    the format of the returned text.
+     * @param offsets   optional offsets to apply.
+     * @return          the formatted date text.
      * @see DateFactory#utc(EelContext, String...)
      * @see #formatDate(EelContext, String, ZonedDateTime, String...)
-     * @see <a
-     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
-     *  Java DateTimeFormatter</a>
+     * @see
+     * <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *              Java DateTimeFormatter</a>
      */
     @Nonnull
     @EelFunction("format.utc")
@@ -127,24 +114,18 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.local} function, which returns a DATE in the local time zone with optional
-     * offsets in a customised formatted. This function is the equivalent of {@code format.date( date.local(), format )}
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>format.local( format )</code> - format the current time in the UTC Zone</li>
-     *  <li><code>format.local( format, offsets... )</code>
-     *          - format the time in the local Zone after applying offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param format    Format of the returned string.
-     * @param offsets   optional offsets.
-     * @return the formatted date
+     * Returns a formatted date in the local time zone with optional offsets, formatted according to the specified
+     * {@code format} text.
+     * This function is equivalent to {@code $format.date(format, date.local(), offsets)}.
+     * @param context   the current EEL context.
+     * @param format    the format of the returned text.
+     * @param offsets   optional offsets to apply.
+     * @return          the formatted date text.
      * @see DateFactory#local(EelContext, String...)
      * @see #formatDate(EelContext, String, ZonedDateTime, String...)
-     * @see <a
-     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
-     *  Java DateTimeFormatter</a>
+     * @see
+     * <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *              Java DateTimeFormatter</a>
      */
     @Nonnull
     @EelFunction("format.local")
@@ -156,26 +137,19 @@ public class FormatDate {
 
 
     /**
-     * Entry point for the {@code format.local} function, which returns a DATE the specified zone with optional
-     * offsets in a customised formatted. This function is the equivalent of
-     * {@code format.date( date.at( zone ), format ) }
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>format.at( zone, format )</code> - format the current time in the specified Zone</li>
-     *  <li><code>format.at( zone, format, offsets... )</code>
-     *          - format the time in the specified Zone after applying offsets</li>
-     * </ul>
-     * @param context   The current EEL Context
-     * @param zone      A time Zone
-     * @param format    Format of the returned string.
-     * @param offsets   optional offsets.
-     * @return the formatted date
+     * Returns a formatted date in the specified {@code zone} with optional offsets, formatted according to the
+     * specified {@code format} text.
+     * This function is equivalent to {@code $format.date(format, date.at(zone), offsets)}.
+     * @param context   the current EEL context.
+     * @param zone      the time zone.
+     * @param format    the format of the returned text.
+     * @param offsets   optional offsets to apply.
+     * @return          the formatted date text.
      * @see DateFactory#at(EelContext, String, String...)
      * @see #formatDate(EelContext, String, ZonedDateTime, String...)
-     * @see <a
-     *  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
-     *  Java DateTimeFormatter</a>
+     * @see
+     * <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html">
+     *              Java DateTimeFormatter</a>
      */
     @Nonnull
     @EelFunction("format.at")

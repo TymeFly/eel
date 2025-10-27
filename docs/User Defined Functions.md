@@ -4,17 +4,17 @@
 what the UDF can do, it is very strongly recommended that the implementations follow the [EEL design requirements](../README.md#design-requirements).
 Specifically:
 * Expressions, including function calls, must evaluate quickly
-* The language, and its functions must be secure; must always complete, avoid injecting misleading messages into the logs, 
+* Functions must be secure and always complete quickly. They must not write misleading messages into the logs, 
 block access sensitive parts of the file system or not cause external side effects.
 * The language must be [lazy](The%20EEL%20Language.md#lazy-processing)
 
 # UDF Requirements
 A valid UDF must meet the following requirements:
 * The implementing class must have a public no argument constructor
-* Each implementing method must be public
-* Each implementing method must be annotated with `com.github.tymefly.eel.udf.EelFunction` 
+* The UDF method must be annotated with `com.github.tymefly.eel.udf.EelFunction` 
 * The name given in the `EelFunction` annotation must be a valid [function name](#function-names)
-* Each implementing method must return one of the following types:
+* The UDF method must be public
+* The UDF method must return one of the following types:
   * boolean
   * byte
   * short
@@ -36,13 +36,13 @@ A valid UDF must meet the following requirements:
   * VarArgs for one of the previous types 
   * `com.github.tymefly.eel.EelContext`
   * `com.github.tymefly.eel.udf.FunctionalResource`
-* The implementing method must not return `null`
+* The UDF must not return `null`
 * The implementing class must not maintain state. (See [Stateful functions](#stateful-functions) for an alternative) 
 
 ## Function names
 
-The value in the `EelFunction` annotation provides the name EEL uses to call the functions. Names are written in the form
-`prefix.functionName`. The rules for function names are:
+The value in the `EelFunction` annotation provides the name EEL uses to call the functions. Names are written in the
+form `prefix.functionName`. The rules for function names are:
 
 1. The name of the function must be a value [EEL Identifier](The%20EEL%20Language.md#identifiers)
 2. The function name must have at least one dot (`.`) delimited prefix.
@@ -219,4 +219,51 @@ Then create the Context using:
 
 **Note:** Child packages are not automatically added. If a child package is also required then it must be added
 with an additional call to `withUdfPackage()`   
+
+
+# EelDoc
+EelDoc is a Java Doclet that can be used to generate user documentation that describes what UDFs do and how they
+should be called.
+
+To generate the documentation, add the following XML into the POM:
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>EEL-UDFs</id>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <doclet>com.github.tymefly.eel.doc.EelDoc</doclet>
+                            <docletArtifact>
+                                <groupId>com.github.tymefly.eel</groupId>
+                                <artifactId>doclet</artifactId>
+                                <version> ..... </version>
+                            </docletArtifact>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+EelDoc supports the following options: 
+
+* **-version** - Prints EEL Doc version information and exits
+* **-d** - Destination directory for output files.
+* **-windowtitle** - Browser window title. This is an EEL expression.
+* **-doctitle** - Include title for the overview page. This is an EEL expression.
+* **-doc-overview** - Include overview documentation from a HTML file. This is an EEL expression.
+* **-top** - Include top text on each page. This is an EEL expression.
+* **-bottom** - Include bottom text on each page. This is an EEL expression
+* **-charset** - Charset for cross-platform viewing of generated documentation. This defaults to UTF-8.
+* **-docencoding** - Specify the character encoding for the output. This defaults to UTF-8.
+* **-author** - A flag used to include @author paragraphs.
+* **-Ewarn** - A flag used to report errors as warnings.
+* **-allrefs** - A flag used to include all @see references, even if they do not refer to EEL functions.
 

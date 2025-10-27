@@ -43,6 +43,23 @@ public class Preconditions {
 
 
     /**
+     * Check that {@code onj} is not null
+     * @param obj       Object to test
+     * @param name      name of the object
+     * @param <T>       Type of object to test
+     * @return          {@code obj} which is guaranteed to be non-null
+     * @throws IllegalStateException if {@code obj} is null
+     */
+    @Nonnull
+    public static <T> T checkSet(@Nullable T obj, @Nonnull String name) throws IllegalStateException {
+        if (obj == null) {
+            throw new IllegalStateException(name + " has not been set");
+        }
+
+        return obj;
+    }
+
+    /**
      * Check that {@code expression} evaluates to {@code true}
      * @param expression            expression to test
      * @param message               Formatting string used to generate a message if {@code expression} is {@code false}

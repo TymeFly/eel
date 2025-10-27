@@ -1,0 +1,245 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - io
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Io
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">Io group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    io
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Functions that read data from local files.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#io.head">io.head(file, lines)</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns up to <code>count</code> lines from the start of the given UTF-8 text <code>file</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#io.tail">io.tail(file, lines)</a></code>
+                                    </td>
+                                    <td>Text</td>
+                                    <td>
+                                        Returns up to <code>count</code> lines from the end of the given UTF-8 text <code>file</code>.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">io</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Functions that read data from local files.<p> To guard against potential denial-of-service attacks, a limit is imposed on the amount of data each function can read. By default, this is 32768 bytes, but it can be changed in the EEL context. If a function attempts to read beyond this limit, an <code>IOException</code> is thrown.
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="io.head">io.head(file, lines)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns up to <code>count</code> lines from the start of the given UTF-8 text <code>file</code>. Lines are delimited with <span class="literal">\n</span>
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>io.head(file)</code></div>
+                            <div><code>io.head(file, lines)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>file</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>lines</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">1</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to read.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">Up to <code>count</code> lines from the start of the file.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>IOException</code> </span> <span class="description">If the file could not be read.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">3.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="io.tail">io.tail(file, lines)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns up to <code>count</code> lines from the end of the given UTF-8 text <code>file</code>. Lines are delimited with <span class="literal">\n</span>
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>io.tail(file)</code></div>
+                            <div><code>io.tail(file, lines)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>file</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>lines</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">1</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to read.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Text</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">Up to <code>count</code> lines from the end of the file.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>IOException</code> </span> <span class="description">If the file could not be read.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">3.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

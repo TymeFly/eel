@@ -65,6 +65,6 @@ public class BuildTimeTest {
        Exception actual = Assert.assertThrows(EelRuntimeException.class,
            () -> new BuildTime("com/github/tymefly/eel/empty.properties"));
 
-       Assert.assertEquals("Unexpected message", "Failed to load EEL build time information", actual.getMessage());
+       Assert.assertEquals("Unexpected message", "Can not find build time information", actual.getMessage());
     }
 }

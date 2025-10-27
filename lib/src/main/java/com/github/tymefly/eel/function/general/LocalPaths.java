@@ -13,7 +13,7 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 /**
  * EEL Functions that handle filesystem paths.
  * <br>
- * As we are manipulating file paths rather than accessing files or their meta-data, it's safe to pass the paths
+ * As EEL is manipulating file paths rather than accessing files or their meta-data, it's safe to pass the paths
  * as strings
  */
 @PackagedEelFunction
@@ -38,14 +38,10 @@ public class LocalPaths {
     }
 
     /**
-     * Entry point for the {@code realPath} function, which returns the {@code path} in a canonical format
-     * based on current operating system
-     * <br>
-     * The EEL syntax for this function is <code>realPath( path )</code>
+     * Returns the {@code path} in canonical format based on the current operating system.
      * @param path  a file path
      * @return      the canonical {@code path}
-     * @throws IOException  if the canonical path could not be obtained. This could be because
-     *                          the {@code path} is empty
+     * @throws IOException if the canonical path cannot be obtained, for example, if the {@code path} is empty
      */
     @EelFunction("realPath")
     @Nonnull
@@ -61,13 +57,10 @@ public class LocalPaths {
 
 
     /**
-     * Entry point for the {@code dirName} function, which returns a the {@code path} with its last non-slashed
-     * component and trailing slashes removed
-     * <br>
-     * The EEL syntax for this function is <code>dirName( path )</code>
+     * Returns the {@code path} with its last non-slash component and trailing slashes removed.
      * @param path  a file path
-     * @return      the {@code path} with its last non-slash component and trailing slashes removed.
-     *              If there is no leading path an empty string is returned.
+     * @return      the {@code path} with its last non-slash component and trailing slashes removed;
+     *              if there is no leading path, an empty string is returned
      * @see #realPath(String)
      * @see #baseName(String, String)
      */
@@ -82,25 +75,17 @@ public class LocalPaths {
     
 
     /**
-     * Entry point for the {@code baseName} function, which returns the {@code path} with any leading directory
-     * components removed
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *     <li><code>baseName( path )</code> - 
-     *          remove and leading directories from the {@code path}</li>
-     *     <li><code>baseName( path, extension )</code> - 
-     *          remove and leading directories and the trailing {@code extension} from the {@code path}</li>
-     * </ul>
-     * @param path       a file path
-     * @param extension  optional extension to remove. This defaults to an empty string which removes nothing.
-     * @return          {@code path} with any leading directory components and the optional {@code extension} removed
-     * @see #dirName(String) 
+     * Returns the {@code path} with any leading directory components removed.
+     * @param path      a file path
+     * @param extension an optional extension to remove; defaults to an empty string, which removes nothing
+     * @return the {@code path} with any leading directory components and the optional {@code extension} removed
+     * @see #dirName(String)
      * @see #extension(String, int)
      */
     @EelFunction("baseName")
     @Nonnull
-    public String baseName(@Nonnull String path, @DefaultArgument("") @Nonnull String extension) {
+    public String baseName(@Nonnull String path,
+                           @DefaultArgument(value = "", description = "Empty text") @Nonnull String extension) {
         int lastIndex = path.lastIndexOf(separator);
         String fileName = path.substring(lastIndex + 1);
 
@@ -113,26 +98,17 @@ public class LocalPaths {
 
 
     /**
-     * Entry point for the {@code extensions} function, which returns the file extensions from the {@code path}.
-     * If there are extensions then the returned string will start with a dot ({@literal .}) character
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *      <li><code>extension( path )</code> -
-     *          return all of the extensions that the file represented by {@code path} contains.</li>
-     *      <li><code>extension( path, max )</code> -
-     *          return at most {@literal max} from extensions that the file represented by {@code path}.
-     *          These are counted from the right.</li>
-     * </ul>
-     * @param path  a file path
-     * @param max   maximum number of extensions to return. {@literal -1} (the default) is used to return all
-     *              extensions.
-     * @return the extensions from the {@code path}
+     * Returns the file extensions from the filename in the specified {@code path}, including any leading
+     * dot ('{@literal .}') characters. If there are no extensions, empty text is returned.
+     * @param path  the file path
+     * @param max   the maximum number of extensions to return
+     * @return      the extensions from the specified {@code path}
      * @see #baseName(String, String)
      */
     @EelFunction("extension")
     @Nonnull
-    public String extension(@Nonnull String path, @DefaultArgument("-1") int max) {
+    public String extension(@Nonnull String path,
+                            @DefaultArgument(value = "-1", description = "All extensions") int max) {
         String result;
         String fileName = baseName(path, "");
         int index = fileName.length();

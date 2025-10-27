@@ -38,10 +38,9 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.fileSeparator} function, which returns the Operating System path separator
-     * <br>
-     * The EEL syntax for this function is <code>system.fileSeparator()</code>
-     * @return the current users home directory
+     * Returns the operating system path separator as text.
+     * This usually is either a forward slash ({@literal '/'}) or a backslash ({@literal '\'}).
+     * @return           the operating system path separator as text
      */
     @Nonnull
     @EelFunction("system.fileSeparator")
@@ -54,18 +53,15 @@ public class FileSystem {
     }
 
     /**
-     * Entry point for the {@code pwd} function, which returns the canonicalised path, that based on current
-     * operating system, of the current working directory.
-     * It is guaranteed this will have a trailing {@link #fileSeparator()}
-     * <br>
-     * The EEL syntax for this function is <code>pwd()</code>
-     * @return      a canonicalised {@code path}
+     * Returns the canonicalised path of the current working directory.
+     * The result always includes a trailing {@link #fileSeparator()}.
+     * @return the canonicalised path of the current working directory.
      */
     @EelFunction("system.pwd")
     @Nonnull
     public String pwd() {
         if (pwd == null) {
-            pwd  = readPath("user.dir");
+            pwd = readPath("user.dir");
         }
 
         return pwd;
@@ -73,12 +69,9 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.home} function, which returns the canonicalised path, that based on current
-     * operating system,  of the users home directory.
-     * It is guaranteed this will have a trailing {@link #fileSeparator()}
-     * <br>
-     * The EEL syntax for this function is <code>system.home()</code>
-     * @return the current users home directory
+     * Returns the canonicalised path representing the current user's home directory.
+     * The result always includes a trailing {@link #fileSeparator()}.
+     * @return the canonicalised path of the current user's home directory.
      */
     @Nonnull
     @EelFunction("system.home")
@@ -92,12 +85,9 @@ public class FileSystem {
 
 
     /**
-     * Entry point for the {@code system.temp} function, which returns the canonicalised path, that based on current
-     * operating system,  of the system temp directory.
-     * It is guaranteed this will have a trailing {@link #fileSeparator()}
-     * <br>
-     * The EEL syntax for this function is <code>system.temp()</code>
-     * @return the system temp directory
+     * Returns the canonicalised path of the temporary directory.
+     * The result always includes a trailing {@link #fileSeparator()}.
+     * @return the canonicalised path of the temporary directory.
      */
     @Nonnull
     @EelFunction("system.temp")

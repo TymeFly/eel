@@ -476,12 +476,12 @@ public class ReadmeIntegrationTest {
     public void test_SeparatingRandomlyNamedFiles() {
         EelContext context = EelContext.factory().build();
         String actual = Eel.compile(context,
-                "$( text.random(10, '0-9') ; ${root-} ~> '/' ~> right( $[1], 4 ) ~> '/' ~> $[1] ~> '.txt' )")
+                "$( text.random(10, '0-9') ; $left( $[1], 4 ); '${root-}/$[2]/$[1].txt' )")
             .evaluate(someData)
             .asText();
 
         Assert.assertTrue("SeparatingRandomlyNamedFiles: " + actual,
-            actual.matches("/my/path/(\\d{4})/\\d{6}\\1\\.txt"));
+            actual.matches("/my/path/(\\d{4})/\\1\\d{6}\\.txt"));
     }
 
     /**

@@ -14,13 +14,11 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class Stats {
     /**
-     * Entry point for the {@code avg} function. That An EEL function that returns the average of a set of numbers
-     * <br>
-     * The EEL syntax for this function is <code>avg( value, values... )</code>
-     * @param context   The current EEL Context
+     * Returns the average of a set of numbers.
+     * @param context   the current EEL context
      * @param first     the first value to average
      * @param others    optional additional values to average
-     * @return          the mean average of all the values passed to this method
+     * @return          the mean of all values passed to this function
      */
     @EelFunction("avg")
     @Nonnull
@@ -37,13 +35,11 @@ public class Stats {
 
 
     /**
-     * Entry point for the {@code max} function, which returns the largest value in a set of numbers.
-     * <br>
-     * The EEL syntax for this function is <code>max( value, values... )</code>
+     * Returns the largest value in a set of numbers.
      * @param first     the first value to test
-     * @param others    optional values to test
-     * @return          the largest value passed to this method
-     * @see #min(BigDecimal, BigDecimal...) 
+     * @param others    optional additional values to test
+     * @return          the largest value among the values passed to this function
+     * @see #min(BigDecimal, BigDecimal...)
      */
     @EelFunction("max")
     @Nonnull
@@ -58,12 +54,10 @@ public class Stats {
     }
 
     /**
-     * Entry point for the {@code min} function, which returns the lowest value in a set of numbers.
-     * <br>
-     * The EEL syntax for this function is <code>min( value, values... )</code>
+     * Returns the smallest value in a set of numbers.
      * @param first     the first value to test
-     * @param others    optional values to test
-     * @return          the lowest value passed to this method
+     * @param others    optional additional values to test
+     * @return          the smallest value among the values passed to this function
      * @see #max(BigDecimal, BigDecimal...) 
      */
     @EelFunction("min")

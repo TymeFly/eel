@@ -288,12 +288,4 @@ public class ConstantTest {
 
         Assert.assertThrows("Empty String", EelConvertException.class, () -> Constant.of("").asChar());
     }
-
-    /**
-     * Unit test {@link Constant#asFile()}
-     */
-    @Test
-    public void test_asFile() throws Exception {
-        Assert.assertEquals("Happy path", "123", text.asFile().getName());
-    }
 }

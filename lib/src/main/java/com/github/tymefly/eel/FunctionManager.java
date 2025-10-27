@@ -68,8 +68,8 @@ class FunctionManager {
      */
     static class Builder {
         private static final Pattern UDF_NAME = Pattern.compile("[A-Za-z_][A-Za-z0-9_]*([.][A-Za-z0-9_]+)*");
-        private static final Map<Package, Set<Class<?>>> PACKAGE_CACHE = new HashMap<>();
-        private static final Map<Class<?>, List<Description>> DESCRIPTION_CACHE = new HashMap<>();
+        private static final Map<Package, Set<Class<?>>> PACKAGE_CACHE = new ConcurrentHashMap<>();
+        private static final Map<Class<?>, List<Description>> DESCRIPTION_CACHE = new ConcurrentHashMap<>();
 
         private static final Collection<String> RESERVED_PREFIX = Set.of(
             "",

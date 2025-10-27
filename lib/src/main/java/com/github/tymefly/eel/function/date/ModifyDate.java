@@ -16,14 +16,12 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class ModifyDate {
     /**
-     * Entry point for the {@code set} function that return a copy of DATE passed in, but individual fields set
-     * to specified values.
-     * The EEL syntax for this function is <code>date.set( date, specifier... )</code>
-     * @param context       The current EEL Context
-     * @param date          date to format
-     * @param spec          Field specifiers
-     * @return the date with specific fields changed
-     * @throws DateTimeException if one of the {@code specifiers} is not valid
+     * Returns a copy of the given {@code date} with individual fields updated according to the specified {@code spec}.
+     * @param context   the current EEL context.
+     * @param date      the date to update.
+     * @param spec      the field specifiers.
+     * @return          the date with specific fields changed.
+     * @throws DateTimeException if one of the {@code specifiers} is not valid.
      * @see #setZone(ZonedDateTime, String)
      */
     @Nonnull
@@ -40,17 +38,14 @@ public class ModifyDate {
 
 
     /**
-     * Entry point for the {@code setZone} function, which returns a copy of the DATE passed to it but with a
-     * different Zone.
-     * Unlike {@link #moveZone(ZonedDateTime, String)} , this function will keep the same value for the time fields.
-     * This means that the numeric value of the returned date (seconds since 1970-01-01 00:00:00 UTC) will not match
-     * the date passed in.
-     * <br>
-     * The EEL syntax for this function is <code>date.setZone( date, zone )</code>
-     * @param date  date to format
-     * @param zone  Zone Id
-     * @return the date with a different zone
-     * @throws DateTimeException if the {@code zone} is not valid
+     * Returns a copy of the given {@code date} with a different time zone.
+     * Unlike {@link #moveZone(ZonedDateTime, String)}, this function preserves the time fields.
+     * The numeric value of the returned date (seconds since 1970-01-01 00:00:00 UTC) may therefore differ from
+     * the original date.
+     * @param date  the date to update.
+     * @param zone  the zone ID.
+     * @return      the date with a different time zone.
+     * @throws DateTimeException if the {@code zone} is not valid.
      * @see #set(EelContext, ZonedDateTime, String...)
      * @see #moveZone(ZonedDateTime, String)
      */
@@ -64,16 +59,13 @@ public class ModifyDate {
 
 
     /**
-     * Entry point for the {@code moveZone} function, which returns a copy of the DATE passed to it but with a
-     * different Zone.
-     * Unlike {@link #setZone(ZonedDateTime, String)}, this function will adjust the time fields so that the numeric
-     * value of the returned DATE (seconds since 1970-01-01 00:00:00 UTC) matches the date passed in.
-     * <br>
-     * The EEL syntax for this function is <code>date.moveZone( date, zone )</code>
-     * @param date  date to format
-     * @param zone  Zone Id
-     * @return the same instant given by the {@code date} but in a different zone
-     * @throws DateTimeException if the {@code zone} is not valid
+     * Returns a copy of the given {@code date} with a different time zone.
+     * Unlike {@link #setZone(ZonedDateTime, String)}, this function adjusts the time fields so that the numeric
+     * value of the returned date (seconds since 1970-01-01 00:00:00 UTC) matches the original date.
+     * @param date  the date to update.
+     * @param zone  the zone ID.
+     * @return      the same instant as the given {@code date} but in a different time zone.
+     * @throws DateTimeException if the {@code zone} is not valid.
      * @see #setZone(ZonedDateTime, String)
      */
     @Nonnull

@@ -1,0 +1,555 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - number
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Number
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">Number group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    number
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate numbers.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.c">number.c()</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the speed of light in metres per second.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.ceil">number.ceil(number)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the smallest integer value that is greater than or equal to the given <code>number</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.e">number.e()</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the value of <code>e</code> to the precision specified by the <code>context</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.floor">number.floor(number)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the largest integer value that is less than or equal to the given <code>number</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.pi">number.pi()</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the value of <code>pi</code> to the precision specified by the <code>context</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.round">number.round(number, precision)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the <code>number</code> rounded to the specified precision.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#number.truncate">number.truncate(number, precision)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the <code>number</code> truncated to the specified precision.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">number</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Functions that manipulate or generate numbers. The precision of the numeric functions is set in the Eel Context
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="number.c">number.c()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the speed of light in metres per second.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.c()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The value of <code>c</code>.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">2.0.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.ceil">number.ceil(number)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the smallest integer value that is greater than or equal to the given <code>number</code>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.ceil(number)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>number</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to ceil.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The smallest integer value greater than or equal to <code>number</code>.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#number.round">number.round(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.truncate">number.truncate(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.floor">number.floor(number)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">2.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.e">number.e()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the value of <code>e</code> to the precision specified by the <code>context</code>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.e()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The value of <code>e</code>.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">2.0.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.floor">number.floor(number)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the largest integer value that is less than or equal to the given <code>number</code>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.floor(number)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>number</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to floor.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The largest integer value less than or equal to <code>number</code>.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#number.round">number.round(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.truncate">number.truncate(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.ceil">number.ceil(number)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">2.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.pi">number.pi()</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the value of <code>pi</code> to the precision specified by the <code>context</code>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.pi()</code></div>
+                        </div>
+                        <section>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The value of <code>pi</code>.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">2.0.0</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.round">number.round(number, precision)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the <code>number</code> rounded to the specified precision.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.round(number)</code></div>
+                            <div><code>number.round(number, precision)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>number</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to round.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>precision</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">round to an integral value</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to round to.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The <code>number</code> rounded to the specified precision.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is less than 0.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#number.truncate">number.truncate(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.ceil">number.ceil(number)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.floor">number.floor(number)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.1</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="number.truncate">number.truncate(number, precision)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the <code>number</code> truncated to the specified precision.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>number.truncate(number)</code></div>
+                            <div><code>number.truncate(number, precision)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>number</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to truncate.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>precision</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">round to an integral value</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to retain.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The <code>number</code> with fractional digits discarded.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is less than 0.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#number.round">number.round(number, precision)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.ceil">number.ceil(number)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#number.floor">number.floor(number)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.1</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

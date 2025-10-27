@@ -6,17 +6,14 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * Data conversion functions
+ * Character conversion functions.
  */
 @PackagedEelFunction
 public class Codepoints {
     /**
-     * Entry point for the {@code char} function, which converts a codepoint to a unicode character and returns it
-     * as a single character {@code text} value.
-     * <br>
-     * The EEL syntax for this function is <code>char( codepoint )</code>
-     * @param codepoint unicode character value
-     * @return          a single character text value
+     * Returns a single-character text value corresponding to the specified Unicode {@code codepoint}.
+     * @param codepoint   the numeric Unicode character value
+     * @return            a single-character text value
      * @see #codepoint(char)
      * @since 1.1
      */
@@ -28,17 +25,14 @@ public class Codepoints {
 
 
     /**
-     * Entry point for the {@code int} function, which returns the unicode codepoint of the first character in
-     * the {@code text}
-     * <br>
-     * The EEL syntax for this function is <code>codepoint( text )</code>
-     * @param character     the first character of the text value
-     * @return              the unicode codepoint of the character
+     * Returns the numeric Unicode code point of the first character in the specified {@code text}.
+     * @param text      the text to evaluate; must not be blank
+     * @return          the Unicode code point of the first character
      * @see #toChar(int)
      * @since 1.1
      */
     @EelFunction("codepoint")
-    public int codepoint(char character) {
-        return character;
+    public int codepoint(char text) {
+        return text;
     }
 }

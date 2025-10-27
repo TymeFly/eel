@@ -10,7 +10,6 @@ import org.junit.Test;
  * Unit test for {@link State}
  */
 public class StateTest {
-
     /**
      * Unit test {@link State#getReturnCode()}
      */

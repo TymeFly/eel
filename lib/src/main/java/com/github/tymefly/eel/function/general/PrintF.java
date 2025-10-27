@@ -18,7 +18,7 @@ import com.github.tymefly.eel.utils.CharSetBuilder;
  */
 @PackagedEelFunction
 public class PrintF {
-    /** Disposable class that holds state for the stateless {@link #printf(String, Value...)}  function */
+    /** Disposable class that holds state for the stateless {@link #printf(String, Value...)} function */
     private static class ArgumentParser {
         private static final String FORMAT_SPECIFIER
             = "%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%]).*";
@@ -132,28 +132,29 @@ public class PrintF {
 
 
     /**
-     * Entry point for the {@code printf} function. The following conversion characters are supported:
+     * Generates formatted text using the specified format string and arguments, similar to Java's
+     * {@link java.util.Formatter#format(String, Object...)}.
+     * The following conversion characters are supported:
      * <ul>
      *  <li><b>Text:</b> {@code s}, {@code S}</li>
-     *  <li><b>Character:</b> {@code c}, {@code C} - this is the first character of text passed to the function</li>
+     *  <li><b>Character:</b> {@code c}, {@code C} - the first character of text passed to the function</li>
      *  <li><b>Logic:</b> {@code b}, {@code B}</li>
      *  <li><b>Integral Number:</b> {@code d}, {@code o}, {@code x}, {@code X}</li>
      *  <li><b>Real Number:</b> {@code e}, {@code E}, {@code f}, {@code g}, {@code G}</li>
      *  <li><b>Dates:</b> {@code t}, {@code T}</li>
-     *  <li><b>Character literals:</b> {@code %}, {@code n}</li>
+     *  <li><b>Character literals:</b> {@code %n}</li>
      * </ul>
-     * All Java formatting indexes, flags, widths and precisions are supported.
-     * <br>
-     * The EEL syntax for this function is <code>printf( format, arguments... )</code>
-     * @param format        the format
-     * @param arguments     Arguments referenced by the format specifiers in the {@code format}.
-     *                      If there are more arguments than format specifiers, the extra arguments are ignored
-     * @return              formatted text
+     * All Java formatting indexes, flags, widths, and precisions are supported.
+     * @param format        the format string
+     * @param arguments     the arguments referenced by the format specifiers in {@code format};
+     *                      extra arguments are ignored if there are more than format specifiers
+     * @return              the formatted text
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html">
-     *         Oracle Java 17 JavaDocs
+     *                      Oracle Java 17 Formatter documentation
      *      </a>
      * @since 1.1
      */
+
     @EelFunction("printf")
     @Nonnull
     public String printf(@Nonnull String format, @Nonnull Value... arguments) {

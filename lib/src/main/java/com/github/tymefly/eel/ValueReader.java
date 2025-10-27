@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelConvertException;
 
 /**
- * This interface defines a consistent interface for reading EEL {@link Value}s and {@link Result}s
+ * This interface defines a consistent interface for reading EEL {@link Value}s and {@link Result}s.
  * @since 3.0.0
  */
 public sealed interface ValueReader permits Value, Result {

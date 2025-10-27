@@ -1,0 +1,683 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - date
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Date
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <a href="index.html" class="menu-item-text">Overview</a>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">Date group</h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr class="table-header">
+                                    <th class="col-types" id="summary-col-block">Name</th>
+                                    <th class="col-types" id="summary-col-returns">Type</th>
+                                    <th class="col-types" id="summary-col-description">Description</th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code>
+                                            <b>
+                                                <a href="#_Group_" class="section-link">
+                                                    date
+                                                </a>
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        <code>
+                                            <b>
+                                                Group
+                                            </b>
+                                        </code>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate dates.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.at">date.at(zone, offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns the current date in the specified <code>zone</code> with optional offsets applied.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.local">date.local(offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns the current date in the local time zone with optional offsets applied.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.minus">date.minus(date, offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns a copy of the given <code>date</code> with all specified <code>offsets</code> subtracted.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.moveZone">date.moveZone(date, zone)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns a copy of the given <code>date</code> with a different time zone.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.plus">date.plus(date, offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns a copy of the given <code>date</code> with all specified <code>offsets</code> added.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.set">date.set(date, spec...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns a copy of the given <code>date</code> with individual fields updated according to the specified <code>spec</code>.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.setZone">date.setZone(date, zone)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns a copy of the given <code>date</code> with a different time zone.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.start">date.start(zone, offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns the DATE at which the given <code>context</code> was created in the UTC time zone.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#date.utc">date.utc(offsets...)</a></code>
+                                    </td>
+                                    <td>Date</td>
+                                    <td>
+                                        Returns the current date in the UTC zone with optional offsets applied.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+            <hr>
+            <span>
+                <section class="group-description">
+                    <h2 class="block-name" id="_Group_">date</h2>
+                    <section class="overview-description">
+                        <div class="block-detail">
+                            <div class="description">
+                                Functions that manipulate or generate dates.<br> Most date functions support modifying, setting, offsetting, or rounding a date with respect to one or more time periods. The supported time periods are: <p/><table border="1"><tr><th>Period</th><th>Full Names</th><th>Short Name</th><th>Range</th><th>Notes</th></tr><tr><td><b>Years</b></td><td><code>year</code>, <code>years</code></td><td><code>y</code></td><td>-999,999,999 to 999,999,999</td><td></td></tr><tr><td><b>Months</b></td><td><code>month</code>, <code>months</code></td><td><code>M</code></td><td> 1 to 12 </td><td></td></tr><tr><td><b>Weeks</b></td><td><code>week</code>, <code>weeks</code></td><td><code>w</code></td><td> 0 to 54 </td><td> [1] </td></tr><tr><td><b>Days</b></td><td><code>day</code>, <code>days</code></td><td><code>d</code></td><td> 1 to 28, 29, 30 or 31 </td><td></td></tr><tr><td><b>Hours</b></td><td><code>hour</code>, <code>hours</code></td><td><code>h</code></td><td> 0 to 23 </td><td></td></tr><tr><td><b>Minutes</b></td><td><code>minute</code>, <code>minutes</code></td><td><code>m</code></td><td> 0 to 59 </td><td></td></tr><tr><td><b>Seconds</b></td><td><code>second</code>, <code>seconds</code></td><td><code>s</code></td><td> 0 to 59 </td><td></td></tr><tr><td><b>Milli</b></td><td><code>milli</code>, <code>millis</code></td><td><code>I</code></td><td> 0 to 999 </td><td> [2] </td></tr><tr><td><b>Micro</b></td><td><code>micro</code>, <code>micros</code></td><td><code>U</code></td><td> 0 to 999 </td><td> [2] </td></tr><tr><td><b>Nano</b></td><td><code>nano</code>, <code>nanos</code></td><td><code>N</code></td><td> 0 to 999 </td><td> [2] </td></tr><tr><td><b>Milli of second</b></td><td><code>milliOfSecond</code>, <code>millisOfSecond</code></td><td><code>i</code></td><td> 0 to 999 </td><td> [3] </td></tr><tr><td><b>Micro of second</b></td><td><code>microOfSecond</code>, <code>microsOfSecond</code></td><td><code>u</code></td><td> 0 to 999,999 </td><td> [3] </td></tr><tr><td><b>Nano of second</b></td><td><code>nanoOfSecond</code>, <code>nanosOfSecond</code></td><td><code>n</code></td><td> 0 to 999,999,999 </td><td>[3]</td></tr></table><p><b>Notes:</b><ol><li>The first day of a week and the first week of a year are set in the EEL context. By default, the first day of the week is Monday, and there are at least 4 days in the first week, following ISO standard 8601.</li><li>Milli, Micro, and Nano are independent. For example, setting microseconds does not affect milliseconds or nanoseconds.</li><li>Milli of Second, Micro of Second, and Nano of Second update all fractional parts of a second. For example, setting microseconds to 1,234 sets millis to 1, micros to 234, and nanos to 0. For adding, subtracting, or snapping, these periods act like their independent counterparts.</li></ol><p> Period names are case-sensitive. Time zones can be: <ul><li>Fixed offsets – a resolved offset from UTC such as <code>+5</code></li><li>Geographical regions – a region following specific rules to find offsets, e.g., <code>Europe/Paris</code></li></ul><p> Time periods can be snapped to the start of a period with a modifier <code>@&lt;period&gt;</code>. Snap modifiers always round down. <p> Examples of valid modifiers: <ul><li><code>7d</code> : 7 days in the future</li><li><code>-7d</code> : 7 days in the past</li><li><code>7days</code> : 7 days in the future using the full name</li><li><code>@d</code> : the start of the current day</li></ul><p> Offsets are applied in the order passed. Examples: <ul><li><code>date.utc()</code> – current UTC date-time with nanosecond accuracy</li><li><code>date.utc(&quot;@s&quot;)</code> – current UTC date-time with second accuracy</li><li><code>date.utc(&quot;1day&quot;)</code> – current UTC date-time plus 1 day</li><li><code>date.utc(&quot;@d&quot;, &quot;+12h&quot;)</code> – current date at midday UTC</li><li><code>date.utc(&quot;@d&quot;, &quot;-1_500n&quot;)</code> – 1500 nanoseconds before start of UTC date</li><li><code>date.utc(&quot;1d&quot;, &quot;@d&quot;)</code> – midnight tomorrow UTC</li><li><code>date.utc(&quot;48h&quot;, &quot;@d&quot;)</code> – midnight the day after tomorrow UTC</li><li><code>date.start(&quot;Europe/Paris&quot;)</code> – instant the EEL context was created in Paris</li><li><code>date.local(&quot;+2months&quot;)</code> – current local date-time plus 2 months</li><li><code>date.at(&quot;-5&quot;, &quot;-1w&quot;)</code> – current date-time in UTC-5 minus 1 week</li><li><code>date.set(${value}, &quot;12h&quot;, &quot;0m&quot;, &quot;0s&quot;, &quot;0n&quot;)</code> – given date with fields set to midday</li><li><code>date.plus(${value}, &quot;15minutes&quot;)</code> – given date plus 15 minutes</li><li><code>date.minus(${value}, &quot;-15minutes&quot;)</code> – given date minus 15 minutes</li><li><code>format.at(&quot;Europe/Paris&quot;, &quot;d/M/yyyy HH:mm&quot;)</code> – current Paris date and time in given format</li></ul>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <hr>
+            </span>
+            <section class="function-description">
+                <h2 class="block-name" id="date.at">date.at(zone, offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the current date in the specified <code>zone</code> with optional offsets applied.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.at(zone, offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>zone</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The time zone.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The current time in the specified zone.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>DateTimeException</code> </span> <span class="description">If the <code>zone</code> is not valid.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.local">date.local(offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the current date in the local time zone with optional offsets applied.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.local(offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The current time in the local time zone.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.minus">date.minus(date, offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns a copy of the given <code>date</code> with all specified <code>offsets</code> subtracted.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.minus(date, offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>date</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to modify.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The <code>date</code> with all offsets applied.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.moveZone">date.moveZone(date, zone)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns a copy of the given <code>date</code> with a different time zone. Unlike <a href="#date.setZone">date.setZone(date, zone)</a>, this function adjusts the time fields so that the numeric value of the returned date (seconds since 1970-01-01 00:00:00 UTC) matches the original date.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.moveZone(date, zone)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>date</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to update.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>zone</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The zone ID.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The same instant as the given <code>date</code> but in a different time zone.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>DateTimeException</code> </span> <span class="description">If the <code>zone</code> is not valid.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#date.setZone">date.setZone(date, zone)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.plus">date.plus(date, offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns a copy of the given <code>date</code> with all specified <code>offsets</code> added.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.plus(date, offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>date</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to modify.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The <code>date</code> with all offsets applied.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.set">date.set(date, spec...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns a copy of the given <code>date</code> with individual fields updated according to the specified <code>spec</code>.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.set(date, spec...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>date</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to update.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>spec...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The field specifiers.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The date with specific fields changed.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>DateTimeException</code> </span> <span class="description">If one of the <code>specifiers</code> is not valid.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#date.setZone">date.setZone(date, zone)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.setZone">date.setZone(date, zone)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns a copy of the given <code>date</code> with a different time zone. Unlike <a href="#date.moveZone">date.moveZone(date, zone)</a>, this function preserves the time fields. The numeric value of the returned date (seconds since 1970-01-01 00:00:00 UTC) may therefore differ from the original date.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.setZone(date, zone)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>date</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to update.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>zone</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The zone ID.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The date with a different time zone.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>DateTimeException</code> </span> <span class="description">If the <code>zone</code> is not valid.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#date.set">date.set(date, spec...)</a> </span> <span class="description"></span>
+                                </div>
+                                <div>
+                                    <span><a href="#date.moveZone">date.moveZone(date, zone)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.start">date.start(zone, offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the DATE at which the given <code>context</code> was created in the UTC time zone. This provides a timestamp that does not change across repeated invocations of an expression or related expressions that use the same context.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.start()</code></div>
+                            <div><code>date.start(zone)</code></div>
+                            <div><code>date.start(zone, offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>zone</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">UTC</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The time zone name.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Default Value : </span><span class="description">No offsets</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">A timestamp indicating when the <code>context</code> was created.</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>DateTimeException</code> </span> <span class="description">If the <code>zone</code> is not valid.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="date.utc">date.utc(offsets...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the current date in the UTC zone with optional offsets applied.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>date.utc(offsets...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>offsets...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Offsets to apply.</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Date</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The current time in the UTC zone.</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * An optional annotation that can be applied to a parameter of a method annotated as {@link EelFunction}.
- * If the compiled expression does not have a value for this parameter then the value in this annotation is used.
+ * If the compiled expression does not have a value for this parameter, then the value in this annotation is used.
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,4 +17,11 @@ public @interface DefaultArgument {
      * @return the optional default value for this argument
      */
     String value();
+
+    /**
+     * An optional description for documentation purposes only.
+     * EelDoc can use this to describe the default value
+     * @return      A description of the default value
+     */
+    String description() default "";
 }

@@ -1,7 +1,7 @@
 # EEL Language
 Probably the easiest way to imagine an EEL expression is as a text literal that can contain:
 1. [Escaped characters](#escaped-characters). These are all prefixed with a backslash character (`\`) 
-2. [Interpolation sequence](#interpolation-sequences) and [look backs](#chained-expressions). These are all prefixed with a dollar character (`$`)
+2. [Interpolation sequence](#interpolation-sequences) and [look backs](#compound-expressions). These are all prefixed with a dollar character (`$`)
 
 If the source expression contains doesn't contain any of these sequences then the data consumed by the EEL compiler 
 will be returned as-is in the Result. On the face of it this isn't very useful; however, it does provide a good
@@ -32,7 +32,7 @@ EEL supports the following 'C' style character escape sequences
 ## Interpolation Sequences
 EEL Supports the following types of interpolation sequences:
 1. **[Value interpolation](#value-interpolation)** which is written in the form `${...}` and is used to read values from the SymbolsTable
-2. **[Function interpolation](#function-interpolation)** which is written in the form `$functionName(...)` and is used to call a [function](#Standard-functions)
+2. **[Function interpolation](#function-interpolation)** which is written in the form `$functionName(...)` and is used to call a [function](#eel-functions)
 3. **[Expression interpolation](#expression-interpolation)** which is written in the form `$(...)` and is used to perform calculations which 
  may include function calls
 
@@ -81,7 +81,7 @@ Text literals behave exactly the same way as full EEL expressions; they can cont
 [Value Interpolations](#value-interpolation), [Function Interpolations](#function-interpolation) and 
 [Expression Interpolations](#expression-interpolation). They can also contain [Escape Sequences](#source-characters) to
 embed special characters, including what would have been the closing quote. If the Text literal is nested inside an
-expression interpolation then [Look Backs](#chained-expressions) are also supported.
+expression interpolation then [Look Backs](#compound-expressions) are also supported.
 
 Text values are returned from [Result](Using%20EEL.md#result) objects as Java Strings.
 
@@ -293,7 +293,7 @@ Value interpolations, literals, nested functions and other expressions.
 ## Expression interpolation
 
 Function interpolation is written in the form **_$(...)_**, where `...` is a complex expression that can contain 
-literal [constants](#constants), [Value interpolations](#value-interpolation), [function calls](#standard-functions) and 
+literal [constants](#constants), [Value interpolations](#value-interpolation), [function calls](#eel-functions) and 
 [operators](#operators). Expression interpolations cannot be empty
 
 
@@ -306,8 +306,8 @@ a value.
 |:-------:|:-----------:|:-----------:|:-------------------:|:--------------:|:-------------:|:--------:|:-----------:|:------:|:------------------------------:|:----:|
 | `true`  |     `+`     |    `and`    |         `&`         |      `<`       |      `=`      |   `~>`   |   `text`    |  `'`   |              `#`               | `${` |
 | `false` |     `-`     |    `or`     | <code>&#124;</code> |      `<=`      | `<>` and `!=` |          |  `number`   |  `"`   |              `^`               | `$(` |
-|         |     `*`     |    `not`    |         `^`         |      `>`       |               |          |   `logic`   |        |              `^^`              | `$[` |
-|         |     `/`     |    `xor`    |         `~`         |      `>=`      |               |          |   `date`    |        |              `,`               | `(`  |
+|         |     `*`     |    `not`    |         `~`         |      `>`       |               |          |   `logic`   |        |              `^^`              | `$[` |
+|         |     `/`     |    `xor`    |         `^`         |      `>=`      |               |          |   `date`    |        |              `,`               | `(`  |
 |         |    `//`     |             |        `<<`         |      `in`      |               |          |             |        |              `,,`              | `)`  | 
 |         |    `-/`     |             |        `>>`         |   `isBefore`   |               |          |             |        |              `~`               | `[`  |
 |         |     `%`     |             |                     |   `isAfter`    |               |          |             |        |              `~~`              | `]`  | 
@@ -321,7 +321,7 @@ a value.
 
 #### Naming conventions
 - Reserved words are lowerCamelCase. For example `text` and `logic`, `and`, `true` and `isAfter`,  
-- [Function names](#standard-functions) are lowerCamelCase. Dots (`.`) are sometimes included in function names to create
+- [Function names](#eel-functions) are lowerCamelCase. Dots (`.`) are sometimes included in function names to create
   prefixes. These are used to logically group functions and avoid namespace clashes much as packages do in Java. 
   Otherwise, they have no special meaning. 
   Example function names are `count`, `cos`, `isEmpty`, `system.home`, `date.local`, `log.warn` and `format.hex`
@@ -373,7 +373,7 @@ EEL supports the following operators:
 
 [1] To match other languages, the not-equal operator exists in two forms; `!=` and `<>`. The difference is purely cosmetic
 
-Most operators require their operands to be a particular type, so EEL will automatically convert their operands using the
+As most operators require their operands to be a particular type, EEL will automatically convert their operands using the
 [type conversion rules](#types-conversions). The expected types for the operators are: 
 
 | Operator Group   | Operators Symbols                                       | Operand type(s)                                                |
@@ -454,21 +454,21 @@ These rules are defined this way so that it is always possible to compare the va
   | `( -12.7 / 1 )` = -12.7 | `( -12.7 // 1 )` = -13 | `( -12.7 -/ 1 )` = -12 | 
 
 
-### Chained expressions
+### Compound expressions
 
-Chained expressions are written in the form:
+Compound expressions are written in the form:
 
     $( <expression-1> ; <expression-2> ; <expression-3> )
 
 Where `expression-1`, `expression-2` and `expression-3` are all non-empty expressions that are separated from each 
 other by a semicolon (`;`). An expression can refer to a previously defined expression by using a _Look Back_, which 
-is written in the form `$[index]`, where _index_ is 1-based number. For example:
+is written in the form `$[index]`, where _index_ is a 1-based number. For example:
 
     $( ${Key,,^-} ; isEmpty( $[1] ) ? fail('no text') : $[1] )
 
 The first expression in the chain is `${Key,,^-}` which will attempt to read _Key_ from the SymbolsTable with the first
 letter capitalised and the rest in lower case. The second expression in the chain references the first expression twice
-via Look Back `$1`. This use of chained expressions can be used to eliminate DRY issues from the expression.
+via Look Back `$[1]`. This use of compound expressions can be used to eliminate DRY code.
 
 
 Backwards references are supported; every expression in the chain can reference any of the previous expressions. 
@@ -476,7 +476,7 @@ For example,
 
     $( 'a' ; $[1] ~> 'b' ; $[2] ~> 'c' )
 
-will evaluate to `abc`. To guard against recursion forward references are not supported. As a result 
+will evaluate to `abc`. To guard against recursion, forward references are not supported. As a result 
 
     $( $[2] + $[3] ; 2 ; 3 ; $[1] * 10 )
 
@@ -485,7 +485,8 @@ will throw an [EelSemanticException](Using%20EEL.md#exceptions).
  
 Each expression in the chain is evaluated at **_most_** once. This can be used to call functions like `count()`, 
 `random()` and `text.random()`, which generate different values each time they are called, exactly once. 
-Through the Look Back, the same generated value can be used multiple times. Care should be taken with expressions like:
+Through the Look Back, the same generated value can be used multiple times. However, care should be taken with
+expressions like:
 
     $( count() ; count() ; $[2] + $[2] )
 
@@ -498,7 +499,7 @@ Consequently, `$1` always refers to the first expression in the current Expressi
 
     First = $( 'a' ; 'b' ; '<$[1]~$[2]>' ) and Second = $( 'c' ; 'd' ; '<$[1]~$[2]>' )
 
-will evaluate to `First = <a~b> and Second = <c~d>`. To prevent ambiguity, chained expressions cannot be nested. So
+will evaluate to `First = <a~b> and Second = <c~d>`. To prevent ambiguity, compound expressions cannot be nested. So
 
     $( count() ; $[1] + $( 2 ; $[1] + 3 ) )
 
@@ -523,13 +524,13 @@ If `myVariable` is in the SymbolsTable it will be returned without writing anyth
 
 Consider the following expression:
 
-    `$( myVariable? ? ${myVariable} : log.error("Undefined") )`
+    $( myVariable? ? ${myVariable} : log.error("Undefined") )
 
 Like the previous example, if `myVariable` is in the SymbolsTable it will be returned without writing anything to the 
 system logs.
 
 
-**3. The logic operators are short-circuited**
+**3. The logical 'and' and 'or' operators are short-circuited**
 
 Consider the following expression:
 
@@ -546,11 +547,14 @@ Because the first operand to the `ànd` operator is false there is no need to ev
 the eventual outcome, and again the counter is not incremented.
 
 
+The logical xor operator cannot be short-circuited as both operands are always required to determine the value. 
+
+
 **4. Function arguments might not be evaluated**
 
 Expressions can be passed to functions without them being evaluated first. These are known as ["Thunks"](https://en.wikipedia.org/wiki/Thunk).
 
-Many of the [Standard functions](#standard-functions) use thunks to pass a default value that is returned if a function
+Many [Eel functions](#eel-functions) use thunks to pass a default value that is returned if a function
 cannot determine what value it should return. For example: 
 
     $indexOf( ${myVariable-}, "x" )
@@ -566,359 +570,20 @@ third argument be evaluated at which point a message will be logged and 99 retur
 
 
 ---
-# Standard functions
+# Eel functions
 
-EEL has a library of standard functions that can be called by all expressions.
+The [EEL Function Reference Manual](function-reference/index.html) outlines the functions that are available by default. 
+Additional functions can be added through User-Defined Functions ([UDF](User%20Defined%20Functions.md)s).
 
-Some of these functions can accept a variable number of arguments where the final argument can be passed zero, one or
-more times. This is denoted in the list below by the `...` after the last argument. 
-For example, `date.plus( date, offsets... )` requires a _date_ be passed, but will accept any number of _offsets_,
-including no _offsets_.
+Functions are organised into groups based on their purpose. The group name is separated from the function by a 
+dot (`.`). This grouping serves two purposes: it describes the function's intent and prevents naming conflicts, 
+similar to how packages work in Java.
 
-Some functions support one or more default arguments; if the expression does not explicitly pass an argument, then EEL
-will silently add a default value. This is denoted in the list below by surrounding the optional argument(s) with braces.
-For example, `random( { minValue { , maxValue } } )` can be called as `random()`, `random( minValue )` 
-or `random( minValue, maxValue )`.
+EEL functions can have default arguments. If an argument is not explicitly passed then EEL will automatically insert
+the default value.
 
+EEL functions can also accept "varargs", with the final argument being able to be passed zero, one, or more times.
 
-## Function prefixes
-Each of the standard functions has a dot (`.`) delimited prefixes that describe its purpose and prevent name space 
-clashes. The EEL language has reserved the following prefixes:
-
-| Prefix   | Group                                                                                                                                | Example        |
-|----------|--------------------------------------------------------------------------------------------------------------------------------------|----------------|
-| < none > | [General utility functions](#General-utility-functions). <br> These includes common function on text, number, logic and date data  . | count()        |
-| eel      | [Eel system functions](#EEL-system-functions)                                                                                        | eel.version()  |
-| system   | [Host system information functions](#Host-system-information-functions)                                                              | system.home()  |
-| text     | [Text functions](#Text-functions)                                                                                                    | text.random()  |
-| number   | [Number functions](#Number-functions)                                                                                                | number.pi()    |
-| logic    | Reserved for future Logic functions                                                                                                  |                |
-| date     | [Date functions](#Date-functions)                                                                                                    | date.utc()     |
-| log      | [Logging functions](#Logging-functions)                                                                                              | log.error()    |
-| format   | [Data formatting functions](#Data-formatting-functions)                                                                              | format.local() | 
-| io       | [IO functions](#IO-functions)                                                                                                        | io.head()      |
-
-
-## EEL system functions
-- **eel.version()** - returns the EEL version number.
-- **eel.buildDate()** - returns the date and time the EEL compiler was built
-
-## General utility functions
-### Text manipulation functions
-#### Text case conversions
-- **lower( text )** - returns the _text_ in lower case
-- **upper( text )** - returns the _text_ in upper case
-- **title( text )** - returns the _text_ in title case
-
-#### Querying text
-- **len( text )** - returns the length of the _text_, including leading and trailing whitespace
-- **isEmpty( text )** - returns `true` only if the _text_ is empty. This is a more concise version of `len( text ) = 0`
-- **isBlank( text )** - returns `true` only if the _text_ is empty or whitespace. This is a more concise version of 
-    `isEmpty( trim(text) )`
-- **matches( text, regEx )** - returns `true` only if the _text_ matches the regular expression _regEx_
-- **indexOf( text, subString { , defaultFunc } )** - 
-    returns the zero-based index of the first occurrence of _subString_ in _text_, or the result of _defaultFunc_ 
-    if _subString_ is not present. If not specified, _defaultFunc_ returns _-1_ 
-- **lastIndexOf( text, subString { , defaultFunc } )** - 
-    returns the zero-based index of the last occurrence of _subString_ in _text_, or the result of _defaultFunc_ if 
-    _subString_ is not present. If not specified, _defaultFunc_ returns _-1_ 
-- **contains( text, subtext )** - returns the number of times that the _subtext_ occurs in _text_
-
-#### Splitting text on indexes
-- **left( text, length )** - returns up to _length_ characters from the start of the _text_. If _length_ is negative 
-   this is an index from the end of the _text_ where -1 is the last character
-- **mid( text, position { , length } )** - returns up to _length_ characters from the _text_ starting from the zero based
-   _position_. If _position_ is negative then is an index from the end of the _text_ where -1 is the last character.
-   If _length_ is negative this is an index from the end of the _text_ where -1 is the last character. _count_
-   defaults to all the remaining characters in the text.
-- **right( text, length )** - returns up to _length_ characters from the end of the _text_. If _length_ is negative 
-   this is an index from the start of the _text_ where -1 is the first character
-
-#### Splitting text on delimiters
-- **before( text, delimiter, count )** - returns all the text before the _count_'th occurrence of the _delimiter_
-- **between( between, delimiter, start, end )** - returns all the text between the _start_'th and the _end_'th 
-    occurrence of the _delimiter_
-- **after( text, delimiter, count )** - returns all the text after the _count_'th occurrence of the _delimiter_- 
-
-
-- **beforeFirst( text, delimiter )** - returns all the text before the first occurrence of the _delimiter_
-- **afterFirst( text, delimiter )** - returns all the text after the first occurrence of the _delimiter_
-- **beforeLast( text, delimiter )** - returns all the text before the last occurrence of the _delimiter_
-- **afterLast( text, delimiter )** - returns all the text after the last occurrence of the _delimiter_
-
-#### Extracting text
-- **trim( text )** - returns the _text_ with all leading and trailing whitespaces removed
-- **extract( text, regEx )** - returns the grouped characters from the _text_ based on a regular expression
-- **replace( text, from, to )** - returns the _text_ with all instances of the literal text _from_ replaced by _to_
-- **replaceEx( text, regEx, to )** - returns the _text_ with all matches of the regular expression _regEx_ replaced by _to_
-
-#### Formatting text
-- **printf( format, arguments... )** - returns formatted text using the specified [format string](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) and arguments.
-- **padLeft( text, width {, pad } )** - adds _pad_ characters to the start of the _text_ so that it is at least _width_
-   characters long. _pad_ defaults to a space
-- **padRight( text, width {, pad } )** - adds _pad_ characters to the end of the _text_ so that it is at least _width_
-   characters long. _pad_ defaults to a space
-
-#### Text to Unicode codepoints
-- **char( codepoint )** - return a text value containing the single character given by the unicode _codepoint_
-- **codepoint( text )** - returns the unicode codepoint of the first character in the _text_ 
-
-### Mathematical functions
-#### Conversion functions
-- **toDegrees( radians )** - returns the _radians_ value expressed in degrees
-- **toRadians( degrees )** - returns the _degrees_ value expressed in radians
-
-#### Trigonometric functions
-- **sin( value )** - returns the sine of the radian _value_
-- **cos( value )** - returns the cosine of the radian _value_
-- **tan( value )** - returns the tangens of the radian _value_  
-
-
-- **asin( value )** - returns the arc sine (inverted sine) of _value_
-- **acos( value )** - returns the arc cosine (inverted cosine) of _value_
-- **atan( value )** - returns the arc tangens (inverted tangens) of _value_ 
-
-#### Statistics functions
-- **max( value, values... )** - returns the largest of all the numbers passed
-- **min( value, values... )** - returns the smallest of all the numbers passed
-- **avg( value, values... )** - returns the average of all the numbers passed
-
-#### Other maths functions
-- **abs( value )** - returns the absolute value of a number
-- **exp( value )** - returns the natural exponent of value (e<sup>value</sup>)
-- **factorial( value )** - returns the factorial of _value_
-- **ln( value )** - returns the natural log of _value_
-- **log( value )** - returns the log in base 10 of _value_
-- **root( value { , n } )** - returns the n'th root of _value_. The default value of _n_ is 2, which gives square roots
-- **sgn( value )** - returns the sign of a numeric _value_; -1 for negative, 0 for zero and 1 for positive
-
-### File system functions
-#### Local paths
-- **baseName( path { , extension } )** - returns the _path_ with the leading directory components and the optional 
-    _extension_ removed
-- **dirName( path )** - returns _path_ with its last non-slashed component and trailing slash removed
-- **extension( path, { , max } )** - returns up to _max_ of the right most file extensions from the _path_. 
-    The default is to return all extensions
-- **realPath( path )** - returns _path_ in a canonicalised format based on the current operating system
-
-#### File information
-- **exists( path )** - returns _true_ only if the file at the specified _path_ exists
-- **fileSize( path { , defaultSizeFunc } )** - returns the size of the file in bytes. 
-  If the file does not exist, then _defaultSizeFunc_ is evaluated. -1 is returned if the  _defaultSizeFunc_ is not specified 
-- **createAt( path {, defaultTimeFunc } )** - returns the local date on which file was created. 
-  If the file does not exist, then _defaultTimeFunc_ is evaluated. 1970-01-01 00:00:00Z is returned if the 
-  _defaultTimeFunc_ is not specified 
-- **accessedAt( path {, defaultTimeFunc } )** - returns the local date on which file was last accessed. 
-  If the file does not exist, then _defaultTimeFunc_ is evaluated. 1970-01-01 00:00:00Z is returned if the  
-  _defaultTimeFunc_ is not specified 
-- **modifiedAt( path {, defaultTimeFunc } )** - returns the local date on which file was last modified. 
-  If the file does not exist, then _defaultTimeFunc_ is evaluated. 1970-01-01 00:00:00Z is returned if the  
-  _defaultTimeFunc_ is not specified 
-
-#### Directory information
-- **fileCount( dir {, glob } )** - returns the number of files in the _dir_ that match the _glob_ expression. 
-  _glob_ defaults to `*` so that all files are counted   
-- **firstCreated( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file 
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the first created to the last created. 
-  _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and defaults to
-  throwing an IOException 
-- **lastCreated( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file 
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the last created to the first created. 
-  _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and defaults to
-  throwing an IOException 
-- **firstAccessed( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the first accessed to the last 
-  accessed. _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and
-  defaults to throwing an IOException  
-- **lastAccessed( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the last accessed to the first 
-  accessed. 
-  _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and defaults to
-  throwing an IOException 
-- **firstModified( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the first modified to the last 
-  modified. _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and 
-  defaults to throwing an IOException  
-- **lastModified( dir {, glob, {, index {, defaultFunc }}} )** - returns the full path to the _index_'th (0 based) file 
-  that matches the _glob_ expression in the _dir_ where the files are ordered from the last modified to the first modified. 
-  _glob_ defaults to `*`. _index_ defaults to 0. _defaultFunc_ is evaluated if a file could not be found and defaults to
-  throwing an IOException 
-
-### Miscellaneous utility functions
-- **count( { name } )** - returns the next value in the zero based named a counter. _name_ defaults to an anonymous counter. 
-  To reset the counters recompile the expression with a new EelContext
-- **random( { minValue { , maxValue } } )** - return a random non-fractional number in the range _minValue_ to _maxValue_
-  inclusive. The default range is a number between 0 and 99 inclusive.
-- **uuid()** - returns a new **U**niversally **U**nique **I**dentifier (UUID)
-- **duration( from, to { , period } )** - returns the duration between two dates in the specified time period. 
-  The default period is seconds
-- **fail( { message } )** - immediately terminates the expression by throwing an _EelFailException_
-
-
-## Host system information functions
-### File system functions
-- **system.fileSeparator()** - returns the Operating System path separator, usually either '\\' or '/'
-- **system.home()** - returns the path to the users home directory
-- **system.pwd()** - returns the path to the applications current working directory.
-- **system.temp()** - returns the path to the system temporary directory.
-
-### IO functions
-- **io.head( fileName {, count } )** - read up to _count_ lines from the start of a UTF-8 formatted text file. 
-  Count defaults to 1 line 
-- **io.tail( fileName {, count } )** - read up to _count_ lines from the end of a UTF-8 formatted text file. 
-  Count defaults to 1 line 
-
-
-## Text functions
-- **text.random( { length {, characters }} )** - returns some random text. _length_ is the number of character in the
-  returned text and defaults to 10. _characters_ is the list of characters that might be in the returned text and
-  defaults to _A-Za-z0-9_ for all the uppercase latin character, lowercase latin characters and the numbers.
-
-
-## Number functions
-The precision of the numeric functions is set in the [EelContext](Using%20EEL.md#eel-context).
-
-### Constants
-- **number.pi()** - returns an approximate value for _pi_
-- **number.e()** - returns an approximate value for _e_
-- **number.c()** - returns the value for _c_, the speed of light in meters per second.  
-
-### Rounding and conversion functions
-- **number.round( number { , precision} )** - returns the _number_ rounded to the _precision_. 
-  Precision defaults to 0 to round to an integral value
-- **number.truncate( number { , precision} )** - returns the _number_ truncated to the _precision_. 
-  Precision defaults to 0 to round to an integral value
-- **number.ceil( number )** - returns the nearest value that is greater than or equal to _number_ and is non-fractional
-- **number.floor( number )** - returns the nearest value that is less than or equal to _number_ and is non-fractional
- 
-
-## Date functions
-### Reading dates 
-- **date.start( { zone { , offsets... } } )** - returns the date-time when the EelContext was created plus any optional 
-    offsets. _zone_ defaults to UTC
-- **date.utc( offsets... )** - returns the current UTC date-time plus any optional offsets
-- **date.local( offsets... )** - returns the current local date-time plus any optional offsets
-- **date.at( zone, offsets... )** - returns the current date-time in the specified zone plus any optional offsets
-
-### Modifying  dates 
-- **date.plus( date, offsets... )** - returns the _date_ after adding one or more offsets. If an offset is negative
-  then the value is subtracted from the date 
-- **date.minus( date, offsets... )** - returns the _date_ after subtracting one or more offsets. If an offset is 
-  negative then the value is added to the date 
-- **date.set( date, specifier... )** - returns the _date_ after setting one or more periods. Note a week-based specifier
-  will change the month and day of the year, but will maintain the day of the week. 
-- **date.setZone( date, zone )** - returns the _date_ after setting the time zone
-- **date.moveZone( date, zone )** - returns the _date_ after change the time zone and adjusting the time to maintain the
-  same instant
-
-Most of the date functions support the ability to modify, set, offset or round a date with respect to one or more 
-time periods. The supported time periods are: 
-
-|       Period        |            Full Names             | Short Name | Range                       | Notes |
-|:-------------------:|:---------------------------------:|:----------:|:----------------------------|-------|
-|      **Years**      |          `year`, `years`          |    `y`     | -999,999,999 to 999,999,999 |       |
-|     **Months**      |         `month`, `months`         |    `M`     | 1 to 12                     |       |
-|      **Weeks**      |          `week`, `weeks`          |    `w`     | 0 to 54                     | [1]   |
-|      **Days**       |           `day`, `days`           |    `d`     | 1 to 28, 29, 30 or 31       |       |
-|      **Hours**      |          `hour`, `hours`          |    `h`     | 0 to 23                     |       |
-|     **Minutes**     |        `minute`, `minutes`        |    `m`     | 0 to 59                     |       |  
-|     **Seconds**     |        `second`, `seconds`        |    `s`     | 0 to 59                     |       |
-|      **Milli**      |         `milli`, `millis`         |    `I`     | 0 to 999                    | [2]   |
-|      **Micro**      |         `micro`, `micros`         |    `U`     | 0 to 999                    | [2]   |
-|      **Nano**       |          `nano`, `nanos`          |    `N`     | 0 to 999                    | [2]   |
-| **Milli of second** | `milliOfSecond`, `millisOfSecond` |    `i`     | 0 to 999                    | [3]   |
-| **Micro of second** | `microOfSecond`, `microsOfSecond` |    `u`     | 0 to 999,999                | [3]   |
-| **Nano of second**  |  `nanoOfSecond`, `nanosOfsecond`  |    `n`     | 0 to 999,999,999            | [3]   |
-
-[1] The first day of a week and the first week of a year are set in the EEL Context. By default, the first day of the
-week is a Monday and there are at least 4 days in the first week of the year. This is to match the ISO-8601 standard.
-
-[2] Milli, Micro and Nano are all independent time periods. So for example, setting the microseconds in a date will not
-affect the number of milliseconds or nanoseconds.    
-
-[3] Milli of Second, Micro of Second and Nano of a second update all the fractional parts of a second. So for example, 
-setting the Micro seconds of a second to 1,234 will set the millis to 1, the micros to 234 and the nanos to 0. 
-For adding, subtracting or snapping purposes the periods act the same as their independent counterparts.
-
-
-Period names are case-sensitive. Time zones can be either:
-- Fixed offsets - a fully resolved offset from UTC such as `+5`
-- Geographical regions - an area where a specific set of rules for finding the offset from UTC apply such as `Europe/Paris` 
-
-Time periods can also be snapped to the start of a time period by writing a modifier in the form `@<period>`. Snap 
-modifiers always round down to the start of the specified period.
-
-Examples of valid modifiers are:
-
-* **7d** - 7 days in the future
-* **-7d** - 7 days in the past
-* **7days** - 7 days in the future using the full time period name
-* **@d** - the start of the current day
-
-The offsets are applied in the order they are passed to the functions.
-
-For example:
-- **date.utc()** - the current date-time in UTC with nanosecond accuracy
-- **date.utc( "@s" )** - the current date-time in UTC with second accuracy
-- **date.utc( "1day" )** - the current date-time in UTC plus 1 day
-- **date.utc( '@d', '+12h' )** - the current date at midday in UTC
-- **date.utc( '@d', '-1_500n' )** - 1500 nanoseconds before start of the current UTC date   
-- **date.utc( '1d', '@d' )** - the midnight tomorrow in UTC 
-- **date.utc( '48h', '@d' )** - the midnight the day after tomorrow in UTC 
-- **date.start( "Europe/Paris" )** - the instant the EEL Context was created with respect to the Paris time zone
-- **date.local( "+2months" )** - the current date-time in the local time zone plus 2 months
-- **date.at( "-5", "-1w" )** - the current date-time in the _UTC -5_ time zone minus 1 week 
-- **date.set( ${value}, "12h", "0m", "0s", "0n" )** - the date given in the _value_ with all the time fields set to midday
-- **date.plus( ${value}, "15minutes" )** - the time given in the _value_ plus 15 minutes 
-- **date.minus( ${value}, "-15minutes" )** - the time given in the _value_ minus negative 15 minutes 
-- **format.at( 'Europe/Paris', 'd/M/yyyy HH:mm')** - format the current date in Paris in the given format
- 
-
-## Logging functions
-These functions are used to perform logging as a side effect. The value returned by the function is the last argument 
-passed. 
-
-In order of priority, from highest to lowest, the logging functions are:
-
-- **log.error( { message, } arg, args... )** - log the optional message and the _args_ at error level
-- **log.warn( { message, } arg, args... )** - log the optional message and the _args_ at warning level. 
-- **log.info( { message, } arg, args... )** - log the optional message and the _args_ at info level. 
-- **log.debug( { message, } arg, args... )** - log the optional message and the _args_ at debug level. 
-- **log.trace( { message, } arg, args... )** - log the optional message and the _args_ at trace level. 
-
-
-**Note:** The EEL expression must pass at least one argument to the logging function.
-
-**Note:** The client's logging framework is responsible for enabling logging. EEL writes all its messages to the
-`com.github.tymefly.eel.log` logger, so it is recommended that it is configured with **trace** level
-logging enabled.
-
-**Note:** Because expressions can be set after applications have been developed and deployed then there is a 
-need to guard against log repudiation attacks. Consequently:
-1. All logged messages are always prefixed by the literal text `Logged EEL Message: ` to make it obvious they are 
-generated by EEL and do not come from any other source. This prefix cannot be changed or removed. 
-2. Only printable ASCII characters and tabs will be logged. Control characters, including new lines and Unicode 
-characters outside the ASCII range will be silently filtered out
-
- 
-## Data formatting functions
-### Formatting numbers
-- **format.binary( value )** - returns the _value_ as binary Text without a leading _"0b"_
-- **format.octal( value )** - returns the _value_ as octal Text without a leading _"0c"_
-- **format.hex( value )** - returns the _value_ as hexadecimal Text without a leading _"0x"_
-- **format.number( value, radix )** - returns the number as Text in the given radix. The maximum _radix_ is 36 
-
-### Formatting dates
-- **format.date( format, date, offsets... )** - returns the _date_, plus optional offsets, as Text in a custom format.
-- **format.start( format { , zone { , offsets... } } )** - returns instant the EEL Context was created, plus optional 
-  offsets, as Text in a custom format. _zone_ defaults to UTC.
-- **format.utc( format, offsets... )** - returns the current UTC time, plus optional offsets, as Text in a custom format.
-- **format.local( format, offsets... )** - returns the current local time, plus optional offsets, as Text in a custom 
-  format.
-- **format.at( zone, format, offsets... )** - returns the current time in the specified zone, plus optional offsets, as
-  Text in a custom format.
-
-Date formats are described in the [Java DateTimeFormatter](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html) documentation
 
 ---
 # Sample EEL Expressions
@@ -1012,7 +677,7 @@ If the requirement is to display the date without any time fields then use:
 will return a [Result](Using%20EEL.md#result) object that will have a type of `number` and value from an anonymous zero-based counter. 
 If the expression is reevaluated _with the same Context_ then the next value from the counter is returned.
 
-Named counters can be used if the expressions that use the [Context](Using%20EEL.md#eel-context) require multiple, independent, counters. 
+Named counters can be used if the expressions that use the [Context](Using%20EEL.md#eel-context) requires multiple, independent, counters. 
 For example:   
 
     First: $count( "first" ), Second: $count( "second" )
@@ -1051,12 +716,12 @@ directory structure to a new location.
 
 To create a large number of files with random names and put them in subdirectories where they will be easy to find use
 
-    $( text.random(10, '0-9') ; ${root-} ~> '/' ~> right( $[1], 4 ) ~> '/' ~> $[1] ~> '.txt' )
+    $( text.random(10, '0-9') ; $left( $[1], 4 ); '${root-}/$[2]/$[1].txt' )
 
 The [Result](Using%20EEL.md#result) object will have a type of Text and a value that would make a valid *nix directory name.
-The root of the directory is the optional _root_ value from the [SymbolsTable](Using%20EEL.md#symbols-table). The subdirectory is 
-the last 4 digits of a randomly generated 10-digit number. Inside that directory will be a txt file with the same 
-10-digit number. 
+The root of the directory is the optional _root_ value from the [SymbolsTable](Using%20EEL.md#symbols-table). 
+The subdirectory is the first 4 digits of a randomly generated 10-digit number. Inside that directory will be a txt file
+with the same 10-digit number. 
 
 
 ## Converting paths
@@ -1192,7 +857,7 @@ It is also possible to fail an expression if an old version of EEL is being used
 
 ## Functions that return default values
 
-Some of the [Standard functions](#Standard-functions) allow the expression to pass a default values that is returned
+Some of the [Eel functions](#eel-functions) allow the expression to pass a default values that is returned
 if the function is unable to perform its normal operation.
 
 For example `indexOf( text, subString { , defaultFunc } )` will return -1 if the search string is not present in the 

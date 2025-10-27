@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.tymefly.eel</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.1.0</version>
+        <relativePath>../parent</relativePath>
+    </parent>
+
+    <artifactId>docs</artifactId>
+    <name>EEL Functional Documentation</name>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>lib</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>doclet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>EEL-Docs</id>
+                        <phase>prepare-package</phase>
+
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+
+                        <configuration>
+                            <sourcepath>../lib/src/main/java</sourcepath>
+                            <windowtitle>EEL Functions</windowtitle>
+                            <top>EEL $eel.version() Function Reference Manual</top>
+                            <doctitle>EEL Function Reference Manual</doctitle>
+                            <bottom>(c) $format.start("yyyy")</bottom>
+                            <author>false</author>
+
+                            <doclet>com.github.tymefly.eel.doc.EelDoc</doclet>
+                            <docletArtifact>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>doclet</artifactId>
+                                <version>${project.version}</version>
+                            </docletArtifact>
+
+                            <additionalOptions>
+                                <additionalOption>-doc-overview</additionalOption>
+                                <additionalOption>${project.basedir}/src/overview.html</additionalOption>
+                            </additionalOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>publish-docs</id>
+                        <phase>package</phase>
+
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${basedir}/function-reference</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/reports/apidocs</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

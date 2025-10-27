@@ -8,26 +8,21 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL function that fails the expression by throwing an {@link EelFailException}.
- * This function would typically be used inside a ternary expressions as
- * <br>
- * {@code $( condition ? value : fail("error message") ) }
- * <br>
- * The EEL syntax for this function is:
- * <ul>
- *     <li><code>fail()</code> - Fail the expression</li>
- *     <li><code>fail( message )</code> - Fail the expression with the specified error message</li>
- * </ul>
+ * An EEL function that returns that fails an expression by throwing an exception.
  */
 @PackagedEelFunction
 public class Fail {
     /**
-     * Entry point for the {@code fail} function
-     * @param message   The optional message that will be passed back to the client application
-     * @throws EelFailException always
+     * An EEL function that fails the expression by throwing an {@link EelFailException}.
+     * This function is typically used inside a condition, such as a ternary expression. For example:
+     * <br>
+     * {@code $( condition ? value : fail("error message") ) }
+     * @param message   the optional message that will be passed back to the client application
+     * @throws EelFailException when invoked
      */
     @EelFunction("fail")
-    public void fail(@Nonnull @DefaultArgument("") String message) throws EelFailException {
+    public void fail(@Nonnull
+                     @DefaultArgument(value = "", description = "Empty text") String message) throws EelFailException {
         throw new EelFailException(message);
     }
 }

@@ -158,11 +158,21 @@ public class Evaluate {
         return state;
     }
 
+
     /**
      * Application entry point
      * @param args  Command line arguments. Pass {@literal --help} to get a full help page
      */
     public static void main(@Nonnull String[] args) {
-        System.exit(execute(args).getReturnCode());
+        System.exit(testEntry(args));
+    }
+
+    /**
+     * Unit Test Application entry point
+     * @param args  Command line arguments. Pass {@literal --help} to get a full help page
+     */
+    @VisibleForTesting
+    static int testEntry(@Nonnull String[] args) {
+        return execute(args).getReturnCode();
     }
 }

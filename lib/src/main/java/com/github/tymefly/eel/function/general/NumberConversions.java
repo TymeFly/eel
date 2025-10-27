@@ -15,11 +15,10 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class NumberConversions {
     /**
-     * Entry point for the {@code toDegrees} function
-     * The EEL syntax for this function is <code>toDegrees(radians)</code>
-     * @param context   The current EEL Context
-     * @param value     radian value to convert to degrees
-     * @return          the {@code value} expressed in degrees
+     * Returns the specified radian {@code value} expressed in degrees.
+     * @param context   the current EEL context
+     * @param value     the radian value to convert to degrees
+     * @return          the specified radian {@code value} expressed in degrees
      * @since 2.1.0
      */
     @EelFunction("toDegrees")
@@ -29,11 +28,10 @@ public class NumberConversions {
     }
 
     /**
-     * Entry point for the {@code toRadians} function
-     * The EEL syntax for this function is <code>toRadians(degrees)</code>
-     * @param context   The current EEL Context
-     * @param value     degree value to convert to radians
-     * @return          the {@code value} expressed in degrees
+     * Returns the specified degree {@code value} expressed in radians.
+     * @param context   the current EEL context
+     * @param value     the degree value to convert to radians
+     * @return          the specified degree {@code value} expressed in radians
      * @since 2.1.0
      */
     @EelFunction("toRadians")

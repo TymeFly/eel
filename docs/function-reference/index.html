@@ -1,0 +1,191 @@
+<!DOCTYPE html><html>
+    <head>
+        <title>
+            EEL Functions - Overview
+        </title>
+        <link rel="stylesheet" href="resource/main.css">
+        <link rel="icon" href="resource/icon.png">
+        <meta charset="UTF-8">
+        <script src="resource/eel-doc.js" type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <a name="_top"></a>
+        <div class="page-top">
+            EEL 3.1 Function Reference Manual
+        </div>
+        <header id="header" class="title">
+            <span class="header-title">
+                Overview
+            </span>
+            <div id="menu">
+                <span class="menu-item">
+                    <span class="menu-item-text">Overview</span>
+                </span>
+                <span class="menu-item">
+                    <a href="_index.html" class="menu-item-text">Index</a>
+                </span>
+                <span class="menu-item">
+                    <a href="https://github.com/TymeFly/eel?tab=readme-ov-file#eel" class="menu-item-text">EEL</a>
+                </span>
+            </div>
+        </header>
+        <div id="doc-body">
+            <section class="summary-description">
+                <h2 class="block-name">
+                    EEL Function Reference Manual
+                </h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <p>
+                          This manual describes the standard EEL 3.1 functions that are automatically available to all expressions
+                          without needing to explicitly add them via the EEL Context.
+                        </p>
+                        <p>
+                          Many EEL functions can accept a variable number of arguments. The final argument can appear zero, one, or multiple
+                          times.
+                          This is indicated in the list below by <code>...</code> after the last argument.
+                          For example, <code>date.plus(date, offsets...)</code> requires a <em>date</em> but can accept any number of
+                          <em>offsets</em>, including none.
+                        </p>
+                        <p>
+                          Some functions support default arguments. If a value is not explicitly provided, EEL will automatically use the default.
+                          When a parameter can be defaulted, this documentation will describe the default value.
+                          For example, the <code>random</code> function can be called as <code>random()</code>, <code>random(min)</code>, or
+                          <code>random(min, max)</code>,
+                          where <code>min</code> defaults to <code>0</code> and <code>max</code> defaults to <code>100</code>.
+                        </p>
+                        <p>
+                          As EEL is a lazy language, parameters are evaluated only when they are used. Consequently, functions such as
+                          <code>count()</code>, <code>fail()</code>, and the logging functions can be safely passed as parameters, as
+                          there will be no side effects if they are not used.
+                        </p>
+                    </div>
+                </section>
+            </section>
+            <section class="summary-description">
+                <h2 class="block-name">Function Groups   </h2>
+                <section class="block-description">
+                    <div class="block-detail content-container">
+                        <table class="summary-types">
+                            <tbody class="content-body">
+                                <tr>
+                                    <th class="col-types table-header" id="summary-col-group">
+                                        Group
+                                    </th>
+                                    <th class="col-types" id="summary-col-description">
+                                        Description
+                                    </th>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_$.html">
+                                            General utilities
+                                        </a>
+                                    </td>
+                                    <td>
+                                        The general utility group contains common functions for text, number, logic and date types.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_eel.html">
+                                            Eel
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that interact directly with the EEL RunTime.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_system.html">
+                                            System
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that are host-specific.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_text.html">
+                                            Text
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate text.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_number.html">
+                                            Number
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate numbers.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_logic.html">
+                                            Logic
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <i>Reserved for future functions that manipulate or generate logic values.</i>
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_date.html">
+                                            Date
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that manipulate or generate dates.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_log.html">
+                                            Log
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Writes messages to the system logs. The value returned by the function is the last argument passed.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_format.html">
+                                            Format
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Data formatting functions.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td class="content-link">
+                                        <a href="_io.html">
+                                            Io
+                                        </a>
+                                    </td>
+                                    <td>
+                                        Functions that read data from local files.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </div>
+        <a href="#_top" id="scroll-up"></a>
+        <div class="page-bottom">
+            (c) 2025
+        </div>
+    </body>
+</html>

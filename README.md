@@ -45,12 +45,13 @@ The requirements for EEL are:
 * The language must be [lazy](docs/The%20EEL%20Language.md#lazy-processing) - if parts of the expression do not need to be evaluated, they won't be.
 
 **Note:** There is no requirement that EEL be Turing complete; while there is support for conditions, neither iteration
-nor recursion is supported 
+nor recursion are supported 
 
 ---
 # Documentation
 * [Using EEL](docs/Using%20EEL.md) - Describes how to integrate EEL into an application and the EEL CLI  
 * [EEL Language](docs/The%20EEL%20Language.md) - Describes the EEL language
+* [EEL Function Reference Manual](docs/function-reference/index.html) - Describes the standard EEL functions
 * [User Defined Functions](docs/User%20Defined%20Functions.md) - Describes how to extend EEL with additional functions
 * [What's new](docs/WhatsNew.md) - Describes what is new in each release
  

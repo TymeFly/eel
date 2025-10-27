@@ -2124,10 +2124,10 @@ public class ParserTest {
             .evaluate(symbolsTable);
 
         Assert.assertEquals("Unexpected value",
-            Value.of("myFunction([Constant{type=TEXT, value=Arg1}, " +
-                                 "Constant{type=NUMBER, value=123}, " +
-                                 "Constant{type=LOGIC, value=true}, " +
-                                 "Constant{type=TEXT, value=Hello World!}])"),
+            Value.of("myFunction([Constant{type=Text, value=Arg1}, " +
+                                 "Constant{type=Number, value=123}, " +
+                                 "Constant{type=Logic, value=true}, " +
+                                 "Constant{type=Text, value=Hello World!}])"),
             actual);
     }
 

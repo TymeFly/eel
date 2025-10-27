@@ -1,10 +1,14 @@
 # Using EEL
 
-The source code contains three modules. These are:
+The source code contains the following modules:
 
 * **lib** - the EEL compiler and runtime. This describes how to compile and execute EEL expressions from Java
 * **integration** - helper classes that can be used to integrate EEL with JVM applications
 * **evaluate** - EEL Command Line Interface 
+* **parent** - Common definitions used by the previous modules 
+* **doclet** - A Java Doclet that generates the user documentation for EEL functions. 
+  Its usage is described in [User Defined Functions](User%20Defined%20Functions.md#eeldoc) manual 
+* **docs** - The user documentation for the standard EEL functions
 
 As of version 2.0, it is possible to query the version of EEL that's running.  
 
@@ -308,3 +312,6 @@ The dependant libraries are:
 
 Evaluate has one additional dependency:
 * **args4j:args4j** - Command line argument parsing
+
+The doclet has one additional dependency:
+* **com.j2html:j2html** - Used to generate HTML

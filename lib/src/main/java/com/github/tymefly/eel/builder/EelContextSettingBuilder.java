@@ -68,7 +68,7 @@ public interface EelContextSettingBuilder<T> {
 
     /**
      * Sets the maximum number of bytes that an EEL function can read.
-     * By default, this is {@link com.github.tymefly.eel.EelContext#DEFAULT_IO_LIMIT} bytes
+     * By default, this is {@value com.github.tymefly.eel.EelContext#DEFAULT_IO_LIMIT} bytes
      * @param bytes     maximum number of bytes that can be read by a single operation
      * @return          a fluent interface
      * @since 3.0.0

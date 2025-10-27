@@ -24,26 +24,20 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 @PackagedEelFunction
 public class FileIo {
     /**
-     * Entry point for the {@code head} function, which returns a number of lines from the start of a file.
-     * If more than one line is returned then {@literal \n} is used to delimit lines. Files are assumed to be UTF-8
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>head( fileName )</code></li>
-     *  <li><code>head( fileName, count )</code></li>
-     * </ul>
-     * @param context   The EEL Context
-     * @param file      a file on the local file system
-     * @param count     the maximum number of lines to read. This defaults to {@literal 1}
-     * @return up to {@code count} lines from the start of the file
-     * @throws IOException if the file could not be read
+     * Returns up to {@code count} lines from the start of the given UTF-8 text {@code file}.
+     * Lines are delimited with {@literal \n}
+     * @param context   the current EEL context.
+     * @param file      the file on the local file system.
+     * @param lines     the maximum number of lines to read.
+     * @return          up to {@code count} lines from the start of the file.
+     * @throws IOException if the file could not be read.
      * @since 3.0
      */
     @EelFunction("io.head")
     @Nonnull
     public String head(@Nonnull EelContext context,
                        @Nonnull File file,
-                       @DefaultArgument("1") int count) throws IOException {
+                       @DefaultArgument("1") int lines) throws IOException {
         StringBuilder builder = new StringBuilder();
         String delimiter = "";
 
@@ -53,7 +47,7 @@ public class FileIo {
             Reader streamReader = new InputStreamReader(limitedStream, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(streamReader)
         ) {
-            while (count-- > 0) {
+            while (lines-- > 0) {
                 String line = reader.readLine();
 
                 if (line == null) {
@@ -70,34 +64,28 @@ public class FileIo {
     }
 
     /**
-     * Entry point for the {@code tail} function, which returns a number of lines from the end of a file.
-     * If more than one line is returned then {@literal \n} is used to delimit lines. Files are assumed to be UTF-8
-     * <br>
-     * The EEL syntax for this function is:
-     * <ul>
-     *  <li><code>tail( fileName )</code></li>
-     *  <li><code>tail( fileName, count )</code></li>
-     * </ul>
-     * @param context   The EEL Context
-     * @param file      a file on the local file system
-     * @param count     the maximum number of lines to read. This defaults to {@literal 1}
-     * @return up to {@code count} lines from the end of the file
-     * @throws IOException if the file could not be read
+     * Returns up to {@code count} lines from the end of the given UTF-8 text {@code file}.
+     * Lines are delimited with {@literal \n}
+     * @param context   the current EEL context.
+     * @param file      the file on the local file system.
+     * @param lines     the maximum number of lines to read.
+     * @return          up to {@code count} lines from the end of the file.
+     * @throws IOException if the file could not be read.
      * @since 3.0
      */
     @EelFunction("io.tail")
     @Nonnull
     public String tail(@Nonnull EelContext context,
                        @Nonnull File file,
-                       @DefaultArgument("1") int count) throws IOException {
+                       @DefaultArgument("1") int lines) throws IOException {
         String result;
 
-        if (count <= 0 ) {
+        if (lines <= 0 ) {
             result = "";
         } else {
             StringBuilder builder = new StringBuilder();
             String delimiter = "";
-            String[] buffer = new String[count];
+            String[] buffer = new String[lines];
             int size = 0;
             int next = 0;
 
@@ -117,8 +105,8 @@ public class FileIo {
                 }
             }
 
-            if (size >= count) {            // buffer has wrapped => next is the oldest element, read full buffer
-                size = count;
+            if (size >= lines) {            // buffer has wrapped => next is the oldest element, read full buffer
+                size = lines;
             } else {                        // buffer hasn't wrapped => index 0 is the oldest, read size elements
                 next = 0;
             }
