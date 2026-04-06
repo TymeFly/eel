@@ -1,5 +1,4 @@
 package com.github.tymefly.eel.doc.utils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +9,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 import com.github.tymefly.eel.doc.exception.EelDocException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
@@ -24,18 +25,16 @@ import static org.mockito.Mockito.mockStatic;
  * Unit test for {@link FileUtils}
  */
 public class FileUtilsTest {
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
 
-    private File root;
+    @TempDir
+    File root;
+
     private File text;
     private File unknown;
     private File target;
 
-
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        root = tempFolder.getRoot();
         text = new File(root, "text.txt");
         unknown = new File(root, "unknown.file!");
         target = new File(root, "path/to/my/file.txt");
@@ -43,26 +42,24 @@ public class FileUtilsTest {
         Files.writeString(text.toPath(), "Hello\nWorld\n$(1 + 2)");
     }
 
-
     /**
-     * Unit test {@link FileUtils#canRead(File)} 
+     * Unit test {@link FileUtils#canRead(File)}
      */
     @Test
     public void test_canRead() {
-        Assert.assertFalse("Read directory", FileUtils.canRead(root));
-        Assert.assertFalse("missing", FileUtils.canRead(unknown));
-        Assert.assertTrue("text file", FileUtils.canRead(text));
+        assertFalse(FileUtils.canRead(root), "Read directory");
+        assertFalse(FileUtils.canRead(unknown), "missing");
+        assertTrue(FileUtils.canRead(text), "text file");
     }
 
-
     /**
-     * Unit test {@link FileUtils#read(File)} 
+     * Unit test {@link FileUtils#read(File)}
      */
     @Test
     public void test_read_happyPath() {
         List<String> actual = FileUtils.read(text);
 
-        Assert.assertEquals("Unexpected text", List.of("Hello", "World", "3"), actual);
+        assertEquals(List.of("Hello", "World", "3"), actual, "Unexpected text");
     }
 
     /**
@@ -70,13 +67,11 @@ public class FileUtilsTest {
      */
     @Test
     public void test_read_missingFile() {
-        Exception actual =
-            Assert.assertThrows(EelDocException.class, () -> FileUtils.read(unknown));
+        EelDocException actual = assertThrows(EelDocException.class, () -> FileUtils.read(unknown));
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().matches("^Failed to read file .*unknown.file!$"));
+        assertTrue(actual.getMessage().matches("^Failed to read file .*unknown.file!$"),
+            "Unexpected message: " + actual.getMessage());
     }
-
 
     /**
      * Unit test {@link FileUtils#write(File, String, Charset)}
@@ -85,22 +80,21 @@ public class FileUtilsTest {
     public void test_write() throws Exception {
         FileUtils.write(target, "Some Text", StandardCharsets.UTF_8);
 
-        Assert.assertEquals("Unexpected content", "Some Text", Files.readString(target.toPath()));
+        assertEquals("Some Text", Files.readString(target.toPath()), "Unexpected content");
     }
-
 
     /**
      * Unit test {@link FileUtils#write(File, String, Charset)}
      */
     @Test
     public void test_write_badDirectory() {
-        File bad = new File(text, "invalid.path");                       // path through a file
+        File bad = new File(text, "invalid.path"); // path through a file
 
-        Exception actual = Assert.assertThrows(EelDocException.class,
+        EelDocException actual = assertThrows(EelDocException.class,
             () -> FileUtils.write(bad, "Some Text", StandardCharsets.UTF_8));
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().startsWith("Failed to create directory"));
+        assertTrue(actual.getMessage().startsWith("Failed to create directory"),
+            "Unexpected message: " + actual.getMessage());
     }
 
     /**
@@ -109,16 +103,14 @@ public class FileUtilsTest {
     @Test
     public void test_write_badFile() throws Exception {
         File bad = new File(root, "subDir");
+        Files.createDirectory(bad.toPath());
 
-        tempFolder.newFolder("subDir");
-
-        Exception actual = Assert.assertThrows(EelDocException.class,
+        EelDocException actual = assertThrows(EelDocException.class,
             () -> FileUtils.write(bad, "Some Text", StandardCharsets.UTF_8));
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().startsWith("Failed to write file"));
+        assertTrue(actual.getMessage().startsWith("Failed to write file"),
+            "Unexpected message: " + actual.getMessage());
     }
-
 
     /**
      * Unit test {@link FileUtils#copyResource(String, File)}
@@ -129,7 +121,7 @@ public class FileUtilsTest {
 
         FileUtils.copyResource("file.txt", target);
 
-        Assert.assertEquals("Unexpected content", "Some data", Files.readString(text.toPath()));
+        assertEquals("Some data", Files.readString(text.toPath()), "Unexpected content");
     }
 
     /**
@@ -139,10 +131,10 @@ public class FileUtilsTest {
     public void test_copyResource_missingFile() {
         File target = new File(root, "text.txt");
 
-        Exception actual = Assert.assertThrows(EelDocException.class,
+        EelDocException actual = assertThrows(EelDocException.class,
             () -> FileUtils.copyResource("unknown.file!", target));
 
-        Assert.assertEquals("Unexpected message", "Missing resource 'unknown.file!'", actual.getMessage());
+        assertEquals("Missing resource 'unknown.file!'", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -150,20 +142,18 @@ public class FileUtilsTest {
      */
     @Test
     public void test_copyResource_badTarget() {
-        Exception cause = new IOException("expected");
+        IOException cause = new IOException("expected");
         File target = new File(root, "subDir");
 
-        try (
-            MockedStatic<Files> files = mockStatic(Files.class)
-        ) {
+        try (MockedStatic<Files> files = mockStatic(Files.class)) {
             files.when(() -> Files.copy(any(InputStream.class), any(Path.class), any()))
-                .thenThrow(cause);
+                 .thenThrow(cause);
 
-            Exception actual = Assert.assertThrows(EelDocException.class,
+            EelDocException actual = assertThrows(EelDocException.class,
                 () -> FileUtils.copyResource("file.txt", target));
 
-            Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-                actual.getMessage().matches("Failed to copy file 'file.txt' to '.*subDir'"));
+            assertTrue(actual.getMessage().matches("Failed to copy file 'file.txt' to '.*subDir'"),
+                "Unexpected message: " + actual.getMessage());
         }
     }
 }

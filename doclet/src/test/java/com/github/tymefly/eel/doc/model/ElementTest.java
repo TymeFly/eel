@@ -1,10 +1,14 @@
 package com.github.tymefly.eel.doc.model;
-
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Element}
@@ -13,14 +17,13 @@ public class ElementTest {
     private static class RealElement extends Element<RealElement> {
     }
 
-
     /**
      * Unit test {@link Element#hide()} and {@link Element#isHidden}
      */
     @Test
     public void test_hide() {
-        Assert.assertTrue("hidden", new RealElement().hide().isHidden());
-        Assert.assertFalse("not hidden", new RealElement().isHidden());
+        assertTrue(new RealElement().hide().isHidden(), "hidden");
+        assertFalse(new RealElement().isHidden(), "not hidden");
     }
 
     /**
@@ -34,11 +37,10 @@ public class ElementTest {
         Tag tag3 = element.addTag(TagType.AUTHOR);
         Tag tag4 = element.addTag(TagType.RETURN);         // Ignored - only one RETURN element is allowed
 
-        Assert.assertEquals("SINCE", List.of(), element.tags(TagType.SINCE));
-        Assert.assertEquals("RETURN", List.of(tag1), element.tags(TagType.RETURN));
-        Assert.assertEquals("AUTHOR", List.of(tag2, tag3), element.tags(TagType.AUTHOR));
+        assertEquals(List.of(), element.tags(TagType.SINCE), "SINCE");
+        assertEquals(List.of(tag1), element.tags(TagType.RETURN), "RETURN");
+        assertEquals(List.of(tag2, tag3), element.tags(TagType.AUTHOR), "AUTHOR");
     }
-
 
     /**
      * Unit test {@link Element#addSummary(TextBlockGenerator)}, {@link Element#hasSummary()}
@@ -51,23 +53,22 @@ public class ElementTest {
             .withText("Hello")
             .withCode().withText("World");
 
-        Assert.assertFalse("no summary", element.hasSummary());
-        Assert.assertEquals("missing summary", Optional.empty(), element.summary());
+        assertFalse(element.hasSummary(), "no summary");
+        assertEquals(Optional.empty(), element.summary(), "missing summary");
 
         element.addSummary(textBlock);
 
         Optional<TagModel> summary = element.summary();
 
-        Assert.assertTrue("has summary", element.hasSummary());
-        Assert.assertNotEquals("summary text", Optional.empty(), summary);
+        assertTrue(element.hasSummary(), "has summary");
+        assertNotEquals(Optional.empty(), summary, "summary text");
 
         TagModel summaryTag = summary.get();
 
-        Assert.assertEquals("Unexpected tag type", TagType.SUMMARY, summaryTag.tagType());
-        Assert.assertEquals("Unexpected tag reference", Optional.empty(), summaryTag.reference());
-        Assert.assertNull("Unexpected tag target", summaryTag.target());
+        assertEquals(TagType.SUMMARY, summaryTag.tagType(), "Unexpected tag type");
+        assertEquals(Optional.empty(), summaryTag.reference(), "Unexpected tag reference");
+        assertNull(summaryTag.target(), "Unexpected tag target");
     }
-
 
     /**
      * Unit test {@link Element#deprecated}
@@ -76,13 +77,13 @@ public class ElementTest {
     public void test_deprecated() {
         Element<?> element = new RealElement();
 
-        Assert.assertEquals("nothing Deprecated", Optional.empty(), element.deprecated());
+        assertEquals(Optional.empty(), element.deprecated(), "nothing Deprecated");
 
         Tag tag1 = element.addTag(TagType.RETURN);
         Tag tag2 = element.addTag(TagType.AUTHOR);
         Tag tag3 = element.addTag(TagType.DEPRECATED);
         Tag tag4 = element.addTag(TagType.DEPRECATED);                  // Only one tag is allowed
 
-        Assert.assertEquals("Deprecated tag", Optional.of(tag3), element.deprecated());
+        assertEquals(Optional.of(tag3), element.deprecated(), "Deprecated tag");
     }
 }

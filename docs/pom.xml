@@ -5,13 +5,18 @@
     <parent>
         <groupId>com.github.tymefly.eel</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>docs</artifactId>
     <name>EEL Functional Documentation</name>
     <packaging>pom</packaging>
+
+    <properties>
+        <dir.docs>${basedir}/function-reference</dir.docs>
+    </properties>
+
 
     <dependencies>
         <dependency>
@@ -29,6 +34,32 @@
 
     <build>
         <plugins>
+            <plugin>                            <!-- Clean document directory and ZIP -->
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${dir.docs}</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>${basedir}</directory>
+                                    <includes>
+                                        <include>function-reference.zip</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -36,12 +67,10 @@
                 <executions>
                     <execution>
                         <id>EEL-Docs</id>
-                        <phase>prepare-package</phase>
-
+                        <phase>site</phase>
                         <goals>
                             <goal>aggregate</goal>
                         </goals>
-
                         <configuration>
                             <sourcepath>../lib/src/main/java</sourcepath>
                             <windowtitle>EEL Functions</windowtitle>
@@ -59,8 +88,31 @@
 
                             <additionalOptions>
                                 <additionalOption>-doc-overview</additionalOption>
-                                <additionalOption>${project.basedir}/src/overview.html</additionalOption>
+                                <additionalOption>${project.basedir}/src/eel-doc/overview.html</additionalOption>
                             </additionalOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <id>zip-docs</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <outputDirectory>${basedir}</outputDirectory>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>function-reference</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -72,17 +124,23 @@
                 <executions>
                     <execution>
                         <id>publish-docs</id>
-                        <phase>package</phase>
+                        <phase>site</phase>
 
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
 
                         <configuration>
-                            <outputDirectory>${basedir}/function-reference</outputDirectory>
+                            <outputDirectory>${dir.docs}</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${basedir}/target/reports/apidocs</directory>
+                                    <includes>
+                                        <include>**/*.*</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/*.bat</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
@@ -91,5 +149,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

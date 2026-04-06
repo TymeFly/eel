@@ -60,6 +60,7 @@ public class Evaluate {
         return state;
     }
 
+    // expression or scriptFile can be null, but calling method ensures at least one is defined
     @Nonnull
     private State run(@Nullable String expression, @Nullable File scriptFile, @Nonnull String message) {
         State state;
@@ -84,7 +85,7 @@ public class Evaluate {
             e.printStackTrace();
             state = State.EXPRESSION_FAILED;
         } catch (IOException e) {
-            System.err.println("Failed to read script file " + scriptFile.getPath());
+            System.err.println("Failed to read script file " + (scriptFile == null ? "<null>" : scriptFile.getPath()));
             e.printStackTrace();
             state = State.SCRIPT_NOT_FOUND;
         }

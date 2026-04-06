@@ -1,5 +1,5 @@
 /**
- * <i>Reserved for future functions that manipulate or generate logic values.</i>
+ * Functions that manipulate or generate logical values.
  */
 @GroupDescription("logic")
 package com.github.tymefly.eel.function.logic;

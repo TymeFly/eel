@@ -8,7 +8,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionGenerator;
 import com.github.tymefly.eel.doc.model.GroupGenerator;
 import com.github.tymefly.eel.doc.model.ModelManager;
@@ -20,8 +20,8 @@ import com.github.tymefly.eel.doc.utils.EelType;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.GroupDescription;
 import com.sun.source.doctree.DocCommentTree;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
  * Unit test {@link RootScanner}
  */
 public class RootScannerTest {
-    private Context context;
+    private EelDocContext context;
     private ModelManager modelManager;
     private GroupGenerator groupGenerator;
     private FunctionGenerator functionGenerator;
@@ -46,9 +46,9 @@ public class RootScannerTest {
     private PackageElement packageElement;
     private ExecutableElement methodElement;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        context = mock(Context.class);
+        context = mock(EelDocContext.class);
         modelManager = mock(ModelManager.class);
         groupGenerator = mock(GroupGenerator.class);
         functionGenerator = mock(FunctionGenerator.class);
@@ -61,7 +61,7 @@ public class RootScannerTest {
     }
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_run_packageElement_noDescription() {
@@ -76,7 +76,7 @@ public class RootScannerTest {
     }
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_run_packageElement_withDescription_NoSummary() {
@@ -128,7 +128,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_run_packageElement_withDescription_withSummary() {
@@ -180,7 +180,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_run_packageElement_duplicateDescription() {
@@ -217,7 +217,7 @@ public class RootScannerTest {
     }
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_classElement_withUndocumentedEelFunction() {
@@ -275,7 +275,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_functionElement_documented_withSummaryTag() {
@@ -337,7 +337,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_functionElement_documented_withoutSummaryTag() {
@@ -391,7 +391,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_functionElement_unannotated() {
@@ -408,7 +408,7 @@ public class RootScannerTest {
     }
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_functionElement_alreadyDefined() {
@@ -432,7 +432,7 @@ public class RootScannerTest {
 
 
     /**
-     * Unit test {@link RootScanner#run(Context, Element)}
+     * Unit test {@link RootScanner#run(EelDocContext, Element)}
      */
     @Test
     public void test_unsupportedElement() {

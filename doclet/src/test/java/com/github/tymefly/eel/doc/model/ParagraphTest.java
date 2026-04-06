@@ -5,9 +5,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Unit test for {@link Paragraph}
@@ -20,7 +23,7 @@ public class ParagraphTest {
     private Paragraph<?> paragraph;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         paragraph = new RealParagraph();
     }
@@ -30,7 +33,7 @@ public class ParagraphTest {
      */
     @Test
     public void test_instance() {
-        Assert.assertSame("Unexpected instance", paragraph, paragraph.instance());
+        assertSame(paragraph, paragraph.instance(), "Unexpected instance");
     }
 
     /**
@@ -42,7 +45,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "Hello World", TextStyle.NONE, null);
     }
 
@@ -59,7 +62,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 3, actual.size());
+        assertEquals(3, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "First", TextStyle.NONE, null);
         assertText(actual, 1, "Second", TextStyle.LITERAL, null);
         assertText(actual, 2, "Third", TextStyle.CODE, null);
@@ -75,7 +78,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "some code", TextStyle.CODE, null);
     }
 
@@ -89,7 +92,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "error message", TextStyle.ERROR, null);
     }
 
@@ -102,7 +105,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "link text", TextStyle.LINK, actual.get(0).target());
     }
 
@@ -115,7 +118,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 0, actual.size());
+        assertEquals(0, actual.size(), "unexpected number of elements");
     }
 
     /**
@@ -127,7 +130,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "link text", TextStyle.PLAIN_LINK, actual.get(0).target());
     }
 
@@ -141,7 +144,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "literal text", TextStyle.LITERAL, null);
     }
 
@@ -154,7 +157,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 1, actual.size());
+        assertEquals(1, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "<p>", TextStyle.RAW, null);
     }
 
@@ -169,7 +172,7 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertEquals("unexpected number of elements", 0, actual.size());
+        assertEquals(0, actual.size(), "unexpected number of elements");
     }
 
     /**
@@ -182,8 +185,8 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertNotSame("wrong block returned", paragraph, next);
-        Assert.assertEquals("paragraph has unexpected number of elements", 0, actual.size());
+        assertNotSame(paragraph, next, "wrong block returned");
+        assertEquals(0, actual.size(), "paragraph has unexpected number of elements");
     }
 
 
@@ -203,8 +206,8 @@ public class ParagraphTest {
 
         List<TextModel> actual = paragraph.text();
 
-        Assert.assertSame("Broken fluent interface", paragraph, next);
-        Assert.assertEquals("unexpected number of elements", 6, actual.size());
+        assertSame(paragraph, next, "Broken fluent interface");
+        assertEquals(6, actual.size(), "unexpected number of elements");
         assertText(actual, 0, "start with plain", TextStyle.NONE, null);
         assertText(actual, 1, " code", TextStyle.CODE, null);
         assertText(actual, 2, "<br>", TextStyle.RAW, null);
@@ -219,8 +222,8 @@ public class ParagraphTest {
                             @Nonnull String text,
                             @Nonnull TextStyle style,
                             @Nullable String target) {
-        Assert.assertEquals(index + ": unexpected text", text, actual.get(index).text());
-        Assert.assertEquals(index + ": unexpected style", style, actual.get(index).style());
-        Assert.assertEquals(index + ": unexpected target", target, actual.get(index).target());
+        assertEquals(text, actual.get(index).text(), index + ": unexpected text");
+        assertEquals(style, actual.get(index).style(), index + ": unexpected style");
+        assertEquals(target, actual.get(index).target(), index + ": unexpected target");
     }
 }

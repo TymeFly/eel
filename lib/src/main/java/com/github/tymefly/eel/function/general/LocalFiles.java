@@ -19,22 +19,23 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.Value;
 import com.github.tymefly.eel.annotation.VisibleForTesting;
-import com.github.tymefly.eel.function.system.FileSystem;
 import com.github.tymefly.eel.udf.DefaultArgument;
 import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
- * A collection of functions that examine files on the local file system.
+ * Functions that examine files on the local file system.
  * Directories and other file system objects are not managed.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class LocalFiles {
     /** Default value used by file searching functions to indicate an exception should be thrown if no file is found */
-    public static final String DEFAULT_THROW_EXCEPTION = "**THROW_IOEXCEPTION**";
+    public static final String DEFAULT_THROW_EXCEPTION = "**throw IOException**";
 
 
     private enum Direction {
@@ -55,10 +56,6 @@ public class LocalFiles {
     }
 
 
-    private static class LazyFileSystem {
-        private static final FileSystem INSTANCE = new FileSystem();
-    }
-
     private static class LazyLocalPaths {
         private static final LocalPaths INSTANCE = new LocalPaths();
     }
@@ -75,14 +72,17 @@ public class LocalFiles {
 
     /**
      * Returns {@literal true} only if the specified file exists.
+     * @param context   the current EEL context
      * @param path      the file to test for existence; may include a globbing pattern
-     * @return {@literal true} if the file exists, {@literal false} otherwise
+     * @return          {@literal true} if the file exists, {@literal false} otherwise
+     * @since 1.0
      */
     @EelFunction("exists")
-    public boolean exists(@Nonnull String path) {
-        File directory = new File(LazyLocalPaths.INSTANCE.dirName(path));
+    public boolean exists(@Nonnull EelContext context, @Nonnull String path) {
+        String parent = LazyLocalPaths.INSTANCE.dirName(path);
+        File directory = context.getFile(parent.isEmpty() ? "." : parent);
         String glob = LazyLocalPaths.INSTANCE.baseName(path, "");
-        long count = fileCount(directory, glob);
+        long count = fileCount(directory, glob, 1, true);
         boolean exists = (count != 0);
 
         return exists;
@@ -91,21 +91,28 @@ public class LocalFiles {
     /**
      * Returns the number of files in the specified {@code directory} that match the {@code glob} pattern.
      * Subdirectories and their contents are not counted.
-     * @param directory the path to a directory on the local file system
-     * @param glob      the glob pattern used to filter files
-     * @return the number of files in {@code directory} that match the specified {@code glob} pattern
+     * @param directory  the path to a directory on the local file system; must not be empty
+     * @param glob       the glob pattern used to filter files
+     * @return           the number of files in {@code directory} that match the specified {@code glob} pattern
      * @since 1.1
      */
     @EelFunction("fileCount")
     public long fileCount(@Nonnull File directory, @DefaultArgument("*") @Nonnull String glob) {
+        return fileCount(directory, glob, Long.MAX_VALUE, false);
+    }
+
+
+    private long fileCount(@Nonnull File directory, @Nonnull String glob, long maxCount, boolean allObjects) {
         PathMatcher matcher = getPathMatcher(directory, glob);
         long count;
 
         try (
             Stream<Path> list = listDirectory(directory)
         ) {
-            count = list.filter(p -> p.toFile().isFile())
+            count = list
+                .filter(p -> allObjects || p.toFile().isFile())
                 .filter(matcher::matches)
+                .limit(maxCount)
                 .count();
         }
 
@@ -115,9 +122,10 @@ public class LocalFiles {
 
     /**
      * Returns the length of the specified {@code file} in bytes.
-     * @param file          the file on the local file system
+     * @param file          the file on the local file system; must not be empty
      * @param defaultValue  the value to return if the file does not exist
-     * @return the length of the file in bytes, or {@code defaultValue} if the file does not exist
+     * @return              the length of the file in bytes, or {@code defaultValue} if the file does not exist
+     * @since 1.0
      */
     @EelFunction("fileSize")
     public long fileSize(@Nonnull File file, @DefaultArgument("-1") @Nonnull Value defaultValue) {
@@ -129,9 +137,11 @@ public class LocalFiles {
 
     /**
      * Returns the 'creation time' of the specified {@code file}.
-     * @param file         the file on the local file system
-     * @param defaultValue the value to return if the file does not exist
-     * @return the creation time of the file in the local time zone, or {@code defaultValue} if the file does not exist
+     * @param file          the file on the local file system; must not be empty
+     * @param defaultValue  the value to return if the file does not exist
+     * @return              the creation time of the file in the local time zone, or {@code defaultValue}
+     *                          if the file does not exist
+     * @since 1.0
      */
     @EelFunction("createAt")
     @Nonnull
@@ -142,10 +152,11 @@ public class LocalFiles {
 
     /**
      * Returns the 'last access time' of the specified {@code file}.
-     * @param file         the file on the local file system
-     * @param defaultValue the value to return if the file does not exist
-     * @return the last access time of the file, in the local time zone,
-     *          or {@code defaultValue} if the file does not exist
+     * @param file          the file on the local file system; must not be empty
+     * @param defaultValue  the value to return if the file does not exist
+     * @return              the last access time of the file in the local time zone, or
+     *                      {@code defaultValue} if the file does not exist
+     * @since 1.0
      */
     @EelFunction("accessedAt")
     @Nonnull
@@ -156,10 +167,11 @@ public class LocalFiles {
 
     /**
      * Returns the 'last modified time' of the specified {@code file}.
-     * @param file         the file on the local file system
-     * @param defaultValue the value to return if the file does not exist
-     * @return the last modified time of the file, in the local time zone,
-     *          or {@code defaultValue} if the file does not exist
+     * @param file          the file on the local file system; must not be empty
+     * @param defaultValue  the value to return if the file does not exist
+     * @return              the last modified time of the file in the local time zone, or
+     *                      {@code defaultValue} if the file does not exist
+     * @since 1.0
      */
     @EelFunction("modifiedAt")
     @Nonnull
@@ -172,11 +184,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was created first.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
+     * @param directory    the directory on the local file system; must not be empty
      * @param glob         the glob pattern used to filter files
      * @param index        the 0-based index of the file to retrieve
      * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
-     * @return the full path to the matching file in {@code directory}, or {@code defaultValue} if no such file exists
+     * @return             the full path to the matching file in {@code directory}, or
+     *                     {@code defaultValue} if no such file exists
      * @see #lastCreated(File, String, int, Value) 
      * @since 1.1
      */
@@ -195,13 +208,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was created most recently.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
-     * @param glob         the glob pattern used to filter files.
-     * @param index        the 0-based index of the file to retrieve.
-     * @param defaultValue the value to return if no files in {@code directory} matches the specified {@code glob}
-     *                      pattern
-     * @return the full path to the matching file in {@code directory}, or the value provided by {@code defaultValue}
-     * if no such file exists
+     * @param directory    the directory on the local file system; must not be empty
+     * @param glob         the glob pattern used to filter files
+     * @param index        the 0-based index of the file to retrieve
+     * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
+     * @return             the full path to the matching file in {@code directory}, or the value provided by
+     *                     {@code defaultValue} if no such file exists
      * @see #firstCreated(File, String, int, Value)
      * @since 1.1
      */
@@ -221,12 +233,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was most recently accessed.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
+     * @param directory    the directory on the local file system; must not be empty
      * @param glob         the glob pattern used to filter files
      * @param index        the 0-based index of the file to retrieve
      * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
-     * @return the full path to the matching file in {@code directory}, or the value provided by {@code defaultValue}
-     * if no such file exists
+     * @return             the full path to the matching file in {@code directory}, or the value provided by
+     *                     {@code defaultValue} if no such file exists
      * @see #lastAccessed(File, String, int, Value) 
      * @since 1.1
      */
@@ -245,12 +257,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was least recently accessed.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
+     * @param directory    the directory on the local file system; must not be empty
      * @param glob         the glob pattern used to filter files
      * @param index        the 0-based index of the file to retrieve
      * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
-     * @return the full path to the matching file in {@code directory}, or the value provided by {@code defaultValue}
-     * if no such file exists
+     * @return             the full path to the matching file in {@code directory}, or the value provided by
+     *                     {@code defaultValue} if no such file exists
      * @see #firstAccessed(File, String, int, Value) 
      * @since 1.1
      */
@@ -270,12 +282,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was modified least recently.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
+     * @param directory    the directory on the local file system; must not be empty
      * @param glob         the glob pattern used to filter files
      * @param index        the 0-based index of the file to retrieve
      * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
-     * @return the full path to the matching file in {@code directory}, or the value provided by {@code defaultValue}
-     * if no such file exists
+     * @return             the full path to the matching file in {@code directory}, or the value provided by
+     *                     {@code defaultValue} if no such file exists
      * @see #lastModified(File, String, int, Value) 
      * @since 1.1
      */
@@ -295,12 +307,12 @@ public class LocalFiles {
     /**
      * Returns the full path to the file in the specified {@code directory} that was modified most recently.
      * Files in subdirectories are not considered.
-     * @param directory    the directory on the local file system
+     * @param directory    the directory on the local file system; must not be empty
      * @param glob         the glob pattern used to filter files
      * @param index        the 0-based index of the file to retrieve
      * @param defaultValue the value to return if no files in {@code directory} match the specified {@code glob} pattern
-     * @return the full path to the matching file in {@code directory}, or the value provided by {@code defaultValue}
-     * if no such file exists
+     * @return             the full path to the matching file in {@code directory}, or the value provided by
+     *                     {@code defaultValue} if no such file exists
      * @see #firstModified(File, String, int, Value) 
      * @since 1.1
      */
@@ -333,20 +345,24 @@ public class LocalFiles {
 
     @Nonnull
     private PathMatcher getPathMatcher(@Nonnull File directory, @Nonnull String glob) {
-        String path = null;
+        String path;
+
+        if (glob.isEmpty()) {
+            glob = "*";
+        }
 
         try {
-            path = directory.getCanonicalPath();
+            directory = directory.getCanonicalFile();
+            path = directory.getCanonicalPath().replace('\\', '/');
         } catch (IOException e) {
             throwAsUnchecked(e);
+            path = null;                                                // unreachable
         }
 
-        if ("\\".equals(LazyFileSystem.INSTANCE.fileSeparator())) {             // Flip slashes in Windows file paths
-            path = path.replace('\\', '/');
-        }
-
+        boolean isRoot = (directory.getParentFile() == null);
+        String separator = isRoot ? "" : "/";                           // Avoid double slash at root
         PathMatcher matcher = FileSystems.getDefault()
-            .getPathMatcher("glob:" + path + "/" + glob);
+            .getPathMatcher("glob:" + path + separator + glob);
 
         return matcher;
     }
@@ -482,7 +498,7 @@ public class LocalFiles {
      * @param <E>       Type of the checked exception
      * @throws E        a checked exception
      */
-    private static <E extends Throwable> void throwAsUnchecked(@Nonnull Exception checked) throws E {
+    private static <E extends Throwable> void throwAsUnchecked(@Nonnull IOException checked) throws E {
         throw (E) checked;
     }
 }

@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.EelContext;
-import com.github.tymefly.eel.builder.EelContextSettingBuilder;
+import com.github.tymefly.eel.builder.EelContextBuilder;
 import com.github.tymefly.eel.integration.EelProperties;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -57,24 +57,24 @@ class Config {
 
     // EEL Context options
     @Option(name = "-e", aliases = {"--env", "--environment"},
-        usage = "Add all the environment variable to the symbols table")
+        usage = "Add all the environment variable to the SymbolsTable")
     private boolean environment;
 
     @Option(name = "-p", aliases = {"--props", "--properties"},
-        usage = "Add all the Java properties to the symbols table")
+        usage = "Add all the Java properties to the SymbolsTable")
     private boolean properties;
 
     private final Map<String, String> definitions = new HashMap<>();
 
     @Option(name = "--default",
         metaVar = "value",
-        usage = "Set a default value that will be used if the symbols table does not contain a required key")
+        usage = "Set a default value that will be used if the SymbolsTable does not contain a required key")
     private String defaultValue;
 
     @Option(name = "--timeout",
         metaVar = "number",
         usage = "timeout, in seconds, of a EEL expression or 0 to disable timeouts")
-    private long timeout = EelContextSettingBuilder.DEFAULT_TIMEOUT.toSeconds();
+    private long timeout = EelContextBuilder.DEFAULT_TIMEOUT.toSeconds();
 
     @Option(name = "--precision",
         metaVar = "number",
@@ -162,7 +162,7 @@ class Config {
 
     @Option(name = "--defs", aliases = {"--definitions"},
         metaVar = "propertiesFile",
-        usage = "Add all the definitions in a properties file to the symbols table")
+        usage = "Add all the definitions in a properties file to the SymbolsTable")
     private void loadDefinitions(@Nonnull File propertiesFile) throws CmdLineException {
         Properties extra;
 
@@ -197,7 +197,7 @@ class Config {
     @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD", justification = "Called by args4J via reflection")
     @Option(name = "-D", aliases = {"--define"},
         metaVar = "key=value",
-        usage = "Add a definition to the symbols table")
+        usage = "Add a definition to the SymbolsTable")
     private void setDefinition(@Nonnull String input) throws CmdLineException {
         String[] parts = input.split("=", 2);
         String key = parts[0];
@@ -209,7 +209,7 @@ class Config {
         String old = definitions.put(key, value);
 
         if (old != null) {
-            throw new CmdLineException(parser, "'" + key + "' is already in the symbols table");
+            throw new CmdLineException(parser, "'" + key + "' is already in the SymbolsTable");
         }
     }
 
@@ -320,8 +320,8 @@ class Config {
     }
 
     /**
-     * Returns an immutable map of all Symbols table entries defined on the command line
-     * @return an immutable map of all Symbols table entries defined on the command line
+     * Returns an immutable map of all SymbolsTable entries defined on the command line
+     * @return an immutable map of all SymbolsTable entries defined on the command line
      */
     @Nonnull
     Map<String, String> definitions() {
@@ -330,8 +330,8 @@ class Config {
 
 
     /**
-     * Returns the default value returned by the symbols table if a required key is not present
-     * @return the default value returned by the symbols table if a required key is not present
+     * Returns the default value returned by the SymbolsTable if a required key is not present
+     * @return the default value returned by the SymbolsTable if a required key is not present
      */
     @Nullable
     String defaultValue() {

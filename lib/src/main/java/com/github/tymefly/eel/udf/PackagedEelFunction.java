@@ -8,10 +8,9 @@ import java.lang.annotation.Target;
 import com.github.tymefly.eel.builder.EelBuilder;
 
 /**
- * This annotation is used EEL Functions that are located by a call to
- * {@link EelBuilder#withUdfPackage(Package)}.
- * Individual EEL Functions that do not have this annotation can still be made available by calling
- * {@link EelBuilder#withUdfClass(Class)}
+ * This annotation is used by {@link EelBuilder#withUdfPackage(Package)} to locate classes of EEL functions.
+ * EEL functions in classes without this annotation can still be made available by calling
+ * {@link EelBuilder#withUdfClass(Class)}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

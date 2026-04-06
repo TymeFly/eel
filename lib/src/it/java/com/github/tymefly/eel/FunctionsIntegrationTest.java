@@ -11,29 +11,36 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelFailException;
 import func.Delay;
 import func.Echo;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Functional testing of each of the EEL functions
+ * Functional testing each EEL function
  */
+@ExtendWith(SystemStubsExtension.class)
 public class FunctionsIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
     private static final double TEST_DELTA = 0.00000001;
 
     private EelContext context;
     
     
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withUdfPackage(Delay.class.getPackage())
@@ -56,44 +63,53 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_text() {
-        Assert.assertEquals("upper", "HELLO", Eel.compile(context, "$upper('hello')").evaluate().asText());
-        Assert.assertEquals("lower", "hello", Eel.compile(context, "$lower('HELLO')").evaluate().asText());
-        Assert.assertEquals("title", "Hello World Again!! 01abcd~", Eel.compile(context, "$title('hello world AGAIN!! 01abCD~')").evaluate().asText());
-        Assert.assertEquals("len", "7", Eel.compile(context, "$len('  xxxx ')").evaluate().asText());
-        Assert.assertTrue("isEmpty - empty", Eel.compile(context, "$isEmpty('')").evaluate().asLogic());
-        Assert.assertFalse("isEmpty - white", Eel.compile(context, "$isEmpty(' ')").evaluate().asLogic());
-        Assert.assertFalse("isEmpty - text", Eel.compile(context, "$isEmpty('abc')").evaluate().asLogic());
-        Assert.assertTrue("isBlank - empty", Eel.compile(context, "$isBlank('')").evaluate().asLogic());
-        Assert.assertTrue("isBlank - white", Eel.compile(context, "$isBlank(' ')").evaluate().asLogic());
-        Assert.assertFalse("isBlank - text", Eel.compile(context, "$isBlank('abc')").evaluate().asLogic());
-        Assert.assertEquals("trim", "xxxx", Eel.compile(context, "$trim('  xxxx ')").evaluate().asText());
-        Assert.assertEquals("left", "abc", Eel.compile(context, "$left('abcdef', 3)").evaluate().asText());
-        Assert.assertEquals("right", "def", Eel.compile(context, "$right('abcdef', 3)").evaluate().asText());
-        Assert.assertEquals("mid", "bc", Eel.compile(context, "$mid('abcdef', 1, 2)").evaluate().asText());
-        Assert.assertEquals("mid - default length", "cdef", Eel.compile(context, "$mid('abcdef', 2 )").evaluate().asText());
-        Assert.assertEquals("beforeFirst", "ab", Eel.compile(context, "$beforeFirst('ab.cd.ef', '.')").evaluate().asText());
-        Assert.assertEquals("afterFirst", "cd.ef", Eel.compile(context, "$afterFirst('ab.cd.ef', '.')").evaluate().asText());
-        Assert.assertEquals("beforeLast", "ab.cd", Eel.compile(context, "$beforeLast('ab.cd.ef', '.')").evaluate().asText());
-        Assert.assertEquals("afterLast", "ef", Eel.compile(context, "$afterLast('ab.cd.ef', '.')").evaluate().asText());
-        Assert.assertEquals("before", "ab.cd", Eel.compile(context, "$before('ab.cd.ef.gh', '.', 2)").evaluate().asText());
-        Assert.assertEquals("after", "ef.gh", Eel.compile(context, "$after('ab.cd.ef.gh', '.', 2)").evaluate().asText());
-        Assert.assertEquals("contains", 3, Eel.compile(context, "$contains('ab.cd.ef.gh', '.')").evaluate().asInt());
-        Assert.assertTrue("match", Eel.compile(context, "$matches(uuid(), '[0-9a-f-]{36}')").evaluate().asLogic());
-        Assert.assertEquals("extract",
-            "HelloWorld",
-            Eel.compile(context, "$extract('?? ~Hello~  @World@ ??', '.*~([^~]*)~.*@([^@]*)@.*')").evaluate().asText());
-        Assert.assertEquals("replace", "he!!o", Eel.compile(context, "$replace('hello', 'l', '!')").evaluate().asText());
-        Assert.assertEquals("replaceAll", "?ello", Eel.compile(context, "$replaceEx('hello', '^.', '?')").evaluate().asText());
-        Assert.assertEquals("indexOf", 2, Eel.compile(context, "$indexOf('hello', 'l')").evaluate().asInt());
-        Assert.assertEquals("lastIndexOf", 3, Eel.compile(context, "$lastIndexOf('hello', 'l')").evaluate().asInt());
-        Assert.assertEquals("printf", "format:    Hello 12", Eel.compile(context, "$printf('format: %8.8s %d', 'Hello', 12)").evaluate().asText());
-        Assert.assertEquals("padLeft", "      myText", Eel.compile(context, "$padLeft('myText', 12)").evaluate().asText());
-        Assert.assertEquals("padRight", "myText@@@@@@", Eel.compile(context, "$padRight('myText', 12, '@_')").evaluate().asText());
+        assertEquals("HELLO", Eel.compile(context, "$upper('hello')").evaluate().asText(), "upper");
+        assertEquals("hello", Eel.compile(context, "$lower('HELLO')").evaluate().asText(), "lower");
+        assertEquals("Hello World Again!! 01abcd~", Eel.compile(context, "$title('hello world AGAIN!! 01abCD~')").evaluate().asText(), "title");
+        assertEquals("7", Eel.compile(context, "$len('  xxxx ')").evaluate().asText(), "len");
+        assertTrue(Eel.compile(context, "$isEmpty('')").evaluate().asLogic(), "isEmpty - empty");
+        assertFalse(Eel.compile(context, "$isEmpty(' ')").evaluate().asLogic(), "isEmpty - white");
+        assertFalse(Eel.compile(context, "$isEmpty('abc')").evaluate().asLogic(), "isEmpty - text");
+        assertTrue(Eel.compile(context, "$isBlank('')").evaluate().asLogic(), "isBlank - empty");
+        assertTrue(Eel.compile(context, "$isBlank(' ')").evaluate().asLogic(), "isBlank - white");
+        assertFalse(Eel.compile(context, "$isBlank('abc')").evaluate().asLogic(), "isBlank - text");
+        assertEquals("xxxx", Eel.compile(context, "$trim('  xxxx ')").evaluate().asText(), "trim");
+        assertEquals("abc", Eel.compile(context, "$left('abcdef', 3)").evaluate().asText(), "left");
+        assertEquals("def", Eel.compile(context, "$right('abcdef', 3)").evaluate().asText(), "right");
+        assertEquals("bc", Eel.compile(context, "$mid('abcdef', 1, 2)").evaluate().asText(), "mid");
+        assertEquals("cdef", Eel.compile(context, "$mid('abcdef', 2 )").evaluate().asText(), "mid - default length");
+        assertEquals("ab", Eel.compile(context, "$beforeFirst('ab.cd.ef', '.')").evaluate().asText(), "beforeFirst");
+        assertEquals("cd.ef", Eel.compile(context, "$afterFirst('ab.cd.ef', '.')").evaluate().asText(), "afterFirst");
+        assertEquals("ab.cd", Eel.compile(context, "$beforeLast('ab.cd.ef', '.')").evaluate().asText(), "beforeLast");
+        assertEquals("ef", Eel.compile(context, "$afterLast('ab.cd.ef', '.')").evaluate().asText(), "afterLast");
+        assertEquals("ab.cd", Eel.compile(context, "$before('ab.cd.ef.gh', '.', 2)").evaluate().asText(), "before");
+        assertEquals("ef.gh", Eel.compile(context, "$after('ab.cd.ef.gh', '.', 2)").evaluate().asText(), "after");
+        assertEquals(3, Eel.compile(context, "$contains('ab.cd.ef.gh', '.')").evaluate().asInt(), "contains");
+        assertTrue(Eel.compile(context, "$matches(uuid(), '[0-9a-f-]{36}')").evaluate().asLogic(), "match");
+        assertEquals("HelloWorld",
+            Eel.compile(context, "$extract('?? ~Hello~  @World@ ??', '.*~([^~]*)~.*@([^@]*)@.*')").evaluate().asText(),
+            "extract");
+        assertEquals("he!!o", Eel.compile(context, "$replace('hello', 'l', '!')").evaluate().asText(), "replace");
+        assertEquals("?ello", Eel.compile(context, "$replaceEx('hello', '^.', '?')").evaluate().asText(), "replaceAll");
+        assertEquals(2, Eel.compile(context, "$indexOf('hello', 'l')").evaluate().asInt(), "indexOf");
+        assertEquals(3, Eel.compile(context, "$lastIndexOf('hello', 'l')").evaluate().asInt(), "lastIndexOf");
+        assertEquals("format:    Hello 12", Eel.compile(context, "$printf('format: %8.8s %d', 'Hello', 12)").evaluate().asText(), "printf");
+        assertEquals("      myText", Eel.compile(context, "$padLeft('myText', 12)").evaluate().asText(), "padLeft");
+        assertEquals("myText@@@@@@", Eel.compile(context, "$padRight('myText', 12, '@_')").evaluate().asText(), "padRight");
 
-        Assert.assertEquals("char", "a", Eel.compile(context, "$char(97)").evaluate().asText());
-        Assert.assertEquals("codepoint", 126, Eel.compile(context, "$codepoint('~')").evaluate().asInt());
+        assertEquals("a", Eel.compile(context, "$char(97)").evaluate().asText(), "char");
+        assertEquals(126, Eel.compile(context, "$codepoint('~')").evaluate().asInt(), "codepoint");
 
-        Assert.assertEquals("text.random", 10, Eel.compile(context, "$text.random()").evaluate().asText().length());
+        assertEquals(10, Eel.compile(context, "$text.random()").evaluate().asText().length(), "text.random");
+        assertEquals(3, Eel.compile(context, "$text.index('x', 'a', 'b', 'x', 'y', 'z')").evaluate().asInt(), "text.index");
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_logic() {
+        assertEquals(4, Eel.compile(context, "$logic.index( false, ( 1 < 0 ), -1, 1 )").evaluate().asInt(), "logic.index");
     }
 
     /**
@@ -101,9 +117,9 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_stats() {
-        Assert.assertEquals("max", new BigDecimal("5"), Eel.compile(context, "$max(-3, 1, 2, 5)").evaluate().asNumber());
-        Assert.assertEquals("min", new BigDecimal("-3"), Eel.compile(context, "$min(-3, 1, 2, 5)").evaluate().asNumber());
-        Assert.assertEquals("avg", new BigDecimal("1.25"), Eel.compile(context, "$avg(-3, 1, 2, 5)").evaluate().asNumber());
+        assertEquals(new BigDecimal("5"), Eel.compile(context, "$max(-3, 1, 2, 5)").evaluate().asNumber(), "max");
+        assertEquals(new BigDecimal("-3"), Eel.compile(context, "$min(-3, 1, 2, 5)").evaluate().asNumber(), "min");
+        assertEquals(new BigDecimal("1.25"), Eel.compile(context, "$avg(-3, 1, 2, 5)").evaluate().asNumber(), "avg");
     }
 
     /**
@@ -112,36 +128,36 @@ public class FunctionsIntegrationTest {
     @Test
     public void test_maths() {
         // Sign tests and manipulation
-        Assert.assertEquals("Abs", new BigDecimal("2.1"), Eel.compile(context, "$abs(-2.1)").evaluate().asNumber());
-        Assert.assertEquals("Sgn", new BigDecimal("-1"), Eel.compile(context, "$sgn(-2.1)").evaluate().asNumber());
+        assertEquals(new BigDecimal("2.1"), Eel.compile(context, "$abs(-2.1)").evaluate().asNumber(), "Abs");
+        assertEquals(new BigDecimal("-1"), Eel.compile(context, "$sgn(-2.1)").evaluate().asNumber(), "Sgn");
 
         // Conversion functions
-        Assert.assertEquals("toDegrees", 180, Eel.compile(context, "$toDegrees(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("toRadians", 3.14159265, Eel.compile(context, "$toRadians(180)").evaluate().asNumber().doubleValue(), TEST_DELTA);
+        assertEquals(180, Eel.compile(context, "$toDegrees(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA, "toDegrees");
+        assertEquals(3.14159265, Eel.compile(context, "$toRadians(180)").evaluate().asNumber().doubleValue(), TEST_DELTA, "toRadians");
 
         // Logarithms and exponential functions
-        Assert.assertEquals("Log", 2.0, Eel.compile(context, "$log(100)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Ln", 4.605170185988091, Eel.compile(context, "$ln(100)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Exp", 148.4131591025766, Eel.compile(context, "$exp(5)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Root", 7.0, Eel.compile(context, "$root(343, 3)").evaluate().asNumber().doubleValue(), TEST_DELTA);
+        assertEquals(2.0, Eel.compile(context, "$log(100)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Log");
+        assertEquals(4.605170185988091, Eel.compile(context, "$ln(100)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Ln");
+        assertEquals(148.4131591025766, Eel.compile(context, "$exp(5)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Exp");
+        assertEquals(7.0, Eel.compile(context, "$root(343, 3)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Root");
 
         // Trigonometry
-        Assert.assertEquals("Sin", 0, Eel.compile(context, "$sin(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Cos", -1.0, Eel.compile(context, "$cos(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Tan", 0, Eel.compile(context, "$tan(2 * number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Asin", 0, Eel.compile(context, "$asin(0)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Asin", 0, Eel.compile(context, "$asin(0)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Acos", 1.570796326794897, Eel.compile(context, "$acos(0)").evaluate().asNumber().doubleValue(), TEST_DELTA);
-        Assert.assertEquals("Atan", 0.78539816, Eel.compile(context, "$atan(1)").evaluate().asNumber().doubleValue(), TEST_DELTA);
+        assertEquals(0, Eel.compile(context, "$sin(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA, "Sin");
+        assertEquals(-1.0, Eel.compile(context, "$cos(number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA, "Cos");
+        assertEquals(0, Eel.compile(context, "$tan(2 * number.pi())").evaluate().asNumber().doubleValue(), TEST_DELTA, "Tan");
+        assertEquals(0, Eel.compile(context, "$asin(0)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Asin");
+        assertEquals(0, Eel.compile(context, "$asin(0)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Asin");
+        assertEquals(1.570796326794897, Eel.compile(context, "$acos(0)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Acos");
+        assertEquals(0.78539816, Eel.compile(context, "$atan(1)").evaluate().asNumber().doubleValue(), TEST_DELTA, "Atan");
 
         // Rounding functions
-        Assert.assertEquals("number.truncate", new BigDecimal("6"), Eel.compile(context, "$number.truncate(6.5)").evaluate().asNumber());
-        Assert.assertEquals("number.round", new BigDecimal("6.5"), Eel.compile(context, "$number.round(6.45, 1)").evaluate().asNumber());
-        Assert.assertEquals("number.ceil", new BigDecimal("7"), Eel.compile(context, "$number.ceil(6.45)").evaluate().asNumber());
-        Assert.assertEquals("number.floor", new BigDecimal("6"), Eel.compile(context, "$number.floor(6.5)").evaluate().asNumber());
+        assertEquals(new BigDecimal("6"), Eel.compile(context, "$number.truncate(6.5)").evaluate().asNumber(), "number.truncate");
+        assertEquals(new BigDecimal("6.5"), Eel.compile(context, "$number.round(6.45, 1)").evaluate().asNumber(), "number.round");
+        assertEquals(new BigDecimal("7"), Eel.compile(context, "$number.ceil(6.45)").evaluate().asNumber(), "number.ceil");
+        assertEquals(new BigDecimal("6"), Eel.compile(context, "$number.floor(6.5)").evaluate().asNumber(), "number.floor");
 
         // Other maths functions
-        Assert.assertEquals("Factorial", 720, Eel.compile(context, "$factorial(6)").evaluate().asInt());
+        assertEquals(720, Eel.compile(context, "$factorial(6)").evaluate().asInt(), "Factorial");
     }
 
 
@@ -150,21 +166,36 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_date_newDate() {
-        Assert.assertTrue("utc",
-            Eel.compile(context, "$date.utc('-200year')")
+        assertEquals("2001-02-03T04:05:06Z",
+            Eel.compile(context, "$date.parse('yyyy-MM-dd HH:mm:ss z', '2001-02-03 04:05:06 GMT')")
+                .evaluate()
+                .asText(),
+            "date.parse"
+        );
+        assertTrue(Eel.compile(context, "$date.utc()")
                 .evaluate()
                 .asText()
-                .matches("18\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?Z"));
-        Assert.assertTrue("local",
-            Eel.compile(context, "$date.local('+1h')")
+                .matches("20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?Z"),
+            "date.utc"
+        );
+        assertTrue(Eel.compile(context, "$date.utc('-200year')")
                 .evaluate()
                 .asText()
-                .matches("20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.+"));
-        Assert.assertTrue("at",
-            Eel.compile(context, "$date.at('-5')")
+                .matches("18\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?Z"),
+            "date.utc with offset"
+        );
+        assertTrue(Eel.compile(context, "$date.local('+1h')")
                 .evaluate()
                 .asText()
-                .matches("20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?-05"));
+                .matches("20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.+"),
+            "date.local"
+        );
+        assertTrue(Eel.compile(context, "$date.at('-5')")
+                .evaluate()
+                .asText()
+                .matches("20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,9})?-05"),
+            "date.at"
+        );
     }
 
     /**
@@ -172,46 +203,54 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_date_manipulations() {
-        Assert.assertEquals("offset - snap",
-            "2007-12-03T10:00:00Z",
+        assertEquals("2007-12-03T10:00:00Z",
             Eel.compile(context, "$date.plus( 1196676933, '@h')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("offset - plus",
-            "2007-12-03T07:15:42Z",
+                .asText(),
+            "offset - snap"
+        );
+        assertEquals("2007-12-03T07:15:42Z",
             Eel.compile(context, "$date.plus( 1196676933, '-3h', '+9s')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("offset - minus",
-            "2007-12-03T13:15:23.995Z",
+                .asText(),
+            "offset - plus"
+        );
+        assertEquals("2007-12-03T13:15:23.995Z",
             Eel.compile(context, "$date.minus( 1196676933, '-3h', '+9s', '5i')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("set",
-            "2007-12-03T03:05:01Z",
+                .asText(),
+            "offset - minus"
+        );
+        assertEquals("2007-12-03T03:05:01Z",
             Eel.compile(context, "$date.set( 1196676933, '3h', '5minute', '1s')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("setZone",
-            "2007-12-03T10:15:33-06",
+                .asText(),
+            "set"
+        );
+        assertEquals("2007-12-03T10:15:33-06",
             Eel.compile(context, "$date.setZone( 1196676933, '-6')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("moveZone",
-            "2007-12-03T04:15:33-06",
+                .asText(),
+            "setZone"
+        );
+        assertEquals("2007-12-03T04:15:33-06",
             Eel.compile(context, "$date.moveZone( 1196676933, '-6')")
                 .evaluate()
-                .asText());
-        Assert.assertEquals("duration",
-            14,
+                .asText(),
+            "moveZone"
+        );
+        assertEquals(14,
             Eel.compile(context, "$duration( 1196676933, 1235988933, 'months')")
                 .evaluate()
-                .asLong());
-        Assert.assertEquals("set and snap weeks",
-            "2009-01-11T00:00:00Z",
+                .asLong(),
+            "duration"
+        );
+        assertEquals("2009-01-11T00:00:00Z",
             Eel.compile(context, "$date.set( '2009-03-05T10:11:12Z', '2w', '@w' )")
                 .evaluate()
-                .asText());
+                .asText(),
+            "set and snap weeks"
+        );
     }
 
     /**
@@ -222,29 +261,28 @@ public class FunctionsIntegrationTest {
         String date = Eel.compile(context, "$format.date( 'd/M/yyyy HH:mm', 1196676933, '4d', '-7minutes' )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.date",
-            "7/12/2007 10:08",
-            date);
+        assertEquals("7/12/2007 10:08", date, "format.date"
+        );
 
         String start = Eel.compile(context, "$format.start( 'd/M/yyyy HH:mm', 'UTC', '+1h' )")
             .evaluate()
             .asText();
-        Assert.assertTrue("format.start: " + start, start.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"));
+        assertTrue(start.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"), "format.start: " + start);
 
         String utc = Eel.compile(context, "$format.utc( 'd/M/yyyy HH:mm', '+2w' )")
             .evaluate()
             .asText();
-        Assert.assertTrue("format.utc: " + utc, utc.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"));
+        assertTrue(utc.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"), "format.utc: " + utc);
 
         String local = Eel.compile(context, "$format.local( 'd/M/yyyy HH:mm', '-3h' )")
             .evaluate()
             .asText();
-        Assert.assertTrue("format.local: " + local, local.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"));
+        assertTrue(local.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"), "format.local: " + local);
 
         String at = Eel.compile(context, "$format.at( 'Europe/Paris', 'd/M/yyyy HH:mm', '+12h', '3m' )")
             .evaluate()
             .asText();
-        Assert.assertTrue("format.at: " + at, at.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"));
+        assertTrue(at.matches("\\d+/\\d+/\\d{4} \\d+:\\d+"), "format.at: " + at);
     }
 
     /**
@@ -255,22 +293,22 @@ public class FunctionsIntegrationTest {
         String binary = Eel.compile(context, "$format.binary( 0xa55a )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.binary", "1010010101011010", binary);
+        assertEquals("1010010101011010", binary, "format.binary");
 
         String octal = Eel.compile(context, "$format.octal( 1196676933 )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.octal", "10724753505", octal);
+        assertEquals("10724753505", octal, "format.octal");
 
         String hex = Eel.compile(context, "$format.hex( 1196676933 )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.hex", "4753d745", hex);
+        assertEquals("4753d745", hex, "format.hex");
 
         String radixThree = Eel.compile(context, "$format.number( 1196676933, 3 )")
             .evaluate()
             .asText();
-        Assert.assertEquals("format.number", "10002101202111010220", radixThree);
+        assertEquals("10002101202111010220", radixThree, "format.number");
     }
 
     /**
@@ -289,8 +327,8 @@ public class FunctionsIntegrationTest {
             .evaluate(symbols)
             .asLong();
 
-        Assert.assertEquals("moveZone() should NOT change time from UTC", utc, moveZone);
-        Assert.assertEquals("setZone() SHOULD change time from UTC", (utc - 18000), setZone);
+        assertEquals(utc, moveZone, "moveZone() should NOT change time from UTC");
+        assertEquals((utc - 18000), setZone, "setZone() SHOULD change time from UTC");
     }
 
     /**
@@ -298,13 +336,13 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_logging() {
-        Assert.assertEquals("trace", "3", Eel.compile(context, "$log.trace( 1 + 2 )").evaluate().asText());
-        Assert.assertEquals("debug", "true", Eel.compile(context, "$log.trace( true or false )").evaluate().asText());
-        Assert.assertEquals("info", "value", Eel.compile(context, "$log.info( 'message {}', 'value' )").evaluate().asText());
-        Assert.assertEquals("warn", "false", Eel.compile(context, "$log.warn( 'message {}', ( 2=3 ) )").evaluate().asText());
-        Assert.assertEquals("error", "ab", Eel.compile(context, "$log.error( 'message {} {}', 'test', 'a'~>'b' )").evaluate().asText());
-        Assert.assertEquals("error", "ab", Eel.compile(context, "$log.error( 'message {} {}', 'test', 'a'~>'b' )").evaluate().asText());
-        Assert.assertEquals("pass through", "Hello World!", Eel.compile(context, "$log.error( 'No data', 'Hello World!' )").evaluate().asText());
+        assertEquals("3", Eel.compile(context, "$log.trace( 1 + 2 )").evaluate().asText(), "trace");
+        assertEquals("true", Eel.compile(context, "$log.trace( true or false )").evaluate().asText(), "debug");
+        assertEquals("value", Eel.compile(context, "$log.info( 'message {}', 'value' )").evaluate().asText(), "info");
+        assertEquals("false", Eel.compile(context, "$log.warn( 'message {}', ( 2=3 ) )").evaluate().asText(), "warn");
+        assertEquals("ab", Eel.compile(context, "$log.error( 'message {} {}', 'test', 'a'~>'b' )").evaluate().asText(), "error");
+        assertEquals("ab", Eel.compile(context, "$log.error( 'message {} {}', 'test', 'a'~>'b' )").evaluate().asText(), "error");
+        assertEquals("Hello World!", Eel.compile(context, "$log.error( 'No data', 'Hello World!' )").evaluate().asText(), "pass through");
     }
 
     /**
@@ -312,42 +350,41 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_logging_filters() {
-        Assert.assertEquals("Keep Tab - pass through",
-            "Tab\tChar",
-            Eel.compile(context, "$log.info( 'Tab\\tChar' )").evaluate().asText());
-        Assert.assertTrue("Keep Tab - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Logged EEL Message: Tab\tChar"));
+        assertEquals("Tab\tChar",
+            Eel.compile(context, "$log.info( 'Tab\\tChar' )").evaluate().asText(),
+            "Keep Tab - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: Tab\tChar"),
+            "Keep Tab - Logged text: " + stdOut.getLinesNormalized());
 
         // Filter out the following escaped characters
-        Assert.assertEquals("Skip NewLine - pass through",
-            "New\nLine",
-            Eel.compile(context, "$log.info( 'New\\nLine' )").evaluate().asText());
-        Assert.assertTrue("Skip NewLine - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Logged EEL Message: NewLine"));
+        assertEquals("New\nLine",
+            Eel.compile(context, "$log.info( 'New\\nLine' )").evaluate().asText(),
+            "Skip NewLine - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: NewLine"),
+            "Skip NewLine - Logged text: " + stdOut.getLinesNormalized());
 
-        Assert.assertEquals("Skip CarriageReturn - pass through",
-            "Carriage\rReturn",
-            Eel.compile(context, "$log.info( 'Carriage\\rReturn' )").evaluate().asText());
-        Assert.assertTrue("Skip CarriageReturn - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Logged EEL Message: CarriageReturn"));
+        assertEquals("Carriage\rReturn",
+            Eel.compile(context, "$log.info( 'Carriage\\rReturn' )").evaluate().asText(),
+            "Skip CarriageReturn - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: CarriageReturn"),
+            "Skip CarriageReturn - Logged text: " + stdOut.getLinesNormalized());
 
-        Assert.assertEquals("Skip FormFeed - pass through",
-            "Form\fFeed",
-            Eel.compile(context, "$log.info( 'Form\\fFeed' )").evaluate().asText());
-        Assert.assertTrue("Skip FormFeed - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Logged EEL Message: FormFeed"));
+        assertEquals("Form\fFeed",
+            Eel.compile(context, "$log.info( 'Form\\fFeed' )").evaluate().asText(),
+            "Skip FormFeed - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: FormFeed"),
+            "Skip FormFeed - Logged text: " + stdOut.getLinesNormalized());
 
-        Assert.assertEquals("Skip Backspace - pass through",
-            "Back\bSpace",
-            Eel.compile(context, "$log.info( 'Back\\bSpace' )").evaluate().asText());
-        Assert.assertTrue("Skip Backspace - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Logged EEL Message: FormFeed"));
+        assertEquals("Back\bSpace",
+            Eel.compile(context, "$log.info( 'Back\\bSpace' )").evaluate().asText(),
+            "Skip Backspace - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: FormFeed"),
+            "Skip Backspace - Logged text: " + stdOut.getLinesNormalized());
 
-        Assert.assertEquals("Unicode - pass through",
-            "Unicode: \u00A9 ~",
-            Eel.compile(context, "$log.info( 'Unicode: \u00A9 ~' )").evaluate().asText());
-        Assert.assertTrue("Unicode - Logged text: " + stdOut.getLinesNormalized(),
-            stdOut.getLinesNormalized().contains("Unicode:  ~"));
+        assertEquals("Unicode: \u00A9 ~", Eel.compile(context, "$log.info( 'Unicode: \u00A9 ~' )").evaluate().asText(),
+            "Unicode - pass through");
+        assertTrue(stdOut.getLinesNormalized().contains("Unicode:  ~"),
+            "Unicode - Logged text: " + stdOut.getLinesNormalized());
     }
 
 
@@ -361,11 +398,11 @@ public class FunctionsIntegrationTest {
         String home = Eel.compile(context, "$system.home()").evaluate().asText();
         String temp = Eel.compile(context, "$system.temp()").evaluate().asText();
 
-        Assert.assertTrue("fileSeparator(): " + fileSeparator,
-            "/".equals(fileSeparator) || "\\".equals(fileSeparator));
-        Assert.assertTrue("pwd", pwd.matches("^([A-za-z]:)?[/\\\\]([^/\\\\]+[/\\\\])*"));
-        Assert.assertFalse("system.home() : " + home, home.isEmpty());      // Other tests have checked the value
-        Assert.assertFalse("system.temp() : " + temp, temp.isEmpty());
+        assertTrue("/".equals(fileSeparator) || "\\".equals(fileSeparator),
+            "fileSeparator(): " + fileSeparator);
+        assertTrue(pwd.matches("^([A-za-z]:)?[/\\\\]([^/\\\\]+[/\\\\])*"), "pwd");
+        assertFalse(home.isEmpty(), "system.home() : " + home);      // Other tests have checked the value
+        assertFalse(temp.isEmpty(), "system.temp() : " + temp);
     }
 
     /**
@@ -375,19 +412,19 @@ public class FunctionsIntegrationTest {
     public void test_fileNames() {
         String path = (File.separatorChar =='/') ? "a/b/../c/" : "a\\\\b\\\\..\\\\c\\\\";
 
-        Assert.assertEquals("realPath",
-            System.getProperty("user.dir").replace('\\', '/') + "/a/c/d.txt",
-            Eel.compile(context, "$realPath('" + path + "/d.txt')").evaluate().asText().replace('\\', '/'));
-        Assert.assertEquals("dirName",
-            "a/b/../c",
+        assertEquals(System.getProperty("user.dir").replace('\\', '/') + "/a/c/d.txt",
+            Eel.compile(context, "$realPath('" + path + "/d.txt')").evaluate().asText().replace('\\', '/'),
+            "realPath");
+        assertEquals("a/b/../c",
             Eel.compile(context, "$dirName('" + path + "d.txt')").evaluate().asText()
-                .replace('\\', '/').replaceFirst("^.:", ""));
-        Assert.assertEquals("baseName",
-            "d",
-            Eel.compile(context, "$baseName('" + path + "d.txt', '.txt')").evaluate().asText());
-        Assert.assertEquals("extension",
-            "tar.gz",
-            Eel.compile(context, "$extension('" + path + "d.tar.gz')").evaluate().asText());
+                .replace('\\', '/').replaceFirst("^.:", ""),
+            "dirName");
+        assertEquals("d",
+            Eel.compile(context, "$baseName('" + path + "d.txt', '.txt')").evaluate().asText(),
+            "baseName");
+        assertEquals("tar.gz",
+            Eel.compile(context, "$extension('" + path + "d.tar.gz')").evaluate().asText(),
+            "extension");
     }
 
 
@@ -396,21 +433,21 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_fileInfo() {
-        Assert.assertTrue("POM exists", Eel.compile(context, "$exists('pom.*')").evaluate().asLogic());
+        assertTrue(Eel.compile(context, "$exists('pom.*')").evaluate().asLogic(), "POM exists");
 
-        // Source Control will change the file attributes, so the best we can do is make sure these functions don't throw exceptions
+        // Source Control will change the file attributes, so the best we can do is to
+        // make sure these functions don't throw exceptions
 
         Eel.compile(context, "$createAt('pom.xml')").evaluate().asDate();
         Eel.compile(context, "$accessedAt('pom.xml')").evaluate().asDate();
         Eel.compile(context, "$modifiedAt('pom.xml')").evaluate().asDate();
         Eel.compile(context, "$fileSize('pom.xml')").evaluate().asNumber();
 
-        EelFailException actual = Assert.assertThrows(EelFailException.class,
+        EelFailException actual = assertThrows(EelFailException.class,
             () -> Eel.compile(context, "$fileSize('missingFile', fail('Expected fileSize exception'))").evaluate());
 
-        Assert.assertEquals("Unexpected Error Message",
-            "Expected fileSize exception",
-            actual.getMessage());
+        assertEquals("Expected fileSize exception", actual.getMessage(), "Unexpected Error Message"
+        );
     }
 
     /**
@@ -418,9 +455,7 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_findFiles() {
-        Assert.assertEquals("fileCount",
-            1,
-            Eel.compile(context, "$fileCount('.', 'pom.xml')").evaluate().asLong());
+        assertEquals(1, Eel.compile(context, "$fileCount('.', 'pom.xml')").evaluate().asLong(), "fileCount");
 
         // Source Control will set the attributes, so limit the search to a single file that must exist
         test_findFiles_helper("firstCreated", "$firstCreated('.', 'p?m.*')");
@@ -436,7 +471,7 @@ public class FunctionsIntegrationTest {
     private void test_findFiles_helper(@Nonnull String name, @Nonnull String expression) {
         String actual = Eel.compile(context, expression).evaluate().asText();
 
-        Assert.assertTrue(name + "returned: " + actual, actual.replace('\\', '/').endsWith("/pom.xml"));
+        assertTrue(actual.replace('\\', '/').endsWith("/pom.xml"), name + "returned: " + actual);
     }
 
     /**
@@ -449,8 +484,8 @@ public class FunctionsIntegrationTest {
             .getResource("io-data.txt")
             .getFile();
 
-        Assert.assertEquals("head", "line 1", Eel.compile(context, "$io.head( '" + textFile + "', 1 )").evaluate().asText());
-        Assert.assertEquals("tail", "line 3", Eel.compile(context, "$io.tail( '" + textFile + "', 1 )").evaluate().asText());
+        assertEquals("line 1", Eel.compile(context, "$io.head( '" + textFile + "', 1 )").evaluate().asText(), "head");
+        assertEquals("line 3", Eel.compile(context, "$io.tail( '" + textFile + "', 1 )").evaluate().asText(), "tail");
     }
 
     /**
@@ -460,11 +495,15 @@ public class FunctionsIntegrationTest {
     public void test_fail() {
         EelFailException actual;
 
-        actual = Assert.assertThrows("No message", EelFailException.class, () -> Eel.compile(context, "$fail()").evaluate());
-        Assert.assertEquals("No message - unexpected message", "", actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile(context, "$fail()").evaluate(),
+            "No message");
+        assertEquals("", actual.getMessage(), "No message - unexpected message");
 
-        actual = Assert.assertThrows("With message", EelFailException.class, () -> Eel.compile(context, "$fail('my Message!')").evaluate());
-        Assert.assertEquals("With message - unexpected message", "my Message!", actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile(context, "$fail('my Message!')").evaluate(),
+            "With message");
+        assertEquals("my Message!", actual.getMessage(), "With message - unexpected message");
     }
 
 
@@ -473,8 +512,8 @@ public class FunctionsIntegrationTest {
      */
     @Test
     public void test_misc() {
-        Assert.assertTrue("random", Eel.compile(context, "$random(10, 99)").evaluate().asText().matches("\\d{2}"));
-        Assert.assertTrue("uuid", Eel.compile(context, "$uuid()").evaluate().asText().matches("[0-9a-f-]{36}"));
+        assertTrue(Eel.compile(context, "$random(10, 99)").evaluate().asText().matches("\\d{2}"), "random");
+        assertTrue(Eel.compile(context, "$uuid()").evaluate().asText().matches("[0-9a-f-]{36}"), "uuid");
     }
 
     /**
@@ -487,7 +526,7 @@ public class FunctionsIntegrationTest {
             .build();
         Eel eel = Eel.compile(context, "$test.echo(fail('test me'))");
 
-        Assert.assertThrows(EelFailException.class, eel::evaluate);
+        assertThrows(EelFailException.class, eel::evaluate);
     }
 
 
@@ -497,7 +536,8 @@ public class FunctionsIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertTrue(name + " was unexpected value. Was " + value + ", expected pattern " + expectedPattern,
-            value.matches(expectedPattern));
+        assertTrue(value.matches(expectedPattern),
+            name + " was unexpected value. Was " + value + ", expected pattern " + expectedPattern
+        );
     }
 }

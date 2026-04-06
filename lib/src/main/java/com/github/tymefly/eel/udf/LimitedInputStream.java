@@ -6,27 +6,23 @@ import java.io.InputStream;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.EelContext;
-
 /**
- * A Decorator for InputStream classes that will limit the amount of data read.
- * There is a safety issue that can occur if the application is needs to read data from an untrusted
- * external source. A malicious or badly implemented source might break the JVM by supplying a never ending
- * stream of data that will eventually use up all the resources available to the application.
- * This InputStream will combat this problem by limiting the amount of data the backing InputStream can read.
- * If too much data is read then a {@link IOException} is thrown.
- * {@link #available()} will return the lowest of either the bytes available to the backing stream or the number of
- * bytes than can be read before the exception is thrown.
- * This class does not support marks, so {@link #markSupported()} will always return {@literal false}
+ * A decorator for an {@link InputStream} that limits the amount of data read.
+ * This is useful when reading from untrusted external sources, where a malicious or faulty source
+ * could supply an endless stream, potentially exhausting application resources.
+ * This stream enforces a read limit from the backing {@link InputStream}. If the limit is exceeded,
+ * an {@link IOException} is thrown. {@link #available()} returns the smaller of the bytes available
+ * from the backing stream or the number of bytes remaining before the exception is thrown.
+ * Marks are not supported; {@link #markSupported()} always returns {@literal false}.
  */
 public class LimitedInputStream extends InputStream {
     private final InputStream backing;
     private int remaining;
 
-
     /**
-     * Construct a new LimitedInputStream with a specific data limit
-     * @param context       the current EEL Context
-     * @param backing       the backing reader
+     * Constructs a new LimitedInputStream with a specific data limit.
+     * @param context  the current {@link EelContext}
+     * @param backing  the backing input stream
      */
     public LimitedInputStream(@Nonnull EelContext context, @Nonnull InputStream backing) {
         this.backing = backing;

@@ -8,19 +8,20 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.ModelManager;
 import com.github.tymefly.eel.doc.model.TagModel;
 import com.github.tymefly.eel.doc.utils.FileUtils;
 import j2html.tags.DomContent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
@@ -34,15 +35,15 @@ import static org.mockito.Mockito.when;
  */
 public class OverviewPageTest {
 
-    private Context context;
+    private EelDocContext context;
     private ModelManager modelManager;
     private GroupModel group;
     private File overviewFile;
     private Config config;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        context = mock(Context.class);
+        context = mock(EelDocContext.class);
         modelManager = mock(ModelManager.class);
         group = mock(GroupModel.class);
         overviewFile = mock(File.class);
@@ -73,7 +74,7 @@ public class OverviewPageTest {
 
         EnumSet<MenuItem> actual = page.disabledMenuOptions();
 
-        assertEquals("Only OVERVIEW should be disabled", EnumSet.of(MenuItem.OVERVIEW), actual);
+        assertEquals(EnumSet.of(MenuItem.OVERVIEW), actual, "Only OVERVIEW should be disabled");
     }
 
     /**
@@ -97,10 +98,11 @@ public class OverviewPageTest {
             String actual = page.buildPageContent()
                 .render();
 
-            Assert.assertTrue("Missing doc-body", actual.contains("id=\"doc-body\""));
-            Assert.assertFalse("Rendered unexpected groups", actual.contains("content-link"));
+            assertTrue(actual.contains("id=\"doc-body\""), "Missing doc-body");
+            assertFalse(actual.contains("content-link"), "Rendered unexpected groups");
 
-            Assert.assertFalse("Unexpected overview Section", actual.contains("<h2 class=\"block-name\">Overview Title</h2>"));
+            assertFalse(actual.contains("<h2 class=\"block-name\">Overview Title</h2>"),
+                "Unexpected overview Section");
         }
     }
 
@@ -141,19 +143,22 @@ public class OverviewPageTest {
             String actual = page.buildPageContent()
                 .render();
 
-            Assert.assertTrue("Missing doc-body", actual.contains("id=\"doc-body\""));
-            Assert.assertTrue("Missing group link", actual.contains("content-link"));
+            assertTrue(actual.contains("id=\"doc-body\""), "Missing doc-body");
+            assertTrue(actual.contains("content-link"), "Missing group link");
 
-            Assert.assertTrue("Missing content-link",
+            assertTrue(
                 Pattern.compile("<td\\s+class=\"content-link\"\\s*>\\s*<a\\s+href=\"myGroup\\.html\"\\s*>\\s*MyGroup\\s*</a>\\s*</td>", Pattern.DOTALL)
                     .matcher(actual)
-                    .find());
-            Assert.assertTrue("Missing content name",
+                    .find(),
+                "Missing content-link");
+            assertTrue(
                 Pattern.compile("<td>\\s*<div>GROUP CONTENT</div>\\s*</td>", Pattern.DOTALL)
                     .matcher(actual)
-                    .find());
+                    .find(),
+                "Missing content name");
 
-            Assert.assertFalse("Unexpected overview Section", actual.contains("<h2 class=\"block-name\">Overview Title</h2>"));
+            assertFalse(actual.contains("<h2 class=\"block-name\">Overview Title</h2>"),
+                "Unexpected overview Section");
         }
     }
 
@@ -181,9 +186,9 @@ public class OverviewPageTest {
             String actual = page.buildPageContent()
                 .render();
 
-            Assert.assertTrue("Missing overview title", actual.contains("<h2 class=\"block-name\">Overview Title</h2>"));
-            Assert.assertTrue("Missing overview content", actual.contains("<p>Line1</p>"));
-            Assert.assertTrue("Missing overview content", actual.contains("<p>Line2</p>"));
+            assertTrue(actual.contains("<h2 class=\"block-name\">Overview Title</h2>"), "Missing overview title");
+            assertTrue(actual.contains("<p>Line1</p>"), "Missing overview content");
+            assertTrue(actual.contains("<p>Line2</p>"), "Missing overview content");
         }
     }
 

@@ -7,7 +7,7 @@ import com.github.tymefly.eel.validate.Preconditions;
 /**
  * All the token that can exist within an expression
  */
-public enum Token {
+enum Token {
     NUMERIC,                                        // Literals
     TEXT_LITERAL,
     IDENTIFIER,

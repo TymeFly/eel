@@ -7,7 +7,8 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelRuntimeException;
 
 /**
- * Exception thrown by EEL runtime to indicate an EEL function could not be invoked or failed with an Exception
+ * Exception thrown by the EEL runtime to indicate that an EEL function could not be invoked
+ * or failed with an exception.
  */
 public class EelFunctionException extends EelRuntimeException {
     @Serial
@@ -15,8 +16,8 @@ public class EelFunctionException extends EelRuntimeException {
 
 
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructs an exception with a raw message.
+     * @param message       a human-readable (raw) message
      */
     EelFunctionException(@Nonnull String message) {
         super(message);
@@ -24,9 +25,9 @@ public class EelFunctionException extends EelRuntimeException {
 
 
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructs an exception with a formatted message.
+     * @param message       a formatted message string
+     * @param args          formatting arguments. The final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     EelFunctionException(@Nonnull String message, @Nonnull Object... args) {
@@ -35,9 +36,9 @@ public class EelFunctionException extends EelRuntimeException {
 
 
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructs an exception that wraps another exception.
+     * @param message       a human-readable (raw) message
+     * @param cause         the wrapped exception
      */
     EelFunctionException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

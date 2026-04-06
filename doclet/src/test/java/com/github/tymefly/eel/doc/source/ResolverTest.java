@@ -18,11 +18,12 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 
-import com.github.tymefly.eel.doc.context.Context;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.github.tymefly.eel.doc.context.EelDocContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,11 +48,11 @@ public class ResolverTest {
     private Resolver resolver;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         elementUtils = mock(Elements.class);
 
-        Context context = mock(Context.class, RETURNS_DEEP_STUBS);
+        EelDocContext context = mock(EelDocContext.class, RETURNS_DEEP_STUBS);
         PackageElement packageElement = mockPackage("com.github.tymefly.eel.test");
 
         localFunc_0 = mockMethod("myMethod");
@@ -248,7 +249,7 @@ public class ResolverTest {
     public void resolve_local_field() {
         Element actual = resolver.resolve("#MY_FIELD");
 
-        Assert.assertSame("Failed to find method", localField, actual);
+        assertSame(localField, actual, "Failed to find method");
     }
 
     /**
@@ -258,7 +259,7 @@ public class ResolverTest {
     public void resolve_local_method_noArgs() {
         Element actual = resolver.resolve("#myMethod()");
 
-        Assert.assertSame("Failed to find method", localFunc_0, actual);
+        assertSame(localFunc_0, actual, "Failed to find method");
     }
 
     /**
@@ -268,7 +269,7 @@ public class ResolverTest {
     public void resolve_local_method_1arg() {
         Element actual = resolver.resolve("#methodVarArgs(int...)");
 
-        Assert.assertSame("Failed to find method", localFunc_1, actual);
+        assertSame(localFunc_1, actual, "Failed to find method");
     }
 
     /**
@@ -278,7 +279,7 @@ public class ResolverTest {
     public void resolve_local_method_4args() {
         Element actual = resolver.resolve("#myMethod(java.lang.String, boolean, T, int[])");
 
-        Assert.assertSame("Failed to find method", localFunc_4, actual);
+        assertSame(localFunc_4, actual, "Failed to find method");
     }
 
     /**
@@ -288,7 +289,7 @@ public class ResolverTest {
     public void resolve_local_method_unknown() {
         Element actual = resolver.resolve("#unknown()");
 
-        Assert.assertNull("Found unexpected method", actual);
+        assertNull(actual, "Found unexpected method");
     }
 
     /**
@@ -298,7 +299,7 @@ public class ResolverTest {
     public void resolve_qualified_method() {
         Element actual = resolver.resolve("com.github.tymefly.eel.Eel#evaluate()");
 
-        Assert.assertSame("Found unexpected method", eelEvaluate, actual);
+        assertSame(eelEvaluate, actual, "Found unexpected method");
     }
 
     /**
@@ -308,7 +309,7 @@ public class ResolverTest {
     public void resolve_java_method() {
         Element actual = resolver.resolve("String#length()");
 
-        Assert.assertSame("Found unexpected method", stringLength, actual);
+        assertSame(stringLength, actual, "Found unexpected method");
     }
 
     /**
@@ -318,7 +319,7 @@ public class ResolverTest {
     public void resolve_packaged_method() {
         Element actual = resolver.resolve("Package#otherMethod()");
 
-        Assert.assertSame("Found unexpected method", packageMethod, actual);
+        assertSame(packageMethod, actual, "Found unexpected method");
     }
 
     /**
@@ -328,7 +329,7 @@ public class ResolverTest {
     public void resolve_local_NestedClass_field() {
         Element actual = resolver.resolve("Nested#NESTED_FIELD");
 
-        Assert.assertSame("Found unexpected method", nestedField, actual);
+        assertSame(nestedField, actual, "Found unexpected method");
     }
 
     /**
@@ -338,7 +339,7 @@ public class ResolverTest {
     public void resolve_local_InnerClass_field() {
         Element actual = resolver.resolve("Inner#INNER_FIELD");
 
-        Assert.assertSame("Found unexpected method", innerField, actual);
+        assertSame(innerField, actual, "Found unexpected method");
     }
 
     /**
@@ -348,7 +349,7 @@ public class ResolverTest {
     public void resolve_class() {
         Element actual = resolver.resolve("com.github.tymefly.eel.test.testClass");
 
-        Assert.assertSame("Found unexpected class", testClass, actual);
+        assertSame(testClass, actual, "Found unexpected class");
     }
 
     /**
@@ -358,6 +359,6 @@ public class ResolverTest {
     public void resolve_unknown() {
         Element actual = resolver.resolve("x.y.z");
 
-        Assert.assertNull("Found unexpected element", actual);
+        assertNull(actual, "Found unexpected element");
     }
 }

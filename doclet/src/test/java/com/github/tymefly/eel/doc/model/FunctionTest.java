@@ -7,9 +7,11 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.doc.source.Parameter;
 import com.github.tymefly.eel.doc.utils.EelType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -22,94 +24,89 @@ public class FunctionTest {
      */
     @Test
     public void test_parameters_withType() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function = new Function("myFunction", group, EelType.LOGIC);
 
-        Assert.assertEquals("Unexpected name", "myFunction", function.name());
-        Assert.assertSame("Unexpected group", group, function.group());
-        Assert.assertEquals("Unexpected type", Optional.of(EelType.LOGIC), function.type());
+        assertEquals("myFunction", function.name(), "Unexpected name");
+        assertSame(group, function.group(), "Unexpected group");
+        assertEquals(Optional.of(EelType.LOGIC), function.type(), "Unexpected type");
     }
-
 
     /**
      * Unit test {@link Function#name()}, {@link Function#group()}, {@link Function#type()}
      */
     @Test
     public void test_parameters_noType() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function = new Function("anotherFunction", group, null);
 
-        Assert.assertEquals("Unexpected name", "anotherFunction", function.name());
-        Assert.assertSame("Unexpected group", group, function.group());
-        Assert.assertEquals("Unexpected type", Optional.empty(), function.type());
+        assertEquals("anotherFunction", function.name(), "Unexpected name");
+        assertSame(group, function.group(), "Unexpected group");
+        assertEquals(Optional.empty(), function.type(), "Unexpected type");
     }
-
 
     /**
      * Unit test {@link Function#toString()}
      */
     @Test
     public void test_toString() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function = new Function("myFunction", group, EelType.LOGIC);
 
-        Assert.assertEquals("Unexpected name", "FunctionModel{name='myFunction'}", function.toString());
+        assertEquals("FunctionModel{name='myFunction'}", function.toString(), "Unexpected name");
     }
-
 
     /**
      * Unit test {@link Function#uniqueId()}
      */
     @Test
     public void test_uniqueId() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function1 = new Function("myFunction", group, EelType.LOGIC);
         Function function2 = new Function("myFunction", group, EelType.LOGIC);
         Function function3 = new Function("myFunction", group, EelType.LOGIC);
 
-        Assert.assertNotEquals("function1 and function2", function1.uniqueId(), function2.uniqueId());
-        Assert.assertNotEquals("function1 and function3", function1.uniqueId(), function3.uniqueId());
-        Assert.assertNotEquals("function2 and function3", function2.uniqueId(), function3.uniqueId());
+        assertNotEquals(function1.uniqueId(), function2.uniqueId(), "function1 and function2");
+        assertNotEquals(function1.uniqueId(), function3.uniqueId(), "function1 and function3");
+        assertNotEquals(function2.uniqueId(), function3.uniqueId(), "function2 and function3");
     }
-
 
     /**
      * Unit test {@link Function#eelSignature()}
      */
     @Test
     public void test_eelSignature() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function = new Function("myFunction", group, EelType.LOGIC);
         Parameter arg1 = new Parameter("arg1", EelType.TEXT, 0, null, false);
         Parameter arg3 = new Parameter("arg3", null, 2, null, false);
         Parameter arg4 = new Parameter("arg4", EelType.NUMBER, 3, "some default", false);
         Parameter arg5 = new Parameter("arg5", EelType.LOGIC, 5, "another default", true);
 
-        Assert.assertEquals("empty parameter list", "myFunction()", function.eelSignature());
+        assertEquals("myFunction()", function.eelSignature(), "empty parameter list");
 
         function.addParameter("arg1", arg1);
-        Assert.assertEquals("With normal argument", "myFunction(arg1)", function.eelSignature());
+        assertEquals("myFunction(arg1)", function.eelSignature(), "With normal argument");
 
         function.addParameter("arg2", null);
-        Assert.assertEquals("With null argument", "myFunction(arg1)", function.eelSignature());
+        assertEquals("myFunction(arg1)", function.eelSignature(), "With null argument");
 
         function.addParameter("arg3", arg3);
-        Assert.assertEquals("Not an EEL type", "myFunction(arg1)", function.eelSignature());
+        assertEquals("myFunction(arg1)", function.eelSignature(), "Not an EEL type");
 
         function.addParameter("arg4", arg4);
-        Assert.assertEquals("with default", "myFunction(arg1, arg4)", function.eelSignature());
+        assertEquals("myFunction(arg1, arg4)", function.eelSignature(), "with default");
 
         function.addParameter("arg5", arg5);
-        Assert.assertEquals("with varArgs", "myFunction(arg1, arg4, arg5...)", function.eelSignature());
+        assertEquals("myFunction(arg1, arg4, arg5...)", function.eelSignature(), "with varArgs");
     }
-
 
     /**
      * Unit test {@link Function#parameters()}
      */
     @Test
     public void test_addParameter() {
-        GroupModel group = mock();
+        GroupModel group = mock(GroupModel.class);
         Function function = new Function("myFunction", group, EelType.LOGIC);
         Parameter arg1 = new Parameter("arg1", EelType.TEXT, 0, null, false);
         Parameter arg3 = new Parameter("arg3", null, 2, null, false);
@@ -138,13 +135,13 @@ public class FunctionTest {
         List<ParamModel> actual = function.parameters();
         int index = -1;
 
-        Assert.assertEquals("Unexpected number of parameters", expected.length, actual.size());
+        assertEquals(expected.length, actual.size(), "Unexpected number of parameters");
 
         for (var param : actual) {
             Parameter test = expected[++index];
 
-            Assert.assertEquals(message + " Param" + index + " name:", test.name(), param.identifier());
-            Assert.assertEquals(message + " Param" + index + " name:", test.index(), param.order());
+            assertEquals(test.name(), param.identifier(), message + " Param" + index + " name:");
+            assertEquals(test.index(), param.order(), message + " Param" + index + " name:");
         }
     }
 }

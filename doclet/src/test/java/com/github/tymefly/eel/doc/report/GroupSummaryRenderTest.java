@@ -4,46 +4,44 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.TagModel;
 import com.github.tymefly.eel.doc.model.TextModel;
 import com.github.tymefly.eel.doc.utils.EelType;
 import j2html.tags.DomContent;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Unit test for {@link GroupSummaryRender}
  */
 public class GroupSummaryRenderTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private Context context;
+    @TempDir
+    public java.io.File temporaryFolder;
+
+    private EelDocContext context;
     private GroupModel group;
     private FunctionModel function;
     private TagModel tag;
 
-
-    @Before
+    @BeforeEach
     public void setup() {
-        context = mock(Context.class);
+        context = mock(EelDocContext.class);
         group = mock(GroupModel.class);
         function = mock(FunctionModel.class);
         tag = mock(TagModel.class);
-        
+
         TextModel textModel = mock(TextModel.class);
 
         when(group.name())
@@ -92,7 +90,7 @@ public class GroupSummaryRenderTest {
             DomContent actual = render.render();
             String html = actual.render();
 
-            assertTrue("HTML contains group name", html.contains("Math group"));
+            assertTrue(html.contains("Math group"), "HTML contains group name");
         }
     }
 
@@ -119,8 +117,8 @@ public class GroupSummaryRenderTest {
             DomContent actual = render.render();
             String html = actual.render();
 
-            assertTrue("HTML contains link to group page", html.contains("href=\"math.html\""));
-            assertTrue("HTML contains group name", html.contains("Math group"));
+            assertTrue(html.contains("href=\"math.html\""), "HTML contains link to group page");
+            assertTrue(html.contains("Math group"), "HTML contains group name");
         }
     }
 
@@ -147,8 +145,8 @@ public class GroupSummaryRenderTest {
             DomContent actual = render.render();
             String html = actual.render();
 
-            assertTrue("HTML contains function signature", html.contains("sum(a, b)"));
-            assertTrue("HTML contains function type", html.contains("Number"));
+            assertTrue(html.contains("sum(a, b)"), "HTML contains function signature");
+            assertTrue(html.contains("Number"), "HTML contains function type");
         }
     }
 
@@ -189,11 +187,10 @@ public class GroupSummaryRenderTest {
             DomContent actual = render.render();
             String html = actual.render();
 
-            assertTrue("HTML contains first function", html.contains("sum(a, b)"));
-            assertTrue("HTML contains second function", html.contains("multiply(a, b)"));
+            assertTrue(html.contains("sum(a, b)"), "HTML contains first function");
+            assertTrue(html.contains("multiply(a, b)"), "HTML contains second function");
         }
     }
-
 
     /**
      * Unit test for {@link GroupSummaryRender#render()}
@@ -226,7 +223,7 @@ public class GroupSummaryRenderTest {
             DomContent actual = render.render();
             String html = actual.render();
 
-            assertTrue("HTML still renders without summaries or types", html.contains("Math group"));
+            assertTrue(html.contains("Math group"), "HTML still renders without summaries or types");
         }
     }
 }

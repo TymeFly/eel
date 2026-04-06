@@ -9,7 +9,7 @@ import javax.lang.model.SourceVersion;
 import com.github.tymefly.eel.Eel;
 import com.github.tymefly.eel.Metadata;
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.report.Report;
 import com.github.tymefly.eel.doc.scanner.RootScanner;
 import jdk.javadoc.doclet.Doclet;
@@ -17,7 +17,7 @@ import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
 
 /**
- * Entry point for EelDoc Doclets. This is called by the JavaDoc tool.
+ * Entry point for EelDoc Doclets. This is called by the Javadoc tool.
  * @see <a href="https://openjdk.org/groups/compiler/using-new-doclet.html">Doclets architecture overview</a>
  * @see <a
  *     href="https://docs.oracle.com/en/java/javase/17/docs/api/jdk.javadoc/jdk/javadoc/doclet/package-summary.html">
@@ -49,7 +49,7 @@ public class EelDoc implements Doclet {
 
     @Override
     public boolean run(@Nonnull DocletEnvironment environment) {
-        Context context = new Context(environment, reporter);
+        EelDocContext context = new EelDocContext(environment, reporter);
 
         if (Config.getInstance().version()) {
             showVersion(context);
@@ -60,7 +60,7 @@ public class EelDoc implements Doclet {
         return true;
     }
 
-    private void showVersion(@Nonnull Context context) {
+    private void showVersion(@Nonnull EelDocContext context) {
         Metadata metadata = Eel.metadata();
 
         context.note("Eel Doclet version %s, built on %s",
@@ -69,7 +69,7 @@ public class EelDoc implements Doclet {
     }
 
 
-    private void execute(@Nonnull Context context, @Nonnull DocletEnvironment environment) {
+    private void execute(@Nonnull EelDocContext context, @Nonnull DocletEnvironment environment) {
         for (var element : environment.getIncludedElements()) {
             RootScanner.run(context, element);
         }

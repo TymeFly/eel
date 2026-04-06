@@ -10,16 +10,18 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL numeric conversion functions
+ * EEL functions for numeric conversions.
+ * @since 2.1
  */
 @PackagedEelFunction
 public class NumberConversions {
     /**
-     * Returns the specified radian {@code value} expressed in degrees.
+     * Converts the specified radian value to degrees using the precision defined by the context.
      * @param context   the current EEL context
-     * @param value     the radian value to convert to degrees
-     * @return          the specified radian {@code value} expressed in degrees
-     * @since 2.1.0
+     * @param value     the angle in radians to be converted to degrees
+     * @return          the angle expressed in degrees, calculated with the precision defined by the context
+     * @see #toRadians(EelContext, BigDecimal)
+     * @since 2.1
      */
     @EelFunction("toDegrees")
     @Nonnull
@@ -28,11 +30,12 @@ public class NumberConversions {
     }
 
     /**
-     * Returns the specified degree {@code value} expressed in radians.
+     * Converts the specified degree value to radians using the precision defined by the context.
      * @param context   the current EEL context
-     * @param value     the degree value to convert to radians
-     * @return          the specified degree {@code value} expressed in radians
-     * @since 2.1.0
+     * @param value     the angle in degrees to be converted to radians
+     * @return          the angle expressed in radians, calculated with the precision defined by the context
+     * @see #toDegrees(EelContext, BigDecimal)
+     * @since 2.1
      */
     @EelFunction("toRadians")
     @Nonnull

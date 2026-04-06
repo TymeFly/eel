@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -60,7 +60,7 @@
                                         </code>
                                     </td>
                                     <td>
-                                        The general utility group contains common functions for text, number, logic and date types.
+                                        Functions in the general utility group provide common operations for text, number, logic, and date types.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -69,7 +69,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the absolute <code>value</code> of the specified number, with the precision specified by the <code>context</code>.
+                                        Returns the absolute value of the specified number using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -96,7 +96,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text after the <code>count</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                                        Returns all text following the <code>count</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -105,7 +105,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text after the first occurrence of the <code>delimiter</code> text.
+                                        Returns all text following the first occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -114,7 +114,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text after the last occurrence of the <code>delimiter</code> text.
+                                        Returns all text following the last occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -141,7 +141,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the average of a set of numbers.
+                                        Returns the average (arithmetic mean) of the specified numbers using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -159,7 +159,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text before the <code>count</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                                        Returns all text preceding the <code>count</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -168,7 +168,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text before the first occurrence of the <code>delimiter</code>.
+                                        Returns all text preceding the first occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -177,7 +177,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text before the last occurrence of the <code>delimiter</code> text.
+                                        Returns all text preceding the last occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -186,7 +186,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns all the text between the <code>start</code>&#x27;th and the <code>end</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                                        Returns all text between the <code>start</code>&#x27;th and <code>end</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -213,7 +213,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the number of times that the <code>search</code> phrase occurs in the <code>text</code>.
+                                        Returns the number of times the specified <code>search</code> phrase occurs in the <code>text</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -276,7 +276,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the natural exponent of <code>value</code> with the precision specified by the <code>context</code>.
+                                        Returns the natural exponent of the specified value using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -294,7 +294,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Extracts characters from the specified <code>text</code> based on a Java Regular Expression.
+                                        Extracts characters from the specified <code>text</code> using a Java-style regular expression.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -303,7 +303,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Computes the factorial of the specified <code>value</code> with the precision specified by the <code>context</code>.
+                                        Computes the factorial of the specified value using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -362,11 +362,11 @@
                                 </tr>
                                 <tr class="col-types">
                                     <td>
-                                        <code class="section-link"><a href="#indexOf">indexOf(text, subString, defaultValue)</a></code>
+                                        <code class="section-link"><a href="#indexOf">indexOf(text, subText, defaultValue)</a></code>
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the 0-based index of the first occurrence of <code>subString</code> in the specified <code>text</code>, or the <code>defaultValue</code> if <code>subString</code> does not occur.
+                                        Returns the 0-based index of the first occurrence of <code>subText</code> in the specified <code>text</code>, or <code>defaultValue</code> if <code>subText</code> does not occur.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -384,7 +384,7 @@
                                     </td>
                                     <td>Logic</td>
                                     <td>
-                                        Returns <span class="literal">true</span> only if the specified <code>text</code> is empty.
+                                        Returns <span class="literal">true</span> if the specified <code>text</code> is empty.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -411,7 +411,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the 0-based index of the last occurrence of <code>subString</code> in the specified <code>text</code>, or the <code>defaultValue</code> if <code>subString</code> does not occur.
+                                        Returns the 0-based index of the last occurrence of <code>subString</code> in the specified <code>text</code>, or <code>defaultValue</code> if <code>subString</code> does not occur.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -429,7 +429,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns the first portion of the specified <code>text</code> according to the given <code>length</code>.
+                                        Returns a portion of the specified <code>text</code> based on the given <code>length</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -438,7 +438,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the length of the specified <code>text</code>, including any leading and trailing spaces.
+                                        Returns the length of the specified <code>text</code>, including leading and trailing spaces.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -447,7 +447,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the natural logarithm (base e) of the specified <code>value</code> with the precision specified by the <code>context</code>.
+                                        Returns the natural logarithm (base <span class="literal">e</span>) of the specified value using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -456,7 +456,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the logarithm base 10 of the specified <code>value</code> with the precision specified by the <code>context</code>.
+                                        Returns the base-10 logarithm of the specified value using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -474,7 +474,7 @@
                                     </td>
                                     <td>Logic</td>
                                     <td>
-                                        Checks whether the specified <code>text</code> matches a Java regular expression.
+                                        Checks whether the specified <code>text</code> matches the given Java-style regular expression.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -483,7 +483,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the largest value in a set of numbers.
+                                        Returns the largest value among the specified numbers.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -501,7 +501,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the smallest value in a set of numbers.
+                                        Returns the smallest value among the specified numbers.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -519,7 +519,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns the specified <code>text</code> with <code>pad</code> characters added to the start so that it is at least <code>width</code> characters long.
+                                        Left-pads the specified text with the given character until it reaches the specified width.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -528,7 +528,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns the specified <code>text</code> with <code>pad</code> characters added to the end so that it is at least <code>width</code> characters long.
+                                        Right-pads the specified text with the given character until it reaches the specified width.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -546,7 +546,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns a random number between <code>min</code> and <code>max</code>, <b>inclusive</b>.
+                                        Returns a random number between the specified <code>min</code> and <code>max</code>, <b>inclusive</b>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -564,7 +564,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Replaces all instances of the literal <code>from</code> in the specified <code>text</code> with the literal <code>to</code>.
+                                        Replaces all occurrences of the literal <code>from</code> in the specified <code>text</code> with the literal <code>to</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -573,7 +573,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Replaces each part of the specified <code>text</code> that matches the Java regular expression <code>regEx</code> with the literal text <code>to</code>.
+                                        Replaces each part of the specified <code>text</code> that matches the Java-style regular expression <code>regEx</code> with the literal text <code>to</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -582,7 +582,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns the last portion of the specified <code>text</code> according to the given <code>length</code>.
+                                        Returns a portion of the specified <code>text</code> based on the given <code>length</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -591,7 +591,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Calculates the <code>n</code>’th root of the specified <code>value</code>.
+                                        Returns the n-th root of the specified value using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -600,7 +600,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the sign of a numeric <code>value</code>.
+                                        Returns the sign of the specified numeric value.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -618,7 +618,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Calculates the tangens of the specified <code>value</code>.
+                                        Calculates the tangent of the specified <code>value</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -636,7 +636,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the specified radian <code>value</code> expressed in degrees.
+                                        Converts the specified radian value to degrees using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -645,7 +645,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the specified degree <code>value</code> expressed in radians.
+                                        Converts the specified degree value to radians using the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -654,7 +654,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns the <code>text</code> with any leading and trailing spaces removed.
+                                        Returns the <code>text</code> with leading and trailing spaces removed.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -672,7 +672,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns a new pseudo-randomly generated UUID, created using a cryptographically strong pseudo-random number generator.
+                                        Returns a new pseudo-randomly generated UUID using a cryptographically strong pseudo-random number generator.
                                     </td>
                                 </tr>
                             </tbody>
@@ -687,7 +687,7 @@
                     <section class="overview-description">
                         <div class="block-detail">
                             <div class="description">
-                                The general utility group contains common functions for text, number, logic and date types. As these functions are frequently used, they are given short names without a group prefix.
+                                Functions in the general utility group provide common operations for text, number, logic, and date types. As these functions are frequently used, they are given short names without a group prefix.
                             </div>
                         </div>
                     </section>
@@ -699,7 +699,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the absolute <code>value</code> of the specified number, with the precision specified by the <code>context</code>.
+                            Returns the absolute value of the specified number using the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -713,7 +713,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The <code>value</code> for which to calculate the absolute value</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number whose absolute value is to be calculated</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -727,7 +727,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The absolute <code>value</code> of the specified number with the precision specified by the <code>context</code></span>
+                                    <span class="description">The absolute value of the specified number, rounded according to the context</span>
                                 </div>
                             </span>
                         </div>
@@ -736,6 +736,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#sgn">sgn(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -763,7 +771,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -787,7 +795,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The last access time of the file, in the local time zone, or <code>defaultValue</code> if the file does not exist</span>
+                                    <span class="description">The last access time of the file in the local time zone, or <code>defaultValue</code> if the file does not exist</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -814,7 +830,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A numeric value for which to calculate the arccosine</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value for which to calculate the arccosine</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -828,7 +844,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The arccosine of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The arccosine of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -837,6 +853,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#cos">cos(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -849,7 +873,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text after the <code>count</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                            Returns all text following the <code>count</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -872,7 +896,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -881,7 +905,7 @@
                                         <code>count</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The occurrence count of <code>delimiter</code> in the <code>text</code>; must not be negative</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The occurrence of <code>delimiter</code> to consider; must not be negative</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -895,7 +919,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text after the <code>count</code>&#x27;th occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur <code>count</code> times, an empty string is returned</span>
+                                    <span class="description">The text after the <code>count</code>&#x27;th occurrence of <code>delimiter</code>; if the delimiter does not occur <code>count</code> times, an empty string is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -932,7 +956,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -945,7 +969,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text after the first occurrence of the <code>delimiter</code> text.
+                            Returns all text following the first occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -968,7 +992,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -982,7 +1006,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text after the first occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur in the <code>text</code>, an empty string is returned</span>
+                                    <span class="description">The text after the first occurrence of <code>delimiter</code>; if the delimiter does not occur, an empty string is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1013,7 +1037,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1026,7 +1050,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text after the last occurrence of the <code>delimiter</code> text.
+                            Returns all text following the last occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1049,7 +1073,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1063,7 +1087,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text after the last occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur in the <code>text</code>, an empty text is returned</span>
+                                    <span class="description">The text after the last occurrence of <code>delimiter</code>; if the delimiter does not occur, an empty text is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1094,7 +1118,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1121,7 +1145,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A numeric value for which to calculate the arcsine</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value for which to calculate the arcsine</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1135,7 +1159,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The arcsine of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The arcsine of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -1144,6 +1168,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#sin">sin(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1170,7 +1202,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A numeric value for which to calculate the arctangent</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value for which to calculate the arctangent</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1184,7 +1216,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The arctangent of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The arctangent of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -1193,6 +1225,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#tan">tan(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1205,7 +1245,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the average of a set of numbers.
+                            Returns the average (arithmetic mean) of the specified numbers using the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1219,7 +1259,7 @@
                                         <code>first</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The first value to average</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The first value to include in the average</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1228,7 +1268,7 @@
                                         <code>others...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to average</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to include in the average</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1242,7 +1282,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The mean of all values passed to this function</span>
+                                    <span class="description">The arithmetic mean of all provided values, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1270,7 +1318,7 @@
                                         <code>path</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A file path</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">A file path; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1309,6 +1357,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -1318,7 +1374,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text before the <code>count</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                            Returns all text preceding the <code>count</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1341,7 +1397,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1350,7 +1406,7 @@
                                         <code>count</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The occurrence count of <code>delimiter</code> in the <code>text</code>; must not be negative</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The occurrence of <code>delimiter</code> to consider; must not be negative</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1364,7 +1420,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text before the <code>count</code>&#x27;th occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur <code>count</code> times, the full <code>text</code> is returned</span>
+                                    <span class="description">The text before the <code>count</code>&#x27;th occurrence of <code>delimiter</code>; if the delimiter does not occur <code>count</code> times, the entire text is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1401,7 +1457,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1414,7 +1470,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text before the first occurrence of the <code>delimiter</code>.
+                            Returns all text preceding the first occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1437,7 +1493,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1451,7 +1507,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text before the first occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur in the <code>text</code>, the full <code>text</code> is returned</span>
+                                    <span class="description">The text before the first occurrence of <code>delimiter</code>; if the delimiter does not occur, the entire text is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1478,6 +1534,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -1487,7 +1551,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text before the last occurrence of the <code>delimiter</code> text.
+                            Returns all text preceding the last occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1510,7 +1574,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1524,7 +1588,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text before the last occurrence of the <code>delimiter</code>; if the <code>delimiter</code> does not occur in the <code>text</code>, the full <code>text</code> is returned</span>
+                                    <span class="description">The text before the last occurrence of <code>delimiter</code>; if the delimiter does not occur, the entire text is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1551,6 +1615,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -1560,7 +1632,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns all the text between the <code>start</code>&#x27;th and the <code>end</code>&#x27;th occurrence of the <code>delimiter</code> text.
+                            Returns all text between the <code>start</code>&#x27;th and <code>end</code>&#x27;th occurrence of the specified <code>delimiter</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1583,7 +1655,7 @@
                                         <code>delimiter</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The delimiter which should appear in the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The delimiter to locate within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1592,7 +1664,7 @@
                                         <code>start</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The first occurrence of <code>delimiter</code> in the <code>text</code>; must not be negative</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The first occurrence of <code>delimiter</code> to consider; must not be negative</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1601,7 +1673,7 @@
                                         <code>end</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The last occurrence count of <code>delimiter</code> in the <code>text</code>; must not be negative</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The last occurrence of <code>delimiter</code> to consider; must not be negative</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1615,7 +1687,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The text between the <code>start</code>&#x27;th and <code>end</code>&#x27;th occurrences of the <code>delimiter</code>; if the <code>delimiter</code> does not occur <code>end</code> times, an empty string is returned</span>
+                                    <span class="description">The text between the <code>start</code>&#x27;th and <code>end</code>&#x27;th occurrences of <code>delimiter</code>; if <code>delimiter</code> does not occur <code>end</code> times, an empty string is returned</span>
                                 </div>
                             </span>
                         </div>
@@ -1652,7 +1724,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1679,7 +1751,7 @@
                                         <code>codepoint</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The numeric Unicode character value</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">A valid Unicode character value</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1694,6 +1766,14 @@
                                 <h3>Returns:</h3>
                                 <div>
                                     <span class="description">A single-character text value</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If the <code>codepoint</code> is not in the range 0 to 0x10FFFF</span>
                                 </div>
                             </span>
                         </div>
@@ -1736,7 +1816,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text to evaluate; must not be blank</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to evaluate, which must not be blank</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1779,7 +1859,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the number of times that the <code>search</code> phrase occurs in the <code>text</code>.
+                            Returns the number of times the specified <code>search</code> phrase occurs in the <code>text</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -1802,7 +1882,7 @@
                                         <code>search</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The phrase to be counted</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The phrase to count within the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1816,7 +1896,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The number of instances of <code>search</code> in <code>text</code>; if <code>search</code> is empty text, the value returned is the length of the <code>text</code></span>
+                                    <span class="description">The number of instances of <code>search</code> in <code>text</code>; if <code>search</code> is empty, the value returned is the length of the text</span>
                                 </div>
                             </span>
                         </div>
@@ -1847,7 +1927,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1874,7 +1954,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">An angle in radians</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The angle in radians for which to calculate the cosine</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1888,7 +1968,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The cosine of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The cosine of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -1897,6 +1977,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#acos">acos(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1925,7 +2013,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">empty text, denoting the default counter</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The unique name of the counter. If the name is empty then the default anonymous counter is used.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The unique name of the counter; if empty, the default, anonymous, counter is used</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1939,7 +2027,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The next value in an incremental counter</span>
+                                    <span class="description">The next value in the incremental counter</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -1967,7 +2063,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1995,6 +2091,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -2018,7 +2122,7 @@
                                         <code>path</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A file path</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">A file path; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2044,6 +2148,14 @@
                                 </div>
                                 <div>
                                     <span><a href="#baseName">baseName(path, extension)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2104,7 +2216,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The amount of time between <code>from</code> and <code>to</code> in terms of the <code>period</code>. The value is positive only if <code>from</code> precedes <code>to</code>.</span>
+                                    <span class="description">The amount of time between <code>from</code> and <code>to</code> in terms of the <code>period</code>; the value is positive only if <code>from</code> precedes <code>to</code></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2149,6 +2269,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -2158,7 +2286,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the natural exponent of <code>value</code> with the precision specified by the <code>context</code>. This is <span class="literal">e</span> raised to <code>value</code>
+                            Returns the natural exponent of the specified value using the precision defined by the context. This is <span class="literal">e</span> raised to <code>value</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -2172,7 +2300,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value for which to calculate the exponent</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number for which to calculate the exponent</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2186,7 +2314,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description"><span class="literal">e</span> raised to <span class="literal">value</span>, with the precision specified by the <code>context</code>.</span>
+                                    <span class="description"><span class="literal">e</span> raised to <code>value</code>, rounded according to the context</span>
                                 </div>
                             </span>
                         </div>
@@ -2195,6 +2323,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#ln">ln(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2222,7 +2358,7 @@
                                         <code>path</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file path</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file path; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2258,6 +2394,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -2267,7 +2411,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Extracts characters from the specified <code>text</code> based on a Java Regular Expression.
+                            Extracts characters from the specified <code>text</code> using a Java-style regular expression.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -2281,7 +2425,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The full text from which to extract data</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The input text from which characters are extracted</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2290,7 +2434,7 @@
                                         <code>regEx</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The regular expression which should contain matching groups</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The regular expression pattern to match; must include capturing groups</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2304,7 +2448,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The extracted text</span>
+                                    <span class="description">The text extracted based on the specified <code>regEx</code></span>
                                 </div>
                             </span>
                         </div>
@@ -2313,6 +2457,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#matches">matches(text, regEx)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2325,7 +2477,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Computes the factorial of the specified <code>value</code> with the precision specified by the <code>context</code>. An exception is thrown if <code>value</code> is negative.
+                            Computes the factorial of the specified value using the precision defined by the context. Throws an exception if the value is negative.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -2339,7 +2491,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The non-negative value whose factorial is to be computed</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The non-negative number whose factorial is to be computed</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2353,7 +2505,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The factorial of <code>value</code> calculated with the precision specified by the <code>context</code></span>
+                                    <span class="description">The factorial of the specified value, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2366,7 +2526,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            An EEL function that fails the expression by throwing an <code>EelFailException</code>. This function is typically used inside a condition, such as a ternary expression. For example: <br><code>$( condition ? value : fail(&quot;error message&quot;) ) </code>
+                            An EEL function that fails the expression by throwing an <code>EelFailException</code>. This function is typically used inside a condition, such as a ternary expression or a lookback. For example: <br><code>$( condition ? value : fail(&quot;error message&quot;) ) </code>
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -2382,7 +2542,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">Empty text</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The optional message that will be passed back to the client application</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The optional failure message</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2393,6 +2553,14 @@
                                 <h3>Throws:</h3>
                                 <div>
                                     <span><code>EelFailException</code> </span> <span class="description">When invoked</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2420,7 +2588,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The path to a directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The path to a directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2480,7 +2648,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2505,6 +2673,14 @@
                                 <h3>Returns:</h3>
                                 <div>
                                     <span class="description">The length of the file in bytes, or <code>defaultValue</code> if the file does not exist</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2534,7 +2710,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2624,7 +2800,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2714,7 +2890,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2783,16 +2959,16 @@
                 <hr>
             </section>
             <section class="function-description">
-                <h2 class="block-name" id="indexOf">indexOf(text, subString, defaultValue)</h2>
+                <h2 class="block-name" id="indexOf">indexOf(text, subText, defaultValue)</h2>
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the 0-based index of the first occurrence of <code>subString</code> in the specified <code>text</code>, or the <code>defaultValue</code> if <code>subString</code> does not occur.
+                            Returns the 0-based index of the first occurrence of <code>subText</code> in the specified <code>text</code>, or <code>defaultValue</code> if <code>subText</code> does not occur.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
-                            <div><code>indexOf(text, subString)</code></div>
-                            <div><code>indexOf(text, subString, defaultValue)</code></div>
+                            <div><code>indexOf(text, subText)</code></div>
+                            <div><code>indexOf(text, subText, defaultValue)</code></div>
                         </div>
                         <section>
                             <div class="block-detail-section">
@@ -2808,7 +2984,7 @@
                                 </div>
                                 <div class="parameter-block">
                                     <div>
-                                        <code>subString</code>
+                                        <code>subText</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Description : </span><span class="description">The text to search for</span></div>
@@ -2821,7 +2997,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">-1</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to return if <code>subString</code> is not found</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to return if <code>subText</code> is not found</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2835,7 +3011,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The 0-based index of the first occurrence of <code>subString</code> in <code>text</code></span>
+                                    <span class="description">The 0-based index of the first occurrence of <code>subText</code> in <code>text</code></span>
                                 </div>
                             </span>
                         </div>
@@ -2847,6 +3023,14 @@
                                 </div>
                                 <div>
                                     <span><a href="#lastIndexOf">lastIndexOf(text, subString, defaultValue)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2887,7 +3071,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description"><span class="literal">true</span> if <code>text</code> is empty or contains only whitespace</span>
+                                    <span class="description"><span class="literal">true</span> if the <code>text</code> is empty or contains only whitespace</span>
                                 </div>
                             </span>
                         </div>
@@ -2919,7 +3103,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns <span class="literal">true</span> only if the specified <code>text</code> is empty. Text that contains one or more spaces is not considered empty.
+                            Returns <span class="literal">true</span> if the specified <code>text</code> is empty. Text containing one or more spaces is not considered empty.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -2947,7 +3131,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description"><span class="literal">true</span> only if the <code>text</code> is empty</span>
+                                    <span class="description"><span class="literal">true</span> if the <code>text</code> contains no characters</span>
                                 </div>
                             </span>
                         </div>
@@ -2955,10 +3139,18 @@
                             <span class="block-detail-section">
                                 <h3>See:</h3>
                                 <div>
-                                    <span><a href="#len">len(text)</a> </span> <span class="description"></span>
+                                    <span><a href="#len">len(text)</a> </span> <span class="description">For getting the length of the text</span>
                                 </div>
                                 <div>
-                                    <span><a href="#isBlank">isBlank(text)</a> </span> <span class="description"></span>
+                                    <span><a href="#isBlank">isBlank(text)</a> </span> <span class="description">For checking if the text is blank (contains only spaces)</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -2988,7 +3180,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3078,7 +3270,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3088,7 +3280,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">*</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The glob pattern used to filter files.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The glob pattern used to filter files</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3098,7 +3290,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">0</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The 0-based index of the file to retrieve.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The 0-based index of the file to retrieve</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3108,7 +3300,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">Throws IOException</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to return if no files in <code>directory</code> matches the specified <code>glob</code> pattern</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to return if no files in <code>directory</code> match the specified <code>glob</code> pattern</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3151,7 +3343,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the 0-based index of the last occurrence of <code>subString</code> in the specified <code>text</code>, or the <code>defaultValue</code> if <code>subString</code> does not occur.
+                            Returns the 0-based index of the last occurrence of <code>subString</code> in the specified <code>text</code>, or <code>defaultValue</code> if <code>subString</code> does not occur.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3210,7 +3402,15 @@
                                     <span><a href="#len">len(text)</a> </span> <span class="description"></span>
                                 </div>
                                 <div>
-                                    <span><a href="#indexOf">indexOf(text, subString, defaultValue)</a> </span> <span class="description"></span>
+                                    <span><a href="#indexOf">indexOf(text, subText, defaultValue)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3240,7 +3440,7 @@
                                         <code>directory</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The directory on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3313,7 +3513,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the first portion of the specified <code>text</code> according to the given <code>length</code>. If <code>length</code> is positive, up to that many characters are returned from the start; if <code>length</code> is negative, that many characters are returned from the end of the <code>text</code>.
+                            Returns a portion of the specified <code>text</code> based on the given <code>length</code>. If <code>length</code> is positive, returns up to <code>length</code> characters from the start; if <code>length</code> is negative, returns up to <code>length</code> characters from the end of the <code>text</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3327,7 +3527,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are obtained</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are extracted</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3336,7 +3536,7 @@
                                         <code>length</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number of characters to return (positive from start, negative from end)</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of characters to return (positive counts from the start, negative from the end)</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3350,7 +3550,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">A portion of the specified <code>text</code> according to the given <code>length</code></span>
+                                    <span class="description">The extracted portion of the specified text according to the given length</span>
                                 </div>
                             </span>
                         </div>
@@ -3368,6 +3568,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -3377,7 +3585,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the length of the specified <code>text</code>, including any leading and trailing spaces.
+                            Returns the length of the specified <code>text</code>, including leading and trailing spaces.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3391,7 +3599,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text to measure</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text whose length is to be measured</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3405,7 +3613,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The length of <code>text</code>, including leading and trailing spaces</span>
+                                    <span class="description">The length of the specified <code>text</code>, including any leading and trailing spaces</span>
                                 </div>
                             </span>
                         </div>
@@ -3413,10 +3621,18 @@
                             <span class="block-detail-section">
                                 <h3>See:</h3>
                                 <div>
-                                    <span><a href="#isEmpty">isEmpty(text)</a> </span> <span class="description"></span>
+                                    <span><a href="#isEmpty">isEmpty(text)</a> </span> <span class="description">For checking if the text is empty</span>
                                 </div>
                                 <div>
-                                    <span><a href="#isBlank">isBlank(text)</a> </span> <span class="description"></span>
+                                    <span><a href="#isBlank">isBlank(text)</a> </span> <span class="description">For checking if the text is blank (contains only spaces)</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3429,7 +3645,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the natural logarithm (base e) of the specified <code>value</code> with the precision specified by the <code>context</code>. An exception is thrown if <code>value</code> is negative.
+                            Returns the natural logarithm (base <span class="literal">e</span>) of the specified value using the precision defined by the context. Throws an exception if the value is not positive.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3443,7 +3659,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value whose logarithm is to be calculated</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number whose natural logarithm is to be calculated</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3457,7 +3673,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The natural logarithm (base <span class="literal">e</span>) of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The natural logarithm (base <span class="literal">e</span>) of the specified value, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>ArithmeticException</code> </span> <span class="description">If the value is not positive</span>
                                 </div>
                             </span>
                         </div>
@@ -3466,6 +3690,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#exp">exp(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3478,7 +3710,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the logarithm base 10 of the specified <code>value</code> with the precision specified by the <code>context</code>.
+                            Returns the base-10 logarithm of the specified value using the precision defined by the context. Throws an exception if the value is not positive.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3492,7 +3724,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value whose logarithm is to be calculated</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number whose base-10 logarithm is to be calculated</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3506,7 +3738,31 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The base-10 logarithm of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The base-10 logarithm of the specified value, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>ArithmeticException</code> </span> <span class="description">If the value is not positive</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#ln">ln(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3533,7 +3789,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">To convert to lower case</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to convert to lower case</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3562,6 +3818,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -3571,7 +3835,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Checks whether the specified <code>text</code> matches a Java regular expression.
+                            Checks whether the specified <code>text</code> matches the given Java-style regular expression.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3585,7 +3849,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text to check</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to check for a match</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3594,7 +3858,7 @@
                                         <code>regEx</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The regular expression against which the <code>text</code> is checked</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The regular expression pattern to match against</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3608,7 +3872,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description"><span class="literal">true</span> only if the <code>text</code> matches the <code>regEx</code></span>
+                                    <span class="description"><span class="literal">true</span> if the <code>text</code> matches <code>regEx</code>; otherwise <span class="literal">false</span></span>
                                 </div>
                             </span>
                         </div>
@@ -3617,6 +3881,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#extract">extract(text, regEx)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3629,7 +3901,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the largest value in a set of numbers.
+                            Returns the largest value among the specified numbers.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3643,7 +3915,7 @@
                                         <code>first</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The first value to test</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The first value to compare</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3652,7 +3924,7 @@
                                         <code>others...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to test</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to compare</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3666,7 +3938,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The largest value among the values passed to this function</span>
+                                    <span class="description">The maximum value among all provided values</span>
                                 </div>
                             </span>
                         </div>
@@ -3675,6 +3947,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#min">min(first, others...)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3687,7 +3967,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the middle portion of the specified <code>text</code>.<p> The specification of this function deliberately matches the behaviour used by bash.
+                            Returns the middle portion of the specified <code>text</code>.<p> This function&#x27;s behaviour deliberately matches the behaviour used by bash.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3702,7 +3982,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are obtained</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are extracted</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3711,7 +3991,7 @@
                                         <code>position</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">If positive, the zero-based index of the start of the <code>text</code>; if negative, the start index is counted from the end of the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">If positive, the zero-based index of the start; if negative, counted from the end of the text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3721,7 +4001,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">The remaining text</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">If positive, the maximum number of characters to return; if negative, the end index is counted from the end of the <code>text</code></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">If positive, the maximum number of characters to return; if negative, counted from the end</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3735,7 +4015,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">A portion of the specified <code>text</code> starting at <code>position</code> and spanning up to <code>length</code> characters</span>
+                                    <span class="description">The portion of the specified text starting at <code>position</code> and spanning up to <code>length</code> characters</span>
                                 </div>
                             </span>
                         </div>
@@ -3753,6 +4033,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -3762,7 +4050,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the smallest value in a set of numbers.
+                            Returns the smallest value among the specified numbers.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3776,7 +4064,7 @@
                                         <code>first</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The first value to test</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The first value to compare</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3785,7 +4073,7 @@
                                         <code>others...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to test</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional additional values to compare</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3799,7 +4087,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The smallest value among the values passed to this function</span>
+                                    <span class="description">The minimum value among all provided values</span>
                                 </div>
                             </span>
                         </div>
@@ -3808,6 +4096,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#max">max(first, others...)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3835,7 +4131,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3859,7 +4155,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The last modified time of the file, in the local time zone, or <code>defaultValue</code> if the file does not exist</span>
+                                    <span class="description">The last modified time of the file in the local time zone, or <code>defaultValue</code> if the file does not exist</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -3872,7 +4176,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the specified <code>text</code> with <code>pad</code> characters added to the start so that it is at least <code>width</code> characters long.
+                            Left-pads the specified text with the given character until it reaches the specified width.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3887,7 +4191,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text to pad</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to be padded</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3896,7 +4200,7 @@
                                         <code>width</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The minimum length of the returned text; must be at least <span class="literal">1</span></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The minimum length of the resulting text; must be at least <span class="literal">0</span></span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3906,7 +4210,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">A single space</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The padding character</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The character used for padding</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3920,7 +4224,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The <code>text</code> padded to be at least <code>width</code> characters long</span>
+                                    <span class="description">The padded text with a length of at least the specified width</span>
                                 </div>
                             </span>
                         </div>
@@ -3941,7 +4245,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the specified <code>text</code> with <code>pad</code> characters added to the end so that it is at least <code>width</code> characters long.
+                            Right-pads the specified text with the given character until it reaches the specified width.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -3956,7 +4260,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text to pad</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to be padded</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3965,7 +4269,7 @@
                                         <code>width</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The minimum length of the returned text; must be at least <span class="literal">1</span></span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The minimum length of the resulting text; must be at least <span class="literal">0</span></span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3975,7 +4279,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">A single space</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The padding character</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The character used for padding</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3989,7 +4293,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The <code>text</code> padded to be at least <code>width</code> characters long</span>
+                                    <span class="description">The padded text with a length of at least the specified width</span>
                                 </div>
                             </span>
                         </div>
@@ -4010,7 +4314,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Generates formatted text using the specified format string and arguments, similar to Java&#x27;s <code>format(String, Object[])</code>. The following conversion characters are supported: <ul><li><b>Text:</b><code>s</code>, <code>S</code></li><li><b>Character:</b><code>c</code>, <code>C</code> - the first character of text passed to the function</li><li><b>Logic:</b><code>b</code>, <code>B</code></li><li><b>Integral Number:</b><code>d</code>, <code>o</code>, <code>x</code>, <code>X</code></li><li><b>Real Number:</b><code>e</code>, <code>E</code>, <code>f</code>, <code>g</code>, <code>G</code></li><li><b>Dates:</b><code>t</code>, <code>T</code></li><li><b>Character literals:</b><code>%n</code></li></ul> All Java formatting indexes, flags, widths, and precisions are supported.
+                            Generates formatted text using the specified format string and arguments, similar to Java&#x27;s <code>format(String, Object[])</code>. Supported conversion characters include: <ul><li><b>Text:</b><code>s</code>, <code>S</code></li><li><b>Character:</b><code>c</code>, <code>C</code> - the first character of the text argument</li><li><b>Logic:</b><code>b</code>, <code>B</code></li><li><b>Integral Number:</b><code>d</code>, <code>o</code>, <code>x</code>, <code>X</code></li><li><b>Real Number:</b><code>e</code>, <code>E</code>, <code>f</code>, <code>g</code>, <code>G</code></li><li><b>Dates:</b><code>t</code>, <code>T</code></li><li><b>Character literals:</b><code>%n</code></li></ul> All Java formatting indexes, flags, widths, and precisions are supported.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4033,7 +4337,7 @@
                                         <code>arguments...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The arguments referenced by the format specifiers in <code>format</code>; extra arguments are ignored if there are more than format specifiers</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The arguments referenced by the format specifiers in <code>format</code>; extra arguments are ignored if more arguments are provided than format specifiers</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4076,7 +4380,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a random number between <code>min</code> and <code>max</code>, <b>inclusive</b>.
+                            Returns a random number between the specified <code>min</code> and <code>max</code>, <b>inclusive</b>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4093,7 +4397,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">0</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The minimum value this function will return; defaults to 0</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The minimum value the function can return; defaults to 0</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4103,7 +4407,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">99</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The maximum value this function will return; defaults to 99</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The maximum value the function can return; defaults to 99</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4117,7 +4421,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">A random number between <code>min</code> and <code>max</code> inclusive</span>
+                                    <span class="description">A random number between <code>min</code> and <code>max</code>, inclusive</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4144,7 +4456,7 @@
                                         <code>path</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">A file path</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">A file path; must not be empty</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4166,7 +4478,15 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IOException</code> </span> <span class="description">If the canonical path cannot be obtained, for example, if the <code>path</code> is empty</span>
+                                    <span><code>Exception</code> </span> <span class="description">If the canonical path cannot be obtained, for example, if the <code>path</code> is empty</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4179,7 +4499,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Replaces all instances of the literal <code>from</code> in the specified <code>text</code> with the literal <code>to</code>.
+                            Replaces all occurrences of the literal <code>from</code> in the specified <code>text</code> with the literal <code>to</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4193,7 +4513,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text in which replacements will be made</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text in which replacements are made</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4211,7 +4531,7 @@
                                         <code>to</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The literal text to substitute</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The literal text to substitute for <code>from</code></span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4237,6 +4557,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -4246,7 +4574,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Replaces each part of the specified <code>text</code> that matches the Java regular expression <code>regEx</code> with the literal text <code>to</code>.
+                            Replaces each part of the specified <code>text</code> that matches the Java-style regular expression <code>regEx</code> with the literal text <code>to</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4260,7 +4588,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text in which replacements will be made</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text in which replacements are made</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4278,7 +4606,7 @@
                                         <code>to</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The literal text to substitute</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The literal text to substitute for matches</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4304,6 +4632,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -4313,7 +4649,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the last portion of the specified <code>text</code> according to the given <code>length</code>. If <code>length</code> is positive, up to that many characters are returned from the end; if <code>length</code> is negative, that many characters are returned from the start of the <code>text</code>.
+                            Returns a portion of the specified <code>text</code> based on the given <code>length</code>. If <code>length</code> is positive, returns up <code>length</code> characters from the end; if <code>length</code> is negative, returns up <code>length</code> characters from the start of the <code>text</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4327,7 +4663,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are obtained</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text from which characters are extracted</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4336,7 +4672,7 @@
                                         <code>length</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number of characters to return (positive from end, negative from start)</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of characters to return (positive counts from the end, negative from the start)</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4350,7 +4686,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">A portion of the specified <code>text</code> according to the given <code>length</code></span>
+                                    <span class="description">The extracted portion of the specified text according to the given length</span>
                                 </div>
                             </span>
                         </div>
@@ -4368,6 +4704,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -4377,7 +4721,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Calculates the <code>n</code>’th root of the specified <code>value</code>.
+                            Returns the n-th root of the specified value using the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4392,7 +4736,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to calculate the <code>n</code>’th root from</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number whose n-th root is to be calculated</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4402,7 +4746,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">2</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The base for the root; defaults to 2 for square roots</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The degree of the root (e.g. 2 for square root)</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4416,7 +4760,31 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The calculated <code>n</code>’th root of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The n-th root of the specified value, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Throws:</h3>
+                                <div>
+                                    <span><code>ArithmeticException</code> </span> <span class="description">If the value is not positive</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#exp">exp(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4429,7 +4797,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the sign of a numeric <code>value</code>.
+                            Returns the sign of the specified numeric value.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4443,7 +4811,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The <code>value</code> to calculate the sign for</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number whose sign is to be determined</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4457,7 +4825,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description"><span class="literal">-1</span> if <code>value</code> is less than <span class="literal">0</span>; <span class="literal">0</span> if <code>value</code> is equal to <span class="literal">0</span>; <span class="literal">+1</span> if <code>value</code> is greater than <span class="literal">0</span></span>
+                                    <span class="description"><span class="literal">-1</span> if the value is less than 0; <span class="literal">0</span> if the value is equal to 0; <span class="literal">+1</span> if the value is greater than 0</span>
                                 </div>
                             </span>
                         </div>
@@ -4466,6 +4834,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#abs">abs(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4492,7 +4868,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">An angle in radians</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The angle in radians for which to calculate the sine</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4506,7 +4882,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The sine of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The sine of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -4515,6 +4891,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#asin">asin(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4527,7 +4911,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Calculates the tangens of the specified <code>value</code>.
+                            Calculates the tangent of the specified <code>value</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4541,7 +4925,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">An angle in radians</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The angle in radians for which to calculate the tangent</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4555,7 +4939,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The tangent of <code>value</code> with the precision specified by the <code>context</code></span>
+                                    <span class="description">The tangent of <code>value</code>, calculated using the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -4564,6 +4948,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#atan">atan(value)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4590,7 +4982,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">To convert to title case</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to convert to title case</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4636,7 +5028,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the specified radian <code>value</code> expressed in degrees.
+                            Converts the specified radian value to degrees using the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4650,7 +5042,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The radian value to convert to degrees</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The angle in radians to be converted to degrees</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4664,7 +5056,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The specified radian <code>value</code> expressed in degrees</span>
+                                    <span class="description">The angle expressed in degrees, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#toRadians">toRadians(value)</a> </span> <span class="description"></span>
                                 </div>
                             </span>
                         </div>
@@ -4672,7 +5072,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.1.0</span>
+                                    <span class="description">2.1</span>
                                 </div>
                             </span>
                         </div>
@@ -4685,7 +5085,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the specified degree <code>value</code> expressed in radians.
+                            Converts the specified degree value to radians using the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4699,7 +5099,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The degree value to convert to radians</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The angle in degrees to be converted to radians</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4713,7 +5113,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The specified degree <code>value</code> expressed in radians</span>
+                                    <span class="description">The angle expressed in radians, calculated with the precision defined by the context</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>See:</h3>
+                                <div>
+                                    <span><a href="#toDegrees">toDegrees(value)</a> </span> <span class="description"></span>
                                 </div>
                             </span>
                         </div>
@@ -4721,7 +5129,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.1.0</span>
+                                    <span class="description">2.1</span>
                                 </div>
                             </span>
                         </div>
@@ -4734,7 +5142,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the <code>text</code> with any leading and trailing spaces removed.
+                            Returns the <code>text</code> with leading and trailing spaces removed.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4766,6 +5174,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -4789,7 +5205,7 @@
                                         <code>text</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">To convert to upper case</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The text to convert to upper case</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -4818,6 +5234,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -4827,7 +5251,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a new pseudo-randomly generated UUID, created using a cryptographically strong pseudo-random number generator.
+                            Returns a new pseudo-randomly generated UUID using a cryptographically strong pseudo-random number generator.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -4843,7 +5267,15 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">A new pseudo-randomly generated UUID</span>
+                                    <span class="description">A newly generated pseudo-random UUID</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -4854,7 +5286,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

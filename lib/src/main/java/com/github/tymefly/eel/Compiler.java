@@ -3,6 +3,7 @@ package com.github.tymefly.eel;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Defines the contract of a Compiler in the EEL language. The root operations are
@@ -11,7 +12,21 @@ import javax.annotation.Nonnull;
  * generated operations.
  */
 interface Compiler {
-    /** Transformations on values read from the symbols table */
+    /** Fluent interface used to read terms from the Lookback.*/
+    interface LookbackBuilder {
+        @Nonnull
+        LookbackBuilder withIndex(int position, @Nonnull Term index);
+
+        @Nonnull
+        LookbackBuilder withDefault(@Nonnull Term defaultValue);
+
+        @Nonnull
+        Term build();
+
+    }
+
+
+    /** Transformations on values read from the SymbolsTable */
     @FunctionalInterface
     interface SymbolTransformation {
         SymbolTransformation IDENTITY = (s, t) -> t;
@@ -26,7 +41,7 @@ interface Compiler {
         }
     }
 
-    /** Fluent interface used to read values from the Symbols Table. Multiple SymbolTransformation can be set */
+    /** Fluent interface used to read values from the SymbolsTable. Multiple SymbolTransformation can be set */
     interface SymbolBuilder {
         @Nonnull
         SymbolBuilder withDefault(@Nonnull Term defaultValue);
@@ -41,9 +56,13 @@ interface Compiler {
         Term build();
     }
 
-    
+
     @Nonnull
-    Term cached(@Nonnull Term term);
+    Term constTerm(@Nonnull Term term);
+
+    @Nonnull
+    LookbackBuilder lookback(@Nullable List<Term> lookBacks);
+
 
 
     @Nonnull

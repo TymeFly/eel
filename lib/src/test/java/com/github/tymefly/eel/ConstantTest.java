@@ -8,8 +8,15 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import com.github.tymefly.eel.exception.EelConvertException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Constant}
@@ -32,14 +39,14 @@ public class ConstantTest {
      */
     @Test
     public void test_of_String() {
-        Assert.assertSame("Empty String", Value.BLANK, Constant.of(""));
+        assertSame(Value.BLANK, Constant.of(""), "Empty String");
 
-        Assert.assertNotSame("Blank String", Value.BLANK, Constant.of(" "));
-        Assert.assertNotSame("String with text", Value.BLANK, Constant.of("SomeValue"));
+        assertNotSame(Value.BLANK, Constant.of(" "), "Blank String");
+        assertNotSame(Value.BLANK, Constant.of("SomeValue"), "String with text");
 
         String stamp = Long.toString(System.currentTimeMillis());
 
-        Assert.assertSame("Check Cache", Constant.of(stamp), Constant.of(stamp));
+        assertSame(Constant.of(stamp), Constant.of(stamp), "Check Cache");
     }
 
     /**
@@ -47,15 +54,15 @@ public class ConstantTest {
      */
     @Test
     public void test_of_Number() {
-        Assert.assertEquals("Int(0)", Value.ZERO, Constant.of(0));
-        Assert.assertEquals("Int(1)", Value.ONE, Constant.of(1));
-        Assert.assertEquals("Long(1)", Value.ONE, Constant.of(1L));
-        Assert.assertEquals("BigDecimal(1)", Value.ONE, Constant.of(BigDecimal.ONE));
-        Assert.assertEquals("Double(0.0)", Value.ZERO, Constant.of(0.0));
+        assertEquals(Value.ZERO, Constant.of(0), "Int(0)");
+        assertEquals(Value.ONE, Constant.of(1), "Int(1)");
+        assertEquals(Value.ONE, Constant.of(1L), "Long(1)");
+        assertEquals(Value.ONE, Constant.of(BigDecimal.ONE), "BigDecimal(1)");
+        assertEquals(Value.ZERO, Constant.of(0.0), "Double(0.0)");
 
         Long stamp = System.currentTimeMillis();
 
-        Assert.assertSame("Check Cache", Constant.of(stamp), Constant.of(stamp));
+        assertSame(Constant.of(stamp), Constant.of(stamp), "Check Cache");
     }
 
     /**
@@ -63,11 +70,11 @@ public class ConstantTest {
      */
     @Test
     public void test_of_Bool() {
-        Assert.assertSame("false", Value.FALSE, Constant.of(false));
-        Assert.assertSame("Boolean.FALSE", Value.FALSE, Constant.of(Boolean.FALSE));
+        assertSame(Value.FALSE, Constant.of(false), "false");
+        assertSame(Value.FALSE, Constant.of(Boolean.FALSE), "Boolean.FALSE");
 
-        Assert.assertSame("true", Value.TRUE, Constant.of(true));
-        Assert.assertSame("Boolean.TRUE", Value.TRUE, Constant.of(Boolean.TRUE));
+        assertSame(Value.TRUE, Constant.of(true), "true");
+        assertSame(Value.TRUE, Constant.of(Boolean.TRUE), "Boolean.TRUE");
     }
 
     /**
@@ -75,14 +82,14 @@ public class ConstantTest {
      */
     @Test
     public void test_of_Date() {
-        Assert.assertEquals("date", date, Constant.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 678_000_009, ZoneOffset.UTC)));
+        assertEquals(date, Constant.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 678_000_009, ZoneOffset.UTC)), "date");
 
-        Assert.assertNotSame("other year", date, Constant.of(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneOffset.UTC)));
-        Assert.assertNotSame("other zone", date, Constant.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6, ZoneOffset.ofHours(8))));
+        assertNotSame(date, Constant.of(ZonedDateTime.of(2000, 1, 2, 3, 4, 5, 6, ZoneOffset.UTC)), "other year");
+        assertNotSame(date, Constant.of(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6, ZoneOffset.ofHours(8))), "other zone");
 
         ZonedDateTime stamp = ZonedDateTime.now();
 
-        Assert.assertSame("Check Cache", Constant.of(stamp), Constant.of(stamp));
+        assertSame(Constant.of(stamp), Constant.of(stamp), "Check Cache");
     }
 
     /**
@@ -90,10 +97,10 @@ public class ConstantTest {
      */
     @Test
     public void test_getType() {
-        Assert.assertEquals("Unexpected type for text", Type.TEXT, text.getType());
-        Assert.assertEquals("Unexpected type for number", Type.NUMBER, number.getType());
-        Assert.assertEquals("Unexpected type for logic", Type.LOGIC, logic.getType());
-        Assert.assertEquals("Unexpected type for date", Type.DATE, date.getType());
+        assertEquals(Type.TEXT, text.getType(), "Unexpected type for text");
+        assertEquals(Type.NUMBER, number.getType(), "Unexpected type for number");
+        assertEquals(Type.LOGIC, logic.getType(), "Unexpected type for logic");
+        assertEquals(Type.DATE, date.getType(), "Unexpected type for date");
     }
 
     /**
@@ -101,10 +108,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asText() {
-        Assert.assertEquals("Unexpected text for text", "123", text.asText());
-        Assert.assertEquals("Unexpected text for number", "12.3", number.asText());
-        Assert.assertEquals("Unexpected text for logic", "true", logic.asText());
-        Assert.assertEquals("Unexpected text for date", "2022-01-02T03:04:05.678000009Z", date.asText());
+        assertEquals("123", text.asText(), "Unexpected text for text");
+        assertEquals("12.3", number.asText(), "Unexpected text for number");
+        assertEquals("true", logic.asText(), "Unexpected text for logic");
+        assertEquals("2022-01-02T03:04:05.678000009Z", date.asText(), "Unexpected text for date");
     }
 
     /**
@@ -112,15 +119,15 @@ public class ConstantTest {
      */
     @Test
     public void test_asNumber() {
-        Assert.assertEquals("Unexpected number for text", new BigDecimal("123"), text.asNumber());
-        Assert.assertEquals("Unexpected number for number", new BigDecimal("12.3"), number.asNumber());
-        Assert.assertEquals("Unexpected number for logic", new BigDecimal("1"), logic.asNumber());
-        Assert.assertEquals("Unexpected number for date", new BigDecimal("1641092645.678000009"), date.asNumber());
+        assertEquals(new BigDecimal("123"), text.asNumber(), "Unexpected number for text");
+        assertEquals(new BigDecimal("12.3"), number.asNumber(), "Unexpected number for number");
+        assertEquals(new BigDecimal("1"), logic.asNumber(), "Unexpected number for logic");
+        assertEquals(new BigDecimal("1641092645.678000009"), date.asNumber(), "Unexpected number for date");
 
-        Assert.assertEquals("Decimal integer", new BigDecimal("1234"), Constant.of("1234").asNumber());
-        Assert.assertEquals("Hexadecimal integer", new BigDecimal("35243"), Constant.of("0x89ab").asNumber());
-        Assert.assertEquals("Decimal with a fractional part", new BigDecimal("123.456"), Constant.of("123.456").asNumber());
-        Assert.assertEquals("Scientific format", new BigDecimal("2.997e8"), Constant.of("2.997e8").asNumber());
+        assertEquals(new BigDecimal("1234"), Constant.of("1234").asNumber(), "Decimal integer");
+        assertEquals(new BigDecimal("35243"), Constant.of("0x89ab").asNumber(), "Hexadecimal integer");
+        assertEquals(new BigDecimal("123.456"), Constant.of("123.456").asNumber(), "Decimal with a fractional part");
+        assertEquals(new BigDecimal("2.997e8"), Constant.of("2.997e8").asNumber(), "Scientific format");
     }
 
     /**
@@ -128,9 +135,9 @@ public class ConstantTest {
      */
     @Test
     public void test_asNumeric_invalid() {
-        Assert.assertThrows("text", EelConvertException.class, () -> Constant.of("some Text").asNumber());
-        Assert.assertThrows("Bad Hex", EelConvertException.class, () -> Constant.of("0x12.34").asNumber());
-        Assert.assertThrows("Bad scientific", EelConvertException.class, () -> Constant.of("12e3f4").asNumber());
+        assertThrows(EelConvertException.class, () -> Constant.of("some Text").asNumber(), "text");
+        assertThrows(EelConvertException.class, () -> Constant.of("0x12.34").asNumber(), "Bad Hex");
+        assertThrows(EelConvertException.class, () -> Constant.of("12e3f4").asNumber(), "Bad scientific");
     }
 
 
@@ -141,18 +148,18 @@ public class ConstantTest {
     public void test_asLogic() {
         ZonedDateTime TRUE_DATE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(1_000), ZoneOffset.UTC);
 
-        Assert.assertFalse("Unexpected logic for text", Constant.of("False").asLogic());
-        Assert.assertFalse("Unexpected logic for number", Constant.of(0).asLogic());
-        Assert.assertTrue("Unexpected logic for logic", logic.asLogic());
+        assertFalse(Constant.of("False").asLogic(), "Unexpected logic for text");
+        assertFalse(Constant.of(0).asLogic(), "Unexpected logic for number");
+        assertTrue(logic.asLogic(), "Unexpected logic for logic");
 
-        Assert.assertFalse("negative", Constant.of(-0.01).asLogic());
-        Assert.assertFalse("Zero", Constant.of(0).asLogic());
-        Assert.assertTrue("positive", Constant.of(+.01).asLogic());
+        assertFalse(Constant.of(-0.01).asLogic(), "negative");
+        assertFalse(Constant.of(0).asLogic(), "Zero");
+        assertTrue(Constant.of(+.01).asLogic(), "positive");
 
-        Assert.assertFalse("False Date", Constant.of(EelContext.FALSE_DATE).asLogic());
-        Assert.assertFalse("False Date other Zone", Constant.of(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("+2"))).asLogic());
-        Assert.assertTrue("Other Date", Constant.of(TRUE_DATE).asLogic());
-        Assert.assertTrue("Other Date", Constant.of(TRUE_DATE.withZoneSameInstant(ZoneId.of("+2"))).asLogic());
+        assertFalse(Constant.of(EelContext.FALSE_DATE).asLogic(), "False Date");
+        assertFalse(Constant.of(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("+2"))).asLogic(), "False Date other Zone");
+        assertTrue(Constant.of(TRUE_DATE).asLogic(), "Other Date");
+        assertTrue(Constant.of(TRUE_DATE.withZoneSameInstant(ZoneId.of("+2"))).asLogic(), "Other Date");
     }
 
     /**
@@ -160,7 +167,7 @@ public class ConstantTest {
      */
     @Test
     public void test_asLogic_invalid() {
-        Assert.assertThrows(EelConvertException.class, () -> Constant.of("some Text").asLogic());
+        assertThrows(EelConvertException.class, () -> Constant.of("some Text").asLogic());
     }
 
     /**
@@ -168,10 +175,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asDate() {
-        Assert.assertEquals("Unexpected text for text", DATE_STAMP0, Constant.of("2022-01-02T03:04:05Z").asDate());
-        Assert.assertEquals("Unexpected text for number", DATE_STAMP0, Constant.of(1641092645).asDate());
-        Assert.assertEquals("TRUE", DATE_TRUE, Constant.of(true).asDate());
-        Assert.assertEquals("FALSE", EelContext.FALSE_DATE, Constant.of(false).asDate());
+        assertEquals(DATE_STAMP0, Constant.of("2022-01-02T03:04:05Z").asDate(), "Unexpected text for text");
+        assertEquals(DATE_STAMP0, Constant.of(1641092645).asDate(), "Unexpected text for number");
+        assertEquals(DATE_TRUE, Constant.of(true).asDate(), "TRUE");
+        assertEquals(EelContext.FALSE_DATE, Constant.of(false).asDate(), "FALSE");
     }
 
     /**
@@ -179,7 +186,7 @@ public class ConstantTest {
      */
     @Test
     public void test_asDate_invalid() {
-        Assert.assertThrows("Bad Text", EelConvertException.class, () -> Constant.of("some text").asDate());
+        assertThrows(EelConvertException.class, () -> Constant.of("some text").asDate(), "Bad Text");
     }
 
 
@@ -190,23 +197,23 @@ public class ConstantTest {
     public void test_equals() {
         Constant sameNumber = Constant.of(new BigDecimal("12.300"));
 
-        Assert.assertFalse("text to null", text.equals(null));
-        Assert.assertTrue("text to text", text.equals(text));
-        Assert.assertFalse("text to String", text.equals("123"));
-        Assert.assertTrue("text to same value", text.equals(Constant.of("123")));
-        Assert.assertFalse("text to different value", text.equals(Constant.of("1234")));
+        assertFalse(text.equals(null), "text to null");
+        assertTrue(text.equals(text), "text to text");
+        assertFalse(text.equals("123"), "text to String");
+        assertTrue(text.equals(Constant.of("123")), "text to same value");
+        assertFalse(text.equals(Constant.of("1234")), "text to different value");
 
-        Assert.assertTrue("number to same value", number.equals(Constant.of(12.3)));
-        Assert.assertFalse("number to different value", number.equals(Constant.of(12.34)));
-        Assert.assertTrue("number to same value, different precision", number.equals(sameNumber));
+        assertTrue(number.equals(Constant.of(12.3)), "number to same value");
+        assertFalse(number.equals(Constant.of(12.34)), "number to different value");
+        assertTrue(number.equals(sameNumber), "number to same value, different precision");
 
-        Assert.assertTrue("logic to same value", logic.equals(Constant.of(true)));
-        Assert.assertFalse("logic to different value", logic.equals(Constant.of(false)));
+        assertTrue(logic.equals(Constant.of(true)), "logic to same value");
+        assertFalse(logic.equals(Constant.of(false)), "logic to different value");
 
-        Assert.assertTrue("date to same value", date.equals(Constant.of(DATE_STAMP1)));
-        Assert.assertFalse("date to different value", date.equals(Constant.of(DATE_STAMP2)));
+        assertTrue(date.equals(Constant.of(DATE_STAMP1)), "date to same value");
+        assertFalse(date.equals(Constant.of(DATE_STAMP2)), "date to different value");
 
-        Assert.assertFalse("number to text", number.equals(Constant.of(number.asText())));
+        assertFalse(number.equals(Constant.of(number.asText())), "number to text");
     }
 
 
@@ -217,18 +224,18 @@ public class ConstantTest {
     public void test_hashCode() {
         Constant sameNumber = Constant.of(new BigDecimal("12.300"));
 
-        Assert.assertEquals("text to same value", text.hashCode(), Constant.of("123").hashCode());
-        Assert.assertNotEquals("text to different value", text.hashCode(), Constant.of("1234").hashCode());
+        assertEquals(text.hashCode(), Constant.of("123").hashCode(), "text to same value");
+        assertNotEquals(text.hashCode(), Constant.of("1234").hashCode(), "text to different value");
 
-        Assert.assertEquals("number to same value", number.hashCode(), Constant.of(12.3).hashCode());
-        Assert.assertNotEquals("number to different value", number.hashCode(), Constant.of(-12.34).hashCode());
-        Assert.assertNotEquals("number to same value, different precision", number.hashCode(), sameNumber.hashCode());
+        assertEquals(number.hashCode(), Constant.of(12.3).hashCode(), "number to same value");
+        assertNotEquals(number.hashCode(), Constant.of(-12.34).hashCode(), "number to different value");
+        assertNotEquals(number.hashCode(), sameNumber.hashCode(), "number to same value, different precision");
 
-        Assert.assertEquals("logic to same value", logic.hashCode(), Constant.of(true).hashCode());
-        Assert.assertNotEquals("logic to different value", logic.hashCode(), Constant.of(false).hashCode());
+        assertEquals(logic.hashCode(), Constant.of(true).hashCode(), "logic to same value");
+        assertNotEquals(logic.hashCode(), Constant.of(false).hashCode(), "logic to different value");
 
-        Assert.assertEquals("date to same value", date.hashCode(), Constant.of(DATE_STAMP1).hashCode());
-        Assert.assertNotEquals("date to different value", date.hashCode(), Constant.of(DATE_STAMP2).hashCode());
+        assertEquals(date.hashCode(), Constant.of(DATE_STAMP1).hashCode(), "date to same value");
+        assertNotEquals(date.hashCode(), Constant.of(DATE_STAMP2).hashCode(), "date to different value");
     }
 
     /**
@@ -236,10 +243,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asBigInteger() {
-        Assert.assertEquals("Unexpected number for text", new BigInteger("123"), text.asBigInteger());
-        Assert.assertEquals("Unexpected number for number", new BigInteger("12"), number.asBigInteger());
-        Assert.assertEquals("Unexpected number for logic", new BigInteger("1"), logic.asBigInteger());
-        Assert.assertEquals("Unexpected number for date", new BigInteger("1641092645"), date.asBigInteger());
+        assertEquals(new BigInteger("123"), text.asBigInteger(), "Unexpected number for text");
+        assertEquals(new BigInteger("12"), number.asBigInteger(), "Unexpected number for number");
+        assertEquals(new BigInteger("1"), logic.asBigInteger(), "Unexpected number for logic");
+        assertEquals(new BigInteger("1641092645"), date.asBigInteger(), "Unexpected number for date");
     }
 
     /**
@@ -247,10 +254,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asDouble() {
-        Assert.assertEquals("Unexpected number for text", 123.0, text.asDouble(), 0.001);
-        Assert.assertEquals("Unexpected number for number", 12.3, number.asDouble(), 0.001);
-        Assert.assertEquals("Unexpected number for logic", 1.0, logic.asDouble(), 0.001);
-        Assert.assertEquals("Unexpected number for date", 1641092645.678, date.asDouble(), 0.001);
+        assertEquals(123.0, text.asDouble(), 0.001, "Unexpected number for text");
+        assertEquals(12.3, number.asDouble(), 0.001, "Unexpected number for number");
+        assertEquals(1.0, logic.asDouble(), 0.001, "Unexpected number for logic");
+        assertEquals(1641092645.678, date.asDouble(), 0.001, "Unexpected number for date");
     }
 
     /**
@@ -258,10 +265,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asLong() {
-        Assert.assertEquals("Unexpected number for text", 123L, text.asLong());
-        Assert.assertEquals("Unexpected number for number", 12L, number.asLong());
-        Assert.assertEquals("Unexpected number for logic", 1L, logic.asLong());
-        Assert.assertEquals("Unexpected number for date", 1641092645L, date.asLong());
+        assertEquals(123L, text.asLong(), "Unexpected number for text");
+        assertEquals(12L, number.asLong(), "Unexpected number for number");
+        assertEquals(1L, logic.asLong(), "Unexpected number for logic");
+        assertEquals(1641092645L, date.asLong(), "Unexpected number for date");
     }
 
     /**
@@ -269,10 +276,10 @@ public class ConstantTest {
      */
     @Test
     public void test_asInt() {
-        Assert.assertEquals("Unexpected number for text", 123, text.asInt());
-        Assert.assertEquals("Unexpected number for number", 12, number.asInt());
-        Assert.assertEquals("Unexpected number for logic", 1, logic.asInt());
-        Assert.assertEquals("Unexpected number for date", 1641092645, date.asInt());
+        assertEquals(123, text.asInt(), "Unexpected number for text");
+        assertEquals(12, number.asInt(), "Unexpected number for number");
+        assertEquals(1, logic.asInt(), "Unexpected number for logic");
+        assertEquals(1641092645, date.asInt(), "Unexpected number for date");
     }
 
     /**
@@ -280,12 +287,12 @@ public class ConstantTest {
      */
     @Test
     public void test_asChar() {
-        Assert.assertEquals("From String of 1 character", 'X', Constant.of("X").asChar());
-        Assert.assertEquals("From String with multiple characters", 'a', Constant.of("abc").asChar());
-        Assert.assertEquals("From Number", '1', Constant.of(12.34).asChar());
-        Assert.assertEquals("From Logic", 't', Constant.of(true).asChar());
-        Assert.assertEquals("From Date", '1', Constant.of(EelContext.FALSE_DATE).asChar());
+        assertEquals('X', Constant.of("X").asChar(), "From String of 1 character");
+        assertEquals('a', Constant.of("abc").asChar(), "From String with multiple characters");
+        assertEquals('1', Constant.of(12.34).asChar(), "From Number");
+        assertEquals('t', Constant.of(true).asChar(), "From Logic");
+        assertEquals('1', Constant.of(EelContext.FALSE_DATE).asChar(), "From Date");
 
-        Assert.assertThrows("Empty String", EelConvertException.class, () -> Constant.of("").asChar());
+        assertThrows(EelConvertException.class, () -> Constant.of("").asChar(), "Empty String");
     }
 }

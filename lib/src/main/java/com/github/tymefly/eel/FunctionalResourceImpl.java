@@ -21,10 +21,10 @@ class FunctionalResourceImpl implements FunctionalResource {
 
     @Nonnull
     @Override
-    public <T> T getResource(@Nonnull String name, @Nonnull Function<String, T> constructor) {
+    public <T> T getResource(@Nonnull String name, @Nonnull Function<String, T> factory) {
         Preconditions.checkNotNull(name, "The resource does not have a name");
-        Preconditions.checkNotNull(constructor, "The resource does not have a constructor");
+        Preconditions.checkNotNull(factory, "The resource does not have a factory method");
 
-        return context.getResource(owner, name, constructor);
+        return context.getResource(owner, name, factory);
     }
 }

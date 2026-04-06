@@ -12,10 +12,10 @@ import javax.lang.model.type.TypeMirror;
 
 import com.github.tymefly.eel.doc.utils.EelType;
 import com.github.tymefly.eel.udf.DefaultArgument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -79,9 +79,10 @@ public class ParameterListTest {
 
             ParameterList actual = ParameterList.build(element);
 
-            Assert.assertEquals("Unexpected parameter",
+            assertEquals(
                 new Parameter("param1", EelType.TEXT, 0, null, false),
-                actual.get("param1"));
+                actual.get("param1"),
+                "Unexpected parameter");
         }
     }
 
@@ -104,9 +105,10 @@ public class ParameterListTest {
 
             ParameterList actual = ParameterList.build(element);
 
-            Assert.assertEquals("Unexpected parameter",
+            assertEquals(
                 new Parameter("param1", EelType.TEXT, 0, "param1-description", false),
-                actual.get("param1"));
+                actual.get("param1"),
+                "Unexpected parameter");
         }
     }
 
@@ -129,9 +131,10 @@ public class ParameterListTest {
 
             ParameterList actual = ParameterList.build(element);
 
-            Assert.assertEquals("Unexpected parameter",
+            assertEquals(
                 new Parameter("param1", EelType.TEXT, 0, "Hello World", false),
-                actual.get("param1"));
+                actual.get("param1"),
+                "Unexpected parameter");
         }
     }
 
@@ -154,9 +157,10 @@ public class ParameterListTest {
 
             ParameterList actual = ParameterList.build(element);
 
-            Assert.assertEquals("Unexpected parameter",
+            assertEquals(
                 new Parameter("param1", EelType.TEXT, 0, null, true),
-                actual.get("param1"));
+                actual.get("param1"),
+                "Unexpected parameter");
         }
     }
 
@@ -183,13 +187,14 @@ public class ParameterListTest {
             ParameterList list = ParameterList.build(element);
             List<Parameter> actual = list.stream().toList();
 
-            Assert.assertEquals("Unexpected parameter",
+            assertEquals(
                 List.of(
                     new Parameter("param1", EelType.TEXT, 0, null, false),
                     new Parameter("param2", EelType.NUMBER, 1, "param2-description", false),
                     new Parameter("param3", EelType.LOGIC, 2, "foo", true)
                 ),
-                actual);
+                actual,
+                "Unexpected parameter");
         }
     }
 }

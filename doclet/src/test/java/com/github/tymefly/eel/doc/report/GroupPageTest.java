@@ -1,5 +1,4 @@
 package com.github.tymefly.eel.doc.report;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -7,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.ElementModel;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
@@ -18,14 +17,13 @@ import com.github.tymefly.eel.doc.model.TextModel;
 import com.github.tymefly.eel.doc.utils.EelType;
 import j2html.tags.ContainerTag;
 import j2html.tags.DomContent;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -35,10 +33,11 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link GroupPage}
  */
 public class GroupPageTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private Context context;
+    @TempDir
+    public java.io.File temporaryFolder;
+
+    private EelDocContext context;
     private GroupModel group;
     private FunctionModel function;
     private ParamModel parameter;
@@ -46,9 +45,9 @@ public class GroupPageTest {
     private TextModel textModel;
     private GroupPage page;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        context = mock(Context.class);
+        context = mock(EelDocContext.class);
         group = mock(GroupModel.class);
         function = mock(FunctionModel.class);
         parameter = mock(ParamModel.class);
@@ -108,9 +107,10 @@ public class GroupPageTest {
      */
     @Test
     public void test_disabledMenuOptions() {
+        Set<MenuItem> expected = Set.of();
         EnumSet<MenuItem> actual = page.disabledMenuOptions();
 
-        assertEquals("No options should be disabled", Set.of(), actual);
+        assertEquals(expected, actual, "No options should be disabled");
     }
 
 
@@ -136,7 +136,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Missing group name", html.contains("<h2 class=\"block-name\" id=\"_Group_\">myGroups</h2>"));
+            assertTrue(html.contains("<h2 class=\"block-name\" id=\"_Group_\">myGroups</h2>"), "Missing group name");
         }
     }
 
@@ -162,7 +162,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Missing function signature", html.contains("id=\"myFunction\">myFunction(arg1, arg2)"));
+            assertTrue(html.contains("id=\"myFunction\">myFunction(arg1, arg2)"), "Missing function signature");
         }
     }
 
@@ -188,10 +188,10 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Missing parameter block", html.contains("<div class=\"parameter-block\">"));
-            assertTrue("Missing parameter name", html.contains("<code>arg</code>"));
-            assertTrue("Missing parameter desc", html.contains("<code class=\"parameterType description\">Number</code>"));
-            assertTrue("Missing parameter default", html.contains("<span class=\"description\">10</span>"));
+            assertTrue(html.contains("<div class=\"parameter-block\">"), "Missing parameter block");
+            assertTrue(html.contains("<code>arg</code>"), "Missing parameter name");
+            assertTrue(html.contains("<code class=\"parameterType description\">Number</code>"), "Missing parameter desc");
+            assertTrue(html.contains("<span class=\"description\">10</span>"), "Missing parameter default");
         }
     }
 
@@ -222,8 +222,8 @@ public class GroupPageTest {
             DomContent content = page.buildPageContent();
             String actual = content.render();
 
-            assertTrue("Signature with defaulted parameter", actual.contains("<code>myFunction()</code>"));
-            assertTrue("Signature without defaulted parameter", actual.contains("<code>myFunction(arg)</code>"));
+            assertTrue(actual.contains("<code>myFunction()</code>"), "Signature with defaulted parameter");
+            assertTrue(actual.contains("<code>myFunction(arg)</code>"), "Signature without defaulted parameter");
         }
     }
 
@@ -256,7 +256,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("buildPageContent renders call with varargs parameter", html.contains("myFunction(arg...)"));
+            assertTrue(html.contains("myFunction(arg...)"), "buildPageContent renders call with varargs parameter");
         }
     }
 
@@ -282,7 +282,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Missing return type", html.contains("<div class=\"parameterType\">Number</div>"));
+            assertTrue(html.contains("<div class=\"parameterType\">Number</div>"), "Missing return type");
         }
     }
 
@@ -310,7 +310,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Missing deprecated warning", html.contains("<h3>Deprecated</h3>"));
+            assertTrue(html.contains("<h3>Deprecated</h3>"), "Missing deprecated warning");
         }
     }
 
@@ -345,7 +345,7 @@ public class GroupPageTest {
             DomContent actual = page.buildPageContent();
             String html = actual.render();
 
-            assertTrue("Expected group name", html.contains("MyGroups"));           // TODO: Improve this
+            assertTrue(html.contains("MyGroups"), "Expected group name");
         }
     }
 
@@ -382,7 +382,7 @@ public class GroupPageTest {
             ContainerTag<?> actual = page.textTags(group, TagType.RETURN);
             String html = actual.render();
 
-            assertTrue("Missing Tag name", html.contains("<h3>Returns:</h3>"));
+            assertTrue(html.contains("<h3>Returns:</h3>"), "Missing Tag name");
         }
     }
 }

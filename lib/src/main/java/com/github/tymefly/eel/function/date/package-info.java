@@ -2,9 +2,9 @@
  * Functions that manipulate or generate dates.
  * <br>
  * Most date functions support modifying, setting, offsetting, or rounding a date with respect to one or more
- * time periods. The supported time periods are:
- * <p/>
+ * time periods.
  * <table border="1">
+ *   <caption>The supported time periods</caption>
  *   <tr>
  *     <th>Period</th>
  *     <th>Full Names</th>
@@ -23,84 +23,84 @@
  *       <td> <b>Months</b> </td>
  *       <td> <code>month</code>, <code>months</code> </td>
  *       <td> <code>M</code> </td>
- *       <td> 1 to 12 </td>
+ *       <td>1 to 12</td>
  *       <td></td>
  *   </tr>
  *   <tr>
  *       <td> <b>Weeks</b> </td>
  *       <td> <code>week</code>, <code>weeks</code> </td>
  *       <td> <code>w</code> </td>
- *       <td> 0 to 54 </td>
- *       <td> [1] </td>
+ *       <td>0 to 54</td>
+ *       <td>[1]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Days</b> </td>
  *       <td> <code>day</code>, <code>days</code> </td>
  *       <td> <code>d</code> </td>
- *       <td> 1 to 28, 29, 30 or 31 </td>
+ *       <td>1 to 28, 29, 30, or 31</td>
  *       <td></td>
  *   </tr>
  *   <tr>
  *       <td> <b>Hours</b> </td>
  *       <td> <code>hour</code>, <code>hours</code> </td>
  *       <td> <code>h</code> </td>
- *       <td> 0 to 23 </td>
+ *       <td>0 to 23</td>
  *       <td></td>
  *   </tr>
  *   <tr>
  *       <td> <b>Minutes</b> </td>
  *       <td> <code>minute</code>, <code>minutes</code> </td>
  *       <td> <code>m</code> </td>
- *       <td> 0 to 59 </td>
+ *       <td>0 to 59</td>
  *       <td></td>
  *   </tr>
  *   <tr>
  *       <td> <b>Seconds</b> </td>
  *       <td> <code>second</code>, <code>seconds</code> </td>
  *       <td> <code>s</code> </td>
- *       <td> 0 to 59 </td>
+ *       <td>0 to 59</td>
  *       <td></td>
  *   </tr>
  *   <tr>
  *       <td> <b>Milli</b> </td>
  *       <td> <code>milli</code>, <code>millis</code> </td>
  *       <td> <code>I</code> </td>
- *       <td> 0 to 999 </td>
- *       <td> [2] </td>
+ *       <td>0 to 999</td>
+ *       <td>[2]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Micro</b> </td>
  *       <td> <code>micro</code>, <code>micros</code> </td>
  *       <td> <code>U</code> </td>
- *       <td> 0 to 999 </td>
- *       <td> [2] </td>
+ *       <td>0 to 999</td>
+ *       <td>[2]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Nano</b> </td>
  *       <td> <code>nano</code>, <code>nanos</code> </td>
  *       <td> <code>N</code> </td>
- *       <td> 0 to 999 </td>
- *       <td> [2] </td>
+ *       <td>0 to 999</td>
+ *       <td>[2]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Milli of second</b> </td>
  *       <td> <code>milliOfSecond</code>, <code>millisOfSecond</code> </td>
  *       <td> <code>i</code> </td>
- *       <td> 0 to 999 </td>
- *       <td> [3] </td>
+ *       <td>0 to 999</td>
+ *       <td>[3]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Micro of second</b> </td>
  *       <td> <code>microOfSecond</code>, <code>microsOfSecond</code> </td>
  *       <td> <code>u</code> </td>
- *       <td> 0 to 999,999 </td>
- *       <td> [3] </td>
+ *       <td>0 to 999,999</td>
+ *       <td>[3]</td>
  *   </tr>
  *   <tr>
  *       <td> <b>Nano of second</b> </td>
  *       <td> <code>nanoOfSecond</code>, <code>nanosOfSecond</code> </td>
  *       <td> <code>n</code> </td>
- *       <td> 0 to 999,999,999 </td>
+ *       <td>0 to 999,999,999</td>
  *       <td>[3]</td>
  *   </tr>
  * </table>
@@ -108,7 +108,7 @@
  * <b>Notes:</b>
  * <ol>
  *   <li>The first day of a week and the first week of a year are set in the EEL context. By default, the first day
- *       of the week is Monday, and there are at least 4 days in the first week, following ISO standard 8601.</li>
+ *       of the week is Monday, and there are at least 4 days in the first week, following ISO 8601.</li>
  *   <li>Milli, Micro, and Nano are independent. For example, setting microseconds does not affect milliseconds or
  *       nanoseconds.</li>
  *   <li>Milli of Second, Micro of Second, and Nano of Second update all fractional parts of a second.
@@ -119,7 +119,7 @@
  * Period names are case-sensitive. Time zones can be:
  * <ul>
  *   <li>Fixed offsets – a resolved offset from UTC such as {@code +5}</li>
- *   <li>Geographical regions – a region following specific rules to find offsets, e.g., {@code Europe/Paris}</li>
+ *   <li>Geographical regions – a region following specific rules to determine offsets, e.g., {@code Europe/Paris}</li>
  * </ul>
  * <p>
  * Time periods can be snapped to the start of a period with a modifier {@code @<period>}. Snap modifiers

@@ -1,14 +1,21 @@
 package com.github.tymefly.eel;
 
 import javax.annotation.Nonnull;
-
 /**
- * Types handled by the Expression parser
+ * Supported EEL data types.
+ * Each type represents a possible result of an evaluated EEL expression.
  */
 public enum Type {
+    /** Textual values. */
     TEXT("Text"),
+
+    /** Numeric values. */
     NUMBER("Number"),
+
+    /** Logical ({@code boolean}) values. */
     LOGIC("Logic"),
+
+    /** Date and time values. */
     DATE("Date");
 
     private final String name;

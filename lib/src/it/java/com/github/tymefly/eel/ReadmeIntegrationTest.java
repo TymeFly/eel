@@ -2,6 +2,7 @@ package com.github.tymefly.eel;
 
 import java.io.File;
 import java.io.InputStream;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -15,27 +16,33 @@ import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import com.github.tymefly.eel.readme.Half;
 import com.github.tymefly.eel.readme.MyClass1;
 import com.github.tymefly.eel.readme.MyClass2;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
 
 import static java.util.Map.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Code taken from the readme.md file
  */
+@ExtendWith(SystemStubsExtension.class)
 public class ReadmeIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    private File tempFolder;
 
 
     private static final String someExpression = "$( 0 + 1 )";
@@ -57,7 +64,7 @@ public class ReadmeIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -71,7 +78,7 @@ public class ReadmeIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -86,7 +93,7 @@ public class ReadmeIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -99,7 +106,7 @@ public class ReadmeIntegrationTest {
             .evaluate(symTable)
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -116,7 +123,7 @@ public class ReadmeIntegrationTest {
             .evaluate(symbols)
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -135,7 +142,7 @@ public class ReadmeIntegrationTest {
             .evaluate(symbols)
             .asText();
 
-        Assert.assertEquals("Unexpected result", "1", result);
+        assertEquals("1", result, "Unexpected result");
     }
 
     /**
@@ -156,14 +163,14 @@ public class ReadmeIntegrationTest {
 
         System.out.println("As a string " + result.asText());
 
-        Assert.assertTrue("Missing Number message",
-            stdOut.getLinesNormalized().contains("As a number 1"));
-        Assert.assertFalse("Unexpected Logic message",
-            stdOut.getLinesNormalized().contains("As logic"));
-        Assert.assertFalse("Unexpected Date message",
-            stdOut.getLinesNormalized().contains("As logic"));
-        Assert.assertTrue("Missing String message",
-            stdOut.getLinesNormalized().contains("As a string 1"));
+        assertTrue(stdOut.getLinesNormalized().contains("As a number 1"),
+            "Missing Number message");
+        assertFalse(stdOut.getLinesNormalized().contains("As logic"),
+            "Unexpected Logic message");
+        assertFalse(stdOut.getLinesNormalized().contains("As logic"),
+            "Unexpected Date message");
+        assertTrue(stdOut.getLinesNormalized().contains("As a string 1"),
+            "Missing String message");
     }
 
     /**
@@ -182,33 +189,33 @@ public class ReadmeIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
-    public void test_comments_closed() {
+    public void test_Comments_closed() {
         Result result = Eel.compile("$random( 10, ## upper-limit ## 99 )")
             .evaluate();
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, result.getType());
-        Assert.assertTrue("Unexpected Value: " + result.asText(), result.asText().matches("[1-9][0-9]"));
+        assertEquals(Type.NUMBER, result.getType(), "Unexpected Type");
+        assertTrue(result.asText().matches("[1-9][0-9]"), "Unexpected Value: " + result.asText());
     }
 
     /**
      * Integration test {@link Eel}
      */
     @Test
-    public void test_comments_trailing() {
+    public void test_Comments_trailing() {
         InputStream source = getClass().getResourceAsStream("/comment.eel");
         Result result = Eel.factory()
             .compile(source)
             .evaluate();
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, result.getType());
-        Assert.assertTrue("Unexpected Value: " + result.asText(), result.asText().matches("[1-9][0-9](\\.5)?"));
+        assertEquals(Type.NUMBER, result.getType(), "Unexpected Type");
+        assertTrue(result.asText().matches("[1-9][0-9](\\.5)?"), "Unexpected Value: " + result.asText());
     }
 
     /**
      * Integration test {@link Eel}
      */
     @Test
-    public void test_operator_notes() {
+    public void test_Operator_notes() {
         // in operator
         testExpression("$( (${myValue} = 1) or (${myValue} = 2) or (${myValue} = 3) )", Type.LOGIC, "false");
         testExpression("$( ${myValue} in { 1, 2, 3 } )", Type.LOGIC, "false");
@@ -257,9 +264,9 @@ public class ReadmeIntegrationTest {
             .withValues("m2", Map.ofEntries(entry("a", "Map2 value a"), entry("b", "Map2 value b")))
             .build();
 
-        Assert.assertThrows("${a}", EelUnknownSymbolException.class, () -> Eel.compile("${a}").evaluate(symbols));
-        Assert.assertEquals("${m1.a}", "Map1 value a", Eel.compile("${m1.a}").evaluate(symbols).asText());
-        Assert.assertEquals("${m2.b}", "Map2 value b", Eel.compile("${m2.b}").evaluate(symbols).asText());
+        assertThrows(EelUnknownSymbolException.class, () -> Eel.compile("${a}").evaluate(symbols), "${a}");
+        assertEquals("Map1 value a", Eel.compile("${m1.a}").evaluate(symbols).asText(), "${m1.a}");
+        assertEquals("Map2 value b", Eel.compile("${m2.b}").evaluate(symbols).asText(), "${m2.b}");
     }
 
     /**
@@ -267,33 +274,33 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_ValueInterpolation_modifiers() {
-        Assert.assertEquals("${key}", "myValue", Eel.compile("${key}").evaluate(someData).asText());
-        Assert.assertEquals("${#key}", "7", Eel.compile("${#key}").evaluate(someData).asText());
-        Assert.assertEquals("${key^}", "MyValue", Eel.compile("${key^}").evaluate(someData).asText());
-        Assert.assertEquals("${key^^}", "MYVALUE", Eel.compile("${key^^}").evaluate(someData).asText());
-        Assert.assertEquals("${key,}", "myValue", Eel.compile("${key,}").evaluate(someData).asText());
-        Assert.assertEquals("${key,,}", "myvalue", Eel.compile("${key,,}").evaluate(someData).asText());
-        Assert.assertEquals("${key~}", "MyValue", Eel.compile("${key~}").evaluate(someData).asText());
-        Assert.assertEquals("${key~~}", "MYvALUE", Eel.compile("${key~~}").evaluate(someData).asText());
-        Assert.assertEquals("${key:offset:count}", "Val", Eel.compile("${key:2:3}").evaluate(someData).asText());
-        Assert.assertEquals("${key-default}", "myValue", Eel.compile("${key-default}").evaluate(someData).asText());
+        assertEquals("myValue", Eel.compile("${key}").evaluate(someData).asText(), "${key}");
+        assertEquals("7", Eel.compile("${#key}").evaluate(someData).asText(), "${#key}");
+        assertEquals("MyValue", Eel.compile("${key^}").evaluate(someData).asText(), "${key^}");
+        assertEquals("MYVALUE", Eel.compile("${key^^}").evaluate(someData).asText(), "${key^^}");
+        assertEquals("myValue", Eel.compile("${key,}").evaluate(someData).asText(), "${key,}");
+        assertEquals("myvalue", Eel.compile("${key,,}").evaluate(someData).asText(), "${key,,}");
+        assertEquals("MyValue", Eel.compile("${key~}").evaluate(someData).asText(), "${key~}");
+        assertEquals("MYvALUE", Eel.compile("${key~~}").evaluate(someData).asText(), "${key~~}");
+        assertEquals("Val", Eel.compile("${key:2:3}").evaluate(someData).asText(), "${key:offset:count}");
+        assertEquals("myValue", Eel.compile("${key-default}").evaluate(someData).asText(), "${key-default}");
 
-        Assert.assertEquals("${key,,^}", "Myvalue", Eel.compile("${key,,^}").evaluate(someData).asText());
-        Assert.assertEquals("${key^^-default}", "MYVALUE", Eel.compile("${key^^-default}").evaluate(someData).asText());
-        Assert.assertEquals("${key:0:3,,}", "myv", Eel.compile("${key:0:3,,}").evaluate(someData).asText());
-        Assert.assertEquals("${key:2:3^}", "Val", Eel.compile("${key:2:3^}").evaluate(someData).asText());
-        Assert.assertEquals("${#key-default}", "7", Eel.compile("${#key-default}").evaluate(someData).asText());
-        Assert.assertEquals("${key:0:3:-default}", "myV", Eel.compile("${key:0:3:-default}").evaluate(someData).asText());
+        assertEquals("Myvalue", Eel.compile("${key,,^}").evaluate(someData).asText(), "${key,,^}");
+        assertEquals("MYVALUE", Eel.compile("${key^^-default}").evaluate(someData).asText(), "${key^^-default}");
+        assertEquals("myv", Eel.compile("${key:0:3,,}").evaluate(someData).asText(), "${key:0:3,,}");
+        assertEquals("Val", Eel.compile("${key:2:3^}").evaluate(someData).asText(), "${key:2:3^}");
+        assertEquals("7", Eel.compile("${#key-default}").evaluate(someData).asText(), "${#key-default}");
+        assertEquals("myV", Eel.compile("${key:0:3:-default}").evaluate(someData).asText(), "${key:0:3:-default}");
 
-        Assert.assertEquals("${undefined-defaultText}", "defaultText", Eel.compile("${undefined-defaultText}").evaluate(someData).asText());
-        Assert.assertEquals("${undefined-}", "", Eel.compile("${undefined-}").evaluate(someData).asText());
-        Assert.assertEquals("${first-${second}}", "2nd", Eel.compile("${first-${second}}").evaluate(someData).asText());
-        Assert.assertEquals("${first-${second-defaultText}}", "2nd", Eel.compile("${first-${second-defaultText}}").evaluate(someData).asText());
-        Assert.assertEquals("${undefined-$myFunction()}", "299792458", Eel.compile("${undefined-$number.c()}").evaluate(someData).asText());
-        Assert.assertEquals("${undefined-$( expression )}", "hello", Eel.compile("${undefined-$( 'hello' )}").evaluate(someData).asText());
-        Assert.assertEquals("${STR:$(indexOf(${STR}, '~', fail()) + 1):1}",
-            "0",
-            Eel.compile("${STR:$(indexOf(${STR}, '~', fail()) + 1):1}").evaluate(someData).asText());
+        assertEquals("defaultText", Eel.compile("${undefined-defaultText}").evaluate(someData).asText(), "${undefined-defaultText}");
+        assertEquals("", Eel.compile("${undefined-}").evaluate(someData).asText(), "${undefined-}");
+        assertEquals("2nd", Eel.compile("${first-${second}}").evaluate(someData).asText(), "${first-${second}}");
+        assertEquals("2nd", Eel.compile("${first-${second-defaultText}}").evaluate(someData).asText(), "${first-${second-defaultText}}");
+        assertEquals("299792458", Eel.compile("${undefined-$number.c()}").evaluate(someData).asText(), "${undefined-$myFunction()}");
+        assertEquals("hello", Eel.compile("${undefined-$( 'hello' )}").evaluate(someData).asText(), "${undefined-$( expression )}");
+        assertEquals("0",
+            Eel.compile("${STR:$(indexOf(${STR}, '~', fail()) + 1):1}").evaluate(someData).asText(),
+            "${STR:$(indexOf(${STR}, '~', fail()) + 1):1}");
     }
 
 
@@ -302,27 +309,31 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_Lazy() {
-        Assert.assertEquals("Value interpolation might not evaluate the default",
-            "Undefined",
-            Eel.compile("${myVariable-$log.error('Undefined')}").evaluate(someData).asText());
+        assertEquals("Undefined",
+            Eel.compile("${myVariable-$log.error('Undefined')}").evaluate(someData).asText(),
+            "Value interpolation might not evaluate the default");
 
-        Assert.assertEquals("The conditional operator will only evaluate one path",
-            "Undefined",
-            Eel.compile("$( myVariable? ? ${myVariable} : log.error('Undefined') )").evaluate(someData).asText());
+        assertEquals("Undefined",
+            Eel.compile("$( myVariable? ? ${myVariable} : log.error('Undefined') )").evaluate(someData).asText(),
+            "The conditional operator will only evaluate one path");
 
-        Assert.assertEquals("The logic operators are short-circuited - or",
-            "true",
-            Eel.compile("$( true or (count() = 10) )").evaluate(someData).asText());
-        Assert.assertEquals("The logic operators are short-circuited - and",
-            "false",
-            Eel.compile("$( false and (count() = 10) )").evaluate(someData).asText());
+        assertEquals("true",
+            Eel.compile("$( true or (count() = 10) )").evaluate(someData).asText(),
+            "The logic operators are short-circuited - or");
+        assertEquals("false",
+            Eel.compile("$( false and (count() = 10) )").evaluate(someData).asText(),
+            "The logic operators are short-circuited - and");
 
-        Assert.assertEquals("Function arguments might not be evaluated - no default",
-            "-1",
-            Eel.compile("$indexOf(${myVariable-}, 'x')").evaluate(someData).asText());
-        Assert.assertEquals("Function arguments might not be evaluated - with default",
-            "99",
-            Eel.compile("$indexOf( ${myVariable-}, 'x', log.error('Undefined', 99) )").evaluate(someData).asText());
+        assertEquals("-1",
+            Eel.compile("$indexOf(${myVariable-}, 'x')").evaluate(someData).asText(),
+            "Function arguments might not be evaluated - no default");
+        assertEquals("99",
+            Eel.compile("$indexOf( ${myVariable-}, 'x', log.error('Undefined', 99) )").evaluate(someData).asText(),
+            "Function arguments might not be evaluated - with default");
+
+        assertEquals("1",
+            Eel.compile("$( 1 ; fail(\"Not evaluated\") ; $[1] )").evaluate(someData).asText(),
+            "Fail should not be evaluated");
     }
 
 
@@ -335,7 +346,7 @@ public class ReadmeIntegrationTest {
             .withUdfClass(Half.class)
             .build();
 
-        Assert.assertEquals("divide.by2( 1234 )", "617", Eel.compile(context, "$divide.by2( 1234 )").evaluate().asText());
+        assertEquals("617", Eel.compile(context, "$divide.by2( 1234 )").evaluate().asText(), "divide.by2( 1234 )");
     }
 
     /**
@@ -348,9 +359,9 @@ public class ReadmeIntegrationTest {
             .withUdfClass(MyClass2.class)
             .build();
 
-        Assert.assertEquals("Unexpected",
-            "99 - myName1",
-            Eel.compile(context, "$my.random() - $my.stateful()").evaluate().asText());
+        assertEquals("99 - myName1",
+            Eel.compile(context, "$my.random() - $my.stateful()").evaluate().asText(),
+            "Unexpected");
     }
 
     /**
@@ -362,9 +373,9 @@ public class ReadmeIntegrationTest {
             .withUdfPackage(MyClass1.class.getPackage())    // Any of the classes in the package could have been used
             .build();
 
-        Assert.assertEquals("Unexpected",
-            "99",
-            Eel.compile(context, "$my.random()").evaluate().asText());
+        assertEquals("99",
+            Eel.compile(context, "$my.random()").evaluate().asText(),
+            "Unexpected");
     }
 
     /**
@@ -372,13 +383,13 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_TextPassThrough() {
-        Assert.assertEquals("Text pass through",
-            "this is an expression",
-            Eel.compile("this is an expression").evaluate().asText());
+        assertEquals("this is an expression",
+            Eel.compile("this is an expression").evaluate().asText(),
+            "Text pass through");
 
-        Assert.assertEquals("with new line",
-            "Hello\nWorld",
-            Eel.compile("Hello\\nWorld").evaluate().asText());
+        assertEquals("Hello\nWorld",
+            Eel.compile("Hello\\nWorld").evaluate().asText(),
+            "with new line");
     }
 
     /**
@@ -386,9 +397,9 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_ForcingTheResultType() {
-        Assert.assertEquals("unexpected type",
-            Type.NUMBER,
-            Eel.compile("$number( ${#myValue--1} )").evaluate().getType());
+        assertEquals(Type.NUMBER,
+            Eel.compile("$number( ${#myValue--1} )").evaluate().getType(),
+            "unexpected type");
     }
 
     /**
@@ -396,12 +407,12 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_PathsWithCommonRoot() {
-        Assert.assertEquals("${root}/config",
-            "/my/path/config",
-            Eel.compile("${root}/config").evaluate(someData).asText());
-        Assert.assertEquals("${root}/template",
-            "/my/path/template",
-            Eel.compile("${root}/template").evaluate(someData).asText());
+        assertEquals("/my/path/config",
+            Eel.compile("${root}/config").evaluate(someData).asText(),
+            "${root}/config");
+        assertEquals("/my/path/template",
+            Eel.compile("${root}/template").evaluate(someData).asText(),
+            "${root}/template");
     }
 
 
@@ -413,20 +424,20 @@ public class ReadmeIntegrationTest {
         String actual;
 
         actual = Eel.compile("Next week is $date.local( \"7d\" )").evaluate().asText();
-        Assert.assertTrue("Next week is $date.local( \"7d\" ) returned: " + actual,
-            actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"));
+        assertTrue(actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"),
+            "Next week is $date.local( \"7d\" ) returned: " + actual);
 
         actual = Eel.compile("Next week is $date.set( date.local(\"7d\"), \"@d\" )").evaluate().asText();
-        Assert.assertTrue("Next week is $date.set( date.local(\"7d\"), \"@d\" ) returned: " + actual,
-            actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"));
+        assertTrue(actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"),
+            "Next week is $date.set( date.local(\"7d\"), \"@d\" ) returned: " + actual);
 
         actual = Eel.compile("Next week is $date.local( \"7d\", \"@d\" )").evaluate().asText();
-        Assert.assertTrue("Next week is $date.local( \"7d\", \"@d\" ) returned: " + actual,
-            actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T00:00:00.*"));
+        assertTrue(actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}T00:00:00.*"),
+            "Next week is $date.local( \"7d\", \"@d\" ) returned: " + actual);
 
         actual = Eel.compile("Next week is $format.local( \"yyyy-MM-dd\", \"7d\" )").evaluate().asText();
-        Assert.assertTrue("Next week is $format.local( \"yyyy-MM-dd\", \"7d\" ) returned: " + actual,
-            actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}"));
+        assertTrue(actual.matches("Next week is \\d{4}-\\d{2}-\\d{2}"),
+            "Next week is $format.local( \"yyyy-MM-dd\", \"7d\" ) returned: " + actual);
     }
 
     /**
@@ -436,13 +447,13 @@ public class ReadmeIntegrationTest {
     public void test_Counters() {
         EelContext context = EelContext.factory().build();
 
-        Assert.assertEquals("$count()",
-            0,
-            Eel.compile(context, "$count()").evaluate().asInt());
+        assertEquals(0,
+            Eel.compile(context, "$count()").evaluate().asInt(),
+            "$count()");
 
-        Assert.assertEquals("First: $count( \"first\" ), Second: $count( \"second\" )",
-            "First: 0, Second: 0",
-            Eel.compile(context, "First: $count( \"first\" ), Second: $count( \"second\" )").evaluate().asText());
+        assertEquals("First: 0, Second: 0",
+            Eel.compile(context, "First: $count( \"first\" ), Second: $count( \"second\" )").evaluate().asText(),
+            "First: $count( \"first\" ), Second: $count( \"second\" )");
     }
 
     /**
@@ -452,9 +463,9 @@ public class ReadmeIntegrationTest {
     public void test_CreatingSequenceOfFiles() {
         EelContext context = EelContext.factory().build();
 
-        Assert.assertTrue("$system.temp()/${myFilePrefix-}$count().txt",
-            Eel.compile(context, "$system.temp()/${myFilePrefix-}$count().txt").evaluate(someData).asText()
-                .matches(".+/myFile0.txt$"));
+        assertTrue(Eel.compile(context, "$system.temp()/${myFilePrefix-}$count().txt").evaluate(someData).asText()
+                .matches(".+/myFile0.txt$"),
+            "$system.temp()/${myFilePrefix-}$count().txt");
     }
 
     /**
@@ -464,9 +475,9 @@ public class ReadmeIntegrationTest {
     public void test_DateTimeBasedDirectories() {
         EelContext context = EelContext.factory().build();
 
-        Assert.assertTrue("${root-}/$format.local(\"yyyy/MM/dd/HH/\")",
-            Eel.compile(context, "${root-}/$format.local(\"yyyy/MM/dd/HH/\")").evaluate(someData).asText()
-                .matches("/my/path/\\d{4}/\\d{2}/\\d{2}/\\d{2}/"));
+        assertTrue(Eel.compile(context, "${root-}/$format.local(\"yyyy/MM/dd/HH/\")").evaluate(someData).asText()
+                .matches("/my/path/\\d{4}/\\d{2}/\\d{2}/\\d{2}/"),
+            "${root-}/$format.local(\"yyyy/MM/dd/HH/\")");
     }
 
     /**
@@ -480,8 +491,8 @@ public class ReadmeIntegrationTest {
             .evaluate(someData)
             .asText();
 
-        Assert.assertTrue("SeparatingRandomlyNamedFiles: " + actual,
-            actual.matches("/my/path/(\\d{4})/\\1\\d{6}\\.txt"));
+        assertTrue(actual.matches("/my/path/(\\d{4})/\\1\\d{6}\\.txt"),
+            "SeparatingRandomlyNamedFiles: " + actual);
     }
 
     /**
@@ -491,17 +502,17 @@ public class ReadmeIntegrationTest {
     public void test_ConvertingPaths() {
         SymbolsTable symbols = SymbolsTable.from(Map.of("root", "\\my\\path"));
 
-        Assert.assertEquals("$replace( ${root-}, '\\\\', '/')",
-            "/my/path",
-            Eel.compile("$replace( ${root-}, '\\\\', '/')").evaluate(symbols).asText());
+        assertEquals("/my/path",
+            Eel.compile("$replace( ${root-}, '\\\\', '/')").evaluate(symbols).asText(),
+            "$replace( ${root-}, '\\\\', '/')");
 
-        Assert.assertTrue("$realPath( ${root-} )",
-            Eel.compile("$realPath( ${root-} )").evaluate(symbols).asText()
-                .matches("(.:)?[/\\\\]my[/\\\\]path"));
+        assertTrue(Eel.compile("$realPath( ${root-} )").evaluate(symbols).asText()
+                .matches("(.:)?[/\\\\]my[/\\\\]path"),
+            "$realPath( ${root-} )");
 
-        Assert.assertTrue("$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )",
-            Eel.compile("$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )").evaluate(symbols).asText()
-                .matches("(.:)?[/\\\\]my[/\\\\]path[/\\\\]\\d{4}[/\\\\]\\d{2}[/\\\\]\\d{2}[/\\\\]\\d{2}"));
+        assertTrue(Eel.compile("$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )").evaluate(symbols).asText()
+                .matches("(.:)?[/\\\\]my[/\\\\]path[/\\\\]\\d{4}[/\\\\]\\d{2}[/\\\\]\\d{2}[/\\\\]\\d{2}"),
+            "$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )");
     }
 
     /**
@@ -509,22 +520,25 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_DirectoriesListings() throws Exception {
-        File first = tempFolder.newFile("first.tmp");
-        SymbolsTable symbols = SymbolsTable.from(Map.of("myPath", tempFolder.getRoot().getCanonicalPath()));
+        File first = new File(tempFolder, "first.tmp");
+        SymbolsTable symbols = SymbolsTable.from(Map.of("myPath", tempFolder.getCanonicalPath()));
 
-        Assert.assertEquals("$firstModified( ${myPath} )",
-            first.getCanonicalPath(),
-            Eel.compile("$firstModified( ${myPath} )").evaluate(symbols).asText());
+        first.createNewFile();
 
-        File second = tempFolder.newFile("second.txt");
+        assertEquals(first.getCanonicalPath(),
+            Eel.compile("$firstModified( ${myPath} )").evaluate(symbols).asText(),
+            "$firstModified( ${myPath} )");
 
-        Assert.assertEquals("$firstModified( ${myPath}, \"*.txt\" )",
-            second.getCanonicalPath(),
-            Eel.compile("$firstModified( ${myPath}, \"*.txt\" )").evaluate(symbols).asText());
+        File second = new File(tempFolder, "second.txt");
+        second.createNewFile();
 
-        Assert.assertEquals("$( firstModified( ${myPath}, \"*.txt\", count() ) )",
-            second.getCanonicalPath(),
-            Eel.compile("$( firstModified( ${myPath}, \"*.txt\", count() ) )").evaluate(symbols).asText());
+        assertEquals(second.getCanonicalPath(),
+            Eel.compile("$firstModified( ${myPath}, \"*.txt\" )").evaluate(symbols).asText(),
+            "$firstModified( ${myPath}, \"*.txt\" )");
+
+        assertEquals(second.getCanonicalPath(),
+            Eel.compile("$( firstModified( ${myPath}, \"*.txt\", count() ) )").evaluate(symbols).asText(),
+            "$( firstModified( ${myPath}, \"*.txt\", count() ) )");
 
         String result;
         int count = -1;
@@ -534,7 +548,7 @@ public class ReadmeIntegrationTest {
             count++;
         } while (!result.isEmpty() && (count < 999));
 
-        Assert.assertEquals("Unexpected number of files found", 1, count);
+        assertEquals(1, count, "Unexpected number of files found");
     }
 
     /**
@@ -545,54 +559,54 @@ public class ReadmeIntegrationTest {
         Result result;
 
         result = Eel.compile("$log.info( ${myValue-Not Set} )").evaluate();
-        Assert.assertEquals("message#1",
-            "Not Set",
-            result.asText());
-        Assert.assertEquals("Message#1 type",
-            Type.TEXT,
-            result.getType());
-        Assert.assertTrue("Message#1 not logged",
-            stdOut.getLinesNormalized().contains("Logged EEL Message: Not Set\n"));
+        assertEquals("Not Set",
+            result.asText(),
+            "message#1");
+        assertEquals(Type.TEXT,
+            result.getType(),
+            "Message#1 type");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: Not Set\n"),
+            "Message#1 not logged");
 
         result = Eel.compile("$log.info( \"The value is {}\", ${myValue-not set} )").evaluate();
-        Assert.assertEquals("Message#2",
-            "not set",
-            result.asText());
-        Assert.assertEquals("Message#2 type",
-            Type.TEXT,
-            result.getType());
-        Assert.assertTrue("Message#2 not logged",
-            stdOut.getLinesNormalized().contains("Logged EEL Message: The value is not set\n"));
+        assertEquals("not set",
+            result.asText(),
+            "Message#2");
+        assertEquals(Type.TEXT,
+            result.getType(),
+            "Message#2 type");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: The value is not set\n"),
+            "Message#2 not logged");
 
         result = Eel.compile("$log.info( \"Evaluating {} + {} = {}\", 1, 2, ( 1 + 2 ) )").evaluate();
-        Assert.assertEquals("Message#3",
-            "3",
-            result.asText());
-        Assert.assertEquals("Message#3 type",
-            Type.NUMBER,
-            result.getType());
-        Assert.assertTrue("Message#3 not logged",
-            stdOut.getLinesNormalized().contains("Logged EEL Message: Evaluating 1 + 2 = 3\n"));
+        assertEquals("3",
+            result.asText(),
+            "Message#3");
+        assertEquals(Type.NUMBER,
+            result.getType(),
+            "Message#3 type");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: Evaluating 1 + 2 = 3\n"),
+            "Message#3 not logged");
 
         result = Eel.compile("${myValue-$log.warn( \"myValue is not set\" )}").evaluate();
-        Assert.assertEquals("Message#4",
-            "myValue is not set",
-            result.asText());
-        Assert.assertEquals("Message#4 type",
-            Type.TEXT,
-            result.getType());
-        Assert.assertTrue("Message#4 not logged",
-            stdOut.getLinesNormalized().contains("Logged EEL Message: myValue is not set\n"));
+        assertEquals("myValue is not set",
+            result.asText(),
+            "Message#4");
+        assertEquals(Type.TEXT,
+            result.getType(),
+            "Message#4 type");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: myValue is not set\n"),
+            "Message#4 not logged");
 
         result = Eel.compile("$log.info( \"{} {}\", \"Hello\", \"World\", 99 )").evaluate();
-        Assert.assertEquals("Message#5",
-            "99",
-            result.asText());
-        Assert.assertEquals("Message#5 type",
-            Type.NUMBER,
-            result.getType());
-        Assert.assertTrue("Message#5 not logged",
-            stdOut.getLinesNormalized().contains("Logged EEL Message: Hello World\n"));
+        assertEquals("99",
+            result.asText(),
+            "Message#5");
+        assertEquals(Type.NUMBER,
+            result.getType(),
+            "Message#5 type");
+        assertTrue(stdOut.getLinesNormalized().contains("Logged EEL Message: Hello World\n"),
+            "Message#5 not logged");
     }
 
     /**
@@ -602,33 +616,33 @@ public class ReadmeIntegrationTest {
     public void test_FailingExpressions() {
         Exception actual;
 
-        actual = Assert.assertThrows("Test1",
-            EelFailException.class,
-            () -> Eel.compile("$( ${myValue-} ; isEmpty( $[1] ) ? fail() : $[1] )").evaluate());
-        Assert.assertEquals("Unexpected message#1",
-            "",
-            actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile("$( ${myValue-} ; isEmpty( $[1] ) ? fail() : $[1] )").evaluate(),
+            "Test1");
+        assertEquals("",
+            actual.getMessage(),
+            "Unexpected message#1");
 
-        actual = Assert.assertThrows("Test2",
-            EelFailException.class,
-            () -> Eel.compile("${myValue-$fail(\"Custom Message\")}").evaluate());
-        Assert.assertEquals("Unexpected message#2",
-            "Custom Message",
-            actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile("${myValue-$fail(\"Custom Message\")}").evaluate(),
+            "Test2");
+        assertEquals("Custom Message",
+            actual.getMessage(),
+            "Unexpected message#2");
 
-        actual = Assert.assertThrows("Test3",
-            EelFailException.class,
-            () -> Eel.compile("$( not myValue1? or not myValue2? ? fail() : ${myValue1} ~> ${myValue2} )").evaluate());
-        Assert.assertEquals("Unexpected message#3",
-            "",
-            actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile("$( not myValue1? or not myValue2? ? fail() : ${myValue1} ~> ${myValue2} )").evaluate(),
+            "Test3");
+        assertEquals("",
+            actual.getMessage(),
+            "Unexpected message#3");
 
-        actual = Assert.assertThrows("Test4",
-            EelFailException.class,
-            () -> Eel.compile("$( eel.version() >= 99.9 ? 0 : fail(\"Invalid EEL Version\") )").evaluate());
-        Assert.assertEquals("Unexpected message#4",
-            "Invalid EEL Version",
-            actual.getMessage());
+        actual = assertThrows(EelFailException.class,
+            () -> Eel.compile("$( eel.version() >= 99.9 ? 0 : fail(\"Invalid EEL Version\") )").evaluate(),
+            "Test4");
+        assertEquals("Invalid EEL Version",
+            actual.getMessage(),
+            "Unexpected message#4");
     }
 
     /**
@@ -639,40 +653,40 @@ public class ReadmeIntegrationTest {
         Result result;
         EelFailException exception;
 
-        Assert.assertFalse("$indexOf( 'abcdef', 'z' )",
-            Eel.compile("$indexOf( 'abcdef', 'z' )").evaluate().asLogic());
+        assertFalse(Eel.compile("$indexOf( 'abcdef', 'z' )").evaluate().asLogic(),
+            "$indexOf( 'abcdef', 'z' )");
 
-        Assert.assertEquals("$indexOf( 'abcdef', 'z', 0 )",
-            0,
-            Eel.compile("$indexOf( 'abcdef', 'z', 0 )").evaluate().asInt());
+        assertEquals(0,
+            Eel.compile("$indexOf( 'abcdef', 'z', 0 )").evaluate().asInt(),
+            "$indexOf( 'abcdef', 'z', 0 )");
 
-        exception = Assert.assertThrows("$indexOf( 'abcdef', 'z', fail() )",
-            EelFailException.class,
-            () -> Eel.compile("$indexOf( 'abcdef', 'z', fail() )").evaluate());
-        Assert.assertEquals("Unexpected message",
-            "",
-            exception.getMessage());
+        exception = assertThrows(EelFailException.class,
+            () -> Eel.compile("$indexOf( 'abcdef', 'z', fail() )").evaluate(),
+            "$indexOf( 'abcdef', 'z', fail() )");
+        assertEquals("",
+            exception.getMessage(),
+            "Unexpected message");
 
-        exception = Assert.assertThrows("$indexOf( 'abcdef', 'z', fail('There is no z') )",
-            EelFailException.class,
-            () -> Eel.compile("$indexOf( 'abcdef', 'z', fail('There is no z') )").evaluate());
-        Assert.assertEquals("Unexpected message",
-            "There is no z",
-            exception.getMessage());
+        exception = assertThrows(EelFailException.class,
+            () -> Eel.compile("$indexOf( 'abcdef', 'z', fail('There is no z') )").evaluate(),
+            "$indexOf( 'abcdef', 'z', fail('There is no z') )");
+        assertEquals("There is no z",
+            exception.getMessage(),
+            "Unexpected message");
 
         result = Eel.compile("$indexOf('abcdef', 'z', log.warn('There is no z, returning {}', 0) )").evaluate();
-        Assert.assertEquals("value",
-            "0",
-            result.asText());
-        Assert.assertEquals("type",
-            Type.NUMBER,
-            result.getType());
-        Assert.assertTrue("Message not logged",
-            stdOut.getLinesNormalized().contains("There is no z, returning 0\n"));
+        assertEquals("0",
+            result.asText(),
+            "value");
+        assertEquals(Type.NUMBER,
+            result.getType(),
+            "type");
+        assertTrue(stdOut.getLinesNormalized().contains("There is no z, returning 0\n"),
+            "Message not logged");
 
-        Assert.assertEquals("$indexOf( 'abcdef', 'd', fail() )",
-            3,
-            Eel.compile("$indexOf( 'abcdef', 'd', fail() )").evaluate().asInt());
+        assertEquals(3,
+            Eel.compile("$indexOf( 'abcdef', 'd', fail() )").evaluate().asInt(),
+            "$indexOf( 'abcdef', 'd', fail() )");
     }
 
     /**
@@ -682,22 +696,24 @@ public class ReadmeIntegrationTest {
     public void test_DatesOperations() throws Exception {
         long start = ZonedDateTime.now(ZoneId.of("UTC")).toEpochSecond();
         EelContext context = EelContext.factory().build();
-        File file = tempFolder.newFile("file.tmp");
+        File file = new File(tempFolder, "file.tmp");
         SymbolsTable symbols = SymbolsTable.from(Map.of("myFile", file.getCanonicalPath()));
         Result result;
 
+        file.createNewFile();
+
         result = Eel.compile(context, "$( date.utc() + 5 )").evaluate();
-        Assert.assertTrue("$( date.utc() + 5 )",
-            ((result.asLong() == start + 5) || (result.asLong() == start + 6)));
+        assertTrue(((result.asLong() == start + 5) || (result.asLong() == start + 6)),
+            "$( date.utc() + 5 )");
 
         result = Eel.compile(context, "$( date.utc() - date.start() )").evaluate();
-        Assert.assertTrue("$( date.utc() - date.start() )",
-            ((result.asLong() == 0) || (result.asLong() == 1)));
+        assertTrue(((result.asLong() == 0) || (result.asLong() == 1)),
+            "$( date.utc() - date.start() )");
 
         result = Eel.compile(context, "$( duration( modifiedAt( ${myFile} ), date.local(), \"months\" ) > 6 )")
             .evaluate(symbols);
-        Assert.assertFalse("$( duration( modifiedAt( ${myFile} ), date.local(), \"months\" ) > 6 )",
-            result.asLogic());
+        assertFalse(result.asLogic(),
+            "$( duration( modifiedAt( ${myFile} ), date.local(), \"months\" ) > 6 )");
     }
 
 
@@ -705,39 +721,112 @@ public class ReadmeIntegrationTest {
      * Integration test {@link Eel}
      */
     @Test
-    public void test_ChainedExpressions() {
+    public void test_CompoundExpressions() {
         SymbolsTable symbols = SymbolsTable.from(Map.of("Key", "ABCdefGHI"));
-        EelContext context = EelContext.factory().build();
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
 
-        Assert.assertEquals("Not DRY",
-            "Abcdefghi",
-            Eel.compile(context, "$( ${Key,,^-} ; isEmpty( $[1] ) ? fail('no text') : $[1] )").evaluate(symbols).asText());
+        assertEquals("Abcdefghi",
+            Eel.compile(context, "$( ${Key,,^-} ; isEmpty( $[1] ) ? fail('no text') : $[1] )").evaluate(symbols).asText(),
+            "Not DRY");
 
-        Assert.assertEquals("Backward references",
-            "abc",
+        assertEquals("abc",
             Eel.compile(context, "$( 'a' ; $[1] ~> 'b' ; $[2] ~> 'c' )")
                 .evaluate(symbols)
-                .asText());
+                .asText(),
+            "Backward references");
 
-        Assert.assertThrows("Forward references",
-            EelSemanticException.class,
-            () -> Eel.compile(context, "$( $[2] + $[3] ; 2 ; 3 ; $[1] * 10 )").evaluate(symbols));
+        assertThrows(EelSemanticException.class,
+            () -> Eel.compile(context, "$( $[2] + $[3] ; 2 ; 3 ; $[1] )").evaluate(symbols),
+            "Forward references");
 
-        Assert.assertEquals("Lazy",
-            0,
-            Eel.compile(context, "$( count() ; count() ; $[2] + $[2] )").evaluate(symbols).asInt());
-
-        Assert.assertEquals("Scope",
-            "First = <a~b> and Second = <c~d>",
+        assertEquals("First = <a~b> and Second = <c~d>",
             Eel.compile(context, "First = $( 'a' ; 'b' ; '<$[1]~$[2]>' ) and Second = $( 'c' ; 'd' ; '<$[1]~$[2]>' )")
                 .evaluate(symbols)
-                .asText());
+                .asText(),
+            "Scope");
 
-        Assert.assertThrows("Nested chains",
-            EelSyntaxException.class,
-            () -> Eel.compile(context, "$( count() ; $[1] + $( 2 ; $[1] + 3 ) )").evaluate(symbols));
+        assertThrows(EelSyntaxException.class,
+            () -> Eel.compile(context, "$( count() ; $[1] + $( 2 ; $[1] + 3 ) )").evaluate(symbols),
+            "Nested chains");
+
+        // Evaluates, but the value is undefined
+        Eel.compile(context, "$( count() ; count() ; count(); ($[2] ** $[3]) + $[1] )").evaluate(symbols);
     }
 
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_CompoundExpressions_variableIndex() {
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
+
+        Eel expression = Eel.compile(context, "$( 'First'; 'Second'; 'Third' ; $[($count() + 1)] )");
+
+        assertEquals("First", expression.evaluate().asText(), "First Call. No default);");
+        assertEquals("Second", expression.evaluate().asText(), "Second Call. No default);");
+        assertEquals("Third", expression.evaluate().asText(), "Third Call. No default);");
+        assertThrows(EelSemanticException.class, () -> expression.evaluate().asText(), "Fourth Call. No default);");
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_CompoundExpressions_variableIndexWithDefault() {
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
+
+        Eel expression = Eel.compile(context, "$( 'First'; 'Second'; 'Third' ; $[($count() + 1)-$log.info('Not found', '3+')] )");
+
+        assertEquals("First", expression.evaluate().asText(), "First Call. With default);");
+        assertEquals("Second", expression.evaluate().asText(), "Second Call. With default);");
+        assertEquals("Third", expression.evaluate().asText(), "Third Call. With default);");
+        assertEquals("3+", expression.evaluate().asText(), "Fourth Call. With default);");
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_ChoosingValues() {
+        EelContext context = EelContext.factory()
+            .withTimeout(Duration.ofSeconds(0))
+            .build();
+        Map<String, String> data = Map.ofEntries(
+            entry("logicExpression", "true"),
+            entry("numericExpression", "2"),
+            entry("search", "test3"),
+            entry("test1", "false"),
+            entry("test2", "0"),
+            entry("test3", "true")
+        );
+        SymbolsTable symbols = SymbolsTable.from(data);
+
+
+        assertEquals("trueValue",
+            Eel.compile(context, "$( ${logicExpression} ? 'trueValue' : 'falseValue' )").evaluate(symbols).asText(),
+            "simple selection");
+        assertEquals("value2",
+            Eel.compile(context, "$( 'value1'; 'value2'; 'value3'; $[ ${numericExpression} ] )").evaluate(symbols).asText(),
+            "numeric selection");
+        assertEquals("value2",
+            Eel.compile(context, "$( 'value1'; 'value2'; 'value3'; $[ ${numericExpression}-defaultValue] )").evaluate(symbols).asText(),
+            "numeric selection with default");
+        assertEquals("value3",
+            Eel.compile(context, "$( 'value1'; 'value2'; 'value3'; $[text.index( ${search}, 'test1', 'test2', 'test3' )-defaultValue] )").evaluate(symbols).asText(),
+            "text.index");
+        assertEquals("value3",
+            Eel.compile(context, "$( 'value1'; 'value2'; 'value3'; $[logic.index( ${test1}, ${test2}, ${test3} )-defaultValue] )").evaluate(symbols).asText(),
+            "text.index");
+    }
 
 
     private void testExpression(@Nonnull String expression,
@@ -753,7 +842,7 @@ public class ReadmeIntegrationTest {
                               @Nonnull Type expectedType,
                               @Nonnull String expectedText,
                               @Nonnull Result actual) {
-        Assert.assertEquals(message + ": Unexpected Type", expectedType, actual.getType());
-        Assert.assertEquals(message + ": Unexpected Value", expectedText, actual.asText());
+        assertEquals(expectedType, actual.getType(), message + ": Unexpected Type");
+        assertEquals(expectedText, actual.asText(), message + ": Unexpected Value");
     }
 }

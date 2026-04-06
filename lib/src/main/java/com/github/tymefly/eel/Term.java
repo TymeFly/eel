@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 interface Term {
     /**
      * Evaluate this term
-     * @param symbols   Accessor for values stored in the symbols table
+     * @param symbols   Accessor for values stored in the SymbolsTable
      * @return          the evaluated Value
      */
     @Nonnull

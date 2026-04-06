@@ -6,7 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.ModelManager;
@@ -15,27 +15,27 @@ import com.github.tymefly.eel.doc.model.TagType;
 import com.github.tymefly.eel.doc.model.TextModel;
 import com.github.tymefly.eel.doc.model.TextStyle;
 import j2html.tags.DomContent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
  * Unit Test {@link TextRender}
  */
 public class TextRenderTest {
-    private Context context;
+    private EelDocContext context;
     private GroupModel group;
     private ModelManager modelManager;
     private FunctionModel function;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        context = Mockito.mock(Context.class);
+        context = Mockito.mock(EelDocContext.class);
         group = Mockito.mock(GroupModel.class);
         modelManager = Mockito.mock(ModelManager.class);
         function = Mockito.mock(FunctionModel.class);
@@ -50,27 +50,27 @@ public class TextRenderTest {
      */
     @Test
     public void test_text_allStyle() {
-        assertEquals("No Style",
-            "Hello",
-            text_allStyleHelper(TextStyle.NONE, "hello").render());
-        assertEquals("RAW style",
-            "<b>raw</b>",
-            text_allStyleHelper(TextStyle.RAW, "<b>raw</b>").render());
-        assertEquals("code text",
-            "<code>code</code>",
-            text_allStyleHelper(TextStyle.CODE, "code").render());
-        assertEquals("literal text",
-            "<span class=\"literal\">lit</span>",
-            text_allStyleHelper(TextStyle.LITERAL, "lit").render());
-        assertEquals("plain link",
-            "<span class=\"plain-link\"><code>Plain</code></span>",
-            text_allStyleHelper(TextStyle.PLAIN_LINK, "plain").render());
-        assertEquals("broken link",
-            "<code>Link</code>",
-            text_allStyleHelper(TextStyle.LINK, "link").render());
-        assertEquals("error text",
-            "<span class=\"invalid-highlight\">Error</span>",
-            text_allStyleHelper(TextStyle.ERROR, "error").render());
+        assertEquals("Hello",
+            text_allStyleHelper(TextStyle.NONE, "hello").render(),
+            "No Style");
+        assertEquals("<b>raw</b>",
+            text_allStyleHelper(TextStyle.RAW, "<b>raw</b>").render(),
+            "RAW style");
+        assertEquals("<code>code</code>",
+            text_allStyleHelper(TextStyle.CODE, "code").render(),
+            "code text");
+        assertEquals("<span class=\"literal\">lit</span>",
+            text_allStyleHelper(TextStyle.LITERAL, "lit").render(),
+            "literal text");
+        assertEquals("<span class=\"plain-link\"><code>Plain</code></span>",
+            text_allStyleHelper(TextStyle.PLAIN_LINK, "plain").render(),
+            "plain link");
+        assertEquals("<code>Link</code>",
+            text_allStyleHelper(TextStyle.LINK, "link").render(),
+            "broken link");
+        assertEquals("<span class=\"invalid-highlight\">Error</span>",
+            text_allStyleHelper(TextStyle.ERROR, "error").render(),
+            "error text");
     }
 
 
@@ -116,7 +116,8 @@ public class TextRenderTest {
             .thenReturn("second");
 
         DomContent content = render.text(List.of(first, second));
-        Assert.assertEquals("Failed to capitalise", "First second", content.render());
+
+        assertEquals("First second", content.render(), "Failed to capitalise");
     }
 
     /**
@@ -135,7 +136,7 @@ public class TextRenderTest {
 
         DomContent content = renderLink("sig", true);
 
-        Assert.assertEquals("valid link", "<a href=\"#uid\">func</a>", content.render());
+        assertEquals("<a href=\"#uid\">func</a>", content.render(), "valid link");
     }
 
     /**
@@ -158,7 +159,7 @@ public class TextRenderTest {
 
         DomContent content = renderLink("sig", true);
 
-        Assert.assertEquals("valid link", "<a href=\"_other.html#uid\">func</a>", content.render());
+        assertEquals("<a href=\"_other.html#uid\">func</a>", content.render(), "valid link");
     }
 
     /**
@@ -171,7 +172,7 @@ public class TextRenderTest {
 
         DomContent content = renderLink("#my.package.MyClass#myMethod", true);
 
-        Assert.assertEquals("valid link", "<code>MyClass.myMethod</code>", content.render());
+        assertEquals("<code>MyClass.myMethod</code>", content.render(), "valid link");
     }
 
     /**
@@ -184,7 +185,7 @@ public class TextRenderTest {
 
         DomContent content = renderLink("missingSig", false);
 
-        Assert.assertNull("valid link", content);
+        assertNull(content, "valid link");
     }
 
     @Nullable

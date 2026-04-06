@@ -1,7 +1,10 @@
 package com.github.tymefly.eel.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Unit test for {@link EelTimeoutException}
@@ -14,8 +17,8 @@ public class EelTimeoutExceptionTest {
     public void test_Message() {
         Exception actual = new EelTimeoutException("Test Message");
 
-        Assert.assertEquals("Unexpected message", "Test Message", actual.getMessage());
-        Assert.assertNull("Unexpected cause", actual.getCause());
+        assertEquals("Test Message", actual.getMessage(), "Unexpected message");
+        assertNull(actual.getCause(), "Unexpected cause");
     }
 
     /**
@@ -25,8 +28,8 @@ public class EelTimeoutExceptionTest {
     public void test_FormattedMessage() {
         Exception actual = new EelTimeoutException("Hello %s - %d", "World", 12);
 
-        Assert.assertEquals("Unexpected message", "Hello World - 12", actual.getMessage());
-        Assert.assertNull("Unexpected cause", actual.getCause());
+        assertEquals("Hello World - 12", actual.getMessage(), "Unexpected message");
+        assertNull(actual.getCause(), "Unexpected cause");
     }
 
     /**
@@ -37,8 +40,8 @@ public class EelTimeoutExceptionTest {
         Exception cause = new Exception("cause");
         Exception actual = new EelTimeoutException("Hello %s - %d", "World", 12, cause);
 
-        Assert.assertEquals("Unexpected message", "Hello World - 12", actual.getMessage());
-        Assert.assertSame("Unexpected cause", cause, actual.getCause());
+        assertEquals("Hello World - 12", actual.getMessage(), "Unexpected message");
+        assertSame(cause, actual.getCause(), "Unexpected cause");
     }
 
     /**
@@ -49,7 +52,7 @@ public class EelTimeoutExceptionTest {
         Exception cause = new Exception("cause");
         Exception actual = new EelTimeoutException("Test", cause);
 
-        Assert.assertEquals("Unexpected message", "Test", actual.getMessage());
-        Assert.assertSame("Unexpected cause", cause, actual.getCause());
+        assertEquals("Test", actual.getMessage(), "Unexpected message");
+        assertSame(cause, actual.getCause(), "Unexpected cause");
     }
 }

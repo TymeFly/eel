@@ -16,8 +16,9 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 /**
  * An EEL function that returns the next value in a named counter.
  * Counters are context-based: if the same context is shared across multiple expressions,
- * or if there are multiple invocations of the same expression, the value will continue to increment.
+ * or if there are multiple invocations of the same expression, the counter will continue to increment.
  * To reset the counter to its initial value, recompile the expression with a new {@link EelContext}.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Count {
@@ -27,10 +28,10 @@ public class Count {
     /**
      * Returns the next integer value in an incrementing counter. Names are used to differentiate counters.
      * The first time this function is called, the value {@literal 0} is returned.
-     * @param manager   resource manager for Counters
-     * @param name      The unique name of the counter.
-     *                  If the name is empty then the default anonymous counter is used.
-     * @return          The next value in an incremental counter
+     * @param manager   a resource manager for the context
+     * @param name      the unique name of the counter; if empty, the default, anonymous, counter is used
+     * @return          the next value in the incremental counter
+     * @since 1.0
      */
     @EelFunction("count")
     public long count(@Nonnull FunctionalResource manager,

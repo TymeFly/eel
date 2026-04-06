@@ -59,7 +59,7 @@ public class FileUtils {
                 .map(l -> Eel.compile(CONTEXT, l).evaluate().asText())
                 .toList();
         } catch (IOException e) {
-            throw new EelDocException("Failed to read file " + file.getAbsolutePath());
+            throw new EelDocException("Failed to read file " + file.getAbsolutePath(), e);
         }
 
         return content;

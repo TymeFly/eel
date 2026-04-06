@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
  */
 public interface ElementModel extends ParagraphModel {
     /**
-     * Returns {@literal true} only if the block has been marked as hidden by the @hidden tag in the JavaDoc.
+     * Returns {@literal true} only if the block has been marked as hidden by the @hidden tag in the Javadoc.
      * @return {@literal true} only if the block has been marked as hidden.
      */
     boolean isHidden();

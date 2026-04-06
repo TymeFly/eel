@@ -11,19 +11,21 @@ import javax.tools.Diagnostic;
 import com.github.tymefly.eel.Eel;
 import com.github.tymefly.eel.Metadata;
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.report.Report;
 import com.github.tymefly.eel.doc.scanner.RootScanner;
 import jdk.javadoc.doclet.Doclet;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +42,7 @@ import static org.mockito.Mockito.when;
 public class EelDocTest {
     private EelDoc eelDoc;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Reporter reporterMock = mock(Reporter.class);
 
@@ -54,7 +56,7 @@ public class EelDocTest {
      */
     @Test
     public void test_getName() {
-        Assert.assertEquals("Unexpected name", "EelDoc", eelDoc.getName());
+        assertEquals("EelDoc", eelDoc.getName(), "Unexpected name");
     }
 
 
@@ -75,7 +77,7 @@ public class EelDocTest {
             configStatic.when(Config::getInstance)
                 .thenReturn(configMock);
 
-            Assert.assertSame("Unexpected options", options, eelDoc.getSupportedOptions());
+            assertSame(options, eelDoc.getSupportedOptions(), "Unexpected options");
         }
     }
 
@@ -94,9 +96,9 @@ public class EelDocTest {
             sourceVersionStatic.when(SourceVersion::latest)
                 .thenReturn(mockVersion);
 
-            Assert.assertEquals("getSupportedSourceVersion returns mocked latest version",
-                mockVersion,
-                eelDoc.getSupportedSourceVersion());
+            assertEquals(mockVersion,
+                eelDoc.getSupportedSourceVersion(),
+                "getSupportedSourceVersion returns mocked latest version");
         }
     }
 
@@ -131,7 +133,7 @@ public class EelDocTest {
             eelDoc.init(Locale.ENGLISH, reporterMock);
 
             boolean actual = eelDoc.run(environmentMock);
-            Assert.assertTrue("run failed", actual);
+            assertTrue(actual, "run failed");
 
             // Verify that reporter.print() was called via context.note()
             verify(reporterMock)
@@ -167,13 +169,13 @@ public class EelDocTest {
             localDoc.init(Locale.ENGLISH, reporterMockLocal);
 
             boolean actual = localDoc.run(environmentMockLocal);
-            Assert.assertTrue("run failed", actual);
+            assertTrue(actual, "run failed");
 
-            Assert.assertEquals("Report constructor called once", 1, reportConstruction.constructed().size());
+            assertEquals(1, reportConstruction.constructed().size(), "Report constructor called once");
 
             verify(reportConstruction.constructed().get(0), times(1)).writeReport();
 
-            rootScannerStatic.verify(() -> RootScanner.run(any(Context.class), eq(elementMock)), times(1));
+            rootScannerStatic.verify(() -> RootScanner.run(any(EelDocContext.class), eq(elementMock)), times(1));
         }
     }
 }

@@ -2,9 +2,10 @@ package com.github.tymefly.eel.function.system;
 
 import java.util.Properties;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for {@link FileSystem}
@@ -13,7 +14,7 @@ public class FileSystemTest {
     private FileSystem fileSystem;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Properties properties = new Properties();
 
@@ -30,7 +31,7 @@ public class FileSystemTest {
      */
     @Test
     public void test_Separator() {
-        Assert.assertEquals("Unexpected file separator", "/", fileSystem.fileSeparator());
+        assertEquals("/", fileSystem.fileSeparator(), "Unexpected file separator");
     }
 
     /**
@@ -38,7 +39,7 @@ public class FileSystemTest {
      */
     @Test
     public void test_pwd() {
-        Assert.assertEquals("pwd", "/user/home/me/application/root/", fileSystem.pwd());
+        assertEquals("/user/home/me/application/root/", fileSystem.pwd(), "pwd");
     }
 
     /**
@@ -46,7 +47,7 @@ public class FileSystemTest {
      */
     @Test
     public void test_Home() {
-        Assert.assertEquals("Unexpected home dir", "/user/home/me/", fileSystem.home());
+        assertEquals("/user/home/me/", fileSystem.home(), "Unexpected home dir");
     }
 
     /**
@@ -54,6 +55,6 @@ public class FileSystemTest {
      */
     @Test
     public void test_Temp() {
-        Assert.assertEquals("Unexpected temp dir", "/tmp/", fileSystem.temp());
+        assertEquals("/tmp/", fileSystem.temp(), "Unexpected temp dir");
     }
 }

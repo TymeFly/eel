@@ -6,7 +6,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionGenerator;
 import com.github.tymefly.eel.doc.model.GroupGenerator;
 import com.github.tymefly.eel.doc.model.ModelManager;
@@ -19,10 +19,10 @@ import com.github.tymefly.eel.udf.GroupDescription;
  * Root level
  */
 public class RootScanner {
-    private final Context context;
+    private final EelDocContext context;
 
 
-    private RootScanner(@Nonnull Context context) {
+    private RootScanner(@Nonnull EelDocContext context) {
         this.context = context;
     }
 
@@ -32,7 +32,7 @@ public class RootScanner {
      * @param context   EelDoc context object
      * @param element   The root element in the Java source code
      */
-    public static void run(@Nonnull Context context, @Nonnull Element element) {
+    public static void run(@Nonnull EelDocContext context, @Nonnull Element element) {
         new RootScanner(context)
             .scan(element);
     }

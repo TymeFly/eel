@@ -1,5 +1,6 @@
 # What's New
 
+* [3.2.0](#320)
 * [3.1.0](#310)
 * [3.0.0](#300)
 * [2.1.0](#210)
@@ -8,9 +9,34 @@
 * [1.0.0](#100)
 
 
+# 3.2.0
+## Lib
+* **Deprecate `Value.asFile()`.** This function will be removed in the next major release.
+* Add the functions `Context.getFile(String)` and `Context.getFile(Value)`, which return files guaranteed not to reside
+  in sensitive parts of the file system. These functions replace `Value.asFile()`.
+* Add `EelContextBuilder.withFileFactory()`, which clients could use to apply additional checks when creating files.
+* Lookback indices are now full expressions. Previously, only positive numeric literals were supported.
+* Add support for default values in lookbacks when the index is out of range.
+* Add the function `text.index()`, which returns the 1-based index of a value within a list of values. 
+  This can be used to dynamically generate a lookback index.
+* Add the function `logic.index()`, which returns the 1-based index of the first true expression in a list of values. 
+  This can be used to dynamically generate a lookback index.
+* Add the function `date.parse()` to parse text values in a specified format into Dates.
+* Bug fix: `realPath()`, `dirName()`, and `baseName()` now correctly handle paths that end with slashes and empty paths.
+* Bug fix: `exists()` can now check for file system objects that are not files.
+* Bug fix: file system functions no longer fail when the file system path is an empty string.
+* Bug fix: file system functions now work with objects in the root directory.
+
+
+# 3.1.1
+## General
+* Add a ZIP file containing the HTML documentation for the standard EEL functions which is suitable for downloads
+
+
 # 3.1.0
 ## General
 * Add Doclet module. This is used to generate HTML documentation for EEL functions.
+* Generate HTML documentation for the standard EEL functions
 
 
 # 3.0.0
@@ -28,8 +54,8 @@
   Tab (`\t`), New Line (`\r`), `\$` can be used to include a dollar character without invoking an interpolation sequence. 
   Unexpected escape sequences will generate an error**
 * **Breaking Change: `io` is a reserved function prefix.** Add functions `io.head()` and `io.tail()` to read text files. 
-  These functions only read a limited number of characters before failing to guard against DOS attacks. 
-  The default limit is 32768 characters, but this can be changed via the EelContext
+  These functions only read a limited number of characters before failing. This is to guard against DOS attacks. 
+  The default limit is 32,768 characters, but this can be changed via the EelContext
 * **Breaking Change: Changes to operator priority**. 
 * **Breaking Change: Remove function `date.offset()`**. This has been replaced with `date.plus()` and `date.minus()`
 * **Breaking Change: Remove function `date.truncate()`**. This is no longer required as `date.set()`, `date.plus()` and
@@ -100,9 +126,9 @@
   * `toDegrees()` to convert a radian value to degrees 
   * `toRadians()` to convert a degree value to radians 
 * Add optional offsets to `date.start()`
-* Added convenience factory methods to SymbolsTable to create a scoped symbols table from a single data source 
+* Added convenience factory methods to SymbolsTable to create a SymbolsTable from a single data source 
 * Overloaded Eel.execute() to create in-line scoped SymbolsTable from a single data source 
-* Updated the JavaDocs to describe how values are converted in EEL 2.x.x 
+* Updated the Javadocs to describe how values are converted in EEL 2.x.x 
 * Some refactoring of the EEL core to improve efficiency
 
 
@@ -139,7 +165,7 @@
  `lastModified()` have two extra optional arguments. The first is a zero-based index in the directory listing of the
  required file. The second additional optional argument is a function to determine the default value if no file is found
 * UDFs can accept a `FunctionalResource` object as a parameter to manage stateful resources
-* The Symbols Table supports 'scopes' to disambiguate keys from different sources that have the same name
+* SymbolsTable support for 'scopes' to disambiguate keys from different sources that have the same name
 * Numeric literals can contain the `_` character
 * Empty text is converted to logic false 
 * Value interpolation supports multiple case change operators
@@ -168,7 +194,7 @@
 * Reduced default execution timeout from 10 seconds to 2 seconds.
 * Fully define the type conversions used by the `=` and `!=` operators, in a way that is consistent with the inequality
   operators for dates  
-* Characters `[` and `]` can be part of an identifier. This is so that Symbols tables can use these characters to read
+* Characters `[` and `]` can be part of an identifier. This is so that SymbolsTables can use these characters to read
   structured data types.  
 * All positive numbers can be converted to logic value `true` while zero and negative numbers values can be converted to 
   logic `false`. Previously only numbers `0` and `1` could be converted to logic values. This change means functions 
@@ -193,7 +219,7 @@
 * Add functions `char()` and `codepoint()` to convert between characters and unicode codepoints  
 * Add functions `number.round()` and `number.truncate()` to convert fractional numbers to non-fraction numbers
 * `format.date()` now accepts offsets as optional arguments
-* `dirName()` will no longer canonicalize the path
+* `dirName()` will no longer canonicalise the path
 * `extension()` returns the extensions without a leading `.`
 * `exists()` can now accept a glob pattern as part of the file name 
 

@@ -9,8 +9,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 
 import com.github.tymefly.eel.exception.EelConvertException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Convert}
@@ -34,16 +38,16 @@ public class ConvertTest {
      */
     @Test
     public void test_toText_fromNumber() {
-        Assert.assertEquals("ZERO", "0", Convert.toText(BigDecimal.ZERO));
-        Assert.assertEquals("ONE", "1", Convert.toText(BigDecimal.ONE));
-        Assert.assertEquals("TEN", "10", Convert.toText(BigDecimal.TEN));
+        assertEquals("0", Convert.toText(BigDecimal.ZERO), "ZERO");
+        assertEquals("1", Convert.toText(BigDecimal.ONE), "ONE");
+        assertEquals("10", Convert.toText(BigDecimal.TEN), "TEN");
 
-        Assert.assertEquals("negative", "-1", Convert.toText(new BigDecimal("-1")));
-        Assert.assertEquals("fractional", "-1.5", Convert.toText(new BigDecimal("-1.5")));
+        assertEquals("-1", Convert.toText(new BigDecimal("-1")), "negative");
+        assertEquals("-1.5", Convert.toText(new BigDecimal("-1.5")), "fractional");
 
         // Check we are not using scientific notation
-        Assert.assertEquals("Large value", "9223372036854775807", Convert.toText(LARGE_VALUE));
-        Assert.assertEquals("Massive value", "894667087574913253279", Convert.toText(MASSIVE_VALUE));
+        assertEquals("9223372036854775807", Convert.toText(LARGE_VALUE), "Large value");
+        assertEquals("894667087574913253279", Convert.toText(MASSIVE_VALUE), "Massive value");
     }
 
     /**
@@ -51,13 +55,13 @@ public class ConvertTest {
      */
     @Test
     public void test_toText_fromDate() {
-        Assert.assertEquals("Date to Seconds", "2022-01-02T03:04:05Z", Convert.toText(DATE_STAMP));
-        Assert.assertEquals("Date to Millis", "2022-01-02T03:04:05.600Z", Convert.toText(DATE_STAMP_MILLIS));
-        Assert.assertEquals("Date to Micros", "2022-01-02T03:04:05.600007Z", Convert.toText(DATE_STAMP_MICROS));
-        Assert.assertEquals("Date to Nanos", "2022-01-02T03:04:05.600007908Z", Convert.toText(DATE_STAMP_NANOS));
-        Assert.assertEquals("Early Date to Seconds", "1963-11-23T17:15:00Z", Convert.toText(DATE_STAMP_EARLY));
-        Assert.assertEquals("Early Date to Nano", "1963-11-23T17:15:00.600700890Z", Convert.toText(DATE_STAMP_EARLY_NANOS));
-        Assert.assertEquals("BC Date", "-1234-11-23T17:15:00Z", Convert.toText(DATE_STAMP_BC));
+        assertEquals("2022-01-02T03:04:05Z", Convert.toText(DATE_STAMP), "Date to Seconds");
+        assertEquals("2022-01-02T03:04:05.600Z", Convert.toText(DATE_STAMP_MILLIS), "Date to Millis");
+        assertEquals("2022-01-02T03:04:05.600007Z", Convert.toText(DATE_STAMP_MICROS), "Date to Micros");
+        assertEquals("2022-01-02T03:04:05.600007908Z", Convert.toText(DATE_STAMP_NANOS), "Date to Nanos");
+        assertEquals("1963-11-23T17:15:00Z", Convert.toText(DATE_STAMP_EARLY), "Early Date to Seconds");
+        assertEquals("1963-11-23T17:15:00.600700890Z", Convert.toText(DATE_STAMP_EARLY_NANOS), "Early Date to Nano");
+        assertEquals("-1234-11-23T17:15:00Z", Convert.toText(DATE_STAMP_BC), "BC Date");
     }
 
 
@@ -66,20 +70,20 @@ public class ConvertTest {
      */
     @Test
     public void test_toLogic_fromText() {
-        Assert.assertFalse("0", Convert.toLogic("0"));
-        Assert.assertFalse("false", Convert.toLogic("false"));
-        Assert.assertFalse("False", Convert.toLogic("False"));
-        Assert.assertFalse("FALSE", Convert.toLogic("FALSE"));
-        Assert.assertFalse("Empty string", Convert.toLogic(""));
+        assertFalse(Convert.toLogic("0"), "0");
+        assertFalse(Convert.toLogic("false"), "false");
+        assertFalse(Convert.toLogic("False"), "False");
+        assertFalse(Convert.toLogic("FALSE"), "FALSE");
+        assertFalse(Convert.toLogic(""), "Empty string");
 
-        Assert.assertTrue("1", Convert.toLogic("1"));
-        Assert.assertTrue("true", Convert.toLogic("true"));
-        Assert.assertTrue("True", Convert.toLogic("True"));
-        Assert.assertTrue("TRUE", Convert.toLogic("TRUE"));
+        assertTrue(Convert.toLogic("1"), "1");
+        assertTrue(Convert.toLogic("true"), "true");
+        assertTrue(Convert.toLogic("True"), "True");
+        assertTrue(Convert.toLogic("TRUE"), "TRUE");
 
-        Assert.assertThrows("bad String", RuntimeException.class, () -> Convert.toLogic("unknown"));
-        Assert.assertThrows("-1", RuntimeException.class, () -> Convert.toLogic("-1"));
-        Assert.assertThrows("0.0", RuntimeException.class, () -> Convert.toLogic("0.0"));
+        assertThrows(RuntimeException.class, () -> Convert.toLogic("unknown"), "bad String");
+        assertThrows(RuntimeException.class, () -> Convert.toLogic("-1"), "-1");
+        assertThrows(RuntimeException.class, () -> Convert.toLogic("0.0"), "0.0");
     }
 
 
@@ -88,17 +92,17 @@ public class ConvertTest {
      */
     @Test
     public void test_toLogic_fromNumber() {
-        Assert.assertFalse("ZERO", Convert.toLogic(BigDecimal.ZERO));
-        Assert.assertTrue("ONE", Convert.toLogic(BigDecimal.ONE));
+        assertFalse(Convert.toLogic(BigDecimal.ZERO), "ZERO");
+        assertTrue(Convert.toLogic(BigDecimal.ONE), "ONE");
 
-        Assert.assertFalse("0.000", Convert.toLogic(new BigDecimal("0.000")));
-        Assert.assertTrue("1.000", Convert.toLogic(new BigDecimal("1.000")));
+        assertFalse(Convert.toLogic(new BigDecimal("0.000")), "0.000");
+        assertTrue(Convert.toLogic(new BigDecimal("1.000")), "1.000");
 
-        Assert.assertFalse("-2", Convert.toLogic(BigDecimal.valueOf(-2)));
-        Assert.assertFalse("-1", Convert.toLogic(BigDecimal.valueOf(-1)));
-        Assert.assertFalse("0", Convert.toLogic(BigDecimal.valueOf(0)));
-        Assert.assertTrue("1", Convert.toLogic(BigDecimal.valueOf(1)));
-        Assert.assertTrue("2", Convert.toLogic(BigDecimal.valueOf(3)));
+        assertFalse(Convert.toLogic(BigDecimal.valueOf(-2)), "-2");
+        assertFalse(Convert.toLogic(BigDecimal.valueOf(-1)), "-1");
+        assertFalse(Convert.toLogic(BigDecimal.valueOf(0)), "0");
+        assertTrue(Convert.toLogic(BigDecimal.valueOf(1)), "1");
+        assertTrue(Convert.toLogic(BigDecimal.valueOf(3)), "2");
     }
 
 
@@ -110,18 +114,18 @@ public class ConvertTest {
         ZonedDateTime dateMinus1 = EelContext.FALSE_DATE.minusSeconds(1);
         ZonedDateTime datePlus1 = EelContext.FALSE_DATE.plusSeconds(1);
 
-        Assert.assertTrue("Date", Convert.toLogic(DATE_STAMP));
-        Assert.assertTrue("Milli-Date", Convert.toLogic(DATE_STAMP_NANOS));
-        Assert.assertFalse("Zero Date", Convert.toLogic(EelContext.FALSE_DATE));
-        Assert.assertFalse("Zero Date in Zone +1", Convert.toLogic(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("+01"))));
-        Assert.assertFalse("Zero Date in Zone -1", Convert.toLogic(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("-01"))));
+        assertTrue(Convert.toLogic(DATE_STAMP), "Date");
+        assertTrue(Convert.toLogic(DATE_STAMP_NANOS), "Milli-Date");
+        assertFalse(Convert.toLogic(EelContext.FALSE_DATE), "Zero Date");
+        assertFalse(Convert.toLogic(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("+01"))), "Zero Date in Zone +1");
+        assertFalse(Convert.toLogic(EelContext.FALSE_DATE.withZoneSameInstant(ZoneId.of("-01"))), "Zero Date in Zone -1");
 
-        Assert.assertFalse("-1 Date", Convert.toLogic(dateMinus1));
-        Assert.assertFalse("-1 Date in Zone +1", Convert.toLogic(dateMinus1.withZoneSameInstant(ZoneId.of("+01"))));
-        Assert.assertFalse("-1 Date in Zone -1", Convert.toLogic(dateMinus1.withZoneSameInstant(ZoneId.of("-01"))));
-        Assert.assertTrue("+1 Date", Convert.toLogic(datePlus1));
-        Assert.assertTrue("+1 Date in Zone +1", Convert.toLogic(datePlus1.withZoneSameInstant(ZoneId.of("+01"))));
-        Assert.assertTrue("+1 Date in Zone -1", Convert.toLogic(datePlus1.withZoneSameInstant(ZoneId.of("-01"))));
+        assertFalse(Convert.toLogic(dateMinus1), "-1 Date");
+        assertFalse(Convert.toLogic(dateMinus1.withZoneSameInstant(ZoneId.of("+01"))), "-1 Date in Zone +1");
+        assertFalse(Convert.toLogic(dateMinus1.withZoneSameInstant(ZoneId.of("-01"))), "-1 Date in Zone -1");
+        assertTrue(Convert.toLogic(datePlus1), "+1 Date");
+        assertTrue(Convert.toLogic(datePlus1.withZoneSameInstant(ZoneId.of("+01"))), "+1 Date in Zone +1");
+        assertTrue(Convert.toLogic(datePlus1.withZoneSameInstant(ZoneId.of("-01"))), "+1 Date in Zone -1");
     }
 
     /**
@@ -129,15 +133,15 @@ public class ConvertTest {
      */
     @Test
     public void test_toNumber_fromText() {
-        Assert.assertEquals("string", new BigDecimal(93), Convert.toNumber("93"));
-        Assert.assertEquals("String with pad", new BigDecimal(72), Convert.toNumber("  72  "));
-        Assert.assertEquals("Hex String",new BigDecimal(18), Convert.toNumber("0x12"));
-        Assert.assertEquals("with _", new BigDecimal(123), Convert.toNumber("1_23"));
+        assertEquals(new BigDecimal(93), Convert.toNumber("93"), "string");
+        assertEquals(new BigDecimal(72), Convert.toNumber("  72  "), "String with pad");
+        assertEquals(new BigDecimal(18), Convert.toNumber("0x12"), "Hex String");
+        assertEquals(new BigDecimal(123), Convert.toNumber("1_23"), "with _");
 
-        Assert.assertThrows("with leading _", EelConvertException.class, () -> Convert.toNumber("_23"));
-        Assert.assertThrows("Hex with leading _", EelConvertException.class, () -> Convert.toNumber("0x_23"));
+        assertThrows(EelConvertException.class, () -> Convert.toNumber("_23"), "with leading _");
+        assertThrows(EelConvertException.class, () -> Convert.toNumber("0x_23"), "Hex with leading _");
 
-        Assert.assertThrows("text", RuntimeException.class, () -> Convert.toNumber("text"));
+        assertThrows(RuntimeException.class, () -> Convert.toNumber("text"), "text");
     }
 
 
@@ -146,12 +150,12 @@ public class ConvertTest {
      */
     @Test
     public void test_toNumber_fromDate() {
-        Assert.assertEquals("Date to Seconds", new BigDecimal(1641092645), Convert.toNumber(DATE_STAMP));
-        Assert.assertEquals("Date to Millis", new BigDecimal("1641092645.6"), Convert.toNumber(DATE_STAMP_MILLIS));
-        Assert.assertEquals("Date to Micros", new BigDecimal("1641092645.600007"), Convert.toNumber(DATE_STAMP_MICROS));
-        Assert.assertEquals("Date to Nanos", new BigDecimal("1641092645.600007908"), Convert.toNumber(DATE_STAMP_NANOS));
-        Assert.assertEquals("Early Date to Seconds", new BigDecimal("-192696300"), Convert.toNumber(DATE_STAMP_EARLY));
-        Assert.assertEquals("Early Date to Nano", new BigDecimal("-192696299.39929911"), Convert.toNumber(DATE_STAMP_EARLY_NANOS));
+        assertEquals(new BigDecimal(1641092645), Convert.toNumber(DATE_STAMP), "Date to Seconds");
+        assertEquals(new BigDecimal("1641092645.6"), Convert.toNumber(DATE_STAMP_MILLIS), "Date to Millis");
+        assertEquals(new BigDecimal("1641092645.600007"), Convert.toNumber(DATE_STAMP_MICROS), "Date to Micros");
+        assertEquals(new BigDecimal("1641092645.600007908"), Convert.toNumber(DATE_STAMP_NANOS), "Date to Nanos");
+        assertEquals(new BigDecimal("-192696300"), Convert.toNumber(DATE_STAMP_EARLY), "Early Date to Seconds");
+        assertEquals(new BigDecimal("-192696299.39929911"), Convert.toNumber(DATE_STAMP_EARLY_NANOS), "Early Date to Nano");
     }
 
 
@@ -160,21 +164,11 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText() {
-        Assert.assertEquals("string - short format",
-            ZonedDateTime.ofInstant(Instant.ofEpochSecond(1641092645), UTC),
-            Convert.toDate("20220102T030405Z"));
-        Assert.assertEquals("string - long format",
-            ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 0, UTC),
-            Convert.toDate("2022-01-02T03:04:05Z"));
-        Assert.assertEquals("string - long format with nanos",
-            ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6_007_008, UTC),
-            Convert.toDate("2022-01-02T03:04:05.006007008Z"));
-        Assert.assertEquals("string - early",
-            DATE_STAMP_EARLY,
-            Convert.toDate("1963-11-23T17:15:00Z"));
-        Assert.assertEquals("string - BC",
-            DATE_STAMP_BC,
-            Convert.toDate("-1234-11-23T17:15:00Z"));
+        assertEquals(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1641092645), UTC), Convert.toDate("20220102T030405Z"), "string - short format");
+        assertEquals(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 0, UTC), Convert.toDate("2022-01-02T03:04:05Z"), "string - long format");
+        assertEquals(ZonedDateTime.of(2022, 1, 2, 3, 4, 5, 6_007_008, UTC), Convert.toDate("2022-01-02T03:04:05.006007008Z"), "string - long format with nanos");
+        assertEquals(DATE_STAMP_EARLY, Convert.toDate("1963-11-23T17:15:00Z"), "string - early");
+        assertEquals(DATE_STAMP_BC, Convert.toDate("-1234-11-23T17:15:00Z"), "string - BC");
     }
 
 
@@ -183,37 +177,17 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText_reducedPrecision() {
-        Assert.assertEquals("Full",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_008_009, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04:05:06.700008009+08"));
-        Assert.assertEquals("No Nanos",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_008_000, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04:05:06.700008+08"));
-        Assert.assertEquals("No Micros",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04:05:06.700+08"));
-        Assert.assertEquals("No Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04:05:06+08"));
-        Assert.assertEquals("No seconds",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04:05+08"));
-        Assert.assertEquals("No minutes",
-            ZonedDateTime.of(2021, 2, 3, 4, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021-02-03T04+08"));
-        Assert.assertEquals("No hours",
-            ZonedDateTime.of(2021, 2, 3, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021-02-03+08"));
-        Assert.assertEquals("No day",
-            ZonedDateTime.of(2021, 2, 1, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021-02+08"));
-        Assert.assertEquals("No month",
-            ZonedDateTime.of(2021, 1, 1, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021+08"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_008_009, UTC_PLUS8), Convert.toDate("2021-02-03T04:05:06.700008009+08"), "Full");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_008_000, UTC_PLUS8), Convert.toDate("2021-02-03T04:05:06.700008+08"), "No Nanos");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8), Convert.toDate("2021-02-03T04:05:06.700+08"), "No Micros");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC_PLUS8), Convert.toDate("2021-02-03T04:05:06+08"), "No Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 0, 0, UTC_PLUS8), Convert.toDate("2021-02-03T04:05+08"), "No seconds");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021-02-03T04+08"), "No minutes");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021-02-03+08"), "No hours");
+        assertEquals(ZonedDateTime.of(2021, 2, 1, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021-02+08"), "No day");
+        assertEquals(ZonedDateTime.of(2021, 1, 1, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021+08"), "No month");
 
-        Assert.assertEquals("NoZone",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC),
-            Convert.toDate("2021-02-03T04:05:06"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC), Convert.toDate("2021-02-03T04:05:06"), "NoZone");
     }
 
     /**
@@ -221,31 +195,15 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText_reducedPrecision_compactFormat() {
-        Assert.assertEquals("Full",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8),
-            Convert.toDate("20210203040506.7+08"));
-        Assert.assertEquals("No Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC_PLUS8),
-            Convert.toDate("20210203040506+08"));
-        Assert.assertEquals("no seconds",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 0, 0, UTC_PLUS8),
-            Convert.toDate("202102030405+08"));
-        Assert.assertEquals("no minutes",
-            ZonedDateTime.of(2021, 2, 3, 4, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021020304+08"));
-        Assert.assertEquals("no hours",
-            ZonedDateTime.of(2021, 2, 3, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("20210203+08"));
-        Assert.assertEquals("no day",
-            ZonedDateTime.of(2021, 2, 1, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("202102+08"));
-        Assert.assertEquals("no month",
-            ZonedDateTime.of(2021, 1, 1, 0, 0, 0, 0, UTC_PLUS8),
-            Convert.toDate("2021+08"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8), Convert.toDate("20210203040506.7+08"), "Full");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC_PLUS8), Convert.toDate("20210203040506+08"), "No Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 0, 0, UTC_PLUS8), Convert.toDate("202102030405+08"), "no seconds");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021020304+08"), "no minutes");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("20210203+08"), "no hours");
+        assertEquals(ZonedDateTime.of(2021, 2, 1, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("202102+08"), "no day");
+        assertEquals(ZonedDateTime.of(2021, 1, 1, 0, 0, 0, 0, UTC_PLUS8), Convert.toDate("2021+08"), "no month");
 
-        Assert.assertEquals("NoZone",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC),      // Zone defaulted to UTC
-            Convert.toDate("20210203040506"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC), Convert.toDate("20210203040506"), "NoZone");
     }
 
     /**
@@ -253,9 +211,7 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText_spaceSeparator() {
-        Assert.assertEquals("Full",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8),
-            Convert.toDate("2021 02 03 04 05 06.7 +08"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 700_000_000, UTC_PLUS8), Convert.toDate("2021 02 03 04 05 06.7 +08"), "Full");
     }
 
     /**
@@ -263,21 +219,11 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText_FractionsOfSeconds() {
-        Assert.assertEquals("No Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC),
-            Convert.toDate("2021-02-03T04:05:06Z"));
-        Assert.assertEquals("1 digit Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 100_000_000, UTC),
-            Convert.toDate("2021-02-03T04:05:06.1Z"));
-        Assert.assertEquals("2 digit Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 120_000_000, UTC),
-            Convert.toDate("2021-02-03T04:05:06.12Z"));
-        Assert.assertEquals("3 digit Millis",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 123_000_000, UTC),
-            Convert.toDate("2021-02-03T04:05:06.123Z"));
-        Assert.assertEquals("lots of fractional seconds",
-            ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 123_555_555, UTC),
-            Convert.toDate("2021-02-03T04:05:06.123555555Z"));
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 0, UTC), Convert.toDate("2021-02-03T04:05:06Z"), "No Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 100_000_000, UTC), Convert.toDate("2021-02-03T04:05:06.1Z"), "1 digit Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 120_000_000, UTC), Convert.toDate("2021-02-03T04:05:06.12Z"), "2 digit Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 123_000_000, UTC), Convert.toDate("2021-02-03T04:05:06.123Z"), "3 digit Millis");
+        assertEquals(ZonedDateTime.of(2021, 2, 3, 4, 5, 6, 123_555_555, UTC), Convert.toDate("2021-02-03T04:05:06.123555555Z"), "lots of fractional seconds");
     }
 
     /**
@@ -285,15 +231,15 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromText_NoLeading0() {
-        Assert.assertThrows("string - with separators. No leading zeros",
-            DateTimeParseException.class,
-            () -> Convert.toDate("2022-1-2T3:4:5Z"));
-        Assert.assertThrows("string - with spaces. No leading zeros",
-            DateTimeParseException.class,
-            () -> Convert.toDate("2022 1 2 3 4 5Z"));
-        Assert.assertThrows("string - no separators. No leading zeros",
-            DateTimeParseException.class,
-            () -> Convert.toDate("202212345Z"));
+        assertThrows(DateTimeParseException.class,
+            () -> Convert.toDate("2022-1-2T3:4:5Z"),
+            "string - with separators. No leading zeros");
+        assertThrows(DateTimeParseException.class,
+            () -> Convert.toDate("2022 1 2 3 4 5Z"),
+            "string - with spaces. No leading zeros");
+        assertThrows(DateTimeParseException.class,
+            () -> Convert.toDate("202212345Z"),
+            "string - no separators. No leading zeros");
     }
 
 
@@ -302,24 +248,12 @@ public class ConvertTest {
      */
     @Test
     public void test_toDate_fromNumber() {
-        Assert.assertEquals("Date no Millis",
-            DATE_STAMP,
-            Convert.toDate(new BigDecimal("1641092645")));
-        Assert.assertEquals("Date with Millis",
-            DATE_STAMP.with(ChronoField.MILLI_OF_SECOND, 600),
-            Convert.toDate(new BigDecimal("1641092645.600")));
-        Assert.assertEquals("Date with Micros",
-            DATE_STAMP.with(ChronoField.MICRO_OF_SECOND, 700),
-            Convert.toDate(new BigDecimal("1641092645.00070")));
-        Assert.assertEquals("Date with Nanos",
-            DATE_STAMP.with(ChronoField.NANO_OF_SECOND, 800),
-            Convert.toDate(new BigDecimal("1641092645.0000008")));
-        Assert.assertEquals("Early Date no Millis",
-            DATE_STAMP_EARLY,
-            Convert.toDate(new BigDecimal("-192696300")));
-        Assert.assertEquals("Early Date with Millis",
-            DATE_STAMP_EARLY_NANOS.with(ChronoField.MILLI_OF_SECOND, 600),         // truncate Micros seconds
-            Convert.toDate(new BigDecimal("-192696299.400")));
+        assertEquals(DATE_STAMP, Convert.toDate(new BigDecimal("1641092645")), "Date no Millis");
+        assertEquals(DATE_STAMP.with(ChronoField.MILLI_OF_SECOND, 600), Convert.toDate(new BigDecimal("1641092645.600")), "Date with Millis");
+        assertEquals(DATE_STAMP.with(ChronoField.MICRO_OF_SECOND, 700), Convert.toDate(new BigDecimal("1641092645.00070")), "Date with Micros");
+        assertEquals(DATE_STAMP.withNano(800), Convert.toDate(new BigDecimal("1641092645.0000008")), "Date with Nanos");
+        assertEquals(DATE_STAMP_EARLY, Convert.toDate(new BigDecimal("-192696300")), "Early Date no Millis");
+        assertEquals(DATE_STAMP_EARLY_NANOS.with(ChronoField.MILLI_OF_SECOND, 600), Convert.toDate(new BigDecimal("-192696299.400")), "Early Date with Millis");
     }
 
 
@@ -334,7 +268,7 @@ public class ConvertTest {
         ZonedDateTime utcPlus1 = Convert.toDate(dateTime + "+01");
         BigDecimal utcPlus1Unix = Convert.toNumber(utcPlus1);
 
-        Assert.assertEquals("Time Zone not accounted for", utcUnix.longValue(), utcPlus1Unix.longValue() + 3600);
+        assertEquals(utcUnix.longValue(), utcPlus1Unix.longValue() + 3600, "Time Zone not accounted for");
     }
 
 
@@ -343,8 +277,6 @@ public class ConvertTest {
      */
     @Test
     public void test_to_Date_transitive() {
-        Assert.assertEquals("same date",
-            Convert.toDate("2022-01-02T03:04:05Z"),
-            Convert.toDate(BigDecimal.valueOf(1641092645L)));
+        assertEquals(Convert.toDate("2022-01-02T03:04:05Z"), Convert.toDate(BigDecimal.valueOf(1641092645L)), "same date");
     }
 }

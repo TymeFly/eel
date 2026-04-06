@@ -1,25 +1,24 @@
 package com.github.tymefly.eel.doc.report;
-
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.ModelManager;
 import j2html.tags.DomContent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,13 +27,13 @@ import static org.mockito.Mockito.when;
  */
 public class IndexPageTest {
 
-    private Context context;
+    private EelDocContext context;
     private ModelManager modelManager;
     private GroupModel group;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        context = mock(Context.class);
+        context = mock(EelDocContext.class);
         modelManager = mock(ModelManager.class);
         group = mock(GroupModel.class);
 
@@ -58,9 +57,10 @@ public class IndexPageTest {
     public void test_disabledMenuOptions() {
         IndexPage page = buildPage(Collections.emptyList());
 
+        EnumSet<MenuItem> expected = EnumSet.of(MenuItem.INDEX);
         EnumSet<MenuItem> actual = page.disabledMenuOptions();
 
-        assertEquals("Only INDEX should be disabled", EnumSet.of(MenuItem.INDEX), actual);
+        assertEquals(expected, actual, "Only INDEX should be disabled");
     }
 
 
@@ -73,12 +73,12 @@ public class IndexPageTest {
 
         DomContent content = page.buildPageContent();
 
-        assertNotNull("buildPageContent should return non-null DomContent", content);
+        assertNotNull(content, "buildPageContent should return non-null DomContent");
 
         String actual = content.render();
 
-        assertTrue("HTML should have doc-body div", actual.contains("id=\"doc-body\""));
-        assertFalse("HTML should be empty when no groups", actual.contains("group-summary"));
+        assertTrue(actual.contains("id=\"doc-body\""), "HTML should have doc-body div");
+        assertFalse(actual.contains("group-summary"), "HTML should be empty when no groups");
     }
 
     /**
@@ -86,7 +86,7 @@ public class IndexPageTest {
      */
     @Test
     public void test_buildPageContent_withFunctions() {
-        GroupSummaryRender reader = mock();
+        GroupSummaryRender reader = mock(GroupSummaryRender.class);
 
         when(group.getFunctions())
             .thenAnswer(i -> Collections.singletonList(mock(FunctionModel.class)));
@@ -103,7 +103,8 @@ public class IndexPageTest {
 
             DomContent actual = page.buildPageContent();
 
-            assertEquals("Unexpected HTML", "<div id=\"doc-body\"><div>Page content</div></div>", actual.render());
+            String expectedHtml = "<div id=\"doc-body\"><div>Page content</div></div>";
+            assertEquals(expectedHtml, actual.render(), "Unexpected HTML");
         }
     }
 }

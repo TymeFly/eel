@@ -14,7 +14,8 @@ import com.github.tymefly.eel.udf.PackagedEelFunction;
 import com.github.tymefly.eel.utils.CharSetBuilder;
 
 /**
- * The PrintF function
+ * Function that formats text using printf-style formatting.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class PrintF {
@@ -133,11 +134,10 @@ public class PrintF {
 
     /**
      * Generates formatted text using the specified format string and arguments, similar to Java's
-     * {@link java.util.Formatter#format(String, Object...)}.
-     * The following conversion characters are supported:
+     * {@link java.util.Formatter#format(String, Object...)}. Supported conversion characters include:
      * <ul>
      *  <li><b>Text:</b> {@code s}, {@code S}</li>
-     *  <li><b>Character:</b> {@code c}, {@code C} - the first character of text passed to the function</li>
+     *  <li><b>Character:</b> {@code c}, {@code C} - the first character of the text argument</li>
      *  <li><b>Logic:</b> {@code b}, {@code B}</li>
      *  <li><b>Integral Number:</b> {@code d}, {@code o}, {@code x}, {@code X}</li>
      *  <li><b>Real Number:</b> {@code e}, {@code E}, {@code f}, {@code g}, {@code G}</li>
@@ -147,14 +147,13 @@ public class PrintF {
      * All Java formatting indexes, flags, widths, and precisions are supported.
      * @param format        the format string
      * @param arguments     the arguments referenced by the format specifiers in {@code format};
-     *                      extra arguments are ignored if there are more than format specifiers
+     *                      extra arguments are ignored if more arguments are provided than format specifiers
      * @return              the formatted text
      * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html">
-     *                      Oracle Java 17 Formatter documentation
+     *          Oracle Java 17 Formatter documentation
      *      </a>
      * @since 1.1
      */
-
     @EelFunction("printf")
     @Nonnull
     public String printf(@Nonnull String format, @Nonnull Value... arguments) {

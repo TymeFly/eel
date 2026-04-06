@@ -6,30 +6,34 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
 
 import static java.util.Map.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
  * Integration Test for variable expansions
  */
+@ExtendWith(SystemStubsExtension.class)
 public class VariableExpansionIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
     private EelContext context;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withTimeout(Duration.ofSeconds(0))
@@ -45,15 +49,15 @@ public class VariableExpansionIntegrationTest {
             Map.entry("defined", "value"),
             Map.entry("blank", "")));
 
-        Assert.assertEquals("undefined",
-            "???",
-            Eel.compile(context, "${undefined-???}").evaluate(symbols).asText());
-        Assert.assertEquals("blank",
-            "",
-            Eel.compile(context, "${blank-???}").evaluate(symbols).asText());
-        Assert.assertEquals("defined",
-            "value",
-            Eel.compile(context, "${defined-???}").evaluate(symbols).asText());
+        assertEquals("???",
+            Eel.compile(context, "${undefined-???}").evaluate(symbols).asText(),
+            "undefined");
+        assertEquals("",
+            Eel.compile(context, "${blank-???}").evaluate(symbols).asText(),
+            "blank");
+        assertEquals("value",
+            Eel.compile(context, "${defined-???}").evaluate(symbols).asText(),
+            "defined");
     }
     /**
      * Integration test {@link Eel}
@@ -64,15 +68,15 @@ public class VariableExpansionIntegrationTest {
             Map.entry("defined", "value"),
             Map.entry("blank", "")));
 
-        Assert.assertEquals("undefined",
-            "???",
-            Eel.compile(context, "${undefined:-???}").evaluate(symbols).asText());
-        Assert.assertEquals("blank",
-            "???",
-            Eel.compile(context, "${blank:-???}").evaluate(symbols).asText());
-        Assert.assertEquals("defined",
-            "value",
-            Eel.compile(context, "${defined:-???}").evaluate(symbols).asText());
+        assertEquals("???",
+            Eel.compile(context, "${undefined:-???}").evaluate(symbols).asText(),
+            "undefined");
+        assertEquals("???",
+            Eel.compile(context, "${blank:-???}").evaluate(symbols).asText(),
+            "blank");
+        assertEquals("value",
+            Eel.compile(context, "${defined:-???}").evaluate(symbols).asText(),
+            "defined");
     }
 
     /**
@@ -82,9 +86,9 @@ public class VariableExpansionIntegrationTest {
     public void test_notFound() {
         Eel expression = Eel.compile(context, "${fred}");
 
-        EelUnknownSymbolException actual = Assert.assertThrows(EelUnknownSymbolException.class, expression::evaluate);
+        EelUnknownSymbolException actual = assertThrows(EelUnknownSymbolException.class, expression::evaluate);
 
-        Assert.assertEquals("Unexpected message", "Unknown variable 'fred'", actual.getMessage());
+        assertEquals("Unknown variable 'fred'", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -95,8 +99,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${key-default value}")
             .evaluate();
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "default value", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("default value", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -107,8 +111,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${key-default value}")
             .evaluate(SymbolsTable.from(Map.of("key", "Value")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "Value", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("Value", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -119,8 +123,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${key-~$( 1 + number(${two}) )~${postfix}~}!")
             .evaluate(SymbolsTable.from(Map.of("two", "2", "postfix", "@@")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "~3~@@~!", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("~3~@@~!", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -131,8 +135,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var^}")
             .evaluate(SymbolsTable.from(Map.of("var", "lower")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "Lower", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("Lower", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -143,8 +147,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var^^}")
             .evaluate(SymbolsTable.from(Map.of("var", "lower")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "LOWER", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("LOWER", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -155,8 +159,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var,}")
             .evaluate(SymbolsTable.from(Map.of("var", "UPPER")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "uPPER", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("uPPER", actual.asText(), "Unexpected value");
     }
 
 
@@ -168,8 +172,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var,,}")
             .evaluate(SymbolsTable.from(Map.of("var", "UPPER")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "upper", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("upper", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -180,8 +184,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var1~} ${var2~}")
             .evaluate(SymbolsTable.from(Map.of("var1", "UPPER", "var2", "lower")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "uPPER Lower", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("uPPER Lower", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -192,8 +196,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var1~~} ${var2~~}")
             .evaluate(SymbolsTable.from(Map.of("var1", "UPPER", "var2", "lower")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "upper LOWER", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("upper LOWER", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -204,8 +208,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${var1,,^} ${var2,,^}")
             .evaluate(SymbolsTable.from(Map.of("var1", "UPPER", "var2", "lower")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "Upper Lower", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("Upper Lower", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -216,8 +220,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${key^^-default value}")
             .evaluate(SymbolsTable.from(Map.of("key", "Value")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "VALUE", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("VALUE", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -228,8 +232,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${key^^-default value}")
             .evaluate();
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "default value", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("default value", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -240,8 +244,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${#key}")
             .evaluate(SymbolsTable.from(Map.of("key", "123456")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "6", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("6", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -252,8 +256,8 @@ public class VariableExpansionIntegrationTest {
         Result actual = Eel.compile(context, "${#key-12}")
             .evaluate();
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "12", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("12", actual.asText(), "Unexpected value");
     }
 
     /**
@@ -261,11 +265,11 @@ public class VariableExpansionIntegrationTest {
      */
     @Test
     public void test_changeCaseAndLength() {
-        Result actual = Eel.compile(context, "${#key^^}")             // change of case should be ignored
+        Result actual = Eel.compile(context, "${#key^^}")             // changes of case should be ignored
             .evaluate(SymbolsTable.from(Map.of("key", "123456")));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "6", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("6", actual.asText(), "Unexpected value");
     }
 
 
@@ -316,8 +320,8 @@ public class VariableExpansionIntegrationTest {
                 entry("count", "4"))
             ));
 
-        Assert.assertEquals(message + ": Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals(message + ": Unexpected value", expected, actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), message + ": Unexpected type");
+        assertEquals(expected, actual.asText(), message + ": Unexpected value");
     }
 
 
@@ -331,7 +335,7 @@ public class VariableExpansionIntegrationTest {
                 entry("key", "ABCDEFGHI"),
                 entry("count", "4"))));
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected value", "defg", actual.asText());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected type");
+        assertEquals("defg", actual.asText(), "Unexpected value");
     }
 }

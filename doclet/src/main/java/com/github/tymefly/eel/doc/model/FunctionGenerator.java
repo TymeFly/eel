@@ -12,7 +12,7 @@ public interface FunctionGenerator extends ElementGenerator<FunctionGenerator> {
     /**
      * Add a new parameter to this EEL function.
      * If identifier has already been defined then return the existing parameter
-     * @param identifier    Name of the parameter as seen in the JavaDoc
+     * @param identifier    Name of the parameter as seen in the Javadoc
      * @param parameter     The parameter description. This could be {@literal null} if a parameter is
      *                      documented but not defined in the Java code
      * @return A mutator class used to further describe the parameter

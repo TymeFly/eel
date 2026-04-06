@@ -1,7 +1,9 @@
 package com.github.tymefly.eel.doc.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link TextStyle}
@@ -13,13 +15,13 @@ public class TextStyleTest {
      */
     @Test
     public void test_clean() {
-        Assert.assertTrue("NONE", TextStyle.NONE.clean());
-        Assert.assertTrue("RAW", TextStyle.RAW.clean());
-        Assert.assertFalse("LITERAL", TextStyle.LITERAL.clean());
-        Assert.assertFalse("CODE", TextStyle.CODE.clean());
-        Assert.assertFalse("LINK", TextStyle.LINK.clean());
-        Assert.assertFalse("PLAIN_LINK", TextStyle.PLAIN_LINK.clean());
-        Assert.assertFalse("ERROR", TextStyle.ERROR.clean());
+        assertTrue(TextStyle.NONE.clean(), "NONE");
+        assertTrue(TextStyle.RAW.clean(), "RAW");
+        assertFalse(TextStyle.LITERAL.clean(), "LITERAL");
+        assertFalse(TextStyle.CODE.clean(), "CODE");
+        assertFalse(TextStyle.LINK.clean(), "LINK");
+        assertFalse(TextStyle.PLAIN_LINK.clean(), "PLAIN_LINK");
+        assertFalse(TextStyle.ERROR.clean(), "ERROR");
     }
 
     /**
@@ -27,12 +29,12 @@ public class TextStyleTest {
      */
     @Test
     public void test_escape() {
-        Assert.assertFalse("NONE", TextStyle.NONE.escape());
-        Assert.assertFalse("RAW", TextStyle.RAW.escape());
-        Assert.assertFalse("LITERAL", TextStyle.LITERAL.escape());
-        Assert.assertFalse("CODE", TextStyle.CODE.escape());
-        Assert.assertTrue("LINK", TextStyle.LINK.escape());
-        Assert.assertTrue("PLAIN_LINK", TextStyle.PLAIN_LINK.escape());
-        Assert.assertFalse("ERROR", TextStyle.ERROR.escape());
+        assertFalse(TextStyle.NONE.escape(), "NONE");
+        assertFalse(TextStyle.RAW.escape(), "RAW");
+        assertFalse(TextStyle.LITERAL.escape(), "LITERAL");
+        assertFalse(TextStyle.CODE.escape(), "CODE");
+        assertTrue(TextStyle.LINK.escape(), "LINK");
+        assertTrue(TextStyle.PLAIN_LINK.escape(), "PLAIN_LINK");
+        assertFalse(TextStyle.ERROR.escape(), "ERROR");
     }
 }

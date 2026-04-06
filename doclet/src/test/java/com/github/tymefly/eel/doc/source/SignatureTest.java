@@ -10,9 +10,9 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,7 +32,7 @@ public class SignatureTest {
         when(source.getQualifiedName().toString())
             .thenReturn("com.github.tymefly.eel");
 
-        Assert.assertEquals("Unexpected signature", "com.github.tymefly.eel", Signature.of(source));
+        assertEquals("com.github.tymefly.eel", Signature.of(source), "Unexpected signature");
     }
 
     /**
@@ -45,7 +45,7 @@ public class SignatureTest {
         when(source.getQualifiedName().toString())
             .thenReturn("com.github.tymefly.eel.MyClass");
 
-        Assert.assertEquals("Unexpected signature", "com.github.tymefly.eel.MyClass", Signature.of(source));
+        assertEquals("com.github.tymefly.eel.MyClass", Signature.of(source), "Unexpected signature");
     }
 
     /**
@@ -71,9 +71,10 @@ public class SignatureTest {
         when(arg2.asType().toString())
             .thenReturn("int");
 
-        Assert.assertEquals("Unexpected signature",
+        assertEquals(
             "com.github.tymefly.eel.MyClass.myMethod(java.lang.String, int)",
-            Signature.of(source));
+            Signature.of(source),
+            "Unexpected signature");
     }
 
     /**
@@ -92,7 +93,7 @@ public class SignatureTest {
         when(source.getSimpleName().toString())
             .thenReturn("myField");
 
-        Assert.assertEquals("Unexpected signature", "com.github.tymefly.eel.MyClass.myField", Signature.of(source));
+        assertEquals("com.github.tymefly.eel.MyClass.myField", Signature.of(source), "Unexpected signature");
     }
 
     /**
@@ -111,7 +112,7 @@ public class SignatureTest {
         when(source.getSimpleName().toString())
             .thenReturn("MY_ENUM");
 
-        Assert.assertEquals("Unexpected signature", "com.github.tymefly.eel.MyClass.MY_ENUM", Signature.of(source));
+        assertEquals("com.github.tymefly.eel.MyClass.MY_ENUM", Signature.of(source), "Unexpected signature");
     }
 
     /**
@@ -124,6 +125,6 @@ public class SignatureTest {
         when(source.toString())
             .thenReturn("myModule");
 
-        Assert.assertEquals("Unexpected signature", "myModule", Signature.of(source));
+        assertEquals("myModule", Signature.of(source), "Unexpected signature");
     }
 }

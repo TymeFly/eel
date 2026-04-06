@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.Tokenizer.Terminal;
-import com.github.tymefly.eel.exception.EelSemanticException;
 import com.github.tymefly.eel.exception.EelSyntaxException;
 import com.github.tymefly.eel.utils.StringUtils;
 
@@ -87,9 +86,9 @@ class Parser {
     private final Tokenizer tokenizer;
     private final EelContextImpl context;
     private final Compiler compiler;
-    private final List<Term> lookBacks;
 
     private Terminal terminal;
+    private List<Term> lookBacks;
 
 
     /**
@@ -102,7 +101,7 @@ class Parser {
         this.tokenizer = tokenizer;
         this.context = context;
         this.compiler = compiler;
-        this.lookBacks = new ArrayList<>();
+        this.lookBacks = null;
 
         nextText(Token.END_OF_PROGRAM);
     }
@@ -176,7 +175,7 @@ class Parser {
         Term interpolateElement;
         nextToken(follow);
 
-        interpolateElement = expressionSequence(follow);
+        interpolateElement = precedence17(follow);
         assertToken(Token.RIGHT_PARENTHESES);
 
         return interpolateElement;
@@ -194,8 +193,7 @@ class Parser {
             nextToken(follow);
         }
 
-        // Doesn't have to be an identifier - symbols table entries can match a token names so adding a new operator
-        // won't break existing expressions
+        // SymbolsTable name can be the same as an EEL reserved word, so we need to match against more than IDENTIFIER
         assertToken(VALUE_NAMES);
 
         symbolBuilder = compiler.read(terminal.lexeme());
@@ -216,7 +214,7 @@ class Parser {
         } else if (terminal.token() == Token.BLANK_DEFAULT) {
             symbolBuilder = symbolBuilder.withBlankDefault(valueDefault());
         } else {
-            // Do nothing - the only other option is a right brace
+            // Do nothing - only valid option is a right brace, which we check next
         }
 
         assertToken(Token.RIGHT_BRACE);
@@ -311,19 +309,23 @@ class Parser {
 
 
     @Nonnull
-    private Term expressionSequence(@Nonnull Token follow) {
+    private Term precedence17(@Nonnull Token follow) {
         Term result = precedence16(follow);
 
         while (terminal.token() == Token.SEMICOLON) {
-            Term cached = compiler.cached(result);
+            Term single = compiler.constTerm(result);
+
+            if (lookBacks == null) {
+                lookBacks = new ArrayList<>();
+            }
+
+            lookBacks.add(single);
 
             nextToken(follow);
-
-            lookBacks.add(cached);
             result = precedence16(follow);
         }
 
-        lookBacks.clear();                                  // Limit look backs to the expression interpolation block
+        lookBacks = null;                               // Limit lookBacks to the expressionSequence
 
         return result;
     }
@@ -610,26 +612,31 @@ class Parser {
 
     @Nonnull
     private Term lookBack(@Nonnull Token follow) {
-        Term result;
-        int index;
+        Term index;
+        Compiler.LookbackBuilder lookback = compiler.lookback(lookBacks);
+        int position;
 
-        nextToken(Token.NUMERIC, follow);
+        nextToken(follow);
 
-        if (!terminal.isDecimal()) {
-            throw new EelSemanticException(terminal.position(), "Invalid lookBack $%s", terminal.lexeme());
+        position = terminal.position();
+        index = precedence2(follow);
+
+        if (terminal.token() == Token.MINUS) {
+            lookback.withDefault(lookbackDefault());
         }
 
-        index = terminal.decimal();
+        assertToken(Token.RIGHT_BRACKET);
 
-        nextToken(Token.RIGHT_BRACKET, follow);
+        return lookback.withIndex(position, index)
+            .build();
+    }
 
-        if ((index > lookBacks.size()) || (index <= 0)) {
-            throw new EelSemanticException(terminal.position(), "Undefined lookBack $[%d]", index);
-        }
 
-        result = lookBacks.get(index - 1);
+    @Nonnull
+    private Term lookbackDefault() {
+        nextText(Token.RIGHT_BRACKET);
 
-        return result;
+        return expression(Token.RIGHT_BRACKET);
     }
 
     @Nonnull
@@ -688,7 +695,7 @@ class Parser {
         assertToken(Token.RIGHT_PARENTHESES);
 
         result = context.getFunctionManager()
-            .compileCall(functionName, context, argumentList);
+            .compileCall(context, functionName, argumentList);
 
         return result;
     }

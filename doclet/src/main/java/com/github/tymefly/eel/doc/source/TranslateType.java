@@ -59,7 +59,7 @@ class TranslateType {
     /**
      * Returns the EelType associated with the {@code typeMirror}, or {@literal null} if there is
      * no associated EEL type
-     * @param typeMirror        JavaDoc mirror type
+     * @param typeMirror        Javadoc mirror type
      * @return the EelType associated with the {@code typeMirror}, or {@literal null} if there is
      * no associated EEL type
      */

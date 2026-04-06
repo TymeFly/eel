@@ -2,9 +2,11 @@ package com.github.tymefly.eel.doc.model;
 
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,11 +14,11 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link Group}
  */
 public class GroupTest {
-    private Group general = new Group("");
-    private Group text = new Group("text");
-    private Group number = new Group("number");
-    private Group user1 = new Group("xyz");
-    private Group user2 = new Group("abc");
+    private final Group general = new Group("");
+    private final Group text = new Group("text");
+    private final Group number = new Group("number");
+    private final Group user1 = new Group("xyz");
+    private final Group user2 = new Group("abc");
 
 
     /**
@@ -24,11 +26,11 @@ public class GroupTest {
      */
     @Test
     public void test_name() {
-        Assert.assertEquals("general group", "General utilities", general.name());
-        Assert.assertEquals("text group", "text", text.name());
-        Assert.assertEquals("number group", "number", number.name());
-        Assert.assertEquals("user1 group", "xyz", user1.name());
-        Assert.assertEquals("user2 group", "abc", user2.name());
+        assertEquals("General utilities", general.name(), "general group");
+        assertEquals("text", text.name(), "text group");
+        assertEquals("number", number.name(), "number group");
+        assertEquals("xyz", user1.name(), "user1 group");
+        assertEquals("abc", user2.name(), "user2 group");
     }
 
     /**
@@ -36,11 +38,11 @@ public class GroupTest {
      */
     @Test
     public void test_fileName() {
-        Assert.assertEquals("general group", "_$.html", general.fileName());
-        Assert.assertEquals("text group", "_text.html", text.fileName());
-        Assert.assertEquals("number group", "_number.html", number.fileName());
-        Assert.assertEquals("user1 group", "_xyz.html", user1.fileName());
-        Assert.assertEquals("user2 group", "_abc.html", user2.fileName());
+        assertEquals("_$.html", general.fileName(), "general group");
+        assertEquals("_text.html", text.fileName(), "text group");
+        assertEquals("_number.html", number.fileName(), "number group");
+        assertEquals("_xyz.html", user1.fileName(), "user1 group");
+        assertEquals("_abc.html", user2.fileName(), "user2 group");
     }
 
     /**
@@ -48,11 +50,11 @@ public class GroupTest {
      */
     @Test
     public void test_displayOrder() {
-        Assert.assertEquals("general group", 0, general.displayOrder());
-        Assert.assertEquals("text group", 3, text.displayOrder());
-        Assert.assertEquals("number group", 4, number.displayOrder());
-        Assert.assertEquals("user1 group", 999, user1.displayOrder());
-        Assert.assertEquals("user2 group", 999, user2.displayOrder());
+        assertEquals(0, general.displayOrder(), "general group");
+        assertEquals(3, text.displayOrder(), "text group");
+        assertEquals(4, number.displayOrder(), "number group");
+        assertEquals(999, user1.displayOrder(), "user1 group");
+        assertEquals(999, user2.displayOrder(), "user2 group");
     }
 
     /**
@@ -62,20 +64,19 @@ public class GroupTest {
     public void test_hasDescription() {
         general.withDescription();
 
-        Assert.assertTrue("general group",general.hasDescription());
-        Assert.assertFalse("text group", text.hasDescription());
+        assertTrue(general.hasDescription(), "general group");
+        assertFalse(text.hasDescription(), "text group");
     }
 
-
     /**
-     * Unit test and Group#add(String, Function)} {@link Group#getFunctions()}
+     * Unit test and {@link Group#add(Function)} {@link Group#getFunctions()}
      */
     @Test
     public void test_getFunctions() {
-        Function func1 = mock();
-        Function func2 = mock();
-        Function func3 = mock();
-        Function func4 = mock();
+        Function func1 = mock(Function.class);
+        Function func2 = mock(Function.class);
+        Function func3 = mock(Function.class);
+        Function func4 = mock(Function.class);
 
         when(func1.name()).thenReturn("xyz");
         when(func2.name()).thenReturn("hidden");
@@ -88,7 +89,7 @@ public class GroupTest {
         user2.add(func3);
         user2.add(func4);
 
-        Assert.assertEquals("Empty Group", List.of(), user1.getFunctions());
-        Assert.assertEquals("Sorted and filtered", List.of(func3, func4, func1), user2.getFunctions());
+        assertEquals(List.of(), user1.getFunctions(), "Empty Group");
+        assertEquals(List.of(func3, func4, func1), user2.getFunctions(), "Sorted and filtered");
     }
 }

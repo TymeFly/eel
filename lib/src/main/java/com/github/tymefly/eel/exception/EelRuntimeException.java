@@ -5,7 +5,7 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Base class for all Expression Runtime exceptions
+ * Base class for all expression runtime exceptions.
  */
 public non-sealed class EelRuntimeException extends EelException {
     @Serial
@@ -13,29 +13,27 @@ public non-sealed class EelRuntimeException extends EelException {
 
 
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructor for a simple message.
+     * @param message  human-readable message
      */
     public EelRuntimeException(@Nonnull String message) {
         super(message);
     }
 
-
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructor for a formatted message.
+     * @param message  formatted message string
+     * @param args     formatting arguments; the final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     public EelRuntimeException(@Nonnull String message, @Nonnull Object... args) {
         super(message, args);
     }
 
-
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructor for a wrapped exception.
+     * @param message  human-readable message
+     * @param cause    wrapped exception
      */
     public EelRuntimeException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

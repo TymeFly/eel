@@ -1,5 +1,4 @@
 package com.github.tymefly.eel.doc.report;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -7,14 +6,13 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.ModelManager;
 import com.github.tymefly.eel.doc.utils.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -26,26 +24,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 /**
  * Unit test for {@link Report}
  */
 public class ReportTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private Context context;
+    @TempDir
+    File temporaryFolder;
+
+    private EelDocContext context;
     private Config config;
     private File targetDirectory;
 
     private Report report;
 
-
-    @Before
-    public void setup() throws Exception {
-        context = mock(Context.class);
+    @BeforeEach
+    public void setup() {
+        context = mock(EelDocContext.class);
         config = mock(Config.class);
-        targetDirectory = temporaryFolder.newFolder("report-output");
+        targetDirectory = new File(temporaryFolder, "report-output");
+        targetDirectory.mkdirs();
 
         when(config.targetDirectory())
             .thenReturn(targetDirectory);
@@ -67,8 +65,7 @@ public class ReportTest {
             ModelManager modelManager = mock(ModelManager.class);
             GroupModel groupModel = mock(GroupModel.class);
 
-            configurationMock.when(Config::getInstance)
-                .thenReturn(config);
+            configurationMock.when(Config::getInstance).thenReturn(config);
 
             when(groupModel.name())
                 .thenReturn("MathFunctions");
@@ -90,7 +87,6 @@ public class ReportTest {
             String[] resources = {"main.css", "eel-doc.js", "up.png", "up-hover.png", "icon.png"};
             for (var resourceName : resources) {
                 File resourceTarget = new File(new File(targetDirectory, "resource"), resourceName);
-
                 fileUtilsMock.verify(() -> FileUtils.copyResource(resourceName, resourceTarget), times(1));
             }
 
@@ -143,9 +139,8 @@ public class ReportTest {
         }
     }
 
-
     private void verifyFileWrite(@Nonnull MockedStatic<FileUtils> fileUtilsMock, @Nonnull File file) {
         fileUtilsMock.verify(() ->
-                FileUtils.write(eq(file), any(String.class), any(Charset.class)), times(1));
+            FileUtils.write(eq(file), any(String.class), any(Charset.class)), times(1));
     }
 }

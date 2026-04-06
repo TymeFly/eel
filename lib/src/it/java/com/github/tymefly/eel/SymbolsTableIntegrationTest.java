@@ -3,27 +3,33 @@ package com.github.tymefly.eel;
 import java.time.Duration;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
- * Integration Tests on the EEL Symbols Table
+ * Integration Tests on the EEL SymbolsTable
  */
+@ExtendWith(SystemStubsExtension.class)
 public class SymbolsTableIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
+
 
     private EelContext context;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withTimeout(Duration.ofSeconds(0))
@@ -49,7 +55,7 @@ public class SymbolsTableIntegrationTest {
 
         actual = actual.replace('\\', '/');
 
-        Assert.assertEquals("Unexpected value", "Foo <-/-> Bar <-/-> ????", actual);
+        assertEquals("Foo <-/-> Bar <-/-> ????", actual, "Unexpected value");
     }
 
     /**
@@ -61,7 +67,7 @@ public class SymbolsTableIntegrationTest {
             .evaluate(Map.of("hello[12]", "world"))
             .asText();
 
-        Assert.assertEquals("Failed to read Map", "world", actual);
+        assertEquals("world", actual, "Failed to read Map");
     }
 
     /**
@@ -73,7 +79,7 @@ public class SymbolsTableIntegrationTest {
             .evaluate(String::toUpperCase)
             .asText();
 
-        Assert.assertEquals("Failed to read Map", "KEY", actual);
+        assertEquals("KEY", actual, "Failed to read Map");
     }
 
     /**
@@ -89,7 +95,7 @@ public class SymbolsTableIntegrationTest {
             .evaluateEnvironment()
             .asText();
 
-        Assert.assertEquals("Failed to read Env", expected, actual);
+        assertEquals(expected, actual, "Failed to read Env");
     }
 
     /**
@@ -102,7 +108,7 @@ public class SymbolsTableIntegrationTest {
             .evaluateProperties()
             .asText();
 
-        Assert.assertEquals("Failed to read Map", expected, actual);
+        assertEquals(expected, actual, "Failed to read Map");
     }
 
 
@@ -122,8 +128,8 @@ public class SymbolsTableIntegrationTest {
         Eel expression1 = Eel.compile(context, "#1: ${Key1}");
         Eel expression2 = Eel.compile(context, "#2: ${Key2}");
 
-        Assert.assertEquals("First", "#1: Foo", expression1.evaluate(table).asText());
-        Assert.assertEquals("Second", "#2: Bar", expression2.evaluate(table).asText());
+        assertEquals("#1: Foo", expression1.evaluate(table).asText(), "First");
+        assertEquals("#2: Bar", expression2.evaluate(table).asText(), "Second");
     }
 
 
@@ -137,14 +143,14 @@ public class SymbolsTableIntegrationTest {
 
         Eel expression = Eel.compile(context, "result #$random( ${a}, ${a})");
 
-        Assert.assertEquals("First", "result #1", expression.evaluate(table1).asText());
-        Assert.assertEquals("Second", "result #2", expression.evaluate(table2).asText());
+        assertEquals("result #1", expression.evaluate(table1).asText(), "First");
+        assertEquals("result #2", expression.evaluate(table2).asText(), "Second");
     }
 
 
     /**
      * Integration test {@link Eel}.
-     * Test symbols table can contain reserved words and standard functions names
+     * Test SymbolsTable can contain reserved words and standard functions names
      */
     @Test
     public void test_reservedWords() {
@@ -179,7 +185,7 @@ public class SymbolsTableIntegrationTest {
             SymbolsTable table = SymbolsTable.from(Map.of(key, value));
             Eel expression = Eel.compile(context, key + " is mapped to ${" + key + "}" );
 
-            Assert.assertEquals(key, key + " is mapped to " + value, expression.evaluate(table).asText());
+            assertEquals(key + " is mapped to " + value, expression.evaluate(table).asText(), key);
         }
     }
 }

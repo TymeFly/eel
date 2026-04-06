@@ -13,10 +13,10 @@ import com.github.tymefly.eel.builder.EelBuilder;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
- * The Extensible Expression Language (EEL) Entry point.
+ * Entry point for the Extensible Expression Language (EEL).
  */
 public class Eel {
-    /** EEL Expression builder implementation */
+    /** EEL expression builder implementation. */
     private static class EelBuilderImpl implements EelBuilder {
         private final EelContextImpl.Builder contextBuilder;
         private EelContextImpl context;
@@ -93,6 +93,17 @@ public class Eel {
             return this;
         }
 
+        @Nonnull
+        @Override
+        public EelBuilder withFileFactory(@Nonnull FileFactory factory) {
+            Preconditions.checkNotNull(factory, "Can not set a null fileFactory");
+
+            contextBuilder.withFileFactory(factory);
+            context = null;
+
+            return this;
+        }
+
         @Override
         @Nonnull
         public EelBuilder withUdfPackage(@Nonnull Package location) {
@@ -115,12 +126,10 @@ public class Eel {
             return this;
         }
 
-
         @Override
         @Nonnull
         public Eel compile(@Nonnull String expression) {
-            Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
-
+            Preconditions.checkNotNull(expression, "Can not parse a null expression");
             resolveContext();
             Source source = Source.build(expression, context.maxExpressionLength());
 
@@ -137,7 +146,6 @@ public class Eel {
 
             return new Eel(context, source);
         }
-
 
         private void resolveContext() {
             if (this.context == null) {
@@ -160,11 +168,10 @@ public class Eel {
             .wrap(parser.parse());
     }
 
-
     /**
-     * Public entry point for reading Eel language metadata
-     * @return Eel language metadata
-     * @since 2.0.0
+     * Returns metadata describing the EEL compiler.
+     * @return the EEL language metadata
+     * @since 2.0
      */
     @Nonnull
     public static Metadata metadata() {
@@ -173,8 +180,8 @@ public class Eel {
 
 
     /**
-     * Public entry point for creating an EEL expression with a custom context
-     * @return              A fluent interface
+     * Creates a builder for constructing an EEL expression with a custom context.
+     * @return a builder for configuring and compiling expressions
      * @see #compile(String)
      */
     @Nonnull
@@ -184,10 +191,10 @@ public class Eel {
 
 
     /**
-     * Public entry point for an Expression with a default, shared, context
-     * @param expression    The expression to be evaluated
-     * @return              A generated expression
-     * @see #factory() 
+     * Compiles an expression using the default, shared, context.
+     * @param expression    the expression to compile
+     * @return the compiled expression
+     * @see #factory()
      */
     @Nonnull
     public static Eel compile(@Nonnull String expression) {
@@ -195,11 +202,11 @@ public class Eel {
     }
 
     /**
-     * Public entry point for an Expression with a default, shared, context
-     * @param expression    The expression to be evaluated
-     * @return              A generated expression
+     * Compiles an expression from an input stream using the default, shared, context.
+     * @param expression    the input stream containing the expression
+     * @return the compiled expression
      * @see #factory()
-     * @since 3.0.0
+     * @since 3.0
      */
     @Nonnull
     public static Eel compile(@Nonnull InputStream expression) {
@@ -207,35 +214,33 @@ public class Eel {
     }
 
     /**
-     * Public entry point for Expression with a custom context
-     * @param expression    The expression to be evaluated
+     * Compiles an expression using a custom context.
      * @param context       A custom context
-     * @return              A generated expression
+     * @param expression    the expression to compile
+     * @return the compiled expression
      * @see #factory()
      */
     @Nonnull
     public static Eel compile(@Nonnull EelContext context, @Nonnull String expression) {
         Preconditions.checkNotNull(context, "Can not compile with a null context");
-        Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
-
+        Preconditions.checkNotNull(expression, "Can not parse a null expression");
         EelContextImpl contextImpl = (EelContextImpl) context;
 
         return new Eel(contextImpl, Source.build(expression, contextImpl.maxExpressionLength()));
     }
 
     /**
-     * Public entry point for Expression with a custom context
-     * @param expression    The expression to be evaluated
+     * Compiles an expression from an input stream using a custom context.
      * @param context       A custom context
-     * @return              A generated expression
+     * @param expression    the input stream containing the expression
+     * @return the compiled expression
      * @see #factory()
-     * @since 3.0.0
+     * @since 3.0
      */
     @Nonnull
     public static Eel compile(@Nonnull EelContext context, @Nonnull InputStream expression) {
         Preconditions.checkNotNull(context, "Can not compile with a null context");
-        Preconditions.checkNotNull(expression, "Can not set a parse a null expression");
-
+        Preconditions.checkNotNull(expression, "Can not parse a null expression");
         EelContextImpl contextImpl = (EelContextImpl) context;
 
         return new Eel(contextImpl, Source.build(expression, contextImpl.maxExpressionLength()));
@@ -243,8 +248,8 @@ public class Eel {
 
 
     /**
-     * Evaluate this expression without reference to a SymbolsTable
-     * @return the result of evaluating this expression
+     * Evaluates this expression without a SymbolsTable.
+     * @return the result of the evaluation
      */
     @Nonnull
     public Result evaluate() {
@@ -252,9 +257,9 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code symbolsTable}
-     * @param symbolsTable  an object that can provide the expression with values
-     * @return the result of evaluating this expression
+     * Evaluates this expression using the provided {@code symbolsTable}.
+     * @param symbolsTable  the Symbols table supplying values
+     * @return the result of the evaluation
      * @see SymbolsTable#factory()
      */
     @Nonnull
@@ -265,11 +270,11 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code values} as an anonymous {@link SymbolsTable}
-     * @param values    A collection of key-value pairs that will be used as the symbols table
-     * @return the result of evaluating this expression
+     * Evaluates this expression using the provided {@code values} as an anonymous SymbolsTable.
+     * @param values        key-value pairs used to resolve symbols
+     * @return the result of the evaluation
      * @see SymbolsTable#from(Map)
-     * @see #evaluate(String, Map) 
+     * @see #evaluate(String, Map)
      */
     @Nonnull
     public Result evaluate(@Nonnull Map<String, String> values) {
@@ -277,11 +282,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code values} as a scoped {@link SymbolsTable} with the
-     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
-     * @param scopeName Name of the scope for the map
-     * @param values    A collection of key-value pairs that will be used as the symbols table
-     * @return the result of evaluating this expression
+     * Evaluates this expression using the provided {@code values} as a scoped {@link SymbolsTable}.
+     * @param scopeName     unique name of the scope
+     * @param values        key-value pairs used to resolve symbols
+     * @return the result of the evaluation
      * @see SymbolsTable#from(Map)
      * @see #evaluate(Map)
      */
@@ -291,10 +295,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code lookup} function as an anonymous {@link SymbolsTable}
-     * @param lookup    A lookup function that will be used as when accessing the symbols table
-     * @return the result of evaluating this expression
-     * @see SymbolsTable#from(Function) 
+     * Evaluates this expression using the provided {@code lookup} function as an anonymous {@link SymbolsTable}.
+     * @param lookup        function used to resolve symbol values
+     * @return the result of the evaluation
+     * @see SymbolsTable#from(Function)
      * @see #evaluate(String, Function)
      */
     @Nonnull
@@ -303,11 +307,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code lookup} function as a scoped {@link SymbolsTable} with the
-     * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
-     * @param scopeName Name of the scope for lookup function
-     * @param lookup    A lookup function that will be used as when accessing the symbols table
-     * @return the result of evaluating this expression
+     * Evaluates this expression using the provided {@code lookup} function as a scoped {@link SymbolsTable}.
+     * @param scopeName     unique name of the scope
+     * @param lookup        function used to resolve symbol values
+     * @return the result of the evaluation
      * @see SymbolsTable#from(Function)
      * @see #evaluate(Function)
      */
@@ -317,10 +320,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
-     * @return the result of evaluating this expression
-     * @see SymbolsTable#fromEnvironment() 
-     * @see #evaluateEnvironment(String) 
+     * Evaluates this expression using environment variables as an anonymous {@link SymbolsTable}.
+     * @return the result of the evaluation
+     * @see SymbolsTable#fromEnvironment()
+     * @see #evaluateEnvironment(String)
      */
     @Nonnull
     public Result evaluateEnvironment() {
@@ -328,10 +331,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the system properties as a scoped {@link SymbolsTable} with the
+     * Evaluates this expression using environment variables as a scoped {@link SymbolsTable} with the
      * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
-     * @param scopeName Name of the scope for the environment variables
-     * @return the result of evaluating this expression
+     * @param scopeName     unique name of the scope
+     * @return the result of the evaluation
      * @see SymbolsTable#fromEnvironment()
      * @see #evaluateEnvironment()
      */
@@ -341,21 +344,21 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the system properties as an anonymous {@link SymbolsTable}
-     * @return the result of evaluating this expression
-     * @see SymbolsTable#fromProperties() 
+     * Evaluates this expression using system properties as an anonymous {@link SymbolsTable}.
+     * @return the result of the evaluation
+     * @see SymbolsTable#fromProperties()
      * @see #evaluateProperties(String)
      */
     @Nonnull
     public Result evaluateProperties() {
         return expression.evaluate(SymbolsTable.fromProperties());
     }
-    
+
     /**
-     * Evaluate this expression using the system properties as a scoped {@link SymbolsTable} with the
+     * Evaluates this expression using system properties as a scoped {@link SymbolsTable} with the
      * {@code scopeName} and the {@link SymbolsTable#DEFAULT_DELIMITER}
-     * @param scopeName Name of the scope for the properties
-     * @return the result of evaluating this expression
+     * @param scopeName     unique name of the scope
+     * @return the result of the evaluation
      * @see SymbolsTable#fromProperties()
      * @see #evaluateProperties(String)
      */
@@ -365,11 +368,10 @@ public class Eel {
     }
 
     /**
-     * Evaluate this expression using the supplied {@code defaultValue} for all values in the {@code symbolsTable}
-     * without a scope name
-     * @param defaultValue  A string that will be used for all values ae could be in the symbols table
-     * @return the result of evaluating this expression
-     * @see SymbolsTable#from(String) 
+     * Evaluates this expression using a {@code defaultValue} for all unresolved symbols.
+     * @param defaultValue      the value returned when a symbol cannot be resolved
+     * @return the result of the evaluation
+     * @see SymbolsTable#from(String)
      */
     @Nonnull
     public Result evaluate(@Nonnull String defaultValue) {

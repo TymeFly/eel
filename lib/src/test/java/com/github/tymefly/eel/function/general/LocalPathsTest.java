@@ -1,32 +1,45 @@
 package com.github.tymefly.eel.function.general;
 
-import java.io.IOException;
+import java.nio.file.FileSystems;
 
-import org.junit.Assert;
-import org.junit.Test;
+import com.github.tymefly.eel.EelContext;
+import com.github.tymefly.eel.EelFunctionException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link LocalPaths}
  */
 public class LocalPathsTest {
     /**
-     * Unit test {@link LocalPaths#realPath(String)}
+     * Unit test {@link LocalPaths#realPath(EelContext, String)}
      */
     @Test
     public void test_realPath() throws Exception {
+        EelContext context = EelContext.factory().build();
+
         String currentDir = System.getProperty("user.dir");
-        String slash = System.getProperty("file.separator");
+        String slash = FileSystems.getDefault().getSeparator();
 
-        Assert.assertEquals("current dir", currentDir, new LocalPaths().realPath("."));
-        Assert.assertEquals("child dir", currentDir + slash + "child", new LocalPaths().realPath("child"));
-        Assert.assertEquals("file in dir", currentDir + slash + "read.me", new LocalPaths().realPath("read.me"));
-        Assert.assertEquals("remove current dir", currentDir, new LocalPaths().realPath("./."));
-        Assert.assertEquals("parent dir", currentDir + slash + "b", new LocalPaths().realPath("a/../b"));
-        Assert.assertEquals("absolute dir",
-            "/a/c",
-            new LocalPaths().realPath("/a/b/../c/.").replaceFirst("^[A-Za-z]:", "").replace('\\', '/'));
+        assertEquals(currentDir, new LocalPaths().realPath(context, "."), "current dir");
+        assertEquals(currentDir + slash + "child", new LocalPaths().realPath(context, "child"), "child dir");
+        assertEquals(currentDir + slash + "read.me", new LocalPaths().realPath(context, "read.me"), "file in dir");
+        assertEquals(currentDir, new LocalPaths().realPath(context, "./."), "remove current dir");
+        assertEquals(currentDir + slash + "b", new LocalPaths().realPath(context, "a/../b"), "parent dir");
+        assertEquals("/a/c",
+            new LocalPaths().realPath(context, "/a/b/../c/.").replaceFirst("^[A-Za-z]:", "").replace('\\', '/'),
+            "absolute dir");
 
-        Assert.assertThrows("Empty String", IOException.class, () -> new LocalPaths().realPath(""));
+        assertEquals("/a/c",
+            new LocalPaths().realPath(context, "/a/b/../c/").replaceFirst("^[A-Za-z]:", "").replace('\\', '/'),
+            "trailing slash");
+        assertEquals("/a/c",
+            new LocalPaths().realPath(context, "/a/b/../c////").replaceFirst("^[A-Za-z]:", "").replace('\\', '/'),
+            "multiple trailing slashes");
+
+        assertThrows(EelFunctionException.class, () -> new LocalPaths().realPath(context, ""), "Empty String");
     }
 
 
@@ -35,14 +48,16 @@ public class LocalPathsTest {
      */
     @Test
     public void test_dirName() {
-        Assert.assertEquals("empty", new LocalPaths('/').dirName(""), "");
-        Assert.assertEquals("Full Path (*nix)", new LocalPaths('/').dirName("/a/b/c/d.txt"), "/a/b/c");
-        Assert.assertEquals("Full Path (Windows)", new LocalPaths('\\').dirName("c:\\a\\b\\c\\d.txt"), "c:\\a\\b\\c");
-        Assert.assertEquals("No Extension", new LocalPaths('\\').dirName("c:\\a\\b\\c\\d"), "c:\\a\\b\\c");
-        Assert.assertEquals("Just File", new LocalPaths('/').dirName("d.txt"), "");
-        Assert.assertEquals("Just Slash and File", new LocalPaths('/').dirName("/d.txt"), "");
-        Assert.assertEquals("Relative Path", new LocalPaths('/').dirName("a/b/c/d.txt"), "a/b/c");
-        Assert.assertEquals("With Navigation", new LocalPaths('/').dirName("/a/b/../c/d.txt"), "/a/b/../c");
+        assertEquals("", new LocalPaths('/').dirName(""), "empty");
+        assertEquals("/a/b/c", new LocalPaths('/').dirName("/a/b/c/d.txt"), "Full Path (*nix)");
+        assertEquals("c:\\a\\b\\c", new LocalPaths('\\').dirName("c:\\a\\b\\c\\d.txt"), "Full Path (Windows)");
+        assertEquals("c:\\a\\b\\c", new LocalPaths('\\').dirName("c:\\a\\b\\c\\d"), "No Extension");
+        assertEquals("", new LocalPaths('/').dirName("d.txt"), "Just File");
+        assertEquals("/", new LocalPaths('/').dirName("/d.txt"), "Just Slash and File");
+        assertEquals("a/b/c", new LocalPaths('/').dirName("a/b/c/d.txt"), "Relative Path");
+        assertEquals("/a/b/../c", new LocalPaths('/').dirName("/a/b/../c/d.txt"), "With Navigation");
+        assertEquals("/a/b/c", new LocalPaths('/').dirName("/a/b/c/d/"), "ends with a slash");
+        assertEquals("/a/b/c", new LocalPaths('/').dirName("/a/b/c/d//"), "ends with multiple slashes");
     }
 
 
@@ -51,14 +66,16 @@ public class LocalPathsTest {
      */
     @Test
     public void test_baseName_withExtension() {
-        Assert.assertEquals("empty", "", new LocalPaths('/').baseName("", ""));
-        Assert.assertEquals("Full Path (*nix)", "d.txt", new LocalPaths('/').baseName("/a/b/c/d.txt", ""));
-        Assert.assertEquals("Full Path (Windows)", "d.txt", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d.txt", ""));
-        Assert.assertEquals("No Extension", "d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d", ""));
-        Assert.assertEquals("Just File", "d.txt", new LocalPaths('/').baseName("d.txt", ""));
-        Assert.assertEquals("Just Slash and File", "d.txt", new LocalPaths('/').baseName("/d.txt", ""));
-        Assert.assertEquals("Relative Path", "d.txt", new LocalPaths('/').baseName("a/b/c/d.txt", ""));
-        Assert.assertEquals("With Navigation", "d.txt", new LocalPaths('\\').baseName("\\a\\b\\..\\c\\d.txt", ""));
+        assertEquals("", new LocalPaths('/').baseName("", ""), "empty");
+        assertEquals("d.txt", new LocalPaths('/').baseName("/a/b/c/d.txt", ""), "Full Path (*nix)");
+        assertEquals("d.txt", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d.txt", ""), "Full Path (Windows)");
+        assertEquals("d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d", ""), "No Extension");
+        assertEquals("d.txt", new LocalPaths('/').baseName("d.txt", ""), "Just File");
+        assertEquals("d.txt", new LocalPaths('/').baseName("/d.txt", ""), "Just Slash and File");
+        assertEquals("d.txt", new LocalPaths('/').baseName("a/b/c/d.txt", ""), "Relative Path");
+        assertEquals("d.txt", new LocalPaths('\\').baseName("\\a\\b\\..\\c\\d.txt", ""), "With Navigation");
+        assertEquals("d.txt", new LocalPaths('\\').baseName("\\a\\b\\c\\d.txt\\", ""), "ends with slash");
+        assertEquals("d.txt", new LocalPaths('\\').baseName("\\a\\b\\c\\d.txt\\\\", ""), "ends with multiple slashes");
     }
 
     /**
@@ -66,50 +83,53 @@ public class LocalPathsTest {
      */
     @Test
     public void test_baseName_removeExtension() {
-        Assert.assertEquals("empty", "", new LocalPaths('/').baseName("", ".txt"));
-        Assert.assertEquals("Full Path (*nix)", "d", new LocalPaths('/').baseName("/a/b/c/d.txt", ".txt"));
-        Assert.assertEquals("Full Path (Windows)", "d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d.txt", ".txt"));
-        Assert.assertEquals("No Extension", "d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d", ".txt"));
-        Assert.assertEquals("Just File", "d", new LocalPaths('/').baseName("d.txt", ".txt"));
-        Assert.assertEquals("Just Slash and File", "d", new LocalPaths('/').baseName("/d.txt", ".txt"));
-        Assert.assertEquals("Relative Path", "d", new LocalPaths('/').baseName("a/b/c/d.txt", ".txt"));
-        Assert.assertEquals("With Navigation", "d", new LocalPaths('\\').baseName("\\a\\b\\..\\c\\d.txt", ".txt"));
+        assertEquals("",  new LocalPaths('/').baseName("", ".txt"), "empty");
+        assertEquals("d", new LocalPaths('/').baseName("/a/b/c/d.txt", ".txt"), "Full Path (*nix)");
+        assertEquals("d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d.txt", ".txt"), "Full Path (Windows)");
+        assertEquals("d", new LocalPaths('\\').baseName("c:\\a\\b\\c\\d", ".txt"), "No Extension");
+        assertEquals("d", new LocalPaths('/').baseName("d.txt", ".txt"), "Just File");
+        assertEquals("d", new LocalPaths('/').baseName("/d.txt", ".txt"), "Just Slash and File");
+        assertEquals("d", new LocalPaths('/').baseName("a/b/c/d.txt", ".txt"), "Relative Path");
+        assertEquals("d", new LocalPaths('\\').baseName("\\a\\b\\..\\c\\d.txt", ".txt"), "With Navigation");
+        assertEquals("d", new LocalPaths('\\').baseName("\\a\\b\\c\\d.txt\\", ".txt"), "ends with slash");
+        assertEquals("d", new LocalPaths('\\').baseName("\\a\\b\\c\\d.txt\\\\", ".txt"), "ends with multiple slashes");
     }
 
     /**
      * Unit test {@link LocalPaths#extension(String, int)}
      */
     @Test
-    public void test_extension() {
-        Assert.assertEquals("empty", "", new LocalPaths().extension("", -1));
-        Assert.assertEquals("Full Path (*nix)", "txt", new LocalPaths('/').extension("/a/b/c/d.txt", -1));
-        Assert.assertEquals("Full Path (Windows)", "txt", new LocalPaths('\\').extension("c:\\a\\b\\c\\d.txt", -1));
-        Assert.assertEquals("No Extension", "", new LocalPaths('\\').extension("c:\\a\\b\\c\\d", -1));
-        Assert.assertEquals("Just File", "txt", new LocalPaths('/').extension("d.txt", -1));
-        Assert.assertEquals("Just Slash and File", "txt", new LocalPaths().extension("/d.txt", -1));
-        Assert.assertEquals("Relative Path", "txt", new LocalPaths('/').extension("a/b/c/d.txt", -1));
-        Assert.assertEquals("With Navigation", "txt", new LocalPaths('\\').extension("\\a\\b\\..\\c\\d.txt", -1));
+    public void test_extension() throws Exception {
+        assertEquals("", new LocalPaths().extension("", -1), "empty");
 
-        Assert.assertEquals("No File", "txt", new LocalPaths('/').extension(".txt", -1));
-        Assert.assertEquals("Missing Extension", "", new LocalPaths('/').extension("d.", -1));
+        assertEquals("txt", new LocalPaths('/').extension("/a/b/c/d.txt", -1), "Full Path (*nix)");
+        assertEquals("txt", new LocalPaths('\\').extension("c:\\a\\b\\c\\d.txt", -1), "Full Path (Windows)");
+        assertEquals("", new LocalPaths('\\').extension("c:\\a\\b\\c\\d", -1), "No Extension");
+        assertEquals("txt", new LocalPaths('/').extension("d.txt", -1), "Just File");
+        assertEquals("txt", new LocalPaths().extension("/d.txt", -1), "Just Slash and File");
+        assertEquals("txt", new LocalPaths('/').extension("a/b/c/d.txt", -1), "Relative Path");
+        assertEquals("txt", new LocalPaths('\\').extension("\\a\\b\\..\\c\\d.txt", -1), "With Navigation");
 
-        Assert.assertEquals("multiple extensions (all)", "tar.gz", new LocalPaths('/').extension("archive.tar.gz", -1));
-        Assert.assertEquals("multiple extensions (zero)", "", new LocalPaths('/').extension("archive.tar.gz", 0));
-        Assert.assertEquals("multiple extensions (one)", "gz", new LocalPaths('/').extension("archive.tar.gz", 1));
-        Assert.assertEquals("multiple extensions (two)", "tar.gz", new LocalPaths('/').extension("archive.tar.gz", 2));
-        Assert.assertEquals("multiple extensions (three)", "tar.gz", new LocalPaths('/').extension("archive.tar.gz", 3));
+        assertEquals("txt", new LocalPaths('/').extension(".txt", -1), "No File");
+        assertEquals("", new LocalPaths('/').extension("d.", -1), "Missing Extension");
 
-        Assert.assertEquals("trailing extensions (all)", "tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", -1));
-        Assert.assertEquals("trailing extensions (zero)", "", new LocalPaths('/').extension("archive.tar.gz.", 0));
-        Assert.assertEquals("trailing extensions (one)", "", new LocalPaths('/').extension("archive.tar.gz.", 1));
-        Assert.assertEquals("trailing extensions (two)", "gz.", new LocalPaths('/').extension("archive.tar.gz.", 2));
-        Assert.assertEquals("trailing extensions (three)", "tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", 3));
-        Assert.assertEquals("trailing extensions (four)", "tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", 4));
+        assertEquals("tar.gz", new LocalPaths('/').extension("archive.tar.gz", -1), "multiple extensions (all)");
+        assertEquals("", new LocalPaths('/').extension("archive.tar.gz", 0), "multiple extensions (zero)");
+        assertEquals("gz", new LocalPaths('/').extension("archive.tar.gz", 1), "multiple extensions (one)");
+        assertEquals("tar.gz", new LocalPaths('/').extension("archive.tar.gz", 2), "multiple extensions (two)");
+        assertEquals("tar.gz", new LocalPaths('/').extension("archive.tar.gz", 3), "multiple extensions (three)");
 
-        Assert.assertEquals("No File, multiple extensions (all)", "tar.gz", new LocalPaths('/').extension(".tar.gz", -1));
-        Assert.assertEquals("No File, multiple extensions (zero)", "", new LocalPaths('/').extension(".tar.gz", 0));
-        Assert.assertEquals("No File, multiple extensions (one)", "gz", new LocalPaths('/').extension(".tar.gz", 1));
-        Assert.assertEquals("No File, multiple extensions (two)", "tar.gz", new LocalPaths('/').extension(".tar.gz", 2));
-        Assert.assertEquals("No File, multiple extensions (three)", "tar.gz", new LocalPaths('/').extension(".tar.gz", 3));
+        assertEquals("tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", -1), "trailing extensions (all)");
+        assertEquals("", new LocalPaths('/').extension("archive.tar.gz.", 0), "trailing extensions (zero)");
+        assertEquals("", new LocalPaths('/').extension("archive.tar.gz.", 1), "trailing extensions (one)");
+        assertEquals("gz.", new LocalPaths('/').extension("archive.tar.gz.", 2), "trailing extensions (two)");
+        assertEquals("tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", 3), "trailing extensions (three)");
+        assertEquals("tar.gz.", new LocalPaths('/').extension("archive.tar.gz.", 4), "trailing extensions (four)");
+
+        assertEquals("tar.gz", new LocalPaths('/').extension(".tar.gz", -1), "No File, multiple extensions (all)");
+        assertEquals("", new LocalPaths('/').extension(".tar.gz", 0), "No File, multiple extensions (zero)");
+        assertEquals("gz", new LocalPaths('/').extension(".tar.gz", 1), "No File, multiple extensions (one)");
+        assertEquals("tar.gz", new LocalPaths('/').extension(".tar.gz", 2), "No File, multiple extensions (two)");
+        assertEquals("tar.gz", new LocalPaths('/').extension(".tar.gz", 3), "No File, multiple extensions (three)");
     }
 }

@@ -25,7 +25,7 @@ final class Constant extends AbstractValue implements Result {
     private static final ZonedDateTime ONE_DATE = EelContext.ZERO_DATE.plusSeconds(1);
     private static final ZonedDateTime TEN_DATE = EelContext.ZERO_DATE.plusSeconds(10);
 
-    // As we keep a reference to these objects as static final fields they can't be garbage collected
+    // As we keep a reference to these objects because static final fields can't be garbage collected
     // and therefore will not be removed from the WeakHashMaps
     // These values are created with all the conversion values defined to save time later.
     private static final Constant BLANK = new Constant(Type.TEXT, "", null, null, null);
@@ -188,10 +188,11 @@ final class Constant extends AbstractValue implements Result {
         return date;
     }
 
+
     @Nonnull
     @Override
     public File asFile() throws IOException {
-        return FileFactory.from(asText());
+        return SecureFileFactory.standard().build(asText());
     }
 
 

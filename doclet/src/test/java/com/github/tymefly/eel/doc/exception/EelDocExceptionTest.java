@@ -1,7 +1,10 @@
 package com.github.tymefly.eel.doc.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Unit test for {@link EelDocException}
@@ -14,8 +17,8 @@ public class EelDocExceptionTest {
     public void test_Message() {
         Exception actual = new EelDocException("Test Message");
 
-        Assert.assertEquals("Unexpected message", "Test Message", actual.getMessage());
-        Assert.assertNull("Unexpected cause", actual.getCause());
+        assertEquals("Test Message", actual.getMessage(), "Unexpected message");
+        assertNull(actual.getCause(), "Unexpected cause");
     }
 
     /**
@@ -25,8 +28,8 @@ public class EelDocExceptionTest {
     public void test_FormattedMessage() {
         Exception actual = new EelDocException("Hello %s - %d", "World", 12);
 
-        Assert.assertEquals("Unexpected message", "Hello World - 12", actual.getMessage());
-        Assert.assertNull("Unexpected cause", actual.getCause());
+        assertEquals("Hello World - 12", actual.getMessage(), "Unexpected message");
+        assertNull(actual.getCause(), "Unexpected cause");
     }
 
     /**
@@ -37,10 +40,9 @@ public class EelDocExceptionTest {
         Exception cause = new Exception("cause");
         Exception actual = new EelDocException("Test", cause);
 
-        Assert.assertEquals("Unexpected message", "Test", actual.getMessage());
-        Assert.assertSame("Unexpected cause", cause, actual.getCause());
+        assertEquals("Test", actual.getMessage(), "Unexpected message");
+        assertSame(cause, actual.getCause(), "Unexpected cause");
     }
-
 
     /**
      * Unit test {@link EelDocException}
@@ -50,7 +52,7 @@ public class EelDocExceptionTest {
         Exception cause = new Exception("cause");
         Exception actual = new EelDocException("Hello %s - %d", "World", 12, cause);
 
-        Assert.assertEquals("Unexpected message", "Hello World - 12", actual.getMessage());
-        Assert.assertSame("Unexpected cause", cause, actual.getCause());
+        assertEquals("Hello World - 12", actual.getMessage(), "Unexpected message");
+        assertSame(cause, actual.getCause(), "Unexpected cause");
     }
 }

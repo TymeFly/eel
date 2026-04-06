@@ -3,8 +3,10 @@ package com.github.tymefly.eel.function.date;
 import java.time.DateTimeException;
 import java.time.temporal.ChronoUnit;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link Period}
@@ -16,34 +18,34 @@ public class PeriodTest {
      */
     @Test
     public void test_shortForm() {
-        Assert.assertEquals("Year", "y", Period.YEAR.shortForm());
-        Assert.assertEquals("Week", "w", Period.WEEK.shortForm());
-        Assert.assertEquals("Month", "M", Period.MONTH.shortForm());
-        Assert.assertEquals("Minute", "m", Period.MINUTE.shortForm());
-        Assert.assertEquals("Milli", "I", Period.MILLI.shortForm());
-        Assert.assertEquals("Micro", "U", Period.MICRO.shortForm());
-        Assert.assertEquals("Nano", "N", Period.NANO.shortForm());
+        assertEquals("y", Period.YEAR.shortForm(), "Year");
+        assertEquals("w", Period.WEEK.shortForm(), "Week");
+        assertEquals("M", Period.MONTH.shortForm(), "Month");
+        assertEquals("m", Period.MINUTE.shortForm(), "Minute");
+        assertEquals("I", Period.MILLI.shortForm(), "Milli");
+        assertEquals("U", Period.MICRO.shortForm(), "Micro");
+        assertEquals("N", Period.NANO.shortForm(), "Nano");
 
-        Assert.assertEquals("MilliOfSeconds", "i", Period.MILLI_OF_SECONDS.shortForm());
-        Assert.assertEquals("MicroOfSeconds", "u", Period.MICRO_OF_SECONDS.shortForm());
-        Assert.assertEquals("NanoOfSecond", "n", Period.NANO_OF_SECONDS.shortForm());
+        assertEquals("i", Period.MILLI_OF_SECONDS.shortForm(), "MilliOfSeconds");
+        assertEquals("u", Period.MICRO_OF_SECONDS.shortForm(), "MicroOfSeconds");
+        assertEquals("n", Period.NANO_OF_SECONDS.shortForm(), "NanoOfSecond");
     }
     /**
      * Unit test {@link Period#lookup(String)}
      */
     @Test
     public void test_lookup_shortForm() {
-        Assert.assertEquals("Year", Period.YEAR, Period.lookup("y"));
-        Assert.assertEquals("Week", Period.WEEK, Period.lookup("w"));
-        Assert.assertEquals("Month", Period.MONTH, Period.lookup("M"));
-        Assert.assertEquals("Minute", Period.MINUTE, Period.lookup("m"));
-        Assert.assertEquals("Milli", Period.MILLI, Period.lookup("I"));
-        Assert.assertEquals("Micro", Period.MICRO, Period.lookup("U"));
-        Assert.assertEquals("Nano", Period.NANO, Period.lookup("N"));
+        assertEquals(Period.YEAR, Period.lookup("y"), "Year");
+        assertEquals(Period.WEEK, Period.lookup("w"), "Week");
+        assertEquals(Period.MONTH, Period.lookup("M"), "Month");
+        assertEquals(Period.MINUTE, Period.lookup("m"), "Minute");
+        assertEquals(Period.MILLI, Period.lookup("I"), "Milli");
+        assertEquals(Period.MICRO, Period.lookup("U"), "Micro");
+        assertEquals(Period.NANO, Period.lookup("N"), "Nano");
 
-        Assert.assertEquals("MilliOfSeconds", Period.MILLI_OF_SECONDS, Period.lookup("i"));
-        Assert.assertEquals("MicroOfSeconds", Period.MICRO_OF_SECONDS, Period.lookup("u"));
-        Assert.assertEquals("NanoOfSecond", Period.NANO_OF_SECONDS, Period.lookup("n"));
+        assertEquals(Period.MILLI_OF_SECONDS, Period.lookup("i"), "MilliOfSeconds");
+        assertEquals(Period.MICRO_OF_SECONDS, Period.lookup("u"), "MicroOfSeconds");
+        assertEquals(Period.NANO_OF_SECONDS, Period.lookup("n"), "NanoOfSecond");
     }
 
     /**
@@ -51,17 +53,17 @@ public class PeriodTest {
      */
     @Test
     public void test_lookup_longForm() {
-        Assert.assertEquals("Year", Period.YEAR, Period.lookup("year"));
-        Assert.assertEquals("Week", Period.WEEK, Period.lookup("week"));
-        Assert.assertEquals("Month", Period.MONTH, Period.lookup("month"));
-        Assert.assertEquals("Minute", Period.MINUTE, Period.lookup("minute"));
-        Assert.assertEquals("Milli", Period.MILLI, Period.lookup("milli"));
-        Assert.assertEquals("Micro", Period.MICRO, Period.lookup("micro"));
-        Assert.assertEquals("Nano", Period.NANO, Period.lookup("nano"));
+        assertEquals(Period.YEAR, Period.lookup("year"), "Year");
+        assertEquals(Period.WEEK, Period.lookup("week"), "Week");
+        assertEquals(Period.MONTH, Period.lookup("month"), "Month");
+        assertEquals(Period.MINUTE, Period.lookup("minute"), "Minute");
+        assertEquals(Period.MILLI, Period.lookup("milli"), "Milli");
+        assertEquals(Period.MICRO, Period.lookup("micro"), "Micro");
+        assertEquals(Period.NANO, Period.lookup("nano"), "Nano");
 
-        Assert.assertEquals("MilliOfSeconds", Period.MILLI_OF_SECONDS, Period.lookup("milliOfSecond"));
-        Assert.assertEquals("MicroOfSecond", Period.MICRO_OF_SECONDS, Period.lookup("microOfSecond"));
-        Assert.assertEquals("NanoOfSecond", Period.NANO_OF_SECONDS, Period.lookup("nanoOfSecond"));
+        assertEquals(Period.MILLI_OF_SECONDS, Period.lookup("milliOfSecond"), "MilliOfSeconds");
+        assertEquals(Period.MICRO_OF_SECONDS, Period.lookup("microOfSecond"), "MicroOfSecond");
+        assertEquals(Period.NANO_OF_SECONDS, Period.lookup("nanoOfSecond"), "NanoOfSecond");
     }
 
 
@@ -70,17 +72,17 @@ public class PeriodTest {
      */
     @Test
     public void test_lookup_longForm_plural() {
-        Assert.assertEquals("Year", Period.YEAR, Period.lookup("years"));
-        Assert.assertEquals("Week", Period.WEEK, Period.lookup("weeks"));
-        Assert.assertEquals("Month", Period.MONTH, Period.lookup("months"));
-        Assert.assertEquals("Minute", Period.MINUTE, Period.lookup("minutes"));
-        Assert.assertEquals("Milli", Period.MILLI, Period.lookup("millis"));
-        Assert.assertEquals("Micro", Period.MICRO, Period.lookup("micros"));
-        Assert.assertEquals("Nano", Period.NANO, Period.lookup("nanos"));
+        assertEquals(Period.YEAR, Period.lookup("years"), "Year");
+        assertEquals(Period.WEEK, Period.lookup("weeks"), "Week");
+        assertEquals(Period.MONTH, Period.lookup("months"), "Month");
+        assertEquals(Period.MINUTE, Period.lookup("minutes"), "Minute");
+        assertEquals(Period.MILLI, Period.lookup("millis"), "Milli");
+        assertEquals(Period.MICRO, Period.lookup("micros"), "Micro");
+        assertEquals(Period.NANO, Period.lookup("nanos"), "Nano");
 
-        Assert.assertEquals("MilliOfSeconds", Period.MILLI_OF_SECONDS, Period.lookup("millisOfSecond"));
-        Assert.assertEquals("MicroSecond", Period.MICRO_OF_SECONDS, Period.lookup("microsOfSecond"));
-        Assert.assertEquals("NanoSecond", Period.NANO_OF_SECONDS, Period.lookup("nanosOfSecond"));
+        assertEquals(Period.MILLI_OF_SECONDS, Period.lookup("millisOfSecond"), "MilliOfSeconds");
+        assertEquals(Period.MICRO_OF_SECONDS, Period.lookup("microsOfSecond"), "MicroSecond");
+        assertEquals(Period.NANO_OF_SECONDS, Period.lookup("nanosOfSecond"), "NanoSecond");
     }
 
 
@@ -89,10 +91,10 @@ public class PeriodTest {
      */
     @Test
     public void test_lookup_unexpected() {
-        Assert.assertThrows("Y", DateTimeException.class, () -> Period.lookup("Y"));         // short case check
-        Assert.assertThrows("Year", DateTimeException.class, () -> Period.lookup("Year"));   // long case check
-        Assert.assertThrows("Years", DateTimeException.class, () -> Period.lookup("Years")); // long case plural check
-        Assert.assertThrows("?", DateTimeException.class, () -> Period.lookup("?"));         // unexpected
+        assertThrows(DateTimeException.class, () -> Period.lookup("Y"), "Y");         // short case check
+        assertThrows(DateTimeException.class, () -> Period.lookup("Year"), "Year");   // long case check
+        assertThrows(DateTimeException.class, () -> Period.lookup("Years"), "Years"); // long case plural check
+        assertThrows(DateTimeException.class, () -> Period.lookup("?"), "?");         // unexpected
     }
 
     /**
@@ -100,18 +102,18 @@ public class PeriodTest {
      */
     @Test
     public void test_getChronoUnit() {
-        Assert.assertEquals("YEAR", ChronoUnit.YEARS, Period.YEAR.getChronoUnit());
-        Assert.assertEquals("MONTH", ChronoUnit.MONTHS, Period.MONTH.getChronoUnit());
-        Assert.assertEquals("WEEK", ChronoUnit.WEEKS, Period.WEEK.getChronoUnit());
-        Assert.assertEquals("DAY", ChronoUnit.DAYS, Period.DAY.getChronoUnit());
-        Assert.assertEquals("HOUR", ChronoUnit.HOURS, Period.HOUR.getChronoUnit());
-        Assert.assertEquals("SECOND", ChronoUnit.SECONDS, Period.SECOND.getChronoUnit());
-        Assert.assertEquals("MILLI", ChronoUnit.MILLIS, Period.MILLI.getChronoUnit());
-        Assert.assertEquals("MICRO", ChronoUnit.MICROS, Period.MICRO.getChronoUnit());
-        Assert.assertEquals("NANO", ChronoUnit.NANOS, Period.NANO.getChronoUnit());
+        assertEquals(ChronoUnit.YEARS, Period.YEAR.getChronoUnit(), "YEAR");
+        assertEquals(ChronoUnit.MONTHS, Period.MONTH.getChronoUnit(), "MONTH");
+        assertEquals(ChronoUnit.WEEKS, Period.WEEK.getChronoUnit(), "WEEK");
+        assertEquals(ChronoUnit.DAYS, Period.DAY.getChronoUnit(), "DAY");
+        assertEquals(ChronoUnit.HOURS, Period.HOUR.getChronoUnit(), "HOUR");
+        assertEquals(ChronoUnit.SECONDS, Period.SECOND.getChronoUnit(), "SECOND");
+        assertEquals(ChronoUnit.MILLIS, Period.MILLI.getChronoUnit(), "MILLI");
+        assertEquals(ChronoUnit.MICROS, Period.MICRO.getChronoUnit(), "MICRO");
+        assertEquals(ChronoUnit.NANOS, Period.NANO.getChronoUnit(), "NANO");
 
-        Assert.assertEquals("MILLI_OF_SECONDS", ChronoUnit.MILLIS, Period.MILLI_OF_SECONDS.getChronoUnit());
-        Assert.assertEquals("MICRO_OF_SECONDS", ChronoUnit.MICROS, Period.MICRO_OF_SECONDS.getChronoUnit());
-        Assert.assertEquals("NANO_OF_SECONDS", ChronoUnit.NANOS, Period.NANO_OF_SECONDS.getChronoUnit());
+        assertEquals(ChronoUnit.MILLIS, Period.MILLI_OF_SECONDS.getChronoUnit(), "MILLI_OF_SECONDS");
+        assertEquals(ChronoUnit.MICROS, Period.MICRO_OF_SECONDS.getChronoUnit(), "MICRO_OF_SECONDS");
+        assertEquals(ChronoUnit.NANOS, Period.NANO_OF_SECONDS.getChronoUnit(), "NANO_OF_SECONDS");
     }
 }

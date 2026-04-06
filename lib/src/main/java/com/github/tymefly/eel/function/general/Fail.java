@@ -8,17 +8,19 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL function that returns that fails an expression by throwing an exception.
+ * An EEL function that fails an expression by throwing an {@link EelFailException}.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Fail {
     /**
      * An EEL function that fails the expression by throwing an {@link EelFailException}.
-     * This function is typically used inside a condition, such as a ternary expression. For example:
+     * This function is typically used inside a condition, such as a ternary expression or a lookback. For example:
      * <br>
      * {@code $( condition ? value : fail("error message") ) }
-     * @param message   the optional message that will be passed back to the client application
+     * @param message   the optional failure message
      * @throws EelFailException when invoked
+     * @since 1.0
      */
     @EelFunction("fail")
     public void fail(@Nonnull

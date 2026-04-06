@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -69,7 +69,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns up to <code>count</code> lines from the start of the given UTF-8 text <code>file</code>.
+                                        Returns up to <code>lines</code> lines from the beginning of the specified UTF-8 text <code>file</code>.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -78,7 +78,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns up to <code>count</code> lines from the end of the given UTF-8 text <code>file</code>.
+                                        Returns up to <code>lines</code> lines from the end of the specified UTF-8 text <code>file</code>.
                                     </td>
                                 </tr>
                             </tbody>
@@ -93,7 +93,7 @@
                     <section class="overview-description">
                         <div class="block-detail">
                             <div class="description">
-                                Functions that read data from local files.<p> To guard against potential denial-of-service attacks, a limit is imposed on the amount of data each function can read. By default, this is 32768 bytes, but it can be changed in the EEL context. If a function attempts to read beyond this limit, an <code>IOException</code> is thrown.
+                                Functions that read data from local files.<br> To guard against potential denial-of-service attacks, a limit is imposed on the amount of data each function can read. By default, this is 32768 bytes, but it can be changed in the EEL context. If a function attempts to read beyond this limit, an <code>IOException</code> is thrown.
                             </div>
                         </div>
                     </section>
@@ -105,7 +105,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns up to <code>count</code> lines from the start of the given UTF-8 text <code>file</code>. Lines are delimited with <span class="literal">\n</span>
+                            Returns up to <code>lines</code> lines from the beginning of the specified UTF-8 text <code>file</code>. Lines are delimited by a line feed (<span class="literal"> \n</span>), a carriage return (<span class="literal"> \r</span>), a carriage return followed by a line feed, or by reaching the end of the file.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -120,7 +120,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system to read from</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -130,7 +130,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">1</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to read.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to return</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +144,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">Up to <code>count</code> lines from the start of the file.</span>
+                                    <span class="description">Up to <code>lines</code> lines from the beginning of the file</span>
                                 </div>
                             </span>
                         </div>
@@ -152,7 +152,7 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IOException</code> </span> <span class="description">If the file could not be read.</span>
+                                    <span><code>IOException</code> </span> <span class="description">If the file cannot be read, or the head exceeds the length defined by the <code>context</code></span>
                                 </div>
                             </span>
                         </div>
@@ -173,7 +173,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns up to <code>count</code> lines from the end of the given UTF-8 text <code>file</code>. Lines are delimited with <span class="literal">\n</span>
+                            Returns up to <code>lines</code> lines from the end of the specified UTF-8 text <code>file</code>. Lines are delimited by a line feed (<span class="literal"> \n</span>), a carriage return (<span class="literal"> \r</span>), a carriage return followed by a line feed, or by reaching the end of the file.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -188,7 +188,7 @@
                                         <code>file</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The file on the local file system to read from</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -198,7 +198,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">1</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to read.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The maximum number of lines to return</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -212,7 +212,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">Up to <code>count</code> lines from the end of the file.</span>
+                                    <span class="description">Up to <code>lines</code> lines from the end of the file</span>
                                 </div>
                             </span>
                         </div>
@@ -220,7 +220,7 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IOException</code> </span> <span class="description">If the file could not be read.</span>
+                                    <span><code>IOException</code> </span> <span class="description">If the file cannot be read or exceeds the length defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -239,7 +239,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

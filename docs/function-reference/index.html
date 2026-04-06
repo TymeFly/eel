@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -38,27 +38,38 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <p>
-                          This manual describes the standard EEL 3.1 functions that are automatically available to all expressions
-                          without needing to explicitly add them via the EEL Context.
+                          This manual describes the standard EEL 3.2 functions that are automatically available
+                          in all expressions without needing to add them explicitly via the EEL context.
                         </p>
                         <p>
-                          Many EEL functions can accept a variable number of arguments. The final argument can appear zero, one, or multiple
-                          times.
-                          This is indicated in the list below by <code>...</code> after the last argument.
-                          For example, <code>date.plus(date, offsets...)</code> requires a <em>date</em> but can accept any number of
-                          <em>offsets</em>, including none.
+                          Many EEL functions accept a variable number of arguments. The final argument can appear zero, one, or multiple
+                          times. This is indicated by <code>...</code> after the last argument. For example:
                         </p>
+                        <ul>
+                          <li>
+                            <code>date.plus(date, offsets...)</code> requires a <em>date</em> but can accept any number of
+                            <em>offsets</em>, including none.
+                          </li>
+                        </ul>
                         <p>
-                          Some functions support default arguments. If a value is not explicitly provided, EEL will automatically use the default.
-                          When a parameter can be defaulted, this documentation will describe the default value.
-                          For example, the <code>random</code> function can be called as <code>random()</code>, <code>random(min)</code>, or
-                          <code>random(min, max)</code>,
-                          where <code>min</code> defaults to <code>0</code> and <code>max</code> defaults to <code>100</code>.
+                          Some functions support default arguments. If a value is not explicitly provided, EEL automatically uses the
+                          default. When a parameter can be defaulted, this documentation specifies the default value. For example:
                         </p>
+                        <ul>
+                          <li>
+                            <code>random()</code>, for a random number between <code>0</code> and <code>99</code> inclusive
+                          </li>
+                          <li>
+                            <code>random(min)</code>, for a random number between <code>min</code> and <code>99</code> inclusive
+                          </li>
+                          <li>
+                            <code>random(min, max)</code>, for a random number between <code>min</code> and <code>max</code> inclusive
+                          </li>
+                        </ul>
                         <p>
-                          As EEL is a lazy language, parameters are evaluated only when they are used. Consequently, functions such as
-                          <code>count()</code>, <code>fail()</code>, and the logging functions can be safely passed as parameters, as
-                          there will be no side effects if they are not used.
+                          As EEL is a lazy language, parameters are evaluated only when used. Consequently, functions such as
+                          <code>count()</code>, <code>fail()</code>, and the logging functions can safely be passed as parameters
+                          without side effects if they are not used.
                         </p>
                     </div>
                 </section>
@@ -84,7 +95,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        The general utility group contains common functions for text, number, logic and date types.
+                                        Functions in the general utility group provide common operations for text, number, logic, and date types.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -94,7 +105,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        Functions that interact directly with the EEL RunTime.
+                                        Functions that interact directly with the EEL runtime.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -134,7 +145,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <i>Reserved for future functions that manipulate or generate logic values.</i>
+                                        Functions that manipulate or generate logical values.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -164,7 +175,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        Data formatting functions.
+                                        Functions for data formatting.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -185,7 +196,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

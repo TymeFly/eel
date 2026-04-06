@@ -16,10 +16,9 @@ import com.github.tymefly.eel.builder.ScopedSymbolsTableBuilder;
 import com.github.tymefly.eel.builder.SymbolsTableBuilder;
 import com.github.tymefly.eel.exception.EelSymbolsTableException;
 import com.github.tymefly.eel.validate.Preconditions;
-
 /**
- * The symbols table is a look-up mechanism which allows a compiled {@link Eel} to read external values.
- * The symbols table can be as simple as a lookup from a map (see {@link #from(Map)}, a callback
+ * The {@link SymbolsTable} is a look-up mechanism that allows a compiled {@link Eel} to read external values.
+ * A {@link SymbolsTable} can be as simple as a lookup from a map (see {@link #from(Map)}), a callback
  * function (see {@link #from(Function)}), or a fully fledged lookup strategy that can read values from multiple
  * sources (see {@link #factory()}) with priorities and defaults.
  */
@@ -35,7 +34,6 @@ public class SymbolsTable {
             this.sources = new ArrayList<>();
         }
 
-
         @Nonnull
         @Override
         public SymbolsTableBuilder withProperties() {
@@ -47,7 +45,6 @@ public class SymbolsTable {
         public ScopedSymbolsTableBuilder withProperties(@Nonnull String scopeName) {
             return addScoped(scopeName, System.getProperties()::get);
         }
-
 
         @Nonnull
         @Override
@@ -61,11 +58,10 @@ public class SymbolsTable {
             return addScoped(scopeName, System.getenv()::get);
         }
 
-
         @Nonnull
         @Override
         public SymbolsTableBuilder withValues(@Nonnull Map<String, String> values) {
-            Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
+            Preconditions.checkNotNull(values, "Can not evaluate a null SymbolsTable map");
 
             Map<String, String> copy = new HashMap<>(values);
 
@@ -75,13 +71,12 @@ public class SymbolsTable {
         @Nonnull
         @Override
         public ScopedSymbolsTableBuilder withValues(@Nonnull String scopeName, @Nonnull Map<String, String> values) {
-            Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
+            Preconditions.checkNotNull(values, "Can not evaluate a null SymbolsTable map");
 
             Map<String, String> copy = new HashMap<>(values);
 
             return addScoped(scopeName, copy::get);
         }
-
 
         @Nonnull
         @Override
@@ -100,7 +95,6 @@ public class SymbolsTable {
             return addScoped(scopeName, lookup);
         }
 
-
         @Nonnull
         @Override
         public SymbolsTableBuilder withDefault(@Nonnull String defaultValue) {
@@ -110,7 +104,6 @@ public class SymbolsTable {
 
             return this;
         }
-
 
         @Nonnull
         private SymbolsTableBuilder unscoped(@Nonnull Function<String, ?> strategy) {
@@ -136,7 +129,6 @@ public class SymbolsTable {
             return this;
         }
 
-
         @Nonnull
         @Override
         public SymbolsTable build() {
@@ -147,20 +139,19 @@ public class SymbolsTable {
     /** Default delimiter used by the convenience factory methods. */
     public static final String DEFAULT_DELIMITER = ".";
 
-    /** A symbols table that contains no data */
+    /** A {@link SymbolsTable} that contains no data. */
     static final SymbolsTable EMPTY = new SymbolsTable(Collections.emptyList());
 
     private final List<SymbolsSource> sources;
-
 
     private SymbolsTable(@Nonnull List<SymbolsSource> sources) {
         this.sources = new ArrayList<>(sources);
     }
 
-
     /**
-     * Returns a builder that can create flexible SymbolsTable which can read symbols from a multiple locations.
-     * @return a builder for a SymbolsTable.
+     * Returns a builder that can create flexible {@link SymbolsTable} objects capable of reading symbols
+     * from multiple locations.
+     * @return a builder for a {@link SymbolsTable}
      */
     @Nonnull
     public static SymbolsTableBuilder factory() {
@@ -168,9 +159,10 @@ public class SymbolsTable {
     }
 
     /**
-     * Returns a builder that can create flexible SymbolsTable which can read symbols from a multiple locations.
-     * @param delimiter     characters that separate the scope name from the key name
-     * @return a builder for a SymbolsTable.
+     * Returns a builder that can create flexible {@link SymbolsTable} objects capable of reading symbols
+     * from multiple locations.
+     * @param delimiter     Characters that separate the scope name from the key name
+     * @return              A builder for a {@link SymbolsTable}
      */
     @Nonnull
     public static ScopedSymbolsTableBuilder factory(@Nonnull String delimiter) {
@@ -180,20 +172,20 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable that only contains the {@code values} in the map
-     * without a scope name. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing only the {@code values} in
+     * the map without a scope name. Equivalent to:
      * <pre>{@code SymbolsTable.factory()
      *             .withValues(values)
      *             .build();
      * }</pre>
-     * @param values    A collection of key-value pairs that will be used as the symbols table
-     * @return          A new SymbolsTable object
+     * @param values    A collection of key-value pairs for the {@link SymbolsTable}
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #from(String, Map)
      */
     @Nonnull
     public static SymbolsTable from(@Nonnull Map<String, String> values) {
-        Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
+        Preconditions.checkNotNull(values, "Can not evaluate a null SymbolsTable map");
 
         Map<String, String> copy = new HashMap<>(values);
 
@@ -201,37 +193,36 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable that only contains the {@code values} in the map
-     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing only the {@code values} in
+     * the map with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. Equivalent to:
      * <pre>{@code SymbolsTable.factory(DEFAULT_DELIMITER)
      *             .withValues(scopeName, values)
      *             .build();
      * }</pre>
      * @param scopeName Name of the scope for the map
-     * @param values    A collection of key-value pairs that will be used as the symbols table
-     * @return          A new SymbolsTable object
+     * @param values    A collection of key-value pairs for the {@link SymbolsTable}
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #from(Map)
      */
     @Nonnull
     public static SymbolsTable from(@Nonnull String scopeName, @Nonnull Map<String, String> values) {
-        Preconditions.checkNotNull(values, "Can not evaluate a null symbols table map");
+        Preconditions.checkNotNull(values, "Can not evaluate a null SymbolsTable map");
 
         Map<String, String> copy = new HashMap<>(values);
 
         return new SymbolsTable(List.of(SymbolsSource.scoped(scopeName, DEFAULT_DELIMITER, copy::get)));
     }
 
-
     /**
-     * A convenience factory method that returns a new SymbolsTable which delegates to a lookup function
-     * without a scope name. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} which delegates to a lookup function
+     * without a scope name. Equivalent to:
      * <pre>{@code SymbolsTable.factory()
      *     .withLookup(lookup)
      *     .build();
      * }</pre>
      * @param lookup    A lookup function
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #from(String, Function)
      */
@@ -243,15 +234,15 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable which delegates to a lookup function
-     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} which delegates to a lookup function
+     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. Equivalent to:
      * <pre>{@code SymbolsTable.factory(DEFAULT_DELIMITER)
      *     .withLookup(scopeName, lookup)
      *     .build();
      * }</pre>
-     * @param scopeName Name of the scope for lookup function
+     * @param scopeName Name of the scope for the lookup function
      * @param lookup    A lookup function
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #from(Function)
      */
@@ -263,15 +254,15 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable which contains the Environment Variables
-     * without a scope name. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing the environment variables
+     * without a scope name. Equivalent to:
      * <pre>{@code SymbolsTable.factory()
      *     .withEnvironment()
      *     .build();
      * }</pre>
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
-     * @see #fromEnvironment(String) 
+     * @see #fromEnvironment(String)
      */
     @Nonnull
     public static SymbolsTable fromEnvironment() {
@@ -279,14 +270,14 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable which contains the Environment Variables
-     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing the environment variables
+     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. Equivalent to:
      * <pre>{@code SymbolsTable.factory(DEFAULT_DELIMITER)
      *     .withEnvironment(scopeName)
      *     .build();
      * }</pre>
      * @param scopeName Name of the scope for the environment variables
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #fromEnvironment()
      */
@@ -295,15 +286,14 @@ public class SymbolsTable {
         return from(scopeName, System.getenv()::get);
     }
 
-
     /**
-     * A convenience factory method that returns a new SymbolsTable which contains the JVM Properties
-     * without a scope name. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing JVM system properties
+     * without a scope name. Equivalent to:
      * <pre>{@code SymbolsTable.factory()
      *     .withProperties()
      *     .build();
      * }</pre>
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #fromProperties(String)
      */
@@ -313,14 +303,14 @@ public class SymbolsTable {
     }
 
     /**
-     * A convenience factory method that returns a new SymbolsTable which contains the JVM Properties
-     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing JVM system properties
+     * with {@code scopeName} and the {@link #DEFAULT_DELIMITER}. Equivalent to:
      * <pre>{@code SymbolsTable.factory(DEFAULT_DELIMITER)
      *     .withProperties(scopeName)
      *     .build();
      * }</pre>
      * @param scopeName Name of the scope for the properties
-     * @return          A new SymbolsTable object
+     * @return          A new {@link SymbolsTable} object
      * @see #factory()
      * @see #fromProperties(String)
      */
@@ -329,23 +319,21 @@ public class SymbolsTable {
         return from(scopeName, k -> (String) System.getProperties().get(k));
     }
 
-
     /**
-     * A convenience factory method that returns a new SymbolsTable which only contains a single hardcoded String
-     * that is always returned. This is the equivalent of
+     * A convenience factory method that returns a new {@link SymbolsTable} containing a single hardcoded
+     * {@code defaultValue} that is always returned. Equivalent to:
      * <pre>{@code SymbolsTable.factory()
-     *     .withDefault(string)
+     *     .withDefault(defaultValue)
      *     .build();
      * }</pre>
      * @param defaultValue  The default value that is always applied
-     * @return          A new SymbolsTable object
+     * @return              A new {@link SymbolsTable} object
      * @see #factory()
      */
     @Nonnull
     public static SymbolsTable from(@Nonnull String defaultValue) {
         return from(k -> defaultValue);
     }
-
 
     @Nullable
     String read(@Nonnull String key) {

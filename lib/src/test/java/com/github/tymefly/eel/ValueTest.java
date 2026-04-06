@@ -7,8 +7,14 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import com.github.tymefly.eel.exception.EelConvertException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Value}
@@ -24,15 +30,15 @@ public class ValueTest {
     public void test_BLANK() {
         Value actual = Value.of("");
 
-        Assert.assertSame("Unexpected Constant", Value.BLANK, actual);
-        Assert.assertEquals("Unexpected Type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected Text", "", actual.asText());
-        Assert.assertThrows("Unexpected Number", EelConvertException.class, actual::asNumber);
-        Assert.assertThrows("Unexpected BigInteger", EelConvertException.class, actual::asBigInteger);
-        Assert.assertThrows("Unexpected Integer", EelConvertException.class, actual::asInt);
-        Assert.assertThrows("Unexpected Date", EelConvertException.class, actual::asDate);
+        assertSame(Value.BLANK, actual, "Unexpected Constant");
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected Type");
+        assertEquals("", actual.asText(), "Unexpected Text");
+        assertThrows(EelConvertException.class, actual::asNumber, "Unexpected Number");
+        assertThrows(EelConvertException.class, actual::asBigInteger, "Unexpected BigInteger");
+        assertThrows(EelConvertException.class, actual::asInt, "Unexpected Integer");
+        assertThrows(EelConvertException.class, actual::asDate, "Unexpected Date");
 
-        Assert.assertFalse("Unexpected Logic", actual.asLogic());
+        assertFalse(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -42,14 +48,14 @@ public class ValueTest {
     public void test_ZERO() {
         Value actual = Value.of(0L);
 
-        Assert.assertEquals("Unexpected Constant", Value.ZERO, actual);
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Text", "0", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ZERO, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.ZERO, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 0, actual.asInt());
-        Assert.assertEquals("Unexpected Date", EelContext.FALSE_DATE, actual.asDate());
-        Assert.assertFalse("Unexpected Logic", actual.asLogic());
+        assertEquals(Value.ZERO, actual, "Unexpected Constant");
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals("0", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ZERO, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.ZERO, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(0, actual.asInt(), "Unexpected Integer");
+        assertEquals(EelContext.FALSE_DATE, actual.asDate(), "Unexpected Date");
+        assertFalse(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -59,14 +65,14 @@ public class ValueTest {
     public void test_ONE() {
         Value actual = Value.of(1L);
 
-        Assert.assertEquals("Unexpected Constant", Value.ONE, actual);
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Text", "1", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ONE, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.ONE, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 1, actual.asInt());
-        Assert.assertEquals("Unexpected Date", DATE_1, actual.asDate());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertEquals(Value.ONE, actual, "Unexpected Constant");
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals("1", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.ONE, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(1, actual.asInt(), "Unexpected Integer");
+        assertEquals(DATE_1, actual.asDate(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -76,14 +82,14 @@ public class ValueTest {
     public void test_TEN() {
         Value actual = Value.of(10L);
 
-        Assert.assertEquals("Unexpected Constant", Value.TEN, actual);
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Text", "10", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.TEN, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.TEN, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 10, actual.asInt());
-        Assert.assertEquals("Unexpected Date", DATE_10, actual.asDate());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertEquals(Value.TEN, actual, "Unexpected Constant");
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals("10", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.TEN, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.TEN, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(10, actual.asInt(), "Unexpected Integer");
+        assertEquals(DATE_10, actual.asDate(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -93,14 +99,14 @@ public class ValueTest {
     public void test_TRUE() {
         Value actual = Value.of(true);
 
-        Assert.assertSame("Unexpected Constant", Value.TRUE, actual);
-        Assert.assertEquals("Unexpected Type", Type.LOGIC, actual.getType());
-        Assert.assertEquals("Unexpected Text", "true", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ONE, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.ONE, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 1, actual.asInt());
-        Assert.assertEquals("Unexpected Date", DATE_1, actual.asDate());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertSame(Value.TRUE, actual, "Unexpected Constant");
+        assertEquals(Type.LOGIC, actual.getType(), "Unexpected Type");
+        assertEquals("true", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.ONE, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(1, actual.asInt(), "Unexpected Integer");
+        assertEquals(DATE_1, actual.asDate(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -110,14 +116,14 @@ public class ValueTest {
     public void test_FALSE() {
         Value actual = Value.of(Boolean.FALSE);
 
-        Assert.assertSame("Unexpected Constant", Value.FALSE, actual);
-        Assert.assertEquals("Unexpected Type", Type.LOGIC, actual.getType());
-        Assert.assertEquals("Unexpected Text", "false", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ZERO, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.ZERO, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 0, actual.asInt());
-        Assert.assertEquals("Unexpected Date", EelContext.FALSE_DATE, actual.asDate());
-        Assert.assertFalse("Unexpected Logic", actual.asLogic());
+        assertSame(Value.FALSE, actual, "Unexpected Constant");
+        assertEquals(Type.LOGIC, actual.getType(), "Unexpected Type");
+        assertEquals("false", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ZERO, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.ZERO, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(0, actual.asInt(), "Unexpected Integer");
+        assertEquals(EelContext.FALSE_DATE, actual.asDate(), "Unexpected Date");
+        assertFalse(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -127,14 +133,14 @@ public class ValueTest {
     public void test_EPOCH_START_UTC() {
         Value actual = Value.of(EelContext.FALSE_DATE);
 
-        Assert.assertSame("Unexpected Constant", Value.EPOCH_START_UTC, actual);
-        Assert.assertEquals("Unexpected Type", Type.DATE, actual.getType());
-        Assert.assertEquals("Unexpected Text", "1970-01-01T00:00:00Z", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ZERO, actual.asNumber());
-        Assert.assertEquals("Unexpected BigInteger", BigInteger.ZERO, actual.asBigInteger());
-        Assert.assertEquals("Unexpected Integer", 0, actual.asInt());
-        Assert.assertEquals("Unexpected Date", EelContext.FALSE_DATE, actual.asDate());
-        Assert.assertFalse("Unexpected Logic", actual.asLogic());
+        assertSame(Value.EPOCH_START_UTC, actual, "Unexpected Constant");
+        assertEquals(Type.DATE, actual.getType(), "Unexpected Type");
+        assertEquals("1970-01-01T00:00:00Z", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ZERO, actual.asNumber(), "Unexpected Number");
+        assertEquals(BigInteger.ZERO, actual.asBigInteger(), "Unexpected BigInteger");
+        assertEquals(0, actual.asInt(), "Unexpected Integer");
+        assertEquals(EelContext.FALSE_DATE, actual.asDate(), "Unexpected Date");
+        assertFalse(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -145,9 +151,9 @@ public class ValueTest {
         ZonedDateTime date = EelContext.FALSE_DATE.withZoneSameInstant(ZoneOffset.of("-5"));
         Value actual = Value.of(date);
 
-        Assert.assertNotSame("Unexpected Constant", Value.EPOCH_START_UTC, actual);
-        Assert.assertEquals("Unexpected Type", Type.DATE, actual.getType());
-        Assert.assertEquals("Unexpected Offset", -18000, actual.asDate().getOffset().getTotalSeconds());    // Keep Zone
+        assertNotSame(Value.EPOCH_START_UTC, actual, "Unexpected Constant");
+        assertEquals(Type.DATE, actual.getType(), "Unexpected Type");
+        assertEquals(-18000, actual.asDate().getOffset().getTotalSeconds(), "Unexpected Offset");    // Keep Zone
     }
 
 
@@ -159,11 +165,11 @@ public class ValueTest {
     public void test_of_String() {
         Value actual = Value.of("0");
 
-        Assert.assertEquals("Unexpected Type", Type.TEXT, actual.getType());
-        Assert.assertEquals("Unexpected Text", "0", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ZERO, actual.asNumber());
-        Assert.assertThrows("Unexpected Date", EelConvertException.class, actual::asDate);
-        Assert.assertFalse("Unexpected Logic", actual.asLogic());
+        assertEquals(Type.TEXT, actual.getType(), "Unexpected Type");
+        assertEquals("0", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ZERO, actual.asNumber(), "Unexpected Number");
+        assertThrows(EelConvertException.class, actual::asDate, "Unexpected Date");
+        assertFalse(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -173,11 +179,11 @@ public class ValueTest {
     public void test_of_Number() {
         Value actual = Value.of(1);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Text", "1", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ONE, actual.asNumber());
-        Assert.assertEquals("Unexpected Date", 1, actual.asDate().getSecond());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals("1", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Number");
+        assertEquals(1, actual.asDate().getSecond(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -187,11 +193,11 @@ public class ValueTest {
     public void test_of_bool() {
         Value actual = Value.of(true);
 
-        Assert.assertEquals("Unexpected Type", Type.LOGIC, actual.getType());
-        Assert.assertEquals("Unexpected Text", "true", actual.asText());
-        Assert.assertEquals("Unexpected Number", BigDecimal.ONE, actual.asNumber());
-        Assert.assertEquals("Unexpected Date", 1, actual.asDate().getSecond());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertEquals(Type.LOGIC, actual.getType(), "Unexpected Type");
+        assertEquals("true", actual.asText(), "Unexpected Text");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Number");
+        assertEquals(1, actual.asDate().getSecond(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 
     /**
@@ -203,10 +209,10 @@ public class ValueTest {
         ZonedDateTime start = ZonedDateTime.of(1970, 1, 1, 0, 0, 10, 123_000_000, ZoneId.of("UTC"));
         Value actual = Value.of(start);
 
-        Assert.assertEquals("Unexpected Type", Type.DATE, actual.getType());
-        Assert.assertEquals("Unexpected Text", "1970-01-01T00:00:10.123Z", actual.asText());
-        Assert.assertEquals("Unexpected Number", new BigDecimal("10.123"), actual.asNumber());
-        Assert.assertEquals("Unexpected Date", 10, actual.asDate().getSecond());
-        Assert.assertTrue("Unexpected Logic", actual.asLogic());
+        assertEquals(Type.DATE, actual.getType(), "Unexpected Type");
+        assertEquals("1970-01-01T00:00:10.123Z", actual.asText(), "Unexpected Text");
+        assertEquals(new BigDecimal("10.123"), actual.asNumber(), "Unexpected Number");
+        assertEquals(10, actual.asDate().getSecond(), "Unexpected Date");
+        assertTrue(actual.asLogic(), "Unexpected Logic");
     }
 }

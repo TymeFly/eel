@@ -4,23 +4,23 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.builder.EelContextSettingBuilder;
+import com.github.tymefly.eel.builder.EelContextBuilder;
 import func.bad_functions.Test1;
 import func.functions.Plus1;
 import helper.MockConstructor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,7 +40,7 @@ public class EelTest {
     private BuildTime buildTime;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = mock();
         symbolsTable = mock();
@@ -85,7 +85,7 @@ public class EelTest {
 
             Metadata actual = Eel.metadata();
 
-            Assert.assertEquals("Unexpected information", "mockedVersion", actual.version());
+            assertEquals("mockedVersion", actual.version(), "Unexpected information");
         }
     }
 
@@ -100,28 +100,29 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse())
+                .thenReturn(parsed))
         ) {
             Eel.compile("Test expression");
 
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test expression",
-                expression);
-            Assert.assertEquals("Unexpected expression length",
-                EelContextSettingBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
-                source.getMaxLength());
-            Assert.assertSame("Inconsistent context",
-                compilerMock.getArgument(0, EelContext.class),
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test expression",
+                expression,
+                "Unexpected expression");
+            assertEquals(EelContextBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
+                source.getMaxLength(),
+                "Unexpected expression length");
+            assertSame(compilerMock.getArgument(0, EelContext.class),
+                parserMock.getArgument(0, EelContext.class),
+                "Inconsistent context");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -137,28 +138,29 @@ public class EelTest {
 
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse())
+                .thenReturn(parsed))
         ) {
             Eel.compile(sourceStream);
 
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test Expression",
-                expression);
-            Assert.assertEquals("Unexpected expression length",
-                EelContextSettingBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
-                source.getMaxLength());
-            Assert.assertSame("Inconsistent context",
-                compilerMock.getArgument(0, EelContext.class),
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test Expression",
+                expression,
+                "Unexpected expression");
+            assertEquals(EelContextBuilder.DEFAULT_MAX_EXPRESSION_LENGTH,
+                source.getMaxLength(),
+                "Unexpected expression length");
+            assertSame(compilerMock.getArgument(0, EelContext.class),
+                parserMock.getArgument(0, EelContext.class),
+                "Inconsistent context");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -176,7 +178,8 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(firstParsed))
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse())
+                .thenReturn(firstParsed))
         ) {
             Eel.compile("First");
 
@@ -186,14 +189,15 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(secondParsed))
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse())
+                .thenReturn(secondParsed))
         ) {
             Eel.compile("Second");
 
             second = compilerMock.getArgument(0, EelContext.class);
         }
 
-        Assert.assertSame("Context was not reused", first, second);
+        assertSame(first, second, "Context was not reused");
     }
 
     /**
@@ -216,24 +220,24 @@ public class EelTest {
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test me",
-                expression);
-            Assert.assertEquals("Unexpected expression length",
-                100,
-                source.getMaxLength());
-            Assert.assertSame("Unexpected context passed to compiler",
-                context,
-                compilerMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected context passed to parser",
-                context,
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test me",
+                expression,
+                "Unexpected expression");
+            assertEquals(100,
+                source.getMaxLength(),
+                "Unexpected expression length");
+            assertSame(context,
+                compilerMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to compiler");
+            assertSame(context,
+                parserMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to parser");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -259,24 +263,24 @@ public class EelTest {
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test Expression",
-                expression);
-            Assert.assertEquals("Unexpected expression length",
-                100,
-                source.getMaxLength());
-            Assert.assertSame("Unexpected context passed to compiler",
-                context,
-                compilerMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected context passed to parser",
-                context,
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test Expression",
+                expression,
+                "Unexpected expression");
+            assertEquals(100,
+                source.getMaxLength(),
+                "Unexpected expression length");
+            assertSame(context,
+                compilerMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to compiler");
+            assertSame(context,
+                parserMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to parser");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -297,24 +301,24 @@ public class EelTest {
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test me",
-                expression);
-            Assert.assertEquals("Unexpected expression length",
-                100,
-                source.getMaxLength());
-            Assert.assertSame("Unexpected context passed to compiler",
-                context,
-                compilerMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected context passed to parser",
-                context,
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test me",
+                expression,
+                "Unexpected expression");
+            assertEquals(100,
+                source.getMaxLength(),
+                "Unexpected expression length");
+            assertSame(context,
+                compilerMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to compiler");
+            assertSame(context,
+                parserMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to parser");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -323,6 +327,8 @@ public class EelTest {
      */
     @Test
     public void test_factory_inlineContext() {
+        FileFactory fileFactory =  mock();
+
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
@@ -337,33 +343,37 @@ public class EelTest {
                 .withStartOfWeek(DayOfWeek.WEDNESDAY)
                 .withUdfPackage(Plus1.class.getPackage())
                 .withUdfClass(Test1.class)
+                .withMinimalDaysInFirstWeek(7)
+                .withFileFactory(fileFactory)
                 .compile("Test me");
 
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "Test me",
-                expression);
-            Assert.assertSame("Unexpected context passed to compiler",
-                context,
-                compilerMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected context passed to parser",
-                context,
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("Test me",
+                expression,
+                "Unexpected expression");
+            assertSame(context,
+                compilerMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to compiler");
+            assertSame(context,
+                parserMock.getArgument(0, EelContext.class),
+                "Unexpected context passed to parser");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
 
             verify(contextFactory.getMock()).withMaxExpressionSize(123);
             verify(contextFactory.getMock()).withPrecision(6);
             verify(contextFactory.getMock()).withIoLimit(128);
             verify(contextFactory.getMock()).withStartOfWeek(DayOfWeek.WEDNESDAY);
+            verify(contextFactory.getMock()).withMinimalDaysInFirstWeek(7);
             verify(contextFactory.getMock()).withUdfPackage(Plus1.class.getPackage());
             verify(contextFactory.getMock()).withUdfClass(Test1.class);
+            verify(contextFactory.getMock()).withFileFactory(fileFactory);
         }
     }
 
@@ -378,7 +388,8 @@ public class EelTest {
         try (
             MockConstructor<Tokenizer> tokenizerMock = new MockConstructor<>(Tokenizer.class);
             MockConstructor<LambdaCompiler> compilerMock = new MockConstructor<>(LambdaCompiler.class);
-            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse()).thenReturn(parsed))
+            MockConstructor<Parser> parserMock = new MockConstructor<>(Parser.class, p -> when(p.parse())
+                .thenReturn(parsed))
         ) {
             Eel.factory()
                 .compile(new ByteArrayInputStream("myStream".getBytes(StandardCharsets.UTF_8)));
@@ -386,18 +397,18 @@ public class EelTest {
             Source source = tokenizerMock.getArgument(0, Source.class);
             String expression = readExpression(source);
 
-            Assert.assertEquals("Unexpected expression",
-                "myStream",
-                expression);
-            Assert.assertSame("Inconsistent context",
-                compilerMock.getArgument(0, EelContext.class),
-                parserMock.getArgument(0, EelContext.class));
-            Assert.assertSame("Unexpected tokenizer",
-                tokenizerMock.getMock(),
-                parserMock.getArgument(1, Tokenizer.class));
-            Assert.assertSame("Unexpected compiler",
-                compilerMock.getMock(),
-                parserMock.getArgument(2, LambdaCompiler.class));
+            assertEquals("myStream",
+                expression,
+                "Unexpected expression");
+            assertSame(compilerMock.getArgument(0, EelContext.class),
+                parserMock.getArgument(0, EelContext.class),
+                "Inconsistent context");
+            assertSame(tokenizerMock.getMock(),
+                parserMock.getArgument(1, Tokenizer.class),
+                "Unexpected tokenizer");
+            assertSame(compilerMock.getMock(),
+                parserMock.getArgument(2, LambdaCompiler.class),
+                "Unexpected compiler");
         }
     }
 
@@ -419,7 +430,7 @@ public class EelTest {
 
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", SymbolsTable.EMPTY, captor.getValue());
+            assertSame(SymbolsTable.EMPTY, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -441,7 +452,7 @@ public class EelTest {
 
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", actual, captor.getValue());
+            assertSame(actual, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -468,7 +479,7 @@ public class EelTest {
             symbolsMock.verify(() -> SymbolsTable.from(backing));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -495,7 +506,7 @@ public class EelTest {
             symbolsMock.verify(() -> SymbolsTable.from("map", backing));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -522,7 +533,7 @@ public class EelTest {
             symbolsMock.verify(() -> SymbolsTable.from(backing));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -549,7 +560,7 @@ public class EelTest {
             symbolsMock.verify(() -> SymbolsTable.from("func", backing));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -575,7 +586,7 @@ public class EelTest {
             symbolsMock.verify(SymbolsTable::fromEnvironment);
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -601,7 +612,7 @@ public class EelTest {
             symbolsMock.verify(() -> SymbolsTable.fromEnvironment("env"));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -627,7 +638,7 @@ public class EelTest {
             symbolsMock.verify(SymbolsTable::fromProperties);
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -647,21 +658,13 @@ public class EelTest {
             symbolsMock.when(() -> SymbolsTable.fromProperties("prop"))
                 .thenReturn(symbolsTable);
 
-
-
-
-when(context.getTimeout())
-    .thenReturn(Duration.ofSeconds(0));
-Eel.compile(context, "${prop.myVar}")
-    .evaluateProperties("prop");
-
-//            Eel.compile("${prop.myVar}")
-//                .evaluateProperties("prop");
+            Eel.compile("${prop.myVar}")
+                .evaluateProperties("prop");
 
             symbolsMock.verify(() -> SymbolsTable.fromProperties("prop"));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 
@@ -687,7 +690,7 @@ Eel.compile(context, "${prop.myVar}")
             symbolsMock.verify(() -> SymbolsTable.from("defaultValue"));
             verify(term).evaluate(captor.capture());
 
-            Assert.assertSame("Unexpected symbols table", symbolsTable, captor.getValue());
+            assertSame(symbolsTable, captor.getValue(), "Unexpected SymbolsTable");
         }
     }
 

@@ -4,18 +4,21 @@ import javax.annotation.Nonnull;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
+import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.doc.config.Config;
 import com.github.tymefly.eel.doc.model.ModelManager;
 import com.sun.source.util.DocTrees;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
 
 /**
  * The EelDoc context which provides access to global objects, settings and functions
  */
-public class Context {
+public class EelDocContext {
     private final DocletEnvironment environment;
     private final Reporter reporter;
+    private final ModelManager modelManager;
 
 
     /**
@@ -23,9 +26,18 @@ public class Context {
      * @param environment       The Doclet environment
      * @param reporter          The Doclet message reporter
      */
-    public Context(@Nonnull DocletEnvironment environment, @Nonnull Reporter reporter) {
+    public EelDocContext(@Nonnull DocletEnvironment environment, @Nonnull Reporter reporter) {
+        this(environment, reporter, new ModelManager());
+    }
+
+
+    @VisibleForTesting
+    EelDocContext(@Nonnull DocletEnvironment environment,
+                  @Nonnull Reporter reporter,
+                  @Nonnull ModelManager modelManager) {
         this.environment = environment;
         this.reporter = reporter;
+        this.modelManager = modelManager;
     }
 
 
@@ -41,7 +53,7 @@ public class Context {
 
     /**
      * Returns the JavaDoc {@link DocTrees} utility class.
-     * This class provides methods to access {@code TreePath}s, {@code DocCommentTree}s etc
+     * This class provides methods to access {@code TreePath}s, {@code DocCommentTree}s etc.
      * @return a utility class that operates on doc trees
      */
     @Nonnull
@@ -50,12 +62,13 @@ public class Context {
     }
 
     /**
-     * Returns the singleton instance of the model manager.
-     * @return the singleton instance of the model manager.
+     * Returns the model manager.
+     * @return the model manager.
      */
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Accessor to global model that needs to be updated")
     @Nonnull
     public ModelManager modelManager() {
-        return ModelManager.getInstance();
+        return modelManager;
     }
 
 

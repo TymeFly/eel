@@ -2,10 +2,10 @@ package com.github.tymefly.eel;
 
 import java.util.function.Function;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -20,7 +20,7 @@ public class FunctionalResourceImplTest {
     private FunctionalResourceImpl functionalResource;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = mock();
 
@@ -39,7 +39,7 @@ public class FunctionalResourceImplTest {
 
         String actual = functionalResource.getResource("myName", constructor);
 
-        Assert.assertEquals("Unexpected resource", "myResource", actual);
+        assertEquals("myResource", actual, "Unexpected resource");
         verify(context).getResource(getClass(), "myName", constructor);
     }
 }

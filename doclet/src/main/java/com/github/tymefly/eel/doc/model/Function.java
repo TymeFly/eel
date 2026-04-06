@@ -1,11 +1,11 @@
 package com.github.tymefly.eel.doc.model;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -18,7 +18,8 @@ import com.github.tymefly.eel.doc.utils.EelType;
  * The model for a single method
  */
 class Function extends Element<FunctionGenerator> implements FunctionModel, FunctionGenerator {
-    private static final Map<String, Integer> NAME_MAP = new HashMap<>();       // Count number of times 'name' is used
+    private static final Map<String, Integer> NAME_MAP =
+        new ConcurrentHashMap<>();                          // Count number of times 'name' is used
 
     private final String name;
     private final GroupModel group;

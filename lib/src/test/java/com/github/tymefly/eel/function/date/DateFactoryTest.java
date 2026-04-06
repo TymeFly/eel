@@ -3,6 +3,8 @@ package com.github.tymefly.eel.function.date;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.Month;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -13,14 +15,16 @@ import java.util.TimeZone;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
 
 /**
  * Unit test for {@link DateFactory}
@@ -35,7 +39,7 @@ public class DateFactoryTest {
     private ZonedDateTime date;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));      // Something that isn't UTC
 
@@ -51,10 +55,164 @@ public class DateFactoryTest {
 
 
     /** Restore the time zone */
-    @After
+    @AfterEach
     public void tearDown() {
         TimeZone.setDefault(LOCAL_TIME_ZONE);
     }
+
+
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_fullDateWithNoTime() {
+        ZonedDateTime actual = new DateFactory().parse(context, "dd/MM/yyyy", "03/02/2001");
+
+        assertEquals(2001, actual.getYear(), "Year failed");
+        assertEquals(2, actual.getMonthValue(), "Month failed");
+        assertEquals(3, actual.getDayOfMonth(), "Day failed");
+        assertEquals(0, actual.getHour(), "Hour failed");
+        assertEquals(0, actual.getMinute(), "Minute failed");
+        assertEquals(0, actual.getSecond(), "Second failed");
+        assertEquals(0, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_fullDateWithNoTimeAndOffset() {
+        ZonedDateTime actual = new DateFactory().parse(context, "dd/MM/yyyy", "03/02/2001", "12h", "15m");
+
+        assertEquals(2001, actual.getYear(), "Year failed");
+        assertEquals(2, actual.getMonthValue(), "Month failed");
+        assertEquals(3, actual.getDayOfMonth(), "Day failed");
+        assertEquals(12, actual.getHour(), "Hour failed");
+        assertEquals(15, actual.getMinute(), "Minute failed");
+        assertEquals(0, actual.getSecond(), "Second failed");
+        assertEquals(0, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_partialDate_MonthYearOnly() {
+        ZonedDateTime actual = new DateFactory().parse(context, "MM/yyyy", "11/2026");
+
+        assertEquals(2026, actual.getYear(), "Year failed");
+        assertEquals(11, actual.getMonthValue(), "Month failed");
+        assertEquals(1, actual.getDayOfMonth(), "Day failed");
+        assertEquals(0, actual.getHour(), "Hour failed");
+        assertEquals(0, actual.getMinute(), "Minute failed");
+        assertEquals(0, actual.getSecond(), "Second failed");
+        assertEquals(0, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_yearOnly() {
+        ZonedDateTime actual = new DateFactory().parse(context, "yyyy", "1999");
+
+        assertEquals(1999, actual.getYear(), "Year failed");
+        assertEquals(1, actual.getMonthValue(), "Month failed");
+        assertEquals(1, actual.getDayOfMonth(), "Day failed");
+        assertEquals(0, actual.getHour(), "Hour failed");
+        assertEquals(0, actual.getMinute(), "Minute failed");
+        assertEquals(0, actual.getSecond(), "Second failed");
+        assertEquals(0, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_dateTimeWithTime() {
+        ZonedDateTime actual = new DateFactory().parse(context, "yyyy-MM-dd HH:mm:ss.SSS", "2001-02-03 04:05:06.123");
+
+        assertEquals(2001, actual.getYear(), "Year failed");
+        assertEquals(2, actual.getMonthValue(), "Month failed");
+        assertEquals(3, actual.getDayOfMonth(), "Day failed");
+        assertEquals(4, actual.getHour(), "Hour failed");
+        assertEquals(5, actual.getMinute(), "Minute failed");
+        assertEquals(6, actual.getSecond(), "Second failed");
+        assertEquals(123_000_000, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_eraAndYearDefaults() {
+        ZonedDateTime actual = new DateFactory().parse(context, "dd-MM", "01-02");
+
+        assertEquals(Year.now().getValue(), actual.getYear(), "Year failed");
+        assertEquals(Month.FEBRUARY, actual.getMonth(), "Month failed");
+        assertEquals(1, actual.getDayOfMonth(), "Day failed");
+        assertEquals(0, actual.getHour(), "Hour failed");
+        assertEquals(0, actual.getMinute(), "Minute failed");
+        assertEquals(0, actual.getSecond(), "Second failed");
+        assertEquals(0, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneOffset.UTC, actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_dateTimeWithZone() {
+        ZonedDateTime actual = new DateFactory().parse(context, "yyyy-MM-dd HH:mm:ss.SSS z", "2001-02-03 04:05:06.789 GMT");
+
+        assertEquals(2001, actual.getYear(), "Year failed");
+        assertEquals(2, actual.getMonthValue(), "Month failed");
+        assertEquals(3, actual.getDayOfMonth(), "Day failed");
+        assertEquals(4, actual.getHour(), "Hour failed");
+        assertEquals(5, actual.getMinute(), "Minute failed");
+        assertEquals(6, actual.getSecond(), "Second failed");
+        assertEquals(789_000_000, actual.getNano(), "Nanos failed");
+        assertEquals(ZoneId.of("GMT"), actual.getZone(), "Zone failed");
+    }
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_SingleAndDoubleDigitDateTimeFields() {
+        String pattern = "d/M/yyyy H:m:s";
+        ZonedDateTime expected = ZonedDateTime.of(2001, 2, 3, 4, 5, 6, 0, ZoneOffset.UTC);
+
+        assertEquals(
+            expected,
+            new DateFactory().parse(context, pattern, "3/2/2001 4:5:6"),
+            "Failed to parse date-time for single-digit fields"
+        );
+
+        assertEquals(
+            expected,
+            new DateFactory().parse(context, pattern, "03/02/2001 04:05:06"),
+            "Failed to parse date-time for double-digit fields"
+        );
+    }
+
+
+    /**
+     * Unit test {@link DateFactory#parse(EelContext, String, String, String...)}
+     */
+    @Test
+    public void test_parse_invalidDate() {
+        assertThrows(DateTimeException.class, () -> new DateFactory().parse(context, "dd/MM/yyyy", "31/02/2000"));
+    }
+
+
 
     /**
      * Unit test {@link DateFactory#start}
@@ -64,12 +222,12 @@ public class DateFactoryTest {
         ZonedDateTime first = new DateFactory().start(context, "UTC");
         ZonedDateTime second = new DateFactory().start(context, "UTC", "3days");
 
-        assertEquals("UTC Instant", date.toInstant(), first.toInstant());
-        assertEquals("UTC Zone", ZoneOffset.ofHours(0), first.getOffset());
-        assertEquals("-5 Instant", date.plusDays(3).toInstant(), second.toInstant());
+        assertEquals(date.toInstant(), first.toInstant(), "UTC Instant");
+        assertEquals(ZoneOffset.ofHours(0), first.getOffset(), "UTC Zone");
+        assertEquals(date.plusDays(3).toInstant(), second.toInstant(), "-5 Instant");
 
          // Check it's always the same
-        assertEquals("#2 Unexpected time returned", first, new DateFactory().start(context, "UTC"));
+        assertEquals(first, new DateFactory().start(context, "UTC"), "#2 Unexpected time returned");
     }
 
     /**
@@ -81,13 +239,13 @@ public class DateFactoryTest {
         ZonedDateTime plus1 = new DateFactory().start(context, "+1");
         ZonedDateTime minus5 = new DateFactory().start(context, "-5");
 
-        assertEquals("UTC Instant", date.toInstant(), utc.toInstant());
-        assertEquals("+1 Instant", date.toInstant(), plus1.toInstant());
-        assertEquals("-5 Instant", date.toInstant(), minus5.toInstant());
+        assertEquals(date.toInstant(), utc.toInstant(), "UTC Instant");
+        assertEquals(date.toInstant(), plus1.toInstant(), "+1 Instant");
+        assertEquals(date.toInstant(), minus5.toInstant(), "-5 Instant");
 
-        assertEquals("UTC Zone", ZoneOffset.ofHours(0), utc.getOffset());
-        assertEquals("+1 Zone", ZoneOffset.ofHours(1), plus1.getOffset());
-        assertEquals("-5 Zone", ZoneOffset.ofHours(-5), minus5.getOffset());
+        assertEquals(ZoneOffset.ofHours(0), utc.getOffset(), "UTC Zone");
+        assertEquals(ZoneOffset.ofHours(1), plus1.getOffset(), "+1 Zone");
+        assertEquals(ZoneOffset.ofHours(-5), minus5.getOffset(), "-5 Zone");
     }
 
     /**
@@ -107,7 +265,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -121,7 +279,7 @@ public class DateFactoryTest {
 
         difference = Math.abs(difference);
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -141,7 +299,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
 
@@ -153,7 +311,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().utc(context);
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
-        Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual);
     }
 
     /**
@@ -173,7 +331,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -184,7 +342,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().utc(context, "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -204,7 +362,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
 
@@ -216,7 +374,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().local(context);
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
-        Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual);
     }
 
     /**
@@ -236,7 +394,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -247,7 +405,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().local(context, "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -267,7 +425,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
 
@@ -279,7 +437,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().at(context, "+02");
         long difference = difference(actual, 0, ChronoUnit.MILLIS);
 
-        Assert.assertTrue("Unexpected date " + actual,(difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual);
     }
 
     /**
@@ -300,7 +458,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -311,7 +469,7 @@ public class DateFactoryTest {
         ZonedDateTime actual = new DateFactory().at(context, "+02", "2h");
         long difference = difference(actual, 2, ChronoUnit.HOURS);
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
     /**
@@ -332,7 +490,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
 
@@ -358,7 +516,7 @@ public class DateFactoryTest {
         Duration duration = Duration.between(expected, actual);
         long difference = Math.abs(duration.toMillis());
 
-        Assert.assertTrue("Unexpected date " + actual + ". Out by " + difference + "mS", (difference <= TOLERANCE));
+        assertTrue((difference <= TOLERANCE), "Unexpected date " + actual + ". Out by " + difference + "mS");
     }
 
 
@@ -367,7 +525,7 @@ public class DateFactoryTest {
      */
     @Test
     public void test_at_badZone() {
-        Assert.assertThrows(DateTimeException.class, () -> new DateFactory().at(context, "badZone"));
+        assertThrows(DateTimeException.class, () -> new DateFactory().at(context, "badZone"));
     }
 
 

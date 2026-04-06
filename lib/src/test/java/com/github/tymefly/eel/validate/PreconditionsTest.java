@@ -1,7 +1,10 @@
 package com.github.tymefly.eel.validate;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link Preconditions}
@@ -15,13 +18,12 @@ public class PreconditionsTest {
     public void test_checkNotNull() {
         String result = Preconditions.checkNotNull("Not Null", "Hello %s", "world");
 
-        Assert.assertSame("Unexpected result", "Not Null", result);
+        assertSame("Not Null", result, "Unexpected result");
 
-
-        Exception actual = Assert.assertThrows(NullPointerException.class,
+        Exception actual = assertThrows(NullPointerException.class,
                 () -> Preconditions.checkNotNull(null, "Hello %s %d", "world", 1));
 
-        Assert.assertEquals("Unexpected message", "Hello world 1", actual.getMessage());
+        assertEquals("Hello world 1", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -31,11 +33,10 @@ public class PreconditionsTest {
     public void test_checkState() {
         Preconditions.checkState(true, "Hello %s", "world");
 
-
-        Exception actual = Assert.assertThrows(IllegalStateException.class,
+        Exception actual = assertThrows(IllegalStateException.class,
                 () -> Preconditions.checkState(false, "Hello %s %d", "world", 1));
 
-        Assert.assertEquals("Unexpected message", "Hello world 1", actual.getMessage());
+        assertEquals("Hello world 1", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -45,10 +46,9 @@ public class PreconditionsTest {
     public void test_checkArgument() {
         Preconditions.checkArgument(true, "Hello %s", "world");
 
-
-        Exception actual = Assert.assertThrows(IllegalArgumentException.class,
+        Exception actual = assertThrows(IllegalArgumentException.class,
                 () -> Preconditions.checkArgument(false, "Hello %s %d", "world", 1));
 
-        Assert.assertEquals("Unexpected message", "Hello world 1", actual.getMessage());
+        assertEquals("Hello world 1", actual.getMessage(), "Unexpected message");
     }
 }

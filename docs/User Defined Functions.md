@@ -46,7 +46,7 @@ form `prefix.functionName`. The rules for function names are:
 
 1. The name of the function must be a value [EEL Identifier](The%20EEL%20Language.md#identifiers)
 2. The function name must have at least one dot (`.`) delimited prefix.
-3. The prefix must not be one of the reserved prefixes. See [Standard Functions](The%20EEL%20Language.md#function-prefixes) 
+3. The prefix must not be one of the reserved prefixes. See [Standard Functions](The%20EEL%20Language.md#standard-functions) 
 4. The function name must be unique. EEL functions cannot be overloaded or overridden.  
 
 Because UDFs must have at least one dot (`.`) delimited prefix UDF names are never valid Java identifiers.
@@ -258,7 +258,7 @@ EelDoc supports the following options:
 * **-d** - Destination directory for output files.
 * **-windowtitle** - Browser window title. This is an EEL expression.
 * **-doctitle** - Include title for the overview page. This is an EEL expression.
-* **-doc-overview** - Include overview documentation from a HTML file. This is an EEL expression.
+* **-doc-overview** - Include overview documentation from a supplied HTML file. This is an EEL expression.
 * **-top** - Include top text on each page. This is an EEL expression.
 * **-bottom** - Include bottom text on each page. This is an EEL expression
 * **-charset** - Charset for cross-platform viewing of generated documentation. This defaults to UTF-8.

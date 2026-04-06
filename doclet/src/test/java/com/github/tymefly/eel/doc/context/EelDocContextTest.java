@@ -8,36 +8,35 @@ import com.github.tymefly.eel.doc.model.ModelManager;
 import com.sun.source.util.DocTrees;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit test for {@link Context}
+ * Unit test for {@link EelDocContext}
  */
-public class ContextTest {
-    private DocletEnvironment environment;
+public class EelDocContextTest {
     private Reporter reporter;
 
     private Elements elementUtils;
     private DocTrees docTrees;
-    private MockedStatic<ModelManager> mockModelManager;
     private ModelManager modelManager;
     private MockedStatic<Config> mockConfig;
     private Config config;
 
-    private Context context;
+    private EelDocContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        environment = mock();
+        DocletEnvironment environment = mock();
+
         reporter = mock();
         elementUtils = mock();
         docTrees = mock();
@@ -49,51 +48,44 @@ public class ContextTest {
         when(environment.getDocTrees())
             .thenReturn(docTrees);
 
-        mockModelManager = mockStatic(ModelManager.class);
-        mockModelManager.when(() -> ModelManager.getInstance())
-            .thenReturn(modelManager);
-
         mockConfig = mockStatic(Config.class);
-        mockConfig.when(() -> Config.getInstance())
+        mockConfig.when(Config::getInstance)
             .thenReturn(config);
 
-        context = new Context(environment, reporter);
+        context = new EelDocContext(environment, reporter, modelManager);
     }
 
-
-    @After
+    @AfterEach
     public void tearDown() {
-        mockModelManager.close();
         mockConfig.close();
     }
 
     /**
-     * Unit test {@link Context#elementUtils()}
+     * Unit test {@link EelDocContext#elementUtils()}
      */
     @Test
     public void test_elementUtils() {
-        Assert.assertSame("Unexpected utils", context.elementUtils(), elementUtils);
+        assertSame(elementUtils, context.elementUtils(), "Unexpected utils");
     }
 
     /**
-     * Unit test {@link Context#docTrees()}
+     * Unit test {@link EelDocContext#docTrees()}
      */
     @Test
     public void test_docTrees() {
-        Assert.assertSame("Unexpected docTrees", context.docTrees(), docTrees);
+        assertSame(docTrees, context.docTrees(), "Unexpected docTrees");
     }
 
     /**
-     * Unit test {@link Context#modelManager()}
+     * Unit test {@link EelDocContext#modelManager()}
      */
     @Test
     public void test_modelManager() {
-        Assert.assertSame("Unexpected ModelManager", context.modelManager(), modelManager);
+        assertSame(modelManager, context.modelManager(), "Unexpected ModelManager");
     }
 
-
     /**
-     * Unit test {@link Context#note(String)}
+     * Unit test {@link EelDocContext#note(String)}
      */
     @Test
     public void test_note() {
@@ -103,7 +95,7 @@ public class ContextTest {
     }
 
     /**
-     * Unit test {@link Context#note(String, Object...)}
+     * Unit test {@link EelDocContext#note(String, Object...)}
      */
     @Test
     public void test_note_formatted() {
@@ -112,9 +104,8 @@ public class ContextTest {
         verify(reporter).print(Diagnostic.Kind.NOTE, "Hello World: 12");
     }
 
-
     /**
-     * Unit test {@link Context#warn(String)}
+     * Unit test {@link EelDocContext#warn(String)}
      */
     @Test
     public void test_warn() {
@@ -124,7 +115,7 @@ public class ContextTest {
     }
 
     /**
-     * Unit test {@link Context#warn(String, Object...)}
+     * Unit test {@link EelDocContext#warn(String, Object...)}
      */
     @Test
     public void test_warn_formatted() {
@@ -133,9 +124,8 @@ public class ContextTest {
         verify(reporter).print(Diagnostic.Kind.WARNING, "Warning, there is a warning 123");
     }
 
-
     /**
-     * Unit test {@link Context#error(String)}
+     * Unit test {@link EelDocContext#error(String)}
      */
     @Test
     public void test_error() {
@@ -148,7 +138,7 @@ public class ContextTest {
     }
 
     /**
-     * Unit test {@link Context#error(String)}
+     * Unit test {@link EelDocContext#error(String)}
      */
     @Test
     public void test_error_lowered() {
@@ -161,7 +151,7 @@ public class ContextTest {
     }
 
     /**
-     * Unit test {@link Context#error(String, Object...)}
+     * Unit test {@link EelDocContext#error(String, Object...)}
      */
     @Test
     public void test_error_formatted() {
@@ -174,7 +164,7 @@ public class ContextTest {
     }
 
     /**
-     * Unit test {@link Context#error(String, Object...)}
+     * Unit test {@link EelDocContext#error(String, Object...)}
      */
     @Test
     public void test_error_formatted_lowered() {

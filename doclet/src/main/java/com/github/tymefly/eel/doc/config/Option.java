@@ -15,7 +15,7 @@ import jdk.javadoc.doclet.Doclet;
 /**
  * Class that describes a single EelDoc command line option
  */
-class Option implements Doclet.Option {
+final class Option implements Doclet.Option {
     /** Builder class for Options. */
     static class Builder {
         private final List<String> names;

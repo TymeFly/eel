@@ -18,19 +18,20 @@ import com.github.tymefly.eel.udf.LimitedInputStream;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * A collection of functions that examine files on the local file system.
- * Directories and other file system objects are not managed.
+ * Functions that read files on the local file system.
+ * @since 3.0
  */
 @PackagedEelFunction
 public class FileIo {
     /**
-     * Returns up to {@code count} lines from the start of the given UTF-8 text {@code file}.
-     * Lines are delimited with {@literal \n}
-     * @param context   the current EEL context.
-     * @param file      the file on the local file system.
-     * @param lines     the maximum number of lines to read.
-     * @return          up to {@code count} lines from the start of the file.
-     * @throws IOException if the file could not be read.
+     * Returns up to {@code lines} lines from the beginning of the specified UTF-8 text {@code file}.
+     * Lines are delimited by a line feed ({@literal \n}), a carriage return ({@literal \r}), a carriage
+     * return followed by a line feed, or by reaching the end of the file.
+     * @param context   the current EEL context
+     * @param file      the file on the local file system to read from
+     * @param lines     the maximum number of lines to return
+     * @return          up to {@code lines} lines from the beginning of the file
+     * @throws IOException if the file cannot be read, or the head exceeds the length defined by the {@code context}
      * @since 3.0
      */
     @EelFunction("io.head")
@@ -64,13 +65,14 @@ public class FileIo {
     }
 
     /**
-     * Returns up to {@code count} lines from the end of the given UTF-8 text {@code file}.
-     * Lines are delimited with {@literal \n}
-     * @param context   the current EEL context.
-     * @param file      the file on the local file system.
-     * @param lines     the maximum number of lines to read.
-     * @return          up to {@code count} lines from the end of the file.
-     * @throws IOException if the file could not be read.
+     * Returns up to {@code lines} lines from the end of the specified UTF-8 text {@code file}.
+     * Lines are delimited by a line feed ({@literal \n}), a carriage return ({@literal \r}), a carriage
+     * return followed by a line feed, or by reaching the end of the file.
+     * @param context   the current EEL context
+     * @param file      the file on the local file system to read from
+     * @param lines     the maximum number of lines to return
+     * @return          up to {@code lines} lines from the end of the file
+     * @throws IOException if the file cannot be read or exceeds the length defined by the context
      * @since 3.0
      */
     @EelFunction("io.tail")

@@ -55,7 +55,7 @@ public class StringUtils {
     /**
      * Returns a new string containing all the characters in the {@code text} String but with the
      * case of the first character changed to upper case
-     * If the first character is not alphabetical then the returned string is equal to the input {@code text}
+     * If the first character is not alphabetical,then the returned string is equal to the input {@code text}
      * @param text      text that will be returned with the first character in upper case
      * @return a string containing all the characters in {@code text} but with the case of the first character
      *          in uppercase
@@ -76,7 +76,7 @@ public class StringUtils {
     /**
      * Returns a new string containing all the characters in the {@code text} String but with the
      * case of the first character changed to lower case
-     * If the first character is not alphabetical then the returned string is equal to the input {@code text}
+     * If the first character is not alphabetical, then the returned string is equal to the input {@code text}
      * @param text      text that will be returned with the first character in lower case
      * @return a string containing all the characters in {@code text} but with the case of the first character
      *          in lowercase

@@ -7,10 +7,11 @@ import java.time.ZonedDateTime;
 import java.time.temporal.WeekFields;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +23,7 @@ public class ModifyDateTest {
     private EelContext context;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = spy(EelContext.factory().build());
 
@@ -39,51 +40,23 @@ public class ModifyDateTest {
      */
     @Test
     public void test_set() {
-        Assert.assertEquals("Years",
-           ZonedDateTime.of(-4, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "-4year"));
-        Assert.assertEquals("Months",
-           ZonedDateTime.of(2000, 12, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "12M"));
-        Assert.assertEquals("Days",
-           ZonedDateTime.of(2000, 2, 1, 4, 5, 6, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "1day"));
-        Assert.assertEquals("Hours",
-           ZonedDateTime.of(2000, 2, 3, 23, 5, 6, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "23h"));
-        Assert.assertEquals("Minutes",
-           ZonedDateTime.of(2000, 2, 3, 4, 59, 6, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "59m"));
-        Assert.assertEquals("Seconds",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 12, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "12s"));
-        Assert.assertEquals("Millis",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 15_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "15I"));
-        Assert.assertEquals("Micros",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_019_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "19U"));
-        Assert.assertEquals("Nanos",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_023, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "23N"));
+        assertEquals(ZonedDateTime.of(-4, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "-4year"), "Years");
+        assertEquals(ZonedDateTime.of(2000, 12, 3, 4, 5, 6, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "12M"), "Months");
+        assertEquals(ZonedDateTime.of(2000, 2, 1, 4, 5, 6, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "1day"), "Days");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 23, 5, 6, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "23h"), "Hours");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 59, 6, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "59m"), "Minutes");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 12, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "12s"), "Seconds");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 15_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "15I"), "Millis");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_019_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "19U"), "Micros");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_023, ZoneOffset.UTC), new ModifyDate().set(context, date, "23N"), "Nanos");
 
-        Assert.assertEquals("MilliOfSecond",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_000_000, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "123i"));
-        Assert.assertEquals("MicrosOfSecond",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 1_234_000, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "1234u"));
-        Assert.assertEquals("Nanos",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 1_234_567, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "1234567n"));
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_000_000, ZoneOffset.UTC), new ModifyDate().set(context, date, "123i"), "MilliOfSecond");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 1_234_000, ZoneOffset.UTC), new ModifyDate().set(context, date, "1234u"), "MicrosOfSecond");
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 1_234_567, ZoneOffset.UTC), new ModifyDate().set(context, date, "1234567n"), "Nanos");
 
-        Assert.assertEquals("Snap",
-           ZonedDateTime.of(2000, 2, 3, 4, 5, 0, 0, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "@m"));
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 0, 0, ZoneOffset.UTC), new ModifyDate().set(context, date, "@m"), "Snap");
 
-        Assert.assertEquals("multiple fields",
-           ZonedDateTime.of(1999, 2, 3, 0, 5, 56, 123_456_789, ZoneOffset.UTC),
-           new ModifyDate().set(context, date, "1999y", "0h", "56s"));
+        assertEquals(ZonedDateTime.of(1999, 2, 3, 0, 5, 56, 123_456_789, ZoneOffset.UTC), new ModifyDate().set(context, date, "1999y", "0h", "56s"), "multiple fields");
     }
 
     /**
@@ -91,9 +64,9 @@ public class ModifyDateTest {
      */
     @Test
     public void test_set_unsupportedSpec() {
-        Assert.assertThrows("Bad Unit", DateTimeException.class, () -> new ModifyDate().set(context, date, "1x"));
-        Assert.assertThrows("Only Unit", DateTimeException.class, () -> new ModifyDate().set(context, date, "h"));
-        Assert.assertThrows("Only Offset", DateTimeException.class, () -> new ModifyDate().set(context, date, "1"));
+        assertThrows(DateTimeException.class, () -> new ModifyDate().set(context, date, "1x"), "Bad Unit");
+        assertThrows(DateTimeException.class, () -> new ModifyDate().set(context, date, "h"), "Only Unit");
+        assertThrows(DateTimeException.class, () -> new ModifyDate().set(context, date, "1"), "Only Offset");
     }
 
     /**
@@ -101,8 +74,8 @@ public class ModifyDateTest {
      */
     @Test
     public void test_set_outOfRange() {
-        Assert.assertThrows("negative Offset", DateTimeException.class, () -> new ModifyDate().set(context, date, "-1h"));
-        Assert.assertThrows("25 hour day", DateTimeException.class, () -> new ModifyDate().set(context, date, "25h"));
+        assertThrows(DateTimeException.class, () -> new ModifyDate().set(context, date, "-1h"), "negative Offset");
+        assertThrows(DateTimeException.class, () -> new ModifyDate().set(context, date, "25h"), "25 hour day");
     }
 
 
@@ -111,9 +84,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_moveZone() {
-        Assert.assertEquals("Unexpected DATE",
-            ZonedDateTime.of(2000, 2, 3, 5, 5, 6, 123_456_789, ZoneOffset.of("+01:00")),
-            new ModifyDate().moveZone(date, "+1"));
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 5, 5, 6, 123_456_789, ZoneOffset.of("+01:00")), new ModifyDate().moveZone(date, "+1"), "Unexpected DATE");
     }
 
     /**
@@ -121,7 +92,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_moveZone_badZone() {
-        Assert.assertThrows(DateTimeException.class, () -> new ModifyDate().moveZone(date, "???"));
+        assertThrows(DateTimeException.class, () -> new ModifyDate().moveZone(date, "???"));
     }
 
 
@@ -130,9 +101,7 @@ public class ModifyDateTest {
      */
     @Test
     public void test_setZone() {
-        Assert.assertEquals("Unexpected DATE",
-            ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.of("+01:00")),
-            new ModifyDate().setZone(date, "+1"));
+        assertEquals(ZonedDateTime.of(2000, 2, 3, 4, 5, 6, 123_456_789, ZoneOffset.of("+01:00")), new ModifyDate().setZone(date, "+1"), "Unexpected DATE");
     }
 
     /**
@@ -140,6 +109,6 @@ public class ModifyDateTest {
      */
     @Test
     public void test_setZone_badZone() {
-        Assert.assertThrows(DateTimeException.class, () -> new ModifyDate().setZone(date, "???"));
+        assertThrows(DateTimeException.class, () -> new ModifyDate().setZone(date, "???"));
     }
 }

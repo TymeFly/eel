@@ -4,10 +4,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
-
 /**
- * Builder class used to generate a flexible SymbolsTable that can return values from multiple named sources.
- * A unique scope name is used to disambiguate keys that exist in multiple sources.
+ * Builder used to create a flexible {@link com.github.tymefly.eel.SymbolsTable} that can return values from multiple
+ * named sources. A unique scope name is used to disambiguate keys that exist in multiple sources.
  * Typical usage is:
  * <pre>{@code SymbolsTable.factory(".")
  *             .withProperties("props")
@@ -22,50 +21,51 @@ import javax.annotation.Nonnull;
  */
 public interface ScopedSymbolsTableBuilder extends BasicSymbolTableBuilder {
     /**
-     * Adds all the system properties to the generated SymbolsTable.
-     * @param scopeName Name of the scope for the properties
-     * @return          a fluent interface
+     * Adds all system properties to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * @param scopeName  unique the name of the scope for the properties
+     * @return           a fluent interface
      * @see System#getProperties()
      */
     @Nonnull
     ScopedSymbolsTableBuilder withProperties(@Nonnull String scopeName);
 
     /**
-     * Adds all the environment variables to the generated SymbolsTable.
-     * @param scopeName Name of the scope for the environment variables
-     * @return          a fluent interface
+     * Adds all environment variables to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * @param scopeName  unique name of the scope for the environment variables
+     * @return           a fluent interface
      * @see System#getenv()
      */
     @Nonnull
     ScopedSymbolsTableBuilder withEnvironment(@Nonnull String scopeName);
 
     /**
-     * Adds a map to the generated SymbolsTable. This method may be called multiple times if more than
-     * map is required
-     * @param scopeName Name of the scope for the map
-     * @param values    a collection of key-value pairs that will be added to the generated symbols table
-     * @return          a fluent interface
+     * Adds a map to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * This method may be called multiple times to include more than one map.
+     * @param scopeName  unique name of the scope for the map
+     * @param values     the key-value pairs to add to the generated {@link com.github.tymefly.eel.SymbolsTable}
+     * @return           a fluent interface
      */
     @Nonnull
     ScopedSymbolsTableBuilder withValues(@Nonnull String scopeName, @Nonnull Map<String, String> values);
 
     /**
-     * Adds a callback function from the symbols table that allows the client to read symbols in a flexible way.
-     * This method may be called multiple times if more than one lookup function is required.
+     * Adds a callback function to the {@link com.github.tymefly.eel.SymbolsTable} that enables flexible symbol lookup.
+     * This method may be called multiple times to include more than one lookup function.
      * <br>
-     * <b>Note:</b> It is required that for any given key the lookup function always returns the same value.
-     * @param scopeName Name of the scope for lookup function
-     * @param lookup    A function that is passed the lookup key and returns the associated value or
-     *                      {@literal null} of there is no related value.
-     * @return          a fluent interface
+     * <b>Note:</b> For any given key, the lookup function must always return the same value.
+     * @param scopeName  unique name of the scope for the lookup function
+     * @param lookup     a function that receives the lookup key and returns the associated value,
+     *                   or {@literal null} if no value is available
+     * @return           a fluent interface
+     * @see Function
      */
     @Nonnull
     ScopedSymbolsTableBuilder withLookup(@Nonnull String scopeName, @Nonnull Function<String, String> lookup);
 
     /**
-     * Set a default value that is returned when a symbol can not be found in the symbols table.
-     * As this always returns the {@code defaultValue} no further strategies can be added to this symbols table
-     * @param defaultValue  The default value that is returned when
+     * Sets the value returned when a symbol cannot be found in the {@link com.github.tymefly.eel.SymbolsTable}.
+     * As this always returns the {@code defaultValue}, no further strategies can be added.
+     * @param defaultValue  unique value returned when a symbol is not found
      * @return              a fluent interface
      */
     @Nonnull

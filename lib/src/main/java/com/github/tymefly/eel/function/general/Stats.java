@@ -9,16 +9,18 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * Statistical functions
+ * Functions that perform statistical calculations.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Stats {
     /**
-     * Returns the average of a set of numbers.
+     * Returns the average (arithmetic mean) of the specified numbers using the precision defined by the context.
      * @param context   the current EEL context
-     * @param first     the first value to average
-     * @param others    optional additional values to average
-     * @return          the mean of all values passed to this function
+     * @param first     the first value to include in the average
+     * @param others    optional additional values to include in the average
+     * @return          the arithmetic mean of all provided values, calculated with the precision defined by the context
+     * @since 1.0
      */
     @EelFunction("avg")
     @Nonnull
@@ -35,11 +37,12 @@ public class Stats {
 
 
     /**
-     * Returns the largest value in a set of numbers.
-     * @param first     the first value to test
-     * @param others    optional additional values to test
-     * @return          the largest value among the values passed to this function
+     * Returns the largest value among the specified numbers.
+     * @param first     the first value to compare
+     * @param others    optional additional values to compare
+     * @return          the maximum value among all provided values
      * @see #min(BigDecimal, BigDecimal...)
+     * @since 1.0
      */
     @EelFunction("max")
     @Nonnull
@@ -54,11 +57,12 @@ public class Stats {
     }
 
     /**
-     * Returns the smallest value in a set of numbers.
-     * @param first     the first value to test
-     * @param others    optional additional values to test
-     * @return          the smallest value among the values passed to this function
-     * @see #max(BigDecimal, BigDecimal...) 
+     * Returns the smallest value among the specified numbers.
+     * @param first     the first value to compare
+     * @param others    optional additional values to compare
+     * @return          the minimum value among all provided values
+     * @see #max(BigDecimal, BigDecimal...)
+     * @since 1.0
      */
     @EelFunction("min")
     @Nonnull

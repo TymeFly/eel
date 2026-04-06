@@ -10,16 +10,17 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * Number Rounding functions
+ * Functions that perform number rounding operations.
+ * @since 1.1
  */
 @PackagedEelFunction
 public class Rounding {
     /**
      * Returns the {@code number} rounded to the specified precision.
-     * @param number     the number to round.
-     * @param precision  the number of decimal places to round to.
-     * @return           the {@code number} rounded to the specified precision.
-     * @throws IllegalArgumentException if {@code precision} is less than 0.
+     * @param number     the number to round
+     * @param precision  the number of decimal places to round to
+     * @return           the {@code number} rounded to the specified precision
+     * @throws IllegalArgumentException if {@code precision} is negative
      * @see #truncate(BigDecimal, int)
      * @see #ceil(BigDecimal)
      * @see #floor(BigDecimal)
@@ -40,10 +41,10 @@ public class Rounding {
 
     /**
      * Returns the {@code number} truncated to the specified precision.
-     * @param number     the number to truncate.
-     * @param precision  the number of decimal places to retain.
-     * @return           the {@code number} with fractional digits discarded.
-     * @throws IllegalArgumentException if {@code precision} is less than 0.
+     * @param number     the number to truncate
+     * @param precision  the number of decimal places to retain
+     * @return           the {@code number} with digits beyond the specified precision discarded
+     * @throws IllegalArgumentException if {@code precision} is negative
      * @see #round(BigDecimal, int)
      * @see #ceil(BigDecimal)
      * @see #floor(BigDecimal)
@@ -64,8 +65,8 @@ public class Rounding {
 
     /**
      * Returns the smallest integer value that is greater than or equal to the given {@code number}.
-     * @param number     the number to ceil.
-     * @return           the smallest integer value greater than or equal to {@code number}.
+     * @param number     the number to round up
+     * @return           the smallest integer greater than or equal to {@code number}
      * @see #round(BigDecimal, int)
      * @see #truncate(BigDecimal, int)
      * @see #floor(BigDecimal)
@@ -80,8 +81,8 @@ public class Rounding {
 
     /**
      * Returns the largest integer value that is less than or equal to the given {@code number}.
-     * @param number     the number to floor.
-     * @return           the largest integer value less than or equal to {@code number}.
+     * @param number     the number to round down
+     * @return           the largest integer less than or equal to {@code number}
      * @see #round(BigDecimal, int)
      * @see #truncate(BigDecimal, int)
      * @see #ceil(BigDecimal)

@@ -27,7 +27,7 @@ body {
 }
 
 .menu-item a {
-  color : #c1c1c1;f
+  color : #c1c1c1;
   text-decoration: none;
 }
 
@@ -112,6 +112,10 @@ body {
 .content-container table li {
   padding-left: 10px;
   margin-left: 15px;
+}
+
+table caption {
+  font-weight: bold;
 }
 
 .content-container tbody {

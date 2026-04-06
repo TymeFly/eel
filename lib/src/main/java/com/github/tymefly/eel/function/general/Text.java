@@ -15,7 +15,8 @@ import com.github.tymefly.eel.utils.StringUtils;
 import com.github.tymefly.eel.validate.Preconditions;
 
 /**
- * General purpose Text functions
+ * Functions for general-purpose text manipulation.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Text {
@@ -30,15 +31,16 @@ public class Text {
 
 
     /**
-     * Returns the first portion of the specified {@code text} according to the given {@code length}.
-     * If {@code length} is positive, up to that many characters are returned from the start;
-     * if {@code length} is negative, that many characters are returned from the end of the {@code text}.
-     * @param text      the text from which characters are obtained
-     * @param length    the number of characters to return (positive from start, negative from end)
-     * @return          a portion of the specified {@code text} according to the given {@code length}
+     * Returns a portion of the specified {@code text} based on the given {@code length}.
+     * If {@code length} is positive, returns up to {@code length} characters from the start;
+     * if {@code length} is negative, returns up to {@code length} characters from the end of the {@code text}.
+     * @param text      the text from which characters are extracted
+     * @param length    the number of characters to return (positive counts from the start, negative from the end)
+     * @return          the extracted portion of the specified text according to the given length
      * @see #mid(String, int, int)
      * @see #right(String, int)
      * @see #before(String, String, int)
+     * @since 1.0
      */
     @EelFunction("left")
     @Nonnull
@@ -47,15 +49,16 @@ public class Text {
     }
 
     /**
-     * Returns the last portion of the specified {@code text} according to the given {@code length}.
-     * If {@code length} is positive, up to that many characters are returned from the end;
-     * if {@code length} is negative, that many characters are returned from the start of the {@code text}.
-     * @param text      the text from which characters are obtained
-     * @param length    the number of characters to return (positive from end, negative from start)
-     * @return          a portion of the specified {@code text} according to the given {@code length}
+     * Returns a portion of the specified {@code text} based on the given {@code length}.
+     * If {@code length} is positive, returns up {@code length} characters from the end;
+     * if {@code length} is negative, returns up {@code length} characters from the start of the {@code text}.
+     * @param text      the text from which characters are extracted
+     * @param length    the number of characters to return (positive counts from the end, negative from the start)
+     * @return          the extracted portion of the specified text according to the given length
      * @see #left(String, int)
      * @see #mid(String, int, int)
      * @see #after(String, String, int)
+     * @since 1.0
      */
     @EelFunction("right")
     @Nonnull
@@ -66,17 +69,16 @@ public class Text {
     /**
      * Returns the middle portion of the specified {@code text}.
      * <p>
-     * The specification of this function deliberately matches the behaviour used by bash.
-     * @param text      the text from which characters are obtained
-     * @param position  if positive, the zero-based index of the start of the {@code text};
-     *                  if negative, the start index is counted from the end of the {@code text}
-     * @param length    if positive, the maximum number of characters to return;
-     *                  if negative, the end index is counted from the end of the {@code text}
-     * @return          a portion of the specified {@code text} starting at {@code position} and spanning up to
-     *                      {@code length} characters
+     * This function's behaviour deliberately matches the behaviour used by bash.
+     * @param text      the text from which characters are extracted
+     * @param position  if positive, the zero-based index of the start; if negative, counted from the end of the text
+     * @param length    if positive, the maximum number of characters to return; if negative, counted from the end
+     * @return          the portion of the specified text starting at {@code position} and spanning up to {@code length}
+     *                  characters
      * @see #left(String, int)
      * @see #right(String, int)
      * @see #between(String, String, int, int)
+     * @since 1.0
      */
     @EelFunction("mid")
     @Nonnull
@@ -88,18 +90,18 @@ public class Text {
 
 
     /**
-     * Returns all the text before the first occurrence of the {@code delimiter}.
+     * Returns all text preceding the first occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @return          the text before the first occurrence of the {@code delimiter};
-     *                      if the {@code delimiter} does not occur in the {@code text}, the full
-     *                      {@code text} is returned
+     * @param delimiter the delimiter to locate within the text
+     * @return          the text before the first occurrence of {@code delimiter}; if the delimiter does not
+     *                  occur, the entire text is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #afterFirst(String, String)
      * @see #beforeLast(String, String)
      * @see #afterLast(String, String)
      * @see #contains(String, String)
+     * @since 1.0
      */
     @EelFunction("beforeFirst")
     @Nonnull
@@ -110,19 +112,18 @@ public class Text {
     }
 
     /**
-     * Returns all the text after the first occurrence of the {@code delimiter} text.
+     * Returns all text following the first occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @return          the text after the first occurrence of the {@code delimiter};
-     *                  if the {@code delimiter} does not occur in the {@code text}, an empty
-     *                  string is returned
+     * @param delimiter the delimiter to locate within the text
+     * @return          the text after the first occurrence of {@code delimiter}; if the delimiter does not
+     *                  occur, an empty string is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
      * @see #beforeLast(String, String)
      * @see #afterLast(String, String)
      * @see #contains(String, String)
-     * @since 2.0.0
+     * @since 2.0
      */
     @EelFunction("afterFirst")
     @Nonnull
@@ -133,18 +134,18 @@ public class Text {
     }
 
     /**
-     * Returns all the text before the last occurrence of the {@code delimiter} text.
+     * Returns all text preceding the last occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @return          the text before the last occurrence of the {@code delimiter};
-     *                  if the {@code delimiter} does not occur in the {@code text}, the full
-     *                  {@code text} is returned
+     * @param delimiter the delimiter to locate within the text
+     * @return          the text before the last occurrence of {@code delimiter}; if the delimiter does not
+     *                  occur, the entire text is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
      * @see #afterFirst(String, String)
      * @see #afterLast(String, String)
      * @see #contains(String, String)
+     * @since 1.0
      */
     @EelFunction("beforeLast")
     @Nonnull
@@ -155,19 +156,18 @@ public class Text {
     }
 
     /**
-     * Returns all the text after the last occurrence of the {@code delimiter} text.
+     * Returns all text following the last occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @return          the text after the last occurrence of the {@code delimiter};
-     *                  if the {@code delimiter} does not occur in the {@code text}, an empty
-     *                  text is returned
+     * @param delimiter the delimiter to locate within the text
+     * @return          the text after the last occurrence of {@code delimiter}; if the delimiter does not
+     *                  occur, an empty text is returned
      * @see #after(String, String, int)
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
      * @see #afterFirst(String, String)
      * @see #beforeLast(String, String)
      * @see #contains(String, String)
-     * @since 2.0.0
+     * @since 2.0
      */
     @EelFunction("afterLast")
     @Nonnull
@@ -179,13 +179,12 @@ public class Text {
 
 
     /**
-     * Returns all the text before the {@code count}'th occurrence of the {@code delimiter} text.
+     * Returns all text preceding the {@code count}'th occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @param count     the occurrence count of {@code delimiter} in the {@code text}; must not be negative
-     * @return          the text before the {@code count}'th occurrence of the {@code delimiter};
-     *                  if the {@code delimiter} does not occur {@code count} times, the full
-     *                  {@code text} is returned
+     * @param delimiter the delimiter to locate within the text
+     * @param count     the occurrence of {@code delimiter} to consider; must not be negative
+     * @return          the text before the {@code count}'th occurrence of {@code delimiter}; if the delimiter
+     *                  does not occur {@code count} times, the entire text is returned
      * @see #after(String, String, int)
      * @see #between(String, String, int, int)
      * @see #beforeFirst(String, String)
@@ -194,9 +193,8 @@ public class Text {
      * @see #afterLast(String, String)
      * @see #contains(String, String)
      * @see #left(String, int)
-     * @since 2.0.0
+     * @since 2.0
      */
-
     @EelFunction("before")
     @Nonnull
     public String before(@Nonnull String text, @Nonnull String delimiter, int count) {
@@ -206,13 +204,12 @@ public class Text {
     }
 
     /**
-     * Returns all the text after the {@code count}'th occurrence of the {@code delimiter} text.
+     * Returns all text following the {@code count}'th occurrence of the specified {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @param count     the occurrence count of {@code delimiter} in the {@code text}; must not be negative
-     * @return          the text after the {@code count}'th occurrence of the {@code delimiter};
-     *                  if the {@code delimiter} does not occur {@code count} times, an empty string
-     *                  is returned
+     * @param delimiter the delimiter to locate within the text
+     * @param count     the occurrence of {@code delimiter} to consider; must not be negative
+     * @return          the text after the {@code count}'th occurrence of {@code delimiter}; if the delimiter
+     *                  does not occur {@code count} times, an empty string is returned
      * @see #before(String, String, int)
      * @see #between(String, String, int, int)
      * @see #beforeFirst(String, String)
@@ -221,7 +218,7 @@ public class Text {
      * @see #afterLast(String, String)
      * @see #contains(String, String)
      * @see #right(String, int)
-     * @since 2.0.0
+     * @since 2.0
      */
     @EelFunction("after")
     @Nonnull
@@ -232,15 +229,14 @@ public class Text {
     }
 
     /**
-     * Returns all the text between the {@code start}'th and the {@code end}'th occurrence of the
-     * {@code delimiter} text.
+     * Returns all text between the {@code start}'th and {@code end}'th occurrence of the specified
+     * {@code delimiter}.
      * @param text      the text from which characters are returned
-     * @param delimiter the delimiter which should appear in the {@code text}
-     * @param start     the first occurrence of {@code delimiter} in the {@code text}; must not be negative
-     * @param end       the last occurrence count of {@code delimiter} in the {@code text}; must not be negative
-     * @return          the text between the {@code start}'th and {@code end}'th occurrences of the
-     *                  {@code delimiter}; if the {@code delimiter} does not occur {@code end} times,
-     *                  an empty string is returned
+     * @param delimiter the delimiter to locate within the text
+     * @param start     the first occurrence of {@code delimiter} to consider; must not be negative
+     * @param end       the last occurrence of {@code delimiter} to consider; must not be negative
+     * @return          the text between the {@code start}'th and {@code end}'th occurrences of {@code delimiter};
+     *                  if {@code delimiter} does not occur {@code end} times, an empty string is returned
      * @see #before(String, String, int)
      * @see #after(String, String, int)
      * @see #beforeFirst(String, String)
@@ -249,7 +245,7 @@ public class Text {
      * @see #afterLast(String, String)
      * @see #contains(String, String)
      * @see #mid(String, int, int)
-     * @since 2.0.0
+     * @since 2.0
      */
     @EelFunction("between")
     @Nonnull
@@ -261,18 +257,18 @@ public class Text {
     }
 
     /**
-     * Returns the number of times that the {@code search} phrase occurs in the {@code text}.
+     * Returns the number of times the specified {@code search} phrase occurs in the {@code text}.
      * @param text      the text to be searched
-     * @param search    the phrase to be counted
-     * @return          the number of instances of {@code search} in {@code text};
-     *                  if {@code search} is empty text, the value returned is the length of the {@code text}
+     * @param search    the phrase to count within the text
+     * @return          the number of instances of {@code search} in {@code text}; if {@code search} is empty,
+     *                  the value returned is the length of the text
      * @see #before(String, String, int)
      * @see #beforeFirst(String, String)
      * @see #afterFirst(String, String)
      * @see #beforeLast(String, String)
      * @see #afterLast(String, String)
      * @see #contains(String, String)
-     * @since 2.0.0
+     * @since 2.0
      */
     @EelFunction("contains")
     public int contains(@Nonnull String text, @Nonnull String search) {
@@ -300,11 +296,12 @@ public class Text {
 
 
     /**
-     * Extracts characters from the specified {@code text} based on a Java Regular Expression.
-     * @param text      the full text from which to extract data
-     * @param regEx     the regular expression which should contain matching groups
-     * @return          the extracted text
+     * Extracts characters from the specified {@code text} using a Java-style regular expression.
+     * @param text      the input text from which characters are extracted
+     * @param regEx     the regular expression pattern to match; must include capturing groups
+     * @return          the text extracted based on the specified {@code regEx}
      * @see #matches(String, String)
+     * @since 1.0
      */
     @EelFunction("extract")
     public String extract(@Nonnull String text, @Nonnull String regEx) {
@@ -332,26 +329,26 @@ public class Text {
 
     
     /**
-     * Checks whether the specified {@code text} matches a Java regular expression.
-     * @param text      the text to check
-     * @param regEx     the regular expression against which the {@code text} is checked
-     * @return          {@literal true} only if the {@code text} matches the {@code regEx}
+     * Checks whether the specified {@code text} matches the given Java-style regular expression.
+     * @param text      the text to check for a match
+     * @param regEx     the regular expression pattern to match against
+     * @return          {@literal true} if the {@code text} matches {@code regEx}; otherwise {@literal false}
      * @see #extract(String, String)
+     * @since 1.0
      */
     @EelFunction("matches")
     public boolean matches(@Nonnull String text, @Nonnull String regEx) {
         return text.matches(regEx);
     }
 
-
-    /**
-     * Replaces all instances of the literal {@code from} in the specified {@code text} with the literal {@code to}.
-     * @param text      the text in which replacements will be made
+        /**
+     * Replaces all occurrences of the literal {@code from} in the specified {@code text} with the literal {@code to}.
+     * @param text      the text in which replacements are made
      * @param from      the literal text to be replaced
-     * @param to        the literal text to substitute
-     * @return          the original {@code text} with all instances of {@code from} replaced by
-     *                  {@code to}
+     * @param to        the literal text to substitute for {@code from}
+     * @return          the original {@code text} with all instances of {@code from} replaced by {@code to}
      * @see #replaceEx(String, String, String)
+     * @since 1.0
      */
     @EelFunction("replace")
     @Nonnull
@@ -359,16 +356,15 @@ public class Text {
         return text.replace(from, to);
     }
 
-    
     /**
-     * Replaces each part of the specified {@code text} that matches the Java regular expression
+     * Replaces each part of the specified {@code text} that matches the Java-style regular expression
      * {@code regEx} with the literal text {@code to}.
-     * @param text      the text in which replacements will be made
+     * @param text      the text in which replacements are made
      * @param regEx     the regular expression to search for
-     * @param to        the literal text to substitute
-     * @return          the original {@code text} with all instances matching {@code regEx} replaced by
-     *                  {@code to}
+     * @param to        the literal text to substitute for matches
+     * @return          the original {@code text} with all instances matching {@code regEx} replaced by {@code to}
      * @see #replace(String, String, String)
+     * @since 1.0
      */
     @EelFunction("replaceEx")
     @Nonnull
@@ -378,9 +374,10 @@ public class Text {
     
 
     /**
-     * Returns the {@code text} with any leading and trailing spaces removed.
+     * Returns the {@code text} with leading and trailing spaces removed.
      * @param text      the text to trim
      * @return          the {@code text} with no leading or trailing spaces
+     * @since 1.0
      */
     @EelFunction("trim")
     @Nonnull
@@ -390,11 +387,12 @@ public class Text {
 
 
     /**
-     * Returns the length of the specified {@code text}, including any leading and trailing spaces.
-     * @param text      the text to measure
-     * @return          the length of {@code text}, including leading and trailing spaces
-     * @see #isEmpty(String)
-     * @see #isBlank(String)
+     * Returns the length of the specified {@code text}, including leading and trailing spaces.
+     * @param text      the text whose length is to be measured
+     * @return          the length of the specified {@code text}, including any leading and trailing spaces
+     * @see #isEmpty(String) for checking if the text is empty
+     * @see #isBlank(String) for checking if the text is blank (contains only spaces)
+     * @since 1.0
      */
     @EelFunction("len")
     public int len(@Nonnull String text) {
@@ -402,12 +400,13 @@ public class Text {
     }
 
     /**
-     * Returns {@literal true} only if the specified {@code text} is empty.
-     * Text that contains one or more spaces is not considered empty.
+     * Returns {@literal true} if the specified {@code text} is empty.
+     * Text containing one or more spaces is not considered empty.
      * @param text      the text to check
-     * @return          {@literal true} only if the {@code text} is empty
-     * @see #len(String)
-     * @see #isBlank(String)
+     * @return          {@literal true} if the {@code text} contains no characters
+     * @see #len(String) for getting the length of the text
+     * @see #isBlank(String) for checking if the text is blank (contains only spaces)
+     * @since 1.0
      */
     @EelFunction("isEmpty")
     public boolean isEmpty(@Nonnull String text) {
@@ -415,10 +414,9 @@ public class Text {
     }
 
     /**
-     * Returns {@literal true} if the specified {@code text} is empty
-     * or contains only whitespace.
+     * Returns {@literal true} if the specified {@code text} is empty or contains only whitespace.
      * @param text      the text to check
-     * @return          {@literal true} if {@code text} is empty or contains only whitespace
+     * @return          {@literal true} if the {@code text} is empty or contains only whitespace
      * @see #len(String)
      * @see #isEmpty(String)
      * @since 1.1
@@ -429,33 +427,35 @@ public class Text {
     }
 
     /**
-     * Returns the 0-based index of the first occurrence of {@code subString} in the specified {@code text},
-     * or the {@code defaultValue} if {@code subString} does not occur.
+     * Returns the 0-based index of the first occurrence of {@code subText} in the specified {@code text},
+     * or {@code defaultValue} if {@code subText} does not occur.
      * @param text          the text to check
-     * @param subString     the text to search for
-     * @param defaultValue  the value to return if {@code subString} is not found
-     * @return              the 0-based index of the first occurrence of {@code subString} in {@code text}
+     * @param subText       the text to search for
+     * @param defaultValue  the value to return if {@code subText} is not found
+     * @return              the 0-based index of the first occurrence of {@code subText} in {@code text}
      * @see #len(String)
      * @see #lastIndexOf(String, String, Value)
+     * @since 1.0
      */
     @EelFunction("indexOf")
     public int indexOf(@Nonnull String text,
-                       @Nonnull String subString,
+                       @Nonnull String subText,
                        @Nonnull @DefaultArgument("-1") Value defaultValue) {
-        int index = text.indexOf(subString);
+        int index = text.indexOf(subText);
 
         return (index == -1 ? defaultValue.asInt() : index);
     }
 
     /**
      * Returns the 0-based index of the last occurrence of {@code subString} in the specified {@code text},
-     * or the {@code defaultValue} if {@code subString} does not occur.
+     * or {@code defaultValue} if {@code subString} does not occur.
      * @param text          the text to check
      * @param subString     the text to search for
      * @param defaultValue  the value to return if {@code subString} is not found
      * @return              the 0-based index of the last occurrence of {@code subString} in {@code text}
      * @see #len(String)
      * @see #indexOf(String, String, Value)
+     * @since 1.0
      */
     @EelFunction("lastIndexOf")
     public int lastIndexOf(@Nonnull String text,

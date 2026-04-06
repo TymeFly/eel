@@ -4,7 +4,7 @@
 
     <groupId>com.github.tymefly.eel</groupId>
     <artifactId>parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.2.0-SNAPSHOT</version>
     <name>EEL Parent POM</name>
     <packaging>pom</packaging>
 
@@ -17,11 +17,15 @@
 
         <version.java>17</version.java>
 
-        <version.slf4j>2.0.17</version.slf4j>
-        <version.logback>1.5.20</version.logback>
+        <skip.quality>false</skip.quality>
 
-        <version.junit>4.13.2</version.junit>
-        <version.mockito>5.20.0</version.mockito>
+        <version.slf4j>2.0.17</version.slf4j>
+        <version.logback>1.5.32</version.logback>
+        <version.spotbugs>4.9.8</version.spotbugs>
+
+        <version.junit>5.14.3</version.junit>
+        <version.mockito>5.23.0</version.mockito>
+        <version.system-stubs>2.1.8</version.system-stubs>
     </properties>
 
     <dependencyManagement>
@@ -30,7 +34,7 @@
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-annotations</artifactId>
-                <version>4.9.8</version>
+                <version>${version.spotbugs}</version>
             </dependency>
 
             <!-- Logging -->
@@ -48,8 +52,14 @@
 
             <!-- Testing -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
                 <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
@@ -63,8 +73,8 @@
 
             <dependency>
                 <groupId>uk.org.webcompere</groupId>
-                <artifactId>system-stubs-junit4</artifactId>
-                <version>2.1.8</version>
+                <artifactId>system-stubs-jupiter</artifactId>
+                <version>${version.system-stubs}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -73,6 +83,12 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.21.0</version>
+                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -220,6 +236,7 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <skip>${skip.quality}</skip>
                         <enableRulesSummary>false</enableRulesSummary>
                         <outputFileFormat>xml</outputFileFormat>
                         <includeResources>false</includeResources>
@@ -240,6 +257,7 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <skip>${skip.quality}</skip>
                         <htmlOutput>true</htmlOutput>
                     </configuration>
                 </plugin>
@@ -257,6 +275,7 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <skip>${skip.quality}</skip>
                         <rulesets>
                             <ruleset>${project.basedir}/../config/pmd.xml</ruleset>
                         </rulesets>
@@ -283,8 +302,21 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <skip>${skip.quality}</skip>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

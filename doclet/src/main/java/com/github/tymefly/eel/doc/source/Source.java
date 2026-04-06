@@ -6,7 +6,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.utils.EelType;
 import com.github.tymefly.eel.validate.Preconditions;
 import com.sun.source.doctree.DocCommentTree;
@@ -16,7 +16,7 @@ import com.sun.source.util.DocTreePath;
  * Describes the source code for a method or package
  */
 public class Source {
-    private final Context context;
+    private final EelDocContext context;
     private final Element element;
     private final ParameterList parameters;
     private final EelType eelType;
@@ -25,7 +25,7 @@ public class Source {
     private final Resolver resolver;
 
 
-    private Source(@Nonnull Context context,
+    private Source(@Nonnull EelDocContext context,
                    @Nonnull Element element,
                    @Nonnull ParameterList parameters,
                    @Nullable EelType eelType) {
@@ -48,7 +48,7 @@ public class Source {
      * @return          a fluent interface
      */
     @Nonnull
-    public static Source forPackage(@Nonnull Context context, @Nonnull PackageElement element) {
+    public static Source forPackage(@Nonnull EelDocContext context, @Nonnull PackageElement element) {
         return new Source(context, element, ParameterList.EMPTY, null);
     }
 
@@ -60,7 +60,7 @@ public class Source {
      * @return          a fluent interface
      */
     @Nonnull
-    public static Source forMethod(@Nonnull Context context, @Nonnull ExecutableElement element) {
+    public static Source forMethod(@Nonnull EelDocContext context, @Nonnull ExecutableElement element) {
         return new Source(context,
             element,
             ParameterList.build(element),
@@ -72,7 +72,7 @@ public class Source {
      * @return the EelDoc context
      */
     @Nonnull
-    public Context context() {
+    public EelDocContext context() {
         return context;
     }
 

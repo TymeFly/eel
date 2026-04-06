@@ -2,7 +2,7 @@ package com.github.tymefly.eel.doc.report;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.TagModel;
@@ -31,12 +31,12 @@ import static j2html.TagCreator.tr;
  * Generate the HTML model used to render a table describing all the functions in a single group.
  */
 class GroupSummaryRender {
-    private final Context context;
+    private final EelDocContext context;
     private final GroupModel group;
     private final String pageLink;
     private final boolean isLocal;
 
-    private GroupSummaryRender(@Nonnull Context context,
+    private GroupSummaryRender(@Nonnull EelDocContext context,
                                @Nonnull GroupModel group,
                                @Nonnull String pageLink,
                                boolean isLocal) {
@@ -54,7 +54,7 @@ class GroupSummaryRender {
      * @return          an object to render the {@code group}
      */
     @Nonnull
-    static GroupSummaryRender local(@Nonnull Context context, @Nonnull GroupModel group) {
+    static GroupSummaryRender local(@Nonnull EelDocContext context, @Nonnull GroupModel group) {
         return new GroupSummaryRender(context, group, "", true);
     }
 
@@ -65,7 +65,7 @@ class GroupSummaryRender {
      * @return          an object to render the {@code group}
      */
     @Nonnull
-    static GroupSummaryRender general(@Nonnull Context context, @Nonnull GroupModel group) {
+    static GroupSummaryRender general(@Nonnull EelDocContext context, @Nonnull GroupModel group) {
         String file = group.fileName();
 
         return new GroupSummaryRender(context, group, file, false);

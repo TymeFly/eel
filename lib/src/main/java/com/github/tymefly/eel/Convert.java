@@ -50,7 +50,7 @@ class Convert {
         DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSSSSSSSX");
 
 
-    // Fields are fixed width, so leading 0s must be used to pad fields
+    // Fields are fixed width, so leading 0's must be used to pad fields
     // This is required to prevent ambiguity if the optional separators are absent
     private static final DateTimeFormatter STRING_TO_DATE = new DateTimeFormatterBuilder()
         .appendValue(ChronoField.YEAR, YEAR_WIDTH, YEAR_WIDTH, SignStyle.NORMAL)

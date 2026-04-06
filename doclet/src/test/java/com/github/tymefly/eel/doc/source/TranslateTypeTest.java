@@ -8,9 +8,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import com.github.tymefly.eel.doc.utils.EelType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,14 +25,14 @@ public class TranslateTypeTest {
      */
     @Test
     public void test_toEel_primitive() {
-        Assert.assertEquals("boolean", EelType.LOGIC, TranslateType.toEel(mockPrimitive(TypeKind.BOOLEAN)));
-        Assert.assertEquals("char", EelType.TEXT, TranslateType.toEel(mockPrimitive(TypeKind.CHAR)));
-        Assert.assertEquals("byte", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.BYTE)));
-        Assert.assertEquals("short", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.SHORT)));
-        Assert.assertEquals("int", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.INT)));
-        Assert.assertEquals("long", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.LONG)));
-        Assert.assertEquals("float", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.FLOAT)));
-        Assert.assertEquals("double", EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.DOUBLE)));
+        assertEquals(EelType.LOGIC, TranslateType.toEel(mockPrimitive(TypeKind.BOOLEAN)), "boolean");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockPrimitive(TypeKind.CHAR)), "char");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.BYTE)), "byte");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.SHORT)), "short");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.INT)), "int");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.LONG)), "long");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.FLOAT)), "float");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockPrimitive(TypeKind.DOUBLE)), "double");
     }
 
     @Nonnull
@@ -50,23 +51,23 @@ public class TranslateTypeTest {
      */
     @Test
     public void test_toEel_declared() {
-        Assert.assertEquals("Boolean", EelType.LOGIC, TranslateType.toEel(mockDeclared("java.lang.Boolean")));
-        Assert.assertEquals("Char", EelType.TEXT, TranslateType.toEel(mockDeclared("java.lang.Character")));
-        Assert.assertEquals("Byte", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Byte")));
-        Assert.assertEquals("Short", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Short")));
-        Assert.assertEquals("Int", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Integer")));
-        Assert.assertEquals("Long", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Long")));
-        Assert.assertEquals("Float", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Float")));
-        Assert.assertEquals("Double", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Double")));
+        assertEquals(EelType.LOGIC, TranslateType.toEel(mockDeclared("java.lang.Boolean")), "Boolean");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockDeclared("java.lang.Character")), "Char");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Byte")), "Byte");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Short")), "Short");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Integer")), "Int");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Long")), "Long");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Float")), "Float");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.lang.Double")), "Double");
 
-        Assert.assertEquals("BigInteger", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.math.BigInteger")));
-        Assert.assertEquals("BigDecimal", EelType.NUMBER, TranslateType.toEel(mockDeclared("java.math.BigDecimal")));
-        Assert.assertEquals("String", EelType.TEXT, TranslateType.toEel(mockDeclared("java.lang.String")));
-        Assert.assertEquals("File", EelType.TEXT, TranslateType.toEel(mockDeclared("java.io.File")));
-        Assert.assertEquals("ZonedDateTime", EelType.DATE, TranslateType.toEel(mockDeclared("java.time.ZonedDateTime")));
-        Assert.assertEquals("Value", EelType.VALUE, TranslateType.toEel(mockDeclared("com.github.tymefly.eel.Value")));
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.math.BigInteger")), "BigInteger");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockDeclared("java.math.BigDecimal")), "BigDecimal");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockDeclared("java.lang.String")), "String");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockDeclared("java.io.File")), "File");
+        assertEquals(EelType.DATE, TranslateType.toEel(mockDeclared("java.time.ZonedDateTime")), "ZonedDateTime");
+        assertEquals(EelType.VALUE, TranslateType.toEel(mockDeclared("com.github.tymefly.eel.Value")), "Value");
 
-        Assert.assertNull("Unknown", TranslateType.toEel(mockDeclared("x.y.Z")));
+        assertNull(TranslateType.toEel(mockDeclared("x.y.Z")), "Unknown");
     }
 
     @Nonnull
@@ -91,32 +92,32 @@ public class TranslateTypeTest {
      */
     @Test
     public void test_toEel_array() {
-        Assert.assertEquals("boolean", EelType.LOGIC, TranslateType.toEel(mockArray("boolean")));
-        Assert.assertEquals("char", EelType.TEXT, TranslateType.toEel(mockArray("char")));
-        Assert.assertEquals("byte", EelType.NUMBER, TranslateType.toEel(mockArray("byte")));
-        Assert.assertEquals("short", EelType.NUMBER, TranslateType.toEel(mockArray("short")));
-        Assert.assertEquals("int", EelType.NUMBER, TranslateType.toEel(mockArray("int")));
-        Assert.assertEquals("long", EelType.NUMBER, TranslateType.toEel(mockArray("long")));
-        Assert.assertEquals("float", EelType.NUMBER, TranslateType.toEel(mockArray("float")));
-        Assert.assertEquals("double", EelType.NUMBER, TranslateType.toEel(mockArray("double")));
+        assertEquals(EelType.LOGIC, TranslateType.toEel(mockArray("boolean")), "boolean");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockArray("char")), "char");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("byte")), "byte");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("short")), "short");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("int")), "int");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("long")), "long");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("float")), "float");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("double")), "double");
 
-        Assert.assertEquals("Boolean", EelType.LOGIC, TranslateType.toEel(mockArray("java.lang.Boolean")));
-        Assert.assertEquals("Char", EelType.TEXT, TranslateType.toEel(mockArray("java.lang.Character")));
-        Assert.assertEquals("Byte", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Byte")));
-        Assert.assertEquals("Short", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Short")));
-        Assert.assertEquals("Int", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Integer")));
-        Assert.assertEquals("Long", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Long")));
-        Assert.assertEquals("Float", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Float")));
-        Assert.assertEquals("Double", EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Double")));
+        assertEquals(EelType.LOGIC, TranslateType.toEel(mockArray("java.lang.Boolean")), "Boolean");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockArray("java.lang.Character")), "Char");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Byte")), "Byte");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Short")), "Short");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Integer")), "Int");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Long")), "Long");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Float")), "Float");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.lang.Double")), "Double");
 
-        Assert.assertEquals("BigInteger", EelType.NUMBER, TranslateType.toEel(mockArray("java.math.BigInteger")));
-        Assert.assertEquals("BigDecimal", EelType.NUMBER, TranslateType.toEel(mockArray("java.math.BigDecimal")));
-        Assert.assertEquals("String", EelType.TEXT, TranslateType.toEel(mockArray("java.lang.String")));
-        Assert.assertEquals("File", EelType.TEXT, TranslateType.toEel(mockArray("java.io.File")));
-        Assert.assertEquals("ZonedDateTime", EelType.DATE, TranslateType.toEel(mockArray("java.time.ZonedDateTime")));
-        Assert.assertEquals("Value", EelType.VALUE, TranslateType.toEel(mockArray("com.github.tymefly.eel.Value")));
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.math.BigInteger")), "BigInteger");
+        assertEquals(EelType.NUMBER, TranslateType.toEel(mockArray("java.math.BigDecimal")), "BigDecimal");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockArray("java.lang.String")), "String");
+        assertEquals(EelType.TEXT, TranslateType.toEel(mockArray("java.io.File")), "File");
+        assertEquals(EelType.DATE, TranslateType.toEel(mockArray("java.time.ZonedDateTime")), "ZonedDateTime");
+        assertEquals(EelType.VALUE, TranslateType.toEel(mockArray("com.github.tymefly.eel.Value")), "Value");
 
-        Assert.assertNull("Unknown", TranslateType.toEel(mockArray("x.y.Z")));
+        assertNull(TranslateType.toEel(mockArray("x.y.Z")), "Unknown");
     }
 
     @Nonnull
@@ -143,6 +144,6 @@ public class TranslateTypeTest {
         when(mock.getKind())
             .thenReturn(TypeKind.PACKAGE);
 
-        Assert.assertNull("Unknown", TranslateType.toEel(mock));
+        assertNull(TranslateType.toEel(mock), "Unknown");
     }
 }

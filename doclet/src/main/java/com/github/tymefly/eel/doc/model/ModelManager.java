@@ -11,34 +11,23 @@ import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.doc.utils.EelType;
 
 /**
  * Entry point for managing documentation models
  */
 public class ModelManager {
-    private static final ModelManager INSTANCE = new ModelManager();
-
     private final Map<String, Group> groups;
     private final Map<String, Function> bySignature;        // Function signature => Model
     private final Set<String> names;                        // EEL Function names
 
-    @VisibleForTesting
-    ModelManager() {
+    /** Constructor */
+    public ModelManager() {
         groups = new TreeMap<>();
         names = new HashSet<>();
         bySignature = new HashMap<>();
     }
 
-    /**
-     * Returns the singleton instance of this ModelManager
-     * @return the singleton instance of this ModelManager
-     */
-    @Nonnull
-    public static ModelManager getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * Add a new Function to the model.

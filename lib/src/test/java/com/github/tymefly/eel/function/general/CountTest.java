@@ -7,9 +7,9 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.udf.FunctionalResource;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,9 +46,9 @@ public class CountTest {
 
         Count count = new Count();
 
-        Assert.assertEquals("First", 0, count.count(manager, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Second", 1, count.count(manager, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Third", 2, count.count(manager, Count.DEFAULT_COUNTER));
+        assertEquals(0, count.count(manager, Count.DEFAULT_COUNTER), "First");
+        assertEquals(1, count.count(manager, Count.DEFAULT_COUNTER), "Second");
+        assertEquals(2, count.count(manager, Count.DEFAULT_COUNTER), "Third");
 
         verify(manager, times(3)).getResource(eq(""), any(Function.class));
     }
@@ -65,13 +65,13 @@ public class CountTest {
 
         Count count = new Count();
 
-        Assert.assertEquals("Context 1", 0, count.count(manager1, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Context 2", 0, count.count(manager2, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Context 3", 0, count.count(manager3, Count.DEFAULT_COUNTER));
+        assertEquals(0, count.count(manager1, Count.DEFAULT_COUNTER), "Context 1");
+        assertEquals(0, count.count(manager2, Count.DEFAULT_COUNTER), "Context 2");
+        assertEquals(0, count.count(manager3, Count.DEFAULT_COUNTER), "Context 3");
 
-        Assert.assertEquals("Context 1 again", 1, count.count(manager1, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Context 2 again", 1, count.count(manager2, Count.DEFAULT_COUNTER));
-        Assert.assertEquals("Context 3 again", 1, count.count(manager3, Count.DEFAULT_COUNTER));
+        assertEquals(1, count.count(manager1, Count.DEFAULT_COUNTER), "Context 1 again");
+        assertEquals(1, count.count(manager2, Count.DEFAULT_COUNTER), "Context 2 again");
+        assertEquals(1, count.count(manager3, Count.DEFAULT_COUNTER), "Context 3 again");
 
         verify(manager1, times(2)).getResource(eq(""), any(Function.class));
         verify(manager2, times(2)).getResource(eq(""), any(Function.class));
@@ -87,13 +87,13 @@ public class CountTest {
 
         Count count = new Count();
 
-        Assert.assertEquals("Counter 1", 0, count.count(manager, "Counter1"));
-        Assert.assertEquals("Counter 2", 0, count.count(manager, "Counter2"));
-        Assert.assertEquals("Counter 3", 0, count.count(manager, "Counter3"));
+        assertEquals(0, count.count(manager, "Counter1"), "Counter 1");
+        assertEquals(0, count.count(manager, "Counter2"), "Counter 2");
+        assertEquals(0, count.count(manager, "Counter3"), "Counter 3");
 
-        Assert.assertEquals("Counter 1 again", 1, count.count(manager, "Counter1"));
-        Assert.assertEquals("Counter 2 again", 1, count.count(manager, "Counter2"));
-        Assert.assertEquals("Counter 3 again", 1, count.count(manager, "Counter3"));
+        assertEquals(1, count.count(manager, "Counter1"), "Counter 1 again");
+        assertEquals(1, count.count(manager, "Counter2"), "Counter 2 again");
+        assertEquals(1, count.count(manager, "Counter3"), "Counter 3 again");
 
         verify(manager, times(2)).getResource(eq("Counter1"), any(Function.class));
         verify(manager, times(2)).getResource(eq("Counter2"), any(Function.class));

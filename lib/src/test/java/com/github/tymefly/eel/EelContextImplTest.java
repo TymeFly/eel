@@ -1,5 +1,7 @@
 package com.github.tymefly.eel;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -14,13 +16,16 @@ import java.util.function.Function;
 import func.functions.SameValue;
 import func.functions.Sum;
 import func.functions2.Half;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -35,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class EelContextImplTest {
     private BuildTime buildTime;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         buildTime = mock();
 
@@ -59,9 +64,9 @@ public class EelContextImplTest {
             EelContextImpl context = new EelContextImpl.Builder()
                 .build();
 
-            Assert.assertEquals("Bad MathContext", new MathContext(16, RoundingMode.HALF_UP), context.getMathContext());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(new MathContext(16, RoundingMode.HALF_UP), context.getMathContext(), "Bad MathContext");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -86,9 +91,9 @@ public class EelContextImplTest {
                 .withMaxExpressionSize(123)
                 .build();
 
-            Assert.assertEquals("Bad Max Expression Length", 123, context.maxExpressionLength());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(123, context.maxExpressionLength(), "Bad Max Expression Length");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -102,7 +107,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_withMaxLength_negative() {
-        Assert.assertThrows(IllegalArgumentException.class, () -> new EelContextImpl.Builder()
+        assertThrows(IllegalArgumentException.class, () -> new EelContextImpl.Builder()
             .withMaxExpressionSize(-123));
     }
 
@@ -112,12 +117,8 @@ public class EelContextImplTest {
      */
     @Test
     public void test_withStartOfWeek() {
-        Assert.assertEquals("default",
-            32768,
-            new EelContextImpl.Builder().build().getIoLimit());
-        Assert.assertEquals("custom",
-            101,
-            new EelContextImpl.Builder().withIoLimit(101).build().getIoLimit());
+        assertEquals(32768, new EelContextImpl.Builder().build().getIoLimit(), "default");
+        assertEquals(101, new EelContextImpl.Builder().withIoLimit(101).build().getIoLimit(), "custom");
     }
 
 
@@ -126,14 +127,59 @@ public class EelContextImplTest {
      */
     @Test
     public void test_getWeek() {
-        Assert.assertEquals("default",
-            WeekFields.of(DayOfWeek.MONDAY, 4),
-            new EelContextImpl.Builder().build().getWeek());
-        Assert.assertEquals("custom",
-            WeekFields.of(DayOfWeek.THURSDAY, 4),
-            new EelContextImpl.Builder().withStartOfWeek(DayOfWeek.THURSDAY).build().getWeek());
+        assertEquals(WeekFields.of(DayOfWeek.MONDAY, 4), new EelContextImpl.Builder().build().getWeek(), "default");
+        assertEquals(WeekFields.of(DayOfWeek.THURSDAY, 4), new EelContextImpl.Builder().withStartOfWeek(DayOfWeek.THURSDAY).build().getWeek(), "custom");
     }
 
+
+    /**
+     * Unit test {@link EelContext#getFile(String)}
+     */
+    @Test
+    public void test_getFile_String() {
+        FileFactory customFileFactory = (f -> new File(f + ".2"));
+
+        assertEquals("MyFile.txt.2",
+            new EelContextImpl.Builder()
+                .withFileFactory(customFileFactory)
+                .build()
+                .getFile("MyFile.txt")
+                .getName(),
+            "unexpected file");
+    }
+
+    /**
+     * Unit test {@link EelContext#getFile(Value)}
+     */
+    @Test
+    public void test_getFile_Value() {
+        FileFactory customFileFactory = (f -> new File(f + ".2"));
+        Value path = Value.of("MyFile.txt");
+
+        assertEquals("MyFile.txt.2",
+            new EelContextImpl.Builder()
+                .withFileFactory(customFileFactory)
+                .build()
+                .getFile(path)
+                .getName(),
+            "unexpected file");
+    }
+
+    /**
+     * Unit test {@link FunctionManager}
+     */
+    @Test
+    public void test_getFile__fails() {
+        IOException cause = new IOException("Expected");
+        FileFactory customFileFactory = f -> { throw cause; };
+        EelContext context = new EelContextImpl.Builder()
+            .withFileFactory(customFileFactory)
+            .build();
+        Exception actual = assertThrows(RuntimeException.class, () -> context.getFile("MyFile.txt"));
+
+        assertEquals("File Factory for 'MyFile.txt' failed", actual.getMessage(), "Unexpected message");
+        assertSame(cause, actual.getCause(), "Unexpected cause");
+    }
 
 
     /**
@@ -141,12 +187,8 @@ public class EelContextImplTest {
      */
     @Test
     public void test_withMinimalDaysInFirstWeek() {
-        Assert.assertEquals("default",
-            WeekFields.of(DayOfWeek.MONDAY, 4),
-            new EelContextImpl.Builder().build().getWeek());
-        Assert.assertEquals("custom",
-            WeekFields.of(DayOfWeek.MONDAY, 1),
-            new EelContextImpl.Builder().withMinimalDaysInFirstWeek(1).build().getWeek());
+        assertEquals(WeekFields.of(DayOfWeek.MONDAY, 4), new EelContextImpl.Builder().build().getWeek(), "default");
+        assertEquals(WeekFields.of(DayOfWeek.MONDAY, 1), new EelContextImpl.Builder().withMinimalDaysInFirstWeek(1).build().getWeek(), "custom");
     }
 
 
@@ -165,9 +207,9 @@ public class EelContextImplTest {
                 .withTimeout(Duration.of(6, ChronoUnit.HOURS))
                 .build();
 
-            Assert.assertEquals("Bad Max Expression Length", Duration.of(6, ChronoUnit.HOURS), context.getTimeout());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(Duration.of(6, ChronoUnit.HOURS), context.getTimeout(), "Bad Max Expression Length");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -183,7 +225,7 @@ public class EelContextImplTest {
      */
     @Test
     public void test_getTimeout_negative() {
-        Assert.assertThrows(IllegalArgumentException.class, () -> new EelContextImpl.Builder()
+        assertThrows(IllegalArgumentException.class, () -> new EelContextImpl.Builder()
             .withTimeout(Duration.of(-6, ChronoUnit.HOURS)));
     }
 
@@ -203,9 +245,9 @@ public class EelContextImplTest {
                 .withPrecision(15)
                 .build();
 
-            Assert.assertEquals("Bad Context", new MathContext(15, RoundingMode.HALF_UP), context.getMathContext());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(new MathContext(15, RoundingMode.HALF_UP), context.getMathContext(), "Bad Context");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -231,9 +273,9 @@ public class EelContextImplTest {
                 .withUdfClass(Half.class)
                 .build();
 
-            Assert.assertEquals("Bad Context", new MathContext(16, RoundingMode.HALF_UP), context.getMathContext());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(new MathContext(16, RoundingMode.HALF_UP), context.getMathContext(), "Bad Context");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -262,9 +304,9 @@ public class EelContextImplTest {
                 .withUdfPackage(Half.class.getPackage())
                 .build();
 
-            Assert.assertEquals("Bad Context", new MathContext(16, RoundingMode.HALF_UP), context.getMathContext());
-            Assert.assertTrue("Bad Id" + context.contextId(), context.contextId().matches("_id\\d+"));
-            Assert.assertEquals("functionManager", funcMan, context.getFunctionManager());
+            assertEquals(new MathContext(16, RoundingMode.HALF_UP), context.getMathContext(), "Bad Context");
+            assertTrue(context.contextId().matches("_id\\d+"), "Bad Id" + context.contextId());
+            assertEquals(funcMan, context.getFunctionManager(), "functionManager");
 
             FunctionManager.Builder funcManBuilder = funcManConstructor.constructed().get(0);
 
@@ -289,9 +331,9 @@ public class EelContextImplTest {
 
         long difference = now.until(actual, ChronoUnit.MILLIS);
 
-        Assert.assertTrue("Unexpected time", (difference < 1_000));
-        Assert.assertEquals("Unexpected Zone", "UTC", actual.getZone().getId());
-        Assert.assertSame("Time stamp should not change", actual, context.getStartTime());
+        assertTrue((difference < 1_000), "Unexpected time");
+        assertEquals("UTC", actual.getZone().getId(), "Unexpected Zone");
+        assertSame(actual, context.getStartTime(), "Time stamp should not change");
     }
 
 
@@ -310,7 +352,7 @@ public class EelContextImplTest {
                 .build()
                 .metadata();
 
-            Assert.assertEquals("Unexpected information", "mockedVersion", actual.version());
+            assertEquals("mockedVersion", actual.version(), "Unexpected information");
         }
     }
 
@@ -333,11 +375,11 @@ public class EelContextImplTest {
         String resource5 = context.getResource(owner2, "Name2", constructor);
         String resource6 = context.getResource(owner2, "Name2", constructor);
 
-        Assert.assertEquals("Unexpected resource1", "Item1 (Name1)", resource1);
-        Assert.assertSame("Unexpected resource2", resource1, resource2);
-        Assert.assertEquals("Unexpected resource3", "Item2 (Name2)", resource3);
-        Assert.assertEquals("Unexpected resource4", "Item3 (Name1)", resource4);
-        Assert.assertEquals("Unexpected resource5", "Item4 (Name2)", resource5);
-        Assert.assertSame("Unexpected resource6", resource5, resource6);
+        assertEquals("Item1 (Name1)", resource1, "Unexpected resource1");
+        assertSame(resource1, resource2, "Unexpected resource2");
+        assertEquals("Item2 (Name2)", resource3, "Unexpected resource3");
+        assertEquals("Item3 (Name1)", resource4, "Unexpected resource4");
+        assertEquals("Item4 (Name2)", resource5, "Unexpected resource5");
+        assertSame(resource5, resource6, "Unexpected resource6");
     }
 }

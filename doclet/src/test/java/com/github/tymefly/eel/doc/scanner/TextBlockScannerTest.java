@@ -3,16 +3,16 @@ package com.github.tymefly.eel.doc.scanner;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.ModelManager;
 import com.github.tymefly.eel.doc.model.TextBlockGenerator;
 import com.github.tymefly.eel.doc.source.Source;
 import com.sun.source.doctree.DocTree;
 import com.sun.source.util.DocTreePath;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.mock;
@@ -33,7 +33,7 @@ public class TextBlockScannerTest {
     @Test
     public void testRun_returnsTextBlockGenerator() {
         Source source = mock();
-        Context context = mock();
+        EelDocContext context = mock();
         ModelManager modelManager = mock();
         TextBlockGenerator textBlock = mock();
         DocTree firstNode = mock();

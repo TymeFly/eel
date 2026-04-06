@@ -3,10 +3,12 @@ package com.github.tymefly.eel.doc.model;
 import java.util.List;
 
 import com.github.tymefly.eel.doc.config.Config;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -22,8 +24,8 @@ public class TagTypeTest {
      */
     @Test
     public void test_maxValue() {
-        Assert.assertEquals("SINGLETON", 1, TagType.Cardinality.SINGLETON.getMaxValue());
-        Assert.assertEquals("UNBOUNDED", 0x7FFFFFFF, TagType.Cardinality.UNBOUNDED.getMaxValue());
+        assertEquals(1, TagType.Cardinality.SINGLETON.getMaxValue(), "SINGLETON");
+        assertEquals(0x7FFFFFFF, TagType.Cardinality.UNBOUNDED.getMaxValue(), "UNBOUNDED");
     }
 
     /**
@@ -31,9 +33,10 @@ public class TagTypeTest {
      */
     @Test
     public void test_sections() {
-        Assert.assertEquals("Unexpected sections to display",
+        assertEquals(
             List.of(TagType.RETURN, TagType.THROWS, TagType.SEE, TagType.SINCE, TagType.VERSION, TagType.AUTHOR),
-            TagType.sections());
+            TagType.sections(),
+            "Unexpected sections to display");
     }
 
     /**
@@ -41,14 +44,14 @@ public class TagTypeTest {
      */
     @Test
     public void test_cardinality() {
-        Assert.assertEquals("SUMMARY", TagType.Cardinality.SINGLETON, TagType.SUMMARY.cardinality());
-        Assert.assertEquals("DEPRECATED", TagType.Cardinality.SINGLETON, TagType.DEPRECATED.cardinality());
-        Assert.assertEquals("RETURN", TagType.Cardinality.SINGLETON, TagType.RETURN.cardinality());
-        Assert.assertEquals("THROWS", TagType.Cardinality.UNBOUNDED, TagType.THROWS.cardinality());
-        Assert.assertEquals("SEE", TagType.Cardinality.UNBOUNDED, TagType.SEE.cardinality());
-        Assert.assertEquals("SINCE", TagType.Cardinality.SINGLETON, TagType.SINCE.cardinality());
-        Assert.assertEquals("VERSION", TagType.Cardinality.SINGLETON, TagType.VERSION.cardinality());
-        Assert.assertEquals("AUTHOR", TagType.Cardinality.UNBOUNDED, TagType.AUTHOR.cardinality());
+        assertEquals(TagType.Cardinality.SINGLETON, TagType.SUMMARY.cardinality(), "SUMMARY");
+        assertEquals(TagType.Cardinality.SINGLETON, TagType.DEPRECATED.cardinality(), "DEPRECATED");
+        assertEquals(TagType.Cardinality.SINGLETON, TagType.RETURN.cardinality(), "RETURN");
+        assertEquals(TagType.Cardinality.UNBOUNDED, TagType.THROWS.cardinality(), "THROWS");
+        assertEquals(TagType.Cardinality.UNBOUNDED, TagType.SEE.cardinality(), "SEE");
+        assertEquals(TagType.Cardinality.SINGLETON, TagType.SINCE.cardinality(), "SINCE");
+        assertEquals(TagType.Cardinality.SINGLETON, TagType.VERSION.cardinality(), "VERSION");
+        assertEquals(TagType.Cardinality.UNBOUNDED, TagType.AUTHOR.cardinality(), "AUTHOR");
     }
 
     /**
@@ -56,13 +59,13 @@ public class TagTypeTest {
      */
     @Test
     public void test_isEnabled_defaults() {
-        Assert.assertTrue("SUMMARY", TagType.SUMMARY.isEnabled());
-        Assert.assertTrue("DEPRECATED", TagType.DEPRECATED.isEnabled());
-        Assert.assertTrue("RETURN", TagType.RETURN.isEnabled());
-        Assert.assertTrue("THROWS", TagType.THROWS.isEnabled());
-        Assert.assertTrue("SEE", TagType.SEE.isEnabled());
-        Assert.assertTrue("SINCE", TagType.SINCE.isEnabled());
-        Assert.assertTrue("VERSION", TagType.VERSION.isEnabled());
+        assertTrue(TagType.SUMMARY.isEnabled(), "SUMMARY");
+        assertTrue(TagType.DEPRECATED.isEnabled(), "DEPRECATED");
+        assertTrue(TagType.RETURN.isEnabled(), "RETURN");
+        assertTrue(TagType.THROWS.isEnabled(), "THROWS");
+        assertTrue(TagType.SEE.isEnabled(), "SEE");
+        assertTrue(TagType.SINCE.isEnabled(), "SINCE");
+        assertTrue(TagType.VERSION.isEnabled(), "VERSION");
     }
 
     /**
@@ -81,7 +84,7 @@ public class TagTypeTest {
             configMock.when(Config::getInstance)
                 .thenReturn(config);
 
-            Assert.assertFalse("AUTHOR", TagType.AUTHOR.isEnabled());
+            assertFalse(TagType.AUTHOR.isEnabled(), "AUTHOR");
         }
     }
 
@@ -101,7 +104,7 @@ public class TagTypeTest {
             configMock.when(Config::getInstance)
                 .thenReturn(config);
 
-            Assert.assertTrue("AUTHOR", TagType.AUTHOR.isEnabled());
+            assertTrue(TagType.AUTHOR.isEnabled(), "AUTHOR");
         }
     }
 
@@ -110,13 +113,13 @@ public class TagTypeTest {
      */
     @Test
     public void test_showAllReference_defaults() {
-        Assert.assertTrue("SUMMARY", TagType.SUMMARY.showAllReference());
-        Assert.assertTrue("DEPRECATED", TagType.DEPRECATED.showAllReference());
-        Assert.assertTrue("RETURN", TagType.RETURN.showAllReference());
-        Assert.assertTrue("THROWS", TagType.THROWS.showAllReference());
-        Assert.assertTrue("SINCE", TagType.SINCE.showAllReference());
-        Assert.assertTrue("VERSION", TagType.VERSION.showAllReference());
-        Assert.assertTrue("AUTHOR", TagType.AUTHOR.showAllReference());
+        assertTrue(TagType.SUMMARY.showAllReference(), "SUMMARY");
+        assertTrue(TagType.DEPRECATED.showAllReference(), "DEPRECATED");
+        assertTrue(TagType.RETURN.showAllReference(), "RETURN");
+        assertTrue(TagType.THROWS.showAllReference(), "THROWS");
+        assertTrue(TagType.SINCE.showAllReference(), "SINCE");
+        assertTrue(TagType.VERSION.showAllReference(), "VERSION");
+        assertTrue(TagType.AUTHOR.showAllReference(), "AUTHOR");
     }
 
 
@@ -136,7 +139,7 @@ public class TagTypeTest {
             configMock.when(Config::getInstance)
                 .thenReturn(config);
 
-            Assert.assertFalse("SEE", TagType.SEE.showAllReference());
+            assertFalse(TagType.SEE.showAllReference(), "SEE");
         }
     }
 
@@ -157,7 +160,7 @@ public class TagTypeTest {
             configMock.when(Config::getInstance)
                 .thenReturn(config);
 
-            Assert.assertTrue("SEE", TagType.SEE.showAllReference());
+            assertTrue(TagType.SEE.showAllReference(), "SEE");
         }
     }
 
@@ -167,13 +170,13 @@ public class TagTypeTest {
      */
     @Test
     public void test_toString() {
-        Assert.assertEquals("SUMMARY", "Summary", TagType.SUMMARY.toString());
-        Assert.assertEquals("DEPRECATED", "Deprecated", TagType.DEPRECATED.toString());
-        Assert.assertEquals("RETURN", "Returns", TagType.RETURN.toString());
-        Assert.assertEquals("THROWS", "Throws", TagType.THROWS.toString());
-        Assert.assertEquals("SEE", "See", TagType.SEE.toString());
-        Assert.assertEquals("SINCE", "Since", TagType.SINCE.toString());
-        Assert.assertEquals("VERSION", "Version", TagType.VERSION.toString());
-        Assert.assertEquals("AUTHOR", "Author", TagType.AUTHOR.toString());
+        assertEquals("Summary", TagType.SUMMARY.toString(), "SUMMARY");
+        assertEquals("Deprecated", TagType.DEPRECATED.toString(), "DEPRECATED");
+        assertEquals("Returns", TagType.RETURN.toString(), "RETURN");
+        assertEquals("Throws", TagType.THROWS.toString(), "THROWS");
+        assertEquals("See", TagType.SEE.toString(), "SEE");
+        assertEquals("Since", TagType.SINCE.toString(), "SINCE");
+        assertEquals("Version", TagType.VERSION.toString(), "VERSION");
+        assertEquals("Author", TagType.AUTHOR.toString(), "AUTHOR");
     }
 }

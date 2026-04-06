@@ -8,24 +8,27 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import j2html.tags.DomContent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link AbstractPage}
  */
 public class AbstractPageTest {
 
-    private Context context;
+    private EelDocContext context;
     private Config config;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        context = Mockito.mock(Context.class);
+        context = Mockito.mock(EelDocContext.class);
         config = Mockito.mock(Config.class);
 
         Mockito.when(config.title())
@@ -65,13 +68,13 @@ public class AbstractPageTest {
 
         String html = page.buildPage();
 
-        Assert.assertNotNull("Missing HTML", html);
-        Assert.assertTrue("Missing page content", html.contains("page-content"));
-        Assert.assertTrue("Missing page title", html.contains("MyTitle - Test"));
-        Assert.assertTrue("Missing stylesheet link", html.contains("resource/main.css"));
-        Assert.assertTrue("Missing icon link", html.contains("resource/icon.png"));
-        Assert.assertTrue("Missing JS script", html.contains("resource/eel-doc.js"));
-        Assert.assertTrue("Missing jump back anchor", html.contains("<a name=\"_top\"></a>"));
+        assertNotNull(html, "Missing HTML");
+        assertTrue(html.contains("page-content"), "Missing page content");
+        assertTrue(html.contains("MyTitle - Test"), "Missing page title");
+        assertTrue(html.contains("resource/main.css"), "Missing stylesheet link");
+        assertTrue(html.contains("resource/icon.png"), "Missing icon link");
+        assertTrue(html.contains("resource/eel-doc.js"), "Missing JS script");
+        assertTrue(html.contains("<a name=\"_top\"></a>"), "Missing jump back anchor");
     }
 
 
@@ -83,9 +86,9 @@ public class AbstractPageTest {
         AbstractPage page = buildPage(Set.of(MenuItem.OVERVIEW));
         String html = page.buildPage();
 
-        Assert.assertNotNull("Missing HTML", html);
-        Assert.assertTrue("Failed to render Index", html.contains("<a href=\"_index.html\" class=\"menu-item-text\">Index</a>"));
-        Assert.assertTrue("Failed to render Overview", html.contains("<span class=\"menu-item-text\">Overview</span>"));
+        assertNotNull(html, "Missing HTML");
+        assertTrue(html.contains("<a href=\"_index.html\" class=\"menu-item-text\">Index</a>"), "Failed to render Index");
+        assertTrue(html.contains("<span class=\"menu-item-text\">Overview</span>"), "Failed to render Overview");
     }
 
 
@@ -102,15 +105,17 @@ public class AbstractPageTest {
         AbstractPage page = buildPage(Collections.emptySet());
         String actual = page.buildPage();
 
-        Assert.assertNotNull("Missing HTML", actual);
-        Assert.assertTrue("Missing top bar",
+        assertNotNull(actual, "Missing HTML");
+        assertTrue(
             Pattern.compile("<div\\s+class=\"page-top\"\\s*>\\s*TOP BAR\\s*</div>", Pattern.DOTALL)
                 .matcher(actual)
-                .find());
-        Assert.assertTrue("Missing bottom bar",
+                .find(),
+            "Missing top bar");
+        assertTrue(
             Pattern.compile("<div\\s+class=\"page-bottom\"\\s*>\\s*BOTTOM BAR\\s*</div>", Pattern.DOTALL)
                 .matcher(actual)
-                .find());
+                .find(),
+            "Missing bottom bar");
     }
 
     /**
@@ -126,8 +131,8 @@ public class AbstractPageTest {
         AbstractPage page = buildPage(Collections.emptySet());
         String html = page.buildPage();
 
-        Assert.assertNotNull("Missing HTML", html);
-        Assert.assertFalse("Found top bar", html.contains("<div class=\"page-top\">"));
-        Assert.assertFalse("Found bottom bar", html.contains("<div class=\"page-bottom\">"));
+        assertNotNull(html, "Missing HTML");
+        assertFalse(html.contains("<div class=\"page-top\">"), "Found top bar");
+        assertFalse(html.contains("<div class=\"page-bottom\">"), "Found bottom bar");
     }
 }

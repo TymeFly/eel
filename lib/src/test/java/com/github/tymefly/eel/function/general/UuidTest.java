@@ -1,7 +1,8 @@
 package com.github.tymefly.eel.function.general;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Uuid}
@@ -15,7 +16,7 @@ public class UuidTest {
     public void test_uuid() {
         String actual = new Uuid().uuid();
 
-        Assert.assertTrue("UUID has unexpected format: " + actual,
-            actual.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"));
+        assertTrue(actual.matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"),
+            "UUID has unexpected format: " + actual);
     }
 }

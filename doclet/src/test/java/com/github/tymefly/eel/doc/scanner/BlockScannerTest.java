@@ -3,7 +3,7 @@ package com.github.tymefly.eel.doc.scanner;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.ElementGenerator;
 import com.github.tymefly.eel.doc.model.TagGenerator;
 import com.github.tymefly.eel.doc.model.TagType;
@@ -20,7 +20,7 @@ import com.sun.source.doctree.SummaryTree;
 import com.sun.source.doctree.UnknownBlockTagTree;
 import com.sun.source.doctree.VersionTree;
 import com.sun.source.util.DocTreePath;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.mock;
@@ -247,7 +247,7 @@ public class BlockScannerTest {
         ElementGenerator<?> model = mock();
         UnknownBlockTagTree unknownTag = mock();
         TagGenerator tag = mock();
-        Context context = mock();
+        EelDocContext context = mock();
 
         BlockScanner scanner = spy(new MockBlockScanner(source, model));
 

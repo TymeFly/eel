@@ -1,19 +1,25 @@
 package com.github.tymefly.eel;
 
+import java.nio.file.FileSystems;
 import java.util.Map;
 import java.util.function.Function;
 
 import com.github.tymefly.eel.builder.ScopedSymbolsTableBuilder;
+import com.github.tymefly.eel.builder.SymbolsTableBuilder;
 import com.github.tymefly.eel.exception.EelSymbolsTableException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link SymbolsTable}
  */
 public class SymbolsTableTest {
     /**
-     * Unit test {@link SymbolsTable.Builder#withProperties()}
+     * Unit test {@link SymbolsTableBuilder#withProperties()}
      */
     @Test
     public void test_withProperties() {
@@ -21,11 +27,11 @@ public class SymbolsTableTest {
             .withProperties()
             .build();
 
-        Assert.assertEquals("Failed to read table", System.getProperty("file.separator"), table.read("file.separator"));
+        assertEquals(FileSystems.getDefault().getSeparator(), table.read("file.separator"), "Failed to read table");
     }
 
     /**
-     * Unit test {@link SymbolsTable.Builder#withEnvironment()}
+     * Unit test {@link SymbolsTableBuilder#withEnvironment()}
      */
     @Test
     public void test_withEnvironment() {
@@ -35,11 +41,11 @@ public class SymbolsTableTest {
             .withEnvironment()
             .build();
 
-        Assert.assertEquals("Failed to read env", variable.getValue(), table.read(variable.getKey()));
+        assertEquals(variable.getValue(), table.read(variable.getKey()), "Failed to read env");
     }
 
     /**
-     * Unit test {@link SymbolsTable.Builder#withValues(Map)}
+     * Unit test {@link SymbolsTableBuilder#withValues(Map)}
      */
     @Test
     public void test_withValues() {
@@ -49,11 +55,11 @@ public class SymbolsTableTest {
             .withValues(map)
             .build();
 
-        Assert.assertEquals("Failed to read map", "value", table.read("Key"));
+        assertEquals("value", table.read("Key"), "Failed to read map");
     }
 
     /**
-     * Unit test {@link SymbolsTable.Builder#withLookup(Function)}
+     * Unit test {@link SymbolsTableBuilder#withLookup(Function)}
      */
     @Test
     public void test_withLookup() {
@@ -61,11 +67,11 @@ public class SymbolsTableTest {
             .withLookup(k -> new StringBuilder(k).reverse().toString())
             .build();
 
-        Assert.assertEquals("Failed to read via callback", "yeK", table.read("Key"));
+        assertEquals("yeK", table.read("Key"), "Failed to read via callback");
     }
 
     /**
-     * Unit test {@link SymbolsTable.Builder#withDefault(String)}
+     * Unit test {@link SymbolsTableBuilder#withDefault(String)}
      */
     @Test
     public void test_withDefault() {
@@ -73,7 +79,7 @@ public class SymbolsTableTest {
             .withDefault("????")
             .build();
 
-        Assert.assertEquals("Failed to read via callback", "????", table.read("Key"));
+        assertEquals("????", table.read("Key"), "Failed to read via callback");
     }
 
     /**
@@ -90,11 +96,11 @@ public class SymbolsTableTest {
             .withDefault("<not set>")
             .build();
 
-        // file.separator in first map overrides values in the second map and the system properties
-        Assert.assertEquals("Should have read Map1", "overridden!", table.read("file.separator"));
-        Assert.assertEquals("Should have read Map2", "value-2", table.read("map2"));
-        Assert.assertEquals("Should have read props", property, table.read("java.specification.version"));
-        Assert.assertEquals("Should have read default", "<not set>", table.read("Key"));
+        // file.separator in the first map overrides values in the second map and the system properties
+        assertEquals("overridden!", table.read("file.separator"), "Should have read Map1");
+        assertEquals("value-2", table.read("map2"), "Should have read Map2");
+        assertEquals(property, table.read("java.specification.version"), "Should have read props");
+        assertEquals("<not set>", table.read("Key"), "Should have read default");
     }
 
     /**
@@ -102,7 +108,7 @@ public class SymbolsTableTest {
      */
     @Test
     public void test_Empty() {
-        Assert.assertNull("Empty Table has value", SymbolsTable.EMPTY.read("Key"));
+        assertNull(SymbolsTable.EMPTY.read("Key"), "Empty Table has value");
     }
 
 
@@ -117,7 +123,7 @@ public class SymbolsTableTest {
 
         SymbolsTable table = SymbolsTable.fromEnvironment();
 
-        Assert.assertEquals("Failed to read env", value, table.read(key));
+        assertEquals(value, table.read(key), "Failed to read env");
     }
 
     /**
@@ -131,8 +137,8 @@ public class SymbolsTableTest {
 
         SymbolsTable table = SymbolsTable.fromEnvironment("env");
 
-        Assert.assertEquals("Failed to read env", value, table.read("env." + key));
-        Assert.assertNotEquals("read without scope", table.read(key));
+        assertEquals(value, table.read("env." + key), "Failed to read env");
+        assertNotEquals("read without scope", table.read(key));
     }
 
 
@@ -143,9 +149,7 @@ public class SymbolsTableTest {
     public void test_fromProperties() {
         SymbolsTable table = SymbolsTable.fromProperties();
 
-        Assert.assertEquals("Failed to read property",
-            System.getProperty("file.separator"),
-            table.read("file.separator"));
+        assertEquals(FileSystems.getDefault().getSeparator(), table.read("file.separator"), "Failed to read property");
     }
 
     /**
@@ -155,10 +159,8 @@ public class SymbolsTableTest {
     public void test_fromProperties_scoped() {
         SymbolsTable table = SymbolsTable.fromProperties("prop");
 
-        Assert.assertEquals("Failed to read property",
-            System.getProperty("file.separator"),
-            table.read("prop.file.separator"));
-        Assert.assertNotEquals("read without scope", table.read("file.separator"));
+        assertEquals(FileSystems.getDefault().getSeparator(), table.read("prop.file.separator"), "Failed to read property");
+        assertNotEquals("read without scope", table.read("file.separator"));
     }
 
 
@@ -171,7 +173,7 @@ public class SymbolsTableTest {
 
         SymbolsTable table = SymbolsTable.from(map);
 
-        Assert.assertEquals("Failed to read map", "value", table.read("Key"));
+        assertEquals("value", table.read("Key"), "Failed to read map");
     }
 
     /**
@@ -183,8 +185,8 @@ public class SymbolsTableTest {
 
         SymbolsTable table = SymbolsTable.from("map", map);
 
-        Assert.assertEquals("Failed to read map", "value", table.read("map.Key"));
-        Assert.assertNotEquals("read without scope", table.read("Key"));
+        assertEquals("value", table.read("map.Key"), "Failed to read map");
+        assertNotEquals("read without scope", table.read("Key"));
     }
 
 
@@ -195,7 +197,7 @@ public class SymbolsTableTest {
     public void test_fromLookup() {
         SymbolsTable table = SymbolsTable.from(k -> new StringBuilder(k).reverse().toString());
 
-        Assert.assertEquals("Failed to read via callback", "yeK", table.read("Key"));
+        assertEquals("yeK", table.read("Key"), "Failed to read via callback");
     }
 
     /**
@@ -205,8 +207,8 @@ public class SymbolsTableTest {
     public void test_fromLookup_scoped() {
         SymbolsTable table = SymbolsTable.from("func", k -> new StringBuilder(k).reverse().toString());
 
-        Assert.assertEquals("Failed to read via callback", "yeK", table.read("func.Key"));
-        Assert.assertNotEquals("read without scope", table.read("Key"));
+        assertEquals("yeK", table.read("func.Key"), "Failed to read via callback");
+        assertNotEquals("read without scope", table.read("Key"));
     }
 
     /**
@@ -216,7 +218,7 @@ public class SymbolsTableTest {
     public void test_fromDefault() {
         SymbolsTable table = SymbolsTable.from("<myDefault>");
 
-        Assert.assertEquals("Failed to read via default", "<myDefault>", table.read("any key"));
+        assertEquals("<myDefault>", table.read("any key"), "Failed to read via default");
     }
 
 
@@ -232,10 +234,10 @@ public class SymbolsTableTest {
             .withDefault("<not set>")
             .build();
 
-        Assert.assertEquals("Without scope", "<not set>", table.read("java.specification.version"));
-        Assert.assertEquals("Wrong scope", "<not set>", table.read("xxx.java.specification.version"));
-        Assert.assertEquals("Correct scope", property, table.read("props.java.specification.version"));
-        Assert.assertEquals("Should have read default", "<not set>", table.read("Key"));
+        assertEquals("<not set>", table.read("java.specification.version"), "Without scope");
+        assertEquals("<not set>", table.read("xxx.java.specification.version"), "Wrong scope");
+        assertEquals(property, table.read("props.java.specification.version"), "Correct scope");
+        assertEquals("<not set>", table.read("Key"), "Should have read default");
     }
 
     /**
@@ -249,9 +251,9 @@ public class SymbolsTableTest {
             .withEnvironment("env")
             .build();
 
-        Assert.assertNull("Without scope", table.read(variable.getKey()));
-        Assert.assertNull("Wrong scope",table.read("xxx" + variable.getKey()));
-        Assert.assertEquals("Correct scope", variable.getValue(), table.read("env." + variable.getKey()));
+        assertNull(table.read(variable.getKey()), "Without scope");
+        assertNull(table.read("xxx" + variable.getKey()), "Wrong scope");
+        assertEquals(variable.getValue(), table.read("env." + variable.getKey()), "Correct scope");
     }
 
     /**
@@ -267,14 +269,14 @@ public class SymbolsTableTest {
             .withValues("map2", map2)
             .build();
 
-        Assert.assertEquals("Failed to read Key in map1", "value", table.read("map1.Key"));
-        Assert.assertEquals("Failed to read Key in map2", "value1", table.read("map2.Key"));
+        assertEquals("value", table.read("map1.Key"), "Failed to read Key in map1");
+        assertEquals("value1", table.read("map2.Key"), "Failed to read Key in map2");
 
-        Assert.assertEquals("Failed to read Key2 in map1", "value2", table.read("map1.Key2"));
-        Assert.assertNull("Failed to read Key2 in map2", table.read("map2.Key2"));
+        assertEquals("value2", table.read("map1.Key2"), "Failed to read Key2 in map1");
+        assertNull(table.read("map2.Key2"), "Failed to read Key2 in map2");
 
-        Assert.assertNull("Failed to read Key3 in map1", table.read("map1.Key3"));
-        Assert.assertEquals("Failed to read Key3 in map2", "value3", table.read("map2.Key3"));
+        assertNull(table.read("map1.Key3"), "Failed to read Key3 in map1");
+        assertEquals("value3", table.read("map2.Key3"), "Failed to read Key3 in map2");
     }
 
     /**
@@ -287,9 +289,9 @@ public class SymbolsTableTest {
             .withLookup("f2", String::toLowerCase)
             .build();
 
-        Assert.assertEquals("Failed to call function 1", "SOME_TEXT", table.read("f1.Some_Text"));
-        Assert.assertEquals("Failed to call function 2", "some_text", table.read("f2.Some_Text"));
-        Assert.assertNull("Called bad function", table.read("badFunction"));
+        assertEquals("SOME_TEXT", table.read("f1.Some_Text"), "Failed to call function 1");
+        assertEquals("some_text", table.read("f2.Some_Text"), "Failed to call function 2");
+        assertNull(table.read("badFunction"), "Called bad function");
     }
 
     /**
@@ -299,10 +301,10 @@ public class SymbolsTableTest {
     public void test_scoped_badName() {
         ScopedSymbolsTableBuilder factory = SymbolsTable.factory(".");
 
-        EelSymbolsTableException actual = Assert.assertThrows(EelSymbolsTableException.class,
+        EelSymbolsTableException actual = assertThrows(EelSymbolsTableException.class,
             () -> factory.withLookup("a.b", String::toUpperCase));
 
-        Assert.assertEquals("Unexpected message", "Scope name 'a.b' contains delimiter '.'", actual.getMessage());
+        assertEquals("Scope name 'a.b' contains delimiter '.'", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -313,9 +315,9 @@ public class SymbolsTableTest {
         ScopedSymbolsTableBuilder factory = SymbolsTable.factory(".")
             .withLookup("x", String::toUpperCase);
 
-        EelSymbolsTableException actual = Assert.assertThrows(EelSymbolsTableException.class,
+        EelSymbolsTableException actual = assertThrows(EelSymbolsTableException.class,
             () -> factory.withLookup("x", String::toUpperCase));
 
-        Assert.assertEquals("Unexpected message", "Duplicate scope 'x'", actual.getMessage());
+        assertEquals("Duplicate scope 'x'", actual.getMessage(), "Unexpected message");
     }
 }

@@ -1,5 +1,6 @@
 package com.github.tymefly.eel;
 
+import java.io.File;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
@@ -29,7 +30,6 @@ import com.github.tymefly.eel.validate.Preconditions;
  * </ul>
  */
 final class EelContextImpl implements EelContext {
-
     /**
      * Builder for {@link EelContext} objects
      */
@@ -43,6 +43,7 @@ final class EelContextImpl implements EelContext {
         private int maxExpressionLength = DEFAULT_MAX_EXPRESSION_LENGTH;
         private Duration timeout = DEFAULT_TIMEOUT;
         private WeekFields week = WeekFields.ISO;
+        private FileFactory fileFactory = SecureFileFactory.standard();
 
 
         Builder() {
@@ -129,13 +130,23 @@ final class EelContextImpl implements EelContext {
 
         @Nonnull
         @Override
+        public EelContextBuilder withFileFactory(@Nonnull FileFactory factory) {
+            Preconditions.checkNotNull(factory, "Can not set a null fileFactory");
+
+            fileFactory = SecureFileFactory.custom(factory);
+
+            return this;
+        }
+
+
+        @Nonnull
+        @Override
         public EelContextImpl build() {
             return new EelContextImpl(this);
         }
     }
 
 
-    private static final AtomicLong CONTEXT_COUNT = new AtomicLong();
 
     /**
      * Keys to the {@link #resources}
@@ -143,7 +154,10 @@ final class EelContextImpl implements EelContext {
      * @param name      Name of the resource
      */
     private record ResourceKey(@Nonnull Class<?> owner, @Nonnull String name) {
+
     }
+
+    private static final AtomicLong CONTEXT_COUNT = new AtomicLong();
 
     private final String id;
     private final int maxExpressionLength;
@@ -152,6 +166,7 @@ final class EelContextImpl implements EelContext {
     private final int ioLimit;
     private final WeekFields week;
     private final MathContext mathContext;
+    private final FileFactory fileFactory;
     private final FunctionManager functionManager;
     private final Map<ResourceKey, Object> resources;
 
@@ -165,6 +180,7 @@ final class EelContextImpl implements EelContext {
         this.week = builder.week;
         this.mathContext = builder.mathContext;
         this.functionManager = builder.functionManager.build();
+        this.fileFactory = builder.fileFactory;
         this.resources = Collections.synchronizedMap(new HashMap<>());
     }
 
@@ -202,6 +218,26 @@ final class EelContextImpl implements EelContext {
     @Nonnull
     public WeekFields getWeek() {
         return week;
+    }
+
+    @Nonnull
+    @Override
+    public File getFile(@Nonnull Value path) throws EelFunctionException {
+        return getFile(path.asText());
+    }
+
+    @Nonnull
+    @Override
+    public File getFile(@Nonnull String path) throws EelFunctionException {
+        File result;
+
+        try {
+            result = fileFactory.build(path);
+        } catch (Exception e) {
+            throw new EelFunctionException("File Factory for '" + path + "' failed", e);
+        }
+
+        return result;
     }
 
     @Nonnull

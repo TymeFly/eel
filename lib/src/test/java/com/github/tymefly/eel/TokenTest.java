@@ -1,7 +1,9 @@
 package com.github.tymefly.eel;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link Token}
@@ -13,33 +15,33 @@ public class TokenTest {
      */
     @Test
     public void test_Lexeme() {
-        Assert.assertThrows("NUMERIC", IllegalStateException.class, Token.NUMERIC::lexeme);
-        Assert.assertThrows("STRING", IllegalStateException.class, Token.TEXT_LITERAL::lexeme);
-        Assert.assertThrows("IDENTIFIER", IllegalStateException.class, Token.IDENTIFIER::lexeme);
-        Assert.assertThrows("UNDEFINED", IllegalStateException.class, Token.IDENTIFIER::lexeme);
+        assertThrows(IllegalStateException.class, Token.NUMERIC::lexeme, "NUMERIC");
+        assertThrows(IllegalStateException.class, Token.TEXT_LITERAL::lexeme, "STRING");
+        assertThrows(IllegalStateException.class, Token.IDENTIFIER::lexeme, "IDENTIFIER");
+        assertThrows(IllegalStateException.class, Token.IDENTIFIER::lexeme, "UNDEFINED");
 
-        Assert.assertEquals("VALUE_INTERPOLATION", "${", Token.VALUE_INTERPOLATION.lexeme());
-        Assert.assertEquals("EXPRESSION_INTERPOLATION", "$(", Token.EXPRESSION_INTERPOLATION.lexeme());
-        Assert.assertEquals("FUNCTION_INTERPOLATION", "$", Token.FUNCTION_INTERPOLATION.lexeme());
-        Assert.assertEquals("LOOK_BACK", "$", Token.LOOK_BACK.lexeme());
-        Assert.assertEquals("IS_AFTER", "isAfter", Token.IS_AFTER.lexeme());
+        assertEquals("${", Token.VALUE_INTERPOLATION.lexeme(), "VALUE_INTERPOLATION");
+        assertEquals("$(", Token.EXPRESSION_INTERPOLATION.lexeme(), "EXPRESSION_INTERPOLATION");
+        assertEquals("$", Token.FUNCTION_INTERPOLATION.lexeme(), "FUNCTION_INTERPOLATION");
+        assertEquals("$", Token.LOOK_BACK.lexeme(), "LOOK_BACK");
+        assertEquals("isAfter", Token.IS_AFTER.lexeme(), "IS_AFTER");
 
-        Assert.assertEquals("TRUE", "true", Token.TRUE.lexeme());
-        Assert.assertEquals("TEXT", "text", Token.TEXT.lexeme());
-        Assert.assertEquals("IN", "in", Token.IN.lexeme());
-        Assert.assertEquals("LOGICAL_AND", "and", Token.LOGICAL_AND.lexeme());
+        assertEquals("true", Token.TRUE.lexeme(), "TRUE");
+        assertEquals("text", Token.TEXT.lexeme(), "TEXT");
+        assertEquals("in", Token.IN.lexeme(), "IN");
+        assertEquals("and", Token.LOGICAL_AND.lexeme(), "LOGICAL_AND");
 
-        Assert.assertEquals("BITWISE_AND", "&", Token.BITWISE_AND.lexeme());
-        Assert.assertEquals("PLUS", "+", Token.PLUS.lexeme());
-        Assert.assertEquals("EXPONENTIATION", "**", Token.EXPONENTIATION.lexeme());
-        Assert.assertEquals("LESS_THAN_EQUAL", "<=", Token.LESS_THAN_EQUAL.lexeme());
-        Assert.assertEquals("ALL_LOWER", ",,", Token.ALL_LOWER.lexeme());
+        assertEquals("&", Token.BITWISE_AND.lexeme(), "BITWISE_AND");
+        assertEquals("+", Token.PLUS.lexeme(), "PLUS");
+        assertEquals("**", Token.EXPONENTIATION.lexeme(), "EXPONENTIATION");
+        assertEquals("<=", Token.LESS_THAN_EQUAL.lexeme(), "LESS_THAN_EQUAL");
+        assertEquals(",,", Token.ALL_LOWER.lexeme(), "ALL_LOWER");
 
-        Assert.assertEquals("LEFT_PARENTHESES", "(", Token.LEFT_PARENTHESES.lexeme());
-        Assert.assertEquals("LEFT_BRACE", "{", Token.LEFT_BRACE.lexeme());
-        Assert.assertEquals("LEFT_BRACKET", "[", Token.LEFT_BRACKET.lexeme());
+        assertEquals("(", Token.LEFT_PARENTHESES.lexeme(), "LEFT_PARENTHESES");
+        assertEquals("{", Token.LEFT_BRACE.lexeme(), "LEFT_BRACE");
+        assertEquals("[", Token.LEFT_BRACKET.lexeme(), "LEFT_BRACKET");
 
-        Assert.assertEquals("END_OF_PROGRAM", "\u0000", Token.END_OF_PROGRAM.lexeme());
+        assertEquals("\u0000", Token.END_OF_PROGRAM.lexeme(), "END_OF_PROGRAM");
     }
 
     /**
@@ -47,31 +49,31 @@ public class TokenTest {
      */
     @Test
     public void test_start() {
-        Assert.assertThrows("NUMERIC", IllegalStateException.class, Token.NUMERIC::start);
-        Assert.assertThrows("STRING", IllegalStateException.class, Token.TEXT_LITERAL::start);
-        Assert.assertThrows("IDENTIFIER", IllegalStateException.class, Token.IDENTIFIER::start);
-        Assert.assertThrows("UNDEFINED", IllegalStateException.class, Token.IDENTIFIER::start);
+        assertThrows(IllegalStateException.class, Token.NUMERIC::start, "NUMERIC");
+        assertThrows(IllegalStateException.class, Token.TEXT_LITERAL::start, "STRING");
+        assertThrows(IllegalStateException.class, Token.IDENTIFIER::start, "IDENTIFIER");
+        assertThrows(IllegalStateException.class, Token.IDENTIFIER::start, "UNDEFINED");
 
-        Assert.assertThrows("VALUE_INTERPOLATION", IllegalStateException.class, Token.VALUE_INTERPOLATION::start);
-        Assert.assertThrows("EXPRESSION_INTERPOLATION", IllegalStateException.class, Token.EXPRESSION_INTERPOLATION::start);
-        Assert.assertEquals("FUNCTION_INTERPOLATION", '$', Token.FUNCTION_INTERPOLATION.start());
-        Assert.assertEquals("LOOK_BACK", '$', Token.LOOK_BACK.start());
-        Assert.assertThrows("IS_AFTER", IllegalStateException.class, Token.IS_AFTER::start);
+        assertThrows(IllegalStateException.class, Token.VALUE_INTERPOLATION::start, "VALUE_INTERPOLATION");
+        assertThrows(IllegalStateException.class, Token.EXPRESSION_INTERPOLATION::start, "EXPRESSION_INTERPOLATION");
+        assertEquals('$', Token.FUNCTION_INTERPOLATION.start(), "FUNCTION_INTERPOLATION");
+        assertEquals('$', Token.LOOK_BACK.start(), "LOOK_BACK");
+        assertThrows(IllegalStateException.class, Token.IS_AFTER::start, "IS_AFTER");
 
-        Assert.assertThrows("TRUE", IllegalStateException.class, Token.TRUE::start);
-        Assert.assertThrows("TEXT", IllegalStateException.class, Token.TEXT::start);
-        Assert.assertThrows("LOGICAL_AND", IllegalStateException.class, Token.LOGICAL_AND::start);
+        assertThrows(IllegalStateException.class, Token.TRUE::start, "TRUE");
+        assertThrows(IllegalStateException.class, Token.TEXT::start, "TEXT");
+        assertThrows(IllegalStateException.class, Token.LOGICAL_AND::start, "LOGICAL_AND");
 
-        Assert.assertEquals("BITWISE_AND", '&', Token.BITWISE_AND.start());
-        Assert.assertEquals("PLUS", '+', Token.PLUS.start());
-        Assert.assertThrows("EXPONENTIATION", IllegalStateException.class, Token.EXPONENTIATION::start);
-        Assert.assertThrows("LESS_THAN_EQUAL", IllegalStateException.class, Token.LESS_THAN_EQUAL::start);
-        Assert.assertThrows("ALL_LOWER", IllegalStateException.class, Token.ALL_LOWER::start);
+        assertEquals('&', Token.BITWISE_AND.start(), "BITWISE_AND");
+        assertEquals('+', Token.PLUS.start(), "PLUS");
+        assertThrows(IllegalStateException.class, Token.EXPONENTIATION::start, "EXPONENTIATION");
+        assertThrows(IllegalStateException.class, Token.LESS_THAN_EQUAL::start, "LESS_THAN_EQUAL");
+        assertThrows(IllegalStateException.class, Token.ALL_LOWER::start, "ALL_LOWER");
 
-        Assert.assertEquals("LEFT_PARENTHESES", '(', Token.LEFT_PARENTHESES.start());
-        Assert.assertEquals("LEFT_BRACE", '{', Token.LEFT_BRACE.start());
-        Assert.assertEquals("LEFT_BRACKET", '[', Token.LEFT_BRACKET.start());
+        assertEquals('(', Token.LEFT_PARENTHESES.start(), "LEFT_PARENTHESES");
+        assertEquals('{', Token.LEFT_BRACE.start(), "LEFT_BRACE");
+        assertEquals('[', Token.LEFT_BRACKET.start(), "LEFT_BRACKET");
 
-        Assert.assertEquals("END_OF_PROGRAM", '\u0000', Token.END_OF_PROGRAM.start());
+        assertEquals('\u0000', Token.END_OF_PROGRAM.start(), "END_OF_PROGRAM");
     }
 }

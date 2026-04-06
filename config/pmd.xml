@@ -55,7 +55,6 @@
     </rule>
     <rule ref="category/java/design.xml/ImmutableField"/>
     <rule ref="category/java/design.xml/MutableStaticState"/>
-    <rule ref="category/java/design.xml/SignatureDeclareThrowsException"/>
     <rule ref="category/java/design.xml/ExceptionAsFlowControl"/>
 
     <!-- Removed because it causes false positives with assignments in the enhanced switch -->

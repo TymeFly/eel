@@ -6,8 +6,8 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
- * Builder class used to generate a SymbolsTable that can return values from multiple anonymous sources.
- * If the key exists in multiple sources then the source that is added to the table first takes priority.
+ * Builder used to create a {@link com.github.tymefly.eel.SymbolsTable} that can return values from multiple
+ * anonymous sources. If a key exists in multiple sources, the first source added takes priority.
  * Typical usage is:
  * <pre>{@code SymbolsTable.factory()
  *             .withProperties()
@@ -21,46 +21,47 @@ import javax.annotation.Nonnull;
  */
 public interface SymbolsTableBuilder extends BasicSymbolTableBuilder {
     /**
-     * Adds all the system properties to the generated SymbolsTable.
-     * @return      a fluent interface
+     * Adds all system properties to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * @return  a fluent interface
      * @see System#getProperties()
      */
     @Nonnull
     SymbolsTableBuilder withProperties();
 
     /**
-     * Adds all the environment variables to the generated SymbolsTable.
-     * @return      a fluent interface
+     * Adds all environment variables to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * @return  a fluent interface
      * @see System#getenv()
      */
     @Nonnull
     SymbolsTableBuilder withEnvironment();
 
     /**
-     * Adds a map to the generated SymbolsTable. This method may be called multiple times if more than
-     * map is required
-     * @param values    a collection of key-value pairs that will be added to the generated symbols table
-     * @return          a fluent interface
+     * Adds a map of key-value pairs to the generated {@link com.github.tymefly.eel.SymbolsTable}.
+     * This method may be called multiple times to include more than one map.
+     * @param values  the key-value pairs to add to the {@link com.github.tymefly.eel.SymbolsTable}
+     * @return        a fluent interface
      */
     @Nonnull
     SymbolsTableBuilder withValues(@Nonnull Map<String, String> values);
 
     /**
-     * Adds a callback function from the symbols table that allows the client to read symbols in a flexible way.
-     * This method may be called multiple times if more than one lookup function is required.
+     * Adds a callback function to the {@link com.github.tymefly.eel.SymbolsTable} that allows flexible symbol lookup.
+     * This method may be called multiple times to include more than one lookup function.
      * <br>
-     * <b>Note:</b> It is required that for any given key the lookup function always returns the same value.
-     * @param lookup    A function that is passed the lookup key and returns the associated value or
-     *                      {@literal null} of there is no related value.
-     * @return          a fluent interface
+     * <b>Note:</b> For any given key, the lookup function must always return the same value.
+     * @param lookup  a function that receives a key and returns the associated value, or
+     *                {@literal null} if no value exists
+     * @return        a fluent interface
+     * @see Function
      */
     @Nonnull
     SymbolsTableBuilder withLookup(@Nonnull Function<String, String> lookup);
 
     /**
-     * Set a default value that is returned when a symbol can not be found in the symbols table.
-     * As this always returns the {@code defaultValue} no further strategies can be added to this symbols table
-     * @param defaultValue  The default value that is returned when
+     * Sets the value returned when a symbol cannot be found in the {@link com.github.tymefly.eel.SymbolsTable}.
+     * As this always returns the {@code defaultValue}, no further strategies can be added.
+     * @param defaultValue  the value returned when a symbol is not found
      * @return              a fluent interface
      */
     @Nonnull

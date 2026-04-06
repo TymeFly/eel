@@ -10,7 +10,8 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL functions that return mathematical constant.
+ * EEL functions that return mathematical constants.
+ * @since 2.0
  */
 @PackagedEelFunction
 public class Constants {
@@ -18,10 +19,10 @@ public class Constants {
 
 
     /**
-     * Returns the value of {@code pi} to the precision specified by the {@code context}.
-     * @param context    the current EEL context.
-     * @return           the value of {@code pi}.
-     * @since 2.0.0
+     * Returns the value of {@code pi} calculated to the precision defined by the context.
+     * @param context    the current EEL context
+     * @return           the value of {@code pi} at the precision defined by the context
+     * @since 2.0
      */
     @EelFunction("number.pi")
     @Nonnull
@@ -30,10 +31,10 @@ public class Constants {
     }
 
     /**
-     * Returns the value of {@code e} to the precision specified by the {@code context}.
-     * @param context    the current EEL context.
-     * @return           the value of {@code e}.
-     * @since 2.0.0
+     * Returns the value of {@code e} calculated to the precision defined by the context.
+     * @param context    the current EEL context
+     * @return           the value of {@code e} at the precision defined by the context
+     * @since 2.0
      */
     @EelFunction("number.e")
     @Nonnull
@@ -43,8 +44,8 @@ public class Constants {
 
     /**
      * Returns the speed of light in metres per second.
-     * @return           the value of {@code c}.
-     * @since 2.0.0
+     * @return           the constant value of {@code c} in metres per second
+     * @since 2.0
      */
     @EelFunction("number.c")
     public long c() {

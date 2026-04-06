@@ -1,63 +1,59 @@
 # EEL
-EEL is a small, compiled, **E**xtensible **E**xpression **L**anguage which can be used by a JVM application to evaluate 
-expressions at run time. EEL can be used to configure applications in a dynamic and flexible way.
+EEL is a small, compiled, **E**xtensible **E**xpression **L**anguage for JVM applications.  
+It enables dynamic, flexible configuration by evaluating expressions at run time.
 
 ---
 # Overview
 
-There is a common requirement when developing systems to make certain values configurable. This is traditionally
-achieved by reading values as-is from the environment variables, JVM properties, databases, or properties files. 
-These solutions work well if nothing more sophisticated than simple text substitution is required, the exact values
-are known at deployment time, and none of the values are guaranteed to be related. However, sometimes something more
-sophisticated is needed. 
-For example, an application might want to write data to a file were the path is based on the current date or time. 
-On other occasions, multiple settings may need to be combined, for example, to build up a set of directories that have
-a common root. 
+Many systems need configurable values. Traditionally, these come from environment variables, JVM properties, databases, 
+or property files. These solutions work well when values are known at deployment and unrelated, but sometimes, 
+more sophisticated logic is needed.  
 
-Dates in particular are often problematic as developers and/or end users can have different ideas
-about how to format dates based on their own cultural preference - of course they are all wrong, the correct
-way is always ISO-8601 ;^)
+For example, an application might need to generate file paths based on the current date and/or time. On other occasions,
+it might need to combine multiple settings, such as building several directories that share a common root.  
 
-To solve this problem, a "_Pragmatic Programmer_" would consider using a Domain-Specific Language to derive these
-values at run time, and that's exactly what the **E**xtensible **E**xpression **L**anguage (EEL) is.
-The strings previously used to configure an application can be treated as EEL Expressions that are simple yet powerful
-and are quickly evaluated at run time.
+Dates are especially tricky: developers/users can have different formatting preferences based on personal or
+cultural preferences - of course they are all wrong, the correct way is always ISO-8601 ;^)
+
+A "_Pragmatic Programmer_" would solve this with a Domain-Specific Language, and that's exactly what the 
+**E**xtensible **E**xpression **L**anguage (EEL) is. 
+
+
+EEL allows configuration strings to be treated as expressions that are simple, powerful, and evaluated quickly at run time.
 
 ---
 # Design Requirements
 
-The requirements for EEL are:
-* Expressions that are just strings can be passed through as-is. This makes it possible to take settings
-  that were previously hardcoded strings and use them as EEL Expressions without change.
-* Expressions, including function calls, must evaluate quickly
-* EEL must be easy to use, especially by somebody with a programming background
-* The Java Programming API should be simple and concise.
-* The language must include all the usual text, maths and logic operations that languages typically support.
-* The language must be able to manipulate date/time stamps.
-* The language must support logging so clients can see what is being evaluated for security and/or debugging purposes.
-* The language must be _Null Hostile_ to avoid NullPointerExceptions.  
-* The language and its functions must be secure:
-  * It must be impossible to write an expression that will not complete at compile time or run time.
-  * It must not be possible to inject misleading messages into the system logs. 
-  * It must not access sensitive parts of the local file system.
-  * Except for logging, expressions are executed without _external_ side effects.
-* The language must be extensible - it should be easy to add additional functions without needing to update EEL.
+The requirements for EEL are: 
+* Simple strings can be passed through without change, enabling existing hardcoded settings to become EEL expressions.  
+* The Programming API must be simple and intuitive.
+* The EEL language must be easy to use by somebody with a programming background
+* The EEL language must support usual text, maths, and logic operations.  
+* Date/time manipulation must also be supported.  
+* Logging must be available for security, to monitor evaluations, and debugging.  
+* Expressions, including function calls, must evaluate quickly.  
 * The language must be [lazy](docs/The%20EEL%20Language.md#lazy-processing) - if parts of the expression do not need to be evaluated, they won't be.
+* The language must be extensible, allowing additional functions to be added without changing EEL itself.
+* EEL is _Null Hostile_ to prevent NullPointerExceptions.  
+* The language and its functions must be secure:
+  * EEL must guard against DOS attacks
+  * Log injection attacks must be impossible.  
+  * Expressions must not be able to access to sensitive parts of the local file system. 
+  * Expressions execute without _external_ side effects, except for logging.  
 
-**Note:** There is no requirement that EEL be Turing complete; while there is support for conditions, neither iteration
-nor recursion are supported 
+**Note:** EEL is not Turing complete; conditions are supported, but iteration and recursion are not.
 
 ---
 # Documentation
-* [Using EEL](docs/Using%20EEL.md) - Describes how to integrate EEL into an application and the EEL CLI  
-* [EEL Language](docs/The%20EEL%20Language.md) - Describes the EEL language
-* [EEL Function Reference Manual](docs/function-reference/index.html) - Describes the standard EEL functions
-* [User Defined Functions](docs/User%20Defined%20Functions.md) - Describes how to extend EEL with additional functions
-* [What's new](docs/WhatsNew.md) - Describes what is new in each release
- 
+* [Using EEL](docs/Using%20EEL.md) — Integration guide and CLI usage  
+* [EEL Language](docs/The%20EEL%20Language.md) — EEL Language specification  
+* [EEL Function Reference Manual](docs/function-reference/index.html) — Standard EEL functions  
+* [User Defined Functions](docs/User%20Defined%20Functions.md) — Extending EEL with custom functions  
+* [What's New](docs/WhatsNew.md) — Release highlights  
+
 ---
 # Building EEL
 
-EEL requires:
-* Java 17+
+Requirements:  
+* Java 17+  
 * Maven 3.6+

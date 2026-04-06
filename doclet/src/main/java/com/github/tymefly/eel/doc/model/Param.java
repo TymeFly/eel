@@ -17,7 +17,7 @@ class Param extends Paragraph<ParamGenerator> implements ParamModel, ParamGenera
 
     /**
      * Constructor
-     * @param identifier    name of the parameter as found in the JavaDoc
+     * @param identifier    name of the parameter as found in the Javadoc
      * @param parameter     Parameter as seen in the method signature.
      *                      This could be {@literal null} if a non-existent parameter is documented
      */

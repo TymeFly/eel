@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -60,7 +60,7 @@
                                         </code>
                                     </td>
                                     <td>
-                                        Data formatting functions.
+                                        Functions for data formatting.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -69,7 +69,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns a formatted date in the specified <code>zone</code> with optional offsets, formatted according to the specified <code>format</code> text.
+                                        Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the <code>zone</code> with optional offsets.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -105,7 +105,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns a formatted date in the local time zone with optional offsets, formatted according to the specified <code>format</code> text.
+                                        Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the local zone with optional offsets.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -132,7 +132,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns a formatted date with optional offsets, formatted according to the specified <code>format</code> and <code>zone</code>.
+                                        Returns the date/time at which the given context was created, formatted according to the specified <code>format</code> and adjusted to the specified <code>zone</code> with optional offsets.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -141,7 +141,7 @@
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Returns a formatted date in the UTC zone with optional offsets, formatted according to the specified <code>format</code> text.
+                                        Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the UTC zone with optional offsets.
                                     </td>
                                 </tr>
                             </tbody>
@@ -156,15 +156,7 @@
                     <section class="overview-description">
                         <div class="block-detail">
                             <div class="description">
-                                Data formatting functions.
-                            </div>
-                            <div>
-                                <span class="block-detail-section">
-                                    <h3>See:</h3>
-                                    <div>
-                                        <span class="description"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html"> The Java date formatting documentation</a></span>
-                                    </div>
-                                </span>
+                                Functions for data formatting. Date formats follow the Java <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html"> DateTimeFormatter</a> syntax.
                             </div>
                         </div>
                     </section>
@@ -176,7 +168,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a formatted date in the specified <code>zone</code> with optional offsets, formatted according to the specified <code>format</code> text. This function is equivalent to <code>$format.date(format, date.at(zone), offsets)</code>.
+                            Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the <code>zone</code> with optional offsets.<p> This function is equivalent to <code>$format.date(format, date.at(zone), offsets)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -190,7 +182,7 @@
                                         <code>zone</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The time zone.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The time zone</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +191,7 @@
                                         <code>format</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The format of the returned text.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The format to use for the returned text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -208,7 +200,7 @@
                                         <code>offsets...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply to the date, applied sequentially</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -222,7 +214,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The formatted date text.</span>
+                                    <span class="description">The formatted date text</span>
                                 </div>
                             </span>
                         </div>
@@ -240,6 +232,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -249,7 +249,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the binary representation of the given <code>value</code> as text. The result does not include a leading <code>0b</code>. This is equivalent to <code>$format.number(value, 2)</code>.
+                            Returns the binary representation of the given <code>value</code> as text. The result does not include a leading <code>0b</code>. <p> This is equivalent to <code>$format.number(value, 2)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -263,7 +263,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to convert.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to convert</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -277,7 +277,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The number in binary text.</span>
+                                    <span class="description">The number as binary text</span>
                                 </div>
                             </span>
                         </div>
@@ -293,7 +293,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.1.0</span>
+                                    <span class="description">2.1</span>
                                 </div>
                             </span>
                         </div>
@@ -320,7 +320,7 @@
                                         <code>format</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The format of the returned string.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The format to use for the returned string</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -329,7 +329,7 @@
                                         <code>date</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Date</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The date to format.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The date to format</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -338,7 +338,7 @@
                                         <code>offsets...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply to the <code>date</code>, applied sequentially</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -352,7 +352,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The formatted date.</span>
+                                    <span class="description">The formatted date string</span>
                                 </div>
                             </span>
                         </div>
@@ -361,6 +361,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span class="description"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html"> Java DateTimeFormatter</a></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -373,7 +381,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the hexadecimal representation of the given <code>value</code> as text. The result does not include a leading <code>0x</code>. This is equivalent to <code>$format.number(value, 16)</code>.
+                            Returns the hexadecimal representation of the given <code>value</code> as text. The result does not include a leading <code>0x</code>. <p> This is equivalent to <code>$format.number(value, 16)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -387,7 +395,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to convert.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to convert</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -401,7 +409,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The number in hexadecimal text.</span>
+                                    <span class="description">The number as hexadecimal text</span>
                                 </div>
                             </span>
                         </div>
@@ -410,6 +418,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#format.number">format.number(value, radix)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -422,7 +438,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a formatted date in the local time zone with optional offsets, formatted according to the specified <code>format</code> text. This function is equivalent to <code>$format.date(format, date.local(), offsets)</code>.
+                            Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the local zone with optional offsets.<p> This function is equivalent to <code>$format.date(format, date.local(), offsets)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -436,7 +452,7 @@
                                         <code>format</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The format of the returned text.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The format to use for the returned text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -445,7 +461,7 @@
                                         <code>offsets...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply to the date, applied sequentially</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -459,7 +475,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The formatted date text.</span>
+                                    <span class="description">The formatted date text</span>
                                 </div>
                             </span>
                         </div>
@@ -474,6 +490,14 @@
                                 </div>
                                 <div>
                                     <span class="description"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html"> Java DateTimeFormatter</a></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -500,7 +524,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to convert.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to convert</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -509,7 +533,7 @@
                                         <code>radix</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The radix of the text representation. This must be in the range 2 to 36, inclusive.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The radix of the text representation, which must be in the range 2 to 36, inclusive</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -523,7 +547,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The number as text in the specified radix.</span>
+                                    <span class="description">The number as text in the specified radix</span>
                                 </div>
                             </span>
                         </div>
@@ -531,7 +555,15 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If the radix is out of range.</span>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If the radix is out of range</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -544,7 +576,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the octal representation of the given <code>value</code> as text. The result does not include a leading <code>0c</code>. This is equivalent to <code>$format.number(value, 8)</code>.
+                            Returns the octal representation of the given <code>value</code> as text. The result does not include a leading <code>0c</code>. <p> This is equivalent to <code>$format.number(value, 8)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -558,7 +590,7 @@
                                         <code>value</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The value to convert.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to convert</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -572,7 +604,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The number in octal text.</span>
+                                    <span class="description">The number as octal text</span>
                                 </div>
                             </span>
                         </div>
@@ -581,6 +613,14 @@
                                 <h3>See:</h3>
                                 <div>
                                     <span><a href="#format.number">format.number(value, radix)</a> </span> <span class="description"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
                                 </div>
                             </span>
                         </div>
@@ -593,7 +633,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a formatted date with optional offsets, formatted according to the specified <code>format</code> and <code>zone</code>. This function is equivalent to <code>$format.date(format, date.start(), offsets)</code>.
+                            Returns the date/time at which the given context was created, formatted according to the specified <code>format</code> and adjusted to the specified <code>zone</code> with optional offsets.<p> This function is equivalent to <code>$format.date(format, date.start(), offsets)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -609,7 +649,7 @@
                                         <code>format</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The format of the returned text.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The format to use for the returned text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -619,7 +659,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">UTC</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The time zone.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The time zone</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -629,7 +669,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description"></span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply to the date, applied sequentially</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -643,7 +683,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The formatted date.</span>
+                                    <span class="description">The formatted date string</span>
                                 </div>
                             </span>
                         </div>
@@ -665,7 +705,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.1.0</span>
+                                    <span class="description">2.1</span>
                                 </div>
                             </span>
                         </div>
@@ -678,7 +718,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns a formatted date in the UTC zone with optional offsets, formatted according to the specified <code>format</code> text. This function is equivalent to <code>$format.date(format, date.utc(), offsets)</code>.
+                            Returns the current date/time, formatted according to the specified <code>format</code> and adjusted to the UTC zone with optional offsets.<p> This function is equivalent to <code>$format.date(format, date.utc(), offsets)</code>.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -692,7 +732,7 @@
                                         <code>format</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The format of the returned text.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The format to use for the returned text</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -701,7 +741,7 @@
                                         <code>offsets...</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">Optional offsets to apply to the date, applied sequentially</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -715,7 +755,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The formatted date text.</span>
+                                    <span class="description">The formatted date text</span>
                                 </div>
                             </span>
                         </div>
@@ -733,6 +773,14 @@
                                 </div>
                             </span>
                         </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">1.0</span>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </section>
                 <hr>
@@ -740,7 +788,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

@@ -14,10 +14,12 @@ import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.exception.EelSemanticException;
 import com.github.tymefly.eel.exception.EelSyntaxException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,7 +38,7 @@ public class ParserTest {
     private Queue<Tokenizer.Terminal> terminals;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         FunctionManager functionManager = mock();
 
@@ -57,9 +59,9 @@ public class ParserTest {
         when(tokenizer.interpolate(any(Token.class)))
             .thenAnswer(i -> terminals.remove());
 
-        when(functionManager.compileCall(anyString(), any(EelContext.class), anyList()))
+        when(functionManager.compileCall(any(EelContextImpl.class), anyString(), anyList()))
             .thenAnswer(i -> {
-                String functionName = i.getArgument(0);
+                String functionName = i.getArgument(1);
                 List<Term> argList = i.getArgument(2);
                 List<Value> values = argList.stream()
                     .map(a -> a.evaluate(symbolsTable))
@@ -124,7 +126,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertSame("Unexpected value", Value.BLANK, actual);
+        assertSame(Value.BLANK, actual, "Unexpected value");
     }
 
     /**
@@ -139,7 +141,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Some Text"), actual);
+        assertEquals(Value.of("Some Text"), actual, "Unexpected value");
     }
 
 
@@ -154,10 +156,10 @@ public class ParserTest {
         mockToken(Token.NUMERIC, "123");
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 4: '123' was unexpected", actual.getMessage());
+        assertEquals("Error at position 4: '123' was unexpected", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -177,7 +179,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("myFunction returns: myFunction([])!"), actual);
+        assertEquals(Value.of("myFunction returns: myFunction([])!"), actual, "Unexpected value");
     }
 
     /**
@@ -199,7 +201,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("myFunction returns: myFunction([])!"), actual);
+        assertEquals(Value.of("myFunction returns: myFunction([])!"), actual, "Unexpected value");
     }
 
     /**
@@ -223,7 +225,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("default variable: myFunction([])!"), actual);
+        assertEquals(Value.of("default variable: myFunction([])!"), actual, "Unexpected value");
     }
 
     /**
@@ -240,7 +242,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Hello World!"), actual);
+        assertEquals(Value.of("Hello World!"), actual, "Unexpected value");
     }
 
     /**
@@ -277,7 +279,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value for " + key, Value.of(value), actual);
+        assertEquals(Value.of(value), actual, "Unexpected value for " + key);
     }
 
 
@@ -299,7 +301,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("This is the default value"), actual);
+        assertEquals(Value.of("This is the default value"), actual, "Unexpected value");
     }
     /**
      * Unit test {@link Parser#parse()} for {@literal ${blank-This is the default value} }
@@ -317,7 +319,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("This is the default value"), actual);
+        assertEquals(Value.of("This is the default value"), actual, "Unexpected value");
     }
 
     /**
@@ -336,7 +338,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("hELLO WORLD!"), actual);
+        assertEquals(Value.of("hELLO WORLD!"), actual, "Unexpected value");
     }
 
 
@@ -358,7 +360,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
+        assertEquals(Value.of("World"), actual, "Unexpected value");
     }
 
     /**
@@ -379,7 +381,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World!"), actual);
+        assertEquals(Value.of("World!"), actual, "Unexpected value");
     }
 
 
@@ -399,7 +401,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World!"), actual);
+        assertEquals(Value.of("World!"), actual, "Unexpected value");
     }
 
 
@@ -421,7 +423,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
+        assertEquals(Value.of("World"), actual, "Unexpected value");
     }
 
     /**
@@ -446,7 +448,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
+        assertEquals(Value.of("World"), actual, "Unexpected value");
     }
 
     /**
@@ -471,7 +473,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("World"), actual);
+        assertEquals(Value.of("World"), actual, "Unexpected value");
     }
 
     /**
@@ -489,7 +491,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("12"), actual);
+        assertEquals(Value.of("12"), actual, "Unexpected value");
     }
 
     /**
@@ -509,7 +511,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Hello World!1234"), actual);
+        assertEquals(Value.of("Hello World!1234"), actual, "Unexpected value");
     }
 
     /**
@@ -521,10 +523,10 @@ public class ParserTest {
         mockToken(Token.RIGHT_BRACE, "}");
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 2: '}' was unexpected", actual.getMessage());
+        assertEquals("Error at position 2: '}' was unexpected", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -536,10 +538,10 @@ public class ParserTest {
         mockToken(Token.IDENTIFIER, "myStr");
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: Unexpected end of expression", actual.getMessage());
+        assertEquals("Error at position 3: Unexpected end of expression", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -558,7 +560,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("text"), actual);
+        assertEquals(Value.of("text"), actual, "Unexpected value");
     }
 
     /**
@@ -573,10 +575,12 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        Exception actual = Assert.assertThrows(EelSyntaxException.class,
+        Exception actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 4: 'DOUBLE_QUOTE' was unexpected", actual.getMessage());
+        assertEquals("Error at position 4: 'DOUBLE_QUOTE' was unexpected",
+            actual.getMessage(),
+            "Unexpected message");
     }
 
     /**
@@ -590,10 +594,12 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        Exception actual = Assert.assertThrows(EelSyntaxException.class,
+        Exception actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 4: 'RIGHT_PARENTHESES' was unexpected", actual.getMessage());
+        assertEquals("Error at position 4: 'RIGHT_PARENTHESES' was unexpected",
+            actual.getMessage(),
+            "Unexpected message");
     }
 
     /**
@@ -616,7 +622,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("value: Hello World!!"), actual);
+        assertEquals(Value.of("value: Hello World!!"), actual, "Unexpected value");
     }
 
 
@@ -640,7 +646,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("value: myFunction([])"), actual);
+        assertEquals(Value.of("value: myFunction([])"), actual, "Unexpected value");
     }
 
     /**
@@ -665,7 +671,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("value: 3!"), actual);
+        assertEquals(Value.of("value: 3!"), actual, "Unexpected value");
     }
 
 
@@ -680,10 +686,10 @@ public class ParserTest {
         mockToken(Token.DOUBLE_QUOTE);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 5: Unexpected end of expression", actual.getMessage());
+        assertEquals("Error at position 5: Unexpected end of expression", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -705,7 +711,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Hello World!"), actual);
+        assertEquals(Value.of("Hello World!"), actual, "Unexpected value");
     }
 
     /**
@@ -736,7 +742,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("123 <<<Hello World!>>> 321"), actual);
+        assertEquals(Value.of("123 <<<Hello World!>>> 321"), actual, "Unexpected value");
     }
 
     /**
@@ -753,7 +759,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -770,7 +776,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -788,7 +794,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -807,7 +813,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -826,7 +832,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -846,7 +852,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -865,7 +871,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -889,7 +895,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -912,7 +918,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -936,7 +942,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -959,7 +965,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -984,7 +990,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1009,7 +1015,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -1031,7 +1037,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -1050,7 +1056,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1069,7 +1075,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1089,7 +1095,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1108,7 +1114,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -1127,7 +1133,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1146,7 +1152,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1165,7 +1171,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1183,7 +1189,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1203,7 +1209,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1221,7 +1227,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(1234), actual);
+        assertEquals(Value.of(1234), actual, "Unexpected value");
     }
 
     /**
@@ -1239,7 +1245,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(-123), actual);
+        assertEquals(Value.of(-123), actual, "Unexpected value");
     }
 
     /**
@@ -1258,7 +1264,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1278,7 +1284,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1297,7 +1303,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1317,7 +1323,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1336,7 +1342,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1356,7 +1362,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1375,7 +1381,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1395,7 +1401,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1414,7 +1420,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1434,7 +1440,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1453,7 +1459,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1473,7 +1479,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1492,7 +1498,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
     /**
@@ -1511,7 +1517,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
     /**
@@ -1530,7 +1536,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.FALSE, actual);
+        assertEquals(Value.FALSE, actual, "Unexpected value");
     }
 
 
@@ -1550,7 +1556,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(45), actual);
+        assertEquals(Value.of(45), actual, "Unexpected value");
     }
 
 
@@ -1570,7 +1576,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(-58), actual);
+        assertEquals(Value.of(-58), actual, "Unexpected value");
     }
 
     /**
@@ -1589,7 +1595,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(6), actual);
+        assertEquals(Value.of(6), actual, "Unexpected value");
     }
 
     /**
@@ -1608,7 +1614,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(3.5), actual);
+        assertEquals(Value.of(3.5), actual, "Unexpected value");
     }
 
     /**
@@ -1627,7 +1633,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(-4), actual);
+        assertEquals(Value.of(-4), actual, "Unexpected value");
     }
 
     /**
@@ -1646,7 +1652,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(-3), actual);
+        assertEquals(Value.of(-3), actual, "Unexpected value");
     }
 
     /**
@@ -1665,7 +1671,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-         Assert.assertEquals("Unexpected value", Value.of(1), actual);
+         assertEquals(Value.of(1), actual, "Unexpected value");
     }
 
     /**
@@ -1684,7 +1690,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(64), actual);
+        assertEquals(Value.of(64), actual, "Unexpected value");
     }
 
 
@@ -1704,7 +1710,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(56), actual);
+        assertEquals(Value.of(56), actual, "Unexpected value");
     }
 
     /**
@@ -1723,7 +1729,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(3), actual);
+        assertEquals(Value.of(3), actual, "Unexpected value");
     }
 
 
@@ -1746,7 +1752,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(2), actual);
+        assertEquals(Value.of(2), actual, "Unexpected value");
     }
 
     /**
@@ -1768,7 +1774,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(3), actual);
+        assertEquals(Value.of(3), actual, "Unexpected value");
     }
 
 
@@ -1787,8 +1793,8 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", (byte) 0x5A, actual.asNumber().byteValue());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals((byte) 0x5A, actual.asNumber().byteValue(), "Unexpected Value");
     }
 
     /**
@@ -1807,8 +1813,8 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", (byte) 0x88, actual.asNumber().byteValue());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals((byte) 0x88, actual.asNumber().byteValue(), "Unexpected Value");
     }
 
     /**
@@ -1827,7 +1833,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of((byte) 0x66), actual);
+        assertEquals(Value.of((byte) 0x66), actual, "Unexpected value");
     }
 
     /**
@@ -1846,8 +1852,8 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", (byte) 0xee, actual.asNumber().byteValue());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals((byte) 0xee, actual.asNumber().byteValue(), "Unexpected Value");
     }
 
     /**
@@ -1874,7 +1880,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(21), actual);
+        assertEquals(Value.of(21), actual, "Unexpected value");
     }
 
     /**
@@ -1897,7 +1903,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
 
@@ -1918,7 +1924,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("123"), actual);
+        assertEquals(Value.of("123"), actual, "Unexpected value");
     }
 
     /**
@@ -1940,7 +1946,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(123), actual);
+        assertEquals(Value.of(123), actual, "Unexpected value");
     }
 
 
@@ -1963,7 +1969,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
 
@@ -1984,9 +1990,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value",
-            Value.of(ZonedDateTime.of(1970, 1, 1, 0, 2, 3, 0, ZoneOffset.UTC)),
-            actual);
+        assertEquals(Value.of(ZonedDateTime.of(1970, 1, 1, 0, 2, 3, 0, ZoneOffset.UTC)), actual, "Unexpected value");
     }
 
 
@@ -2007,7 +2011,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("123 !!"), actual);
+        assertEquals(Value.of("123 !!"), actual, "Unexpected value");
     }
 
     /**
@@ -2028,7 +2032,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(123), actual);
+        assertEquals(Value.of(123), actual, "Unexpected value");
     }
 
 
@@ -2050,7 +2054,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.TRUE, actual);
+        assertEquals(Value.TRUE, actual, "Unexpected value");
     }
 
 
@@ -2070,9 +2074,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value",
-            Value.of(ZonedDateTime.of(1970, 1, 1, 0, 2, 3, 0, ZoneOffset.UTC)),
-            actual);
+        assertEquals(Value.of(ZonedDateTime.of(1970, 1, 1, 0, 2, 3, 0, ZoneOffset.UTC)), actual, "Unexpected value");
     }
 
 
@@ -2092,7 +2094,7 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("myFunction([])"), actual);
+        assertEquals(Value.of("myFunction([])"), actual, "Unexpected value");
     }
 
 
@@ -2123,12 +2125,10 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value",
-            Value.of("myFunction([Constant{type=Text, value=Arg1}, " +
-                                 "Constant{type=Number, value=123}, " +
-                                 "Constant{type=Logic, value=true}, " +
-                                 "Constant{type=Text, value=Hello World!}])"),
-            actual);
+        assertEquals(Value.of("myFunction([Constant{type=Text, value=Arg1}, " +
+                             "Constant{type=Number, value=123}, " +
+                             "Constant{type=Logic, value=true}, " +
+                             "Constant{type=Text, value=Hello World!}])"), actual, "Unexpected value");
     }
 
 
@@ -2152,11 +2152,11 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of("Foo-Hello World!-Bar-123-!"), actual);
+        assertEquals(Value.of("Foo-Hello World!-Bar-123-!"), actual, "Unexpected value");
     }
 
     /**
-     * Unit test {@link Parser#parse()} for {@literal $(${myStr}) } with multiple symbols tables
+     * Unit test {@link Parser#parse()} for {@literal $(${myStr}) } with multiple SymbolsTable
      */
     @Test
     public void test_changeSymbolsTable() {
@@ -2174,9 +2174,9 @@ public class ParserTest {
 
         Term term = new Parser(context, tokenizer, compiler).parse();
 
-        Assert.assertEquals("First runtime", "Hello World!", term.evaluate(symbolsTable).asText());
-        Assert.assertEquals("other runtime", "otherValue", term.evaluate(symbolsTable2).asText());
-        Assert.assertEquals("rerun first", "Hello World!", term.evaluate(symbolsTable).asText());
+        assertEquals("Hello World!", term.evaluate(symbolsTable).asText(), "First runtime");
+        assertEquals("otherValue", term.evaluate(symbolsTable2).asText(), "other runtime");
+        assertEquals("Hello World!", term.evaluate(symbolsTable).asText(), "rerun first");
     }
 
 
@@ -2204,7 +2204,54 @@ public class ParserTest {
             .parse()
             .evaluate(symbolsTable);
 
-        Assert.assertEquals("Unexpected value", Value.of(new BigDecimal("3.3")), actual);
+        assertEquals(Value.of(new BigDecimal("3.3")), actual, "Unexpected value");
+    }
+
+
+    /**
+     * Unit test {@link Parser#parse()} for {@literal $( 1.1 ; $[1-???] }
+     */
+    @Test
+    public void test_LookBackWithDefault_unused() {
+        mockToken(Token.EXPRESSION_INTERPOLATION);
+        mockToken(new BigDecimal("1.1"));
+        mockToken(Token.SEMICOLON);
+        mockToken(Token.LOOK_BACK);
+        mockToken(1);
+        mockToken(Token.MINUS);
+        mockToken(Token.TEXT_LITERAL, "???");
+        mockToken(Token.RIGHT_BRACKET);
+        mockToken(Token.RIGHT_PARENTHESES);
+        mockToken(Token.END_OF_PROGRAM);
+
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .evaluate(symbolsTable);
+
+        assertEquals(Value.of(new BigDecimal("1.1")), actual, "Unexpected value");
+    }
+
+    /**
+     * Unit test {@link Parser#parse()} for {@literal $( 1.1 ; $[2-???] }
+     */
+    @Test
+    public void test_LookBackWithDefault_used() {
+        mockToken(Token.EXPRESSION_INTERPOLATION);
+        mockToken(new BigDecimal("1.1"));
+        mockToken(Token.SEMICOLON);
+        mockToken(Token.LOOK_BACK);
+        mockToken(2);
+        mockToken(Token.MINUS);
+        mockToken(Token.TEXT_LITERAL, "???");
+        mockToken(Token.RIGHT_BRACKET);
+        mockToken(Token.RIGHT_PARENTHESES);
+        mockToken(Token.END_OF_PROGRAM);
+
+        Value actual = new Parser(context, tokenizer, compiler)
+            .parse()
+            .evaluate(symbolsTable);
+
+        assertEquals(Value.of("???"), actual, "Unexpected value");
     }
 
     /**
@@ -2221,10 +2268,10 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSemanticException actual = Assert.assertThrows(EelSemanticException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        EelSemanticException actual = assertThrows(EelSemanticException.class,
+            () -> new Parser(context, tokenizer, compiler).parse().evaluate(symbolsTable));
 
-        Assert.assertEquals("Unexpected message", "Error at position 6: Undefined lookBack $[0]", actual.getMessage());
+        assertEquals("Error at position 5: Undefined lookback $[0]", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -2241,29 +2288,30 @@ public class ParserTest {
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSemanticException actual = Assert.assertThrows(EelSemanticException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        EelSemanticException actual = assertThrows(EelSemanticException.class,
+            () -> new Parser(context, tokenizer, compiler).parse().evaluate(symbolsTable));
 
-        Assert.assertEquals("Unexpected message", "Error at position 6: Undefined lookBack $[2]", actual.getMessage());
+        assertEquals("Error at position 5: Undefined lookback $[2]", actual.getMessage(), "Unexpected message");
     }
 
     /**
-     * Unit test {@link Parser#parse()} for {@literal $( 1 ; $2.2 )}
+     * Unit test {@link Parser#parse()} for {@literal $( 1 ; $[2.2] )}
      */
     @Test
-    public void test_LookBack_FractionalIndex() {
+    public void test_LookBack_nonIntegralIndex() {
         mockToken(Token.EXPRESSION_INTERPOLATION);
         mockToken(1);
         mockToken(Token.SEMICOLON);
         mockToken(Token.LOOK_BACK);
         mockToken(new BigDecimal("2.2"));
+        mockToken(Token.RIGHT_BRACKET);
         mockToken(Token.RIGHT_PARENTHESES);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSemanticException actual = Assert.assertThrows(EelSemanticException.class,
-            () -> new Parser(context, tokenizer, compiler).parse());
+        EelSemanticException actual = assertThrows(EelSemanticException.class,
+            () -> new Parser(context, tokenizer, compiler).parse().evaluate(symbolsTable));
 
-        Assert.assertEquals("Unexpected message", "Error at position 5: Invalid lookBack $2.2", actual.getMessage());
+        assertEquals("Error at position 5: Undefined lookback $[2]", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -2276,12 +2324,10 @@ public class ParserTest {
         mockToken(Token.LEFT_SHIFT);
         mockToken(Token.END_OF_PROGRAM);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message",
-            "Error at position 4: Unexpected end of expression",
-            actual.getMessage());
+        assertEquals("Error at position 4: Unexpected end of expression", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -2294,9 +2340,9 @@ public class ParserTest {
         mockToken(Token.TRUE);
         mockToken(Token.FALSE);
 
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> new Parser(context, tokenizer, compiler).parse());
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: 'FALSE' was unexpected", actual.getMessage());
+        assertEquals("Error at position 3: 'FALSE' was unexpected", actual.getMessage(), "Unexpected message");
     }
 }

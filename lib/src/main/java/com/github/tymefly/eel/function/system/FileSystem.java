@@ -9,7 +9,8 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * EEL functions that return local file system information
+ * EEL functions that return information about the local file system.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class FileSystem {
@@ -39,8 +40,9 @@ public class FileSystem {
 
     /**
      * Returns the operating system path separator as text.
-     * This usually is either a forward slash ({@literal '/'}) or a backslash ({@literal '\'}).
+     * This is typically a forward slash ({@literal '/'}) or a backslash ({@literal '\'}).
      * @return           the operating system path separator as text
+     * @since 1.0
      */
     @Nonnull
     @EelFunction("system.fileSeparator")
@@ -55,7 +57,8 @@ public class FileSystem {
     /**
      * Returns the canonicalised path of the current working directory.
      * The result always includes a trailing {@link #fileSeparator()}.
-     * @return the canonicalised path of the current working directory.
+     * @return  the canonicalised path of the current working directory, with a trailing file separator
+     * @since 1.0
      */
     @EelFunction("system.pwd")
     @Nonnull
@@ -71,7 +74,8 @@ public class FileSystem {
     /**
      * Returns the canonicalised path representing the current user's home directory.
      * The result always includes a trailing {@link #fileSeparator()}.
-     * @return the canonicalised path of the current user's home directory.
+     * @return the canonicalised path of the current user's home directory, with a trailing file separator
+     * @since 1.0
      */
     @Nonnull
     @EelFunction("system.home")
@@ -87,7 +91,8 @@ public class FileSystem {
     /**
      * Returns the canonicalised path of the temporary directory.
      * The result always includes a trailing {@link #fileSeparator()}.
-     * @return the canonicalised path of the temporary directory.
+     * @return the canonicalised path of the temporary directory, with a trailing file separator
+     * @since 1.0
      */
     @Nonnull
     @EelFunction("system.temp")

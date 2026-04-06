@@ -7,15 +7,15 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelCompileException;
 
 /**
- * Unchecked exception thrown if the expression source could not be read
+ * Unchecked exception thrown if the expression source cannot be read.
  */
 public class EelSourceException extends EelCompileException {
     @Serial
     private static final long serialVersionUID = 0x1L;
 
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructs an exception with a raw message.
+     * @param message       a human-readable (raw) message
      */
     EelSourceException(@Nonnull String message) {
         super(message);
@@ -23,9 +23,9 @@ public class EelSourceException extends EelCompileException {
 
 
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructs an exception with a formatted message.
+     * @param message       a formatted message string
+     * @param args          formatting arguments; the final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     EelSourceException(@Nonnull String message, @Nonnull Object... args) {
@@ -34,9 +34,9 @@ public class EelSourceException extends EelCompileException {
 
 
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructs an exception that wraps another exception.
+     * @param message       a human-readable (raw) message
+     * @param cause         the wrapped exception
      */
     EelSourceException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

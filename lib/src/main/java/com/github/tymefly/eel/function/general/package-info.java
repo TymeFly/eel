@@ -1,5 +1,5 @@
 /**
- * The general utility group contains common functions for text, number, logic and date types.
+ * Functions in the general utility group provide common operations for text, number, logic, and date types.
  * As these functions are frequently used, they are given short names without a group prefix.
  */
 @GroupDescription("")

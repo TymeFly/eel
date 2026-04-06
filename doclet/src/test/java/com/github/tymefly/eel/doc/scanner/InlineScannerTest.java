@@ -7,7 +7,7 @@ import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.ParagraphGenerator;
 import com.github.tymefly.eel.doc.source.Source;
 import com.sun.source.doctree.AttributeTree;
@@ -25,8 +25,8 @@ import com.sun.source.doctree.SystemPropertyTree;
 import com.sun.source.doctree.TextTree;
 import com.sun.source.doctree.UnknownInlineTagTree;
 import com.sun.source.doctree.ValueTree;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.contains;
@@ -41,14 +41,14 @@ import static org.mockito.Mockito.when;
  */
 public class InlineScannerTest {
     private Source source;
-    private Context context;
+    private EelDocContext context;
     private ParagraphGenerator<?> model;
     private ParagraphGenerator<?> nextModel;
 
     private InlineScanner scanner;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         source = mock();
         context = mock();

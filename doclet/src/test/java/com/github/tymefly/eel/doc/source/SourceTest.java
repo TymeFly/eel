@@ -6,17 +6,22 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.utils.EelType;
 import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.util.DocTreePath;
 import com.sun.source.util.TreePath;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -28,7 +33,7 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link Source}
  */
 public class SourceTest {
-    private Context context;
+    private EelDocContext context;
 
     private PackageElement packageElement;
     private ExecutableElement methodElement;
@@ -37,11 +42,11 @@ public class SourceTest {
     private TreePath methodTreePath;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         TypeMirror returnType = mock();
 
-        context = mock(Context.class, RETURNS_DEEP_STUBS);
+        context = mock(EelDocContext.class, RETURNS_DEEP_STUBS);
         packageElement = mock(PackageElement.class, RETURNS_DEEP_STUBS);
         methodElement = mock(ExecutableElement.class, RETURNS_DEEP_STUBS);
         methodDocTree = mock();
@@ -70,8 +75,8 @@ public class SourceTest {
      */
     @Test
     public void test_context() {
-        Assert.assertSame("For package", context, Source.forPackage(context, packageElement).context());
-        Assert.assertSame("For method", context, Source.forMethod(context, methodElement).context());
+        assertSame(context, Source.forPackage(context, packageElement).context(), "For package");
+        assertSame(context, Source.forMethod(context, methodElement).context(), "For method");
     }
 
     /**
@@ -79,7 +84,7 @@ public class SourceTest {
      */
     @Test
     public void test_parameters() {
-        Assert.assertSame("For package", ParameterList.EMPTY, Source.forPackage(context, packageElement).parameters());
+        assertSame(ParameterList.EMPTY, Source.forPackage(context, packageElement).parameters(), "For package");
 
         ParameterList parameters = mock();
 
@@ -90,7 +95,7 @@ public class SourceTest {
                 .thenReturn(parameters);
 
 
-            Assert.assertSame("For method", parameters, Source.forMethod(context, methodElement).parameters());
+            assertSame(parameters, Source.forMethod(context, methodElement).parameters(), "For method");
         }
     }
 
@@ -111,8 +116,8 @@ public class SourceTest {
         ) {
             Source.forMethod(context, methodElement).docTreePath();
 
-            Assert.assertSame("Unexpected treePath", methodTreePath, treePath[0]);
-            Assert.assertSame("Unexpected tree", methodDocTree, tree[0]);
+            assertSame(methodTreePath, treePath[0], "Unexpected treePath");
+            assertSame(methodDocTree, tree[0], "Unexpected tree");
         }
     }
 
@@ -121,8 +126,8 @@ public class SourceTest {
      */
     @Test
     public void test_hasDocCommentTree() {
-        Assert.assertFalse("For package", Source.forPackage(context, packageElement).hasDocCommentTree());
-        Assert.assertTrue("For method", Source.forMethod(context, methodElement).hasDocCommentTree());
+        assertFalse(Source.forPackage(context, packageElement).hasDocCommentTree(), "For package");
+        assertTrue(Source.forMethod(context, methodElement).hasDocCommentTree(), "For method");
     }
 
     /**
@@ -130,11 +135,11 @@ public class SourceTest {
      */
     @Test
     public void test_docCommentTree() {
-        Assert.assertThrows("For package",
-            IllegalStateException.class,
-            () -> Source.forPackage(context, packageElement).docCommentTree());
+        assertThrows(IllegalStateException.class,
+            () -> Source.forPackage(context, packageElement).docCommentTree(),
+            "For package");
 
-        Assert.assertSame("For method", methodDocTree, Source.forMethod(context, methodElement).docCommentTree());
+        assertSame(methodDocTree, Source.forMethod(context, methodElement).docCommentTree(), "For method");
     }
 
     /**
@@ -142,7 +147,7 @@ public class SourceTest {
      */
     @Test
     public void test_resolveElement_null() {
-        Assert.assertNull("null signature", Source.forMethod(context, methodElement).resolveElement(null));
+        assertNull(Source.forMethod(context, methodElement).resolveElement(null), "null signature");
     }
 
     /**
@@ -166,9 +171,9 @@ public class SourceTest {
                         });
                 })
         ) {
-            Assert.assertSame("nonnull", expected, Source.forMethod(context, methodElement).resolveElement("#local"));
-            Assert.assertEquals("unexpected root element", methodElement, root[0]);
-            Assert.assertEquals("unexpected signature", "#local", signature[0]);
+            assertSame(expected, Source.forMethod(context, methodElement).resolveElement("#local"), "nonnull");
+            assertEquals(methodElement, root[0], "unexpected root element");
+            assertEquals("#local", signature[0], "unexpected signature");
         }
     }
 
@@ -177,7 +182,7 @@ public class SourceTest {
      */
     @Test
     public void test_resolveSignature_null() {
-        Assert.assertNull("null signature", Source.forMethod(context, methodElement).resolveSignature(null));
+        assertNull(Source.forMethod(context, methodElement).resolveSignature(null), "null signature");
     }
 
     /**
@@ -187,12 +192,11 @@ public class SourceTest {
     public void test_resolveSignature_notFound() {
         try (
             MockedConstruction<Resolver> resolver =
-                mockConstruction(Resolver.class, (mock, context) -> {
+                mockConstruction(Resolver.class, (mock, context) ->
                     when(mock.resolve(anyString()))
-                        .thenReturn(null);
-                })
+                        .thenReturn(null))
         ) {
-            Assert.assertNull("not found", Source.forMethod(context, methodElement).resolveSignature("#local"));
+            assertNull(Source.forMethod(context, methodElement).resolveSignature("#local"), "not found");
         }
     }
 
@@ -205,18 +209,17 @@ public class SourceTest {
 
         try (
             MockedConstruction<Resolver> resolver =
-                mockConstruction(Resolver.class, (mock, context) -> {
+                mockConstruction(Resolver.class, (mock, context) ->
                     when(mock.resolve(anyString()))
-                        .thenReturn(local);
-                });
+                        .thenReturn(local));
             MockedStatic<Signature> signatureMock = mockStatic(Signature.class)
         ) {
             signatureMock.when(() -> Signature.of(local))
                 .thenReturn("my.class.local");
 
-            Assert.assertEquals("found",
-                "my.class.local",
-                Source.forMethod(context, methodElement).resolveSignature("#local"));
+            assertEquals("my.class.local",
+                Source.forMethod(context, methodElement).resolveSignature("#local"),
+                "found");
         }
     }
 
@@ -233,8 +236,8 @@ public class SourceTest {
             signatureMock.when(() -> Signature.of(methodElement))
                 .thenReturn("my.package.class");
 
-            Assert.assertSame("For package", "my.package", Source.forPackage(context, packageElement).signature());
-            Assert.assertSame("For method", "my.package.class", Source.forMethod(context, methodElement).signature());
+            assertSame("my.package", Source.forPackage(context, packageElement).signature(), "For package");
+            assertSame("my.package.class", Source.forMethod(context, methodElement).signature(), "For method");
         }
     }
 
@@ -243,7 +246,7 @@ public class SourceTest {
      */
     @Test
     public void test_eelType() {
-        Assert.assertNull("For package", Source.forPackage(context, packageElement).eelType());
-        Assert.assertEquals("For method", EelType.NUMBER, Source.forMethod(context, methodElement).eelType());
+        assertNull(Source.forPackage(context, packageElement).eelType(), "For package");
+        assertEquals(EelType.NUMBER, Source.forMethod(context, methodElement).eelType(), "For method");
     }
 }

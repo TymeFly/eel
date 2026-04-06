@@ -12,7 +12,7 @@ import com.github.tymefly.eel.exception.EelConvertException;
 /**
  * {@link Value} adaptor for {@link Term}s that are passed to functions. These are only evaluated when requested
  * <br>
- * <b>Note:</b> Because the symbols table must be known when this object is created these objects cannot be reused
+ * <b>Note:</b> Because the SymbolsTable must be known when this object is created these objects cannot be reused
  * across invocations
  */
 final class ValueArgument extends AbstractValue {
@@ -56,11 +56,13 @@ final class ValueArgument extends AbstractValue {
         return evaluate().asDate();
     }
 
+
     @Nonnull
     @Override
     public File asFile() throws IOException {
-        return FileFactory.from(asText());
+        return SecureFileFactory.standard().build(asText());
     }
+
 
     @Nonnull
     @Override

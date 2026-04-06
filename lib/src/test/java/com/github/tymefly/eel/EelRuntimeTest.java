@@ -13,10 +13,14 @@ import com.github.tymefly.eel.exception.EelException;
 import com.github.tymefly.eel.exception.EelInterruptedException;
 import com.github.tymefly.eel.exception.EelRuntimeException;
 import com.github.tymefly.eel.exception.EelTimeoutException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +31,7 @@ public class EelRuntimeTest {
     private EelContextImpl context;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = mock();
 
@@ -51,8 +55,8 @@ public class EelRuntimeTest {
 
         Result actual = wrapped.evaluate(table);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Value");
     }
 
     /**
@@ -69,8 +73,8 @@ public class EelRuntimeTest {
 
         Result actual = wrapped.evaluate(table);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Value");
     }
 
 
@@ -87,9 +91,9 @@ public class EelRuntimeTest {
         Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
+        EelRuntimeException actual = assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
-        Assert.assertSame("Unexpected cause", cause, actual);
+        assertSame(cause, actual, "Unexpected cause");
         assertStack(actual, "test_noTimeout_eelException", false);
     }
 
@@ -107,10 +111,10 @@ public class EelRuntimeTest {
         Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
+        EelRuntimeException actual = assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
-        Assert.assertEquals("Unexpected message", "EEL execution failed", actual.getMessage());
-        Assert.assertEquals("Unexpected cause", cause, actual.getCause());
+        assertEquals("EEL execution failed", actual.getMessage(), "Unexpected message");
+        assertEquals(cause, actual.getCause(), "Unexpected cause");
         assertStack(actual, "test_noTimeout_otherException", false);
     }
 
@@ -127,8 +131,8 @@ public class EelRuntimeTest {
 
         Result actual = wrapped.evaluate(table);
 
-        Assert.assertEquals("Unexpected Type", Type.NUMBER, actual.getType());
-        Assert.assertEquals("Unexpected Value", BigDecimal.ONE, actual.asNumber());
+        assertEquals(Type.NUMBER, actual.getType(), "Unexpected Type");
+        assertEquals(BigDecimal.ONE, actual.asNumber(), "Unexpected Value");
     }
 
 
@@ -148,9 +152,9 @@ public class EelRuntimeTest {
         Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelTimeoutException.class, () -> wrapped.evaluate(table));
+        EelRuntimeException actual = assertThrows(EelTimeoutException.class, () -> wrapped.evaluate(table));
 
-        Assert.assertEquals("Unexpected message", "EEL Timeout after 2 second(s)", actual.getMessage());
+        assertEquals("EEL Timeout after 2 second(s)", actual.getMessage(), "Unexpected message");
         assertStack(actual, "test_withTimeout_timedOut", false);
     }
 
@@ -165,9 +169,9 @@ public class EelRuntimeTest {
         Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
+        EelRuntimeException actual = assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
-        Assert.assertSame("Unexpected cause", cause, actual);
+        assertSame(cause, actual, "Unexpected cause");
         assertStack(actual, "test_withTimeout_eelException", false);
     }
 
@@ -182,10 +186,10 @@ public class EelRuntimeTest {
         Expression wrapped = new EelRuntime(context).wrap(backing);
         SymbolsTable table = mock();
 
-        EelRuntimeException actual = Assert.assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
+        EelRuntimeException actual = assertThrows(EelRuntimeException.class, () -> wrapped.evaluate(table));
 
-        Assert.assertEquals("Unexpected message", "EEL execution failed", actual.getMessage());
-        Assert.assertEquals("Unexpected cause", cause, actual.getCause());
+        assertEquals("EEL execution failed", actual.getMessage(), "Unexpected message");
+        assertEquals(cause, actual.getCause(), "Unexpected cause");
         assertStack(actual, "test_withTimeout_otherException", false);
     }
 
@@ -224,9 +228,9 @@ public class EelRuntimeTest {
         thread.interrupt();
         Thread.sleep(250);
 
-        Assert.assertNotNull("Exception was not thrown", exception);
-        Assert.assertEquals("Exception has unexpected type", EelInterruptedException.class, exception.getClass());
-        Assert.assertEquals("Unexpected message", "EEL execution was interrupted", exception.getMessage());
+        assertNotNull(exception, "Exception was not thrown");
+        assertEquals(EelInterruptedException.class, exception.getClass(), "Exception has unexpected type");
+        assertEquals("EEL execution was interrupted", exception.getMessage(), "Unexpected message");
         assertStack(exception, "test_withTimeout_interruptThread", true);
     }
 
@@ -239,7 +243,7 @@ public class EelRuntimeTest {
         if (!found) {
             StringWriter trace = new StringWriter();
             actual.printStackTrace(new PrintWriter(trace));
-            Assert.fail("Calling method '" + callingMethod + "' not in stack trace: " + trace);
+            fail("Calling method '" + callingMethod + "' not in stack trace: " + trace);
         }
     }
 }

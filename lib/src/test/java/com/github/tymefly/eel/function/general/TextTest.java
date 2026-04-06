@@ -1,8 +1,12 @@
 package com.github.tymefly.eel.function.general;
 
 import com.github.tymefly.eel.Value;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Text}
@@ -18,11 +22,11 @@ public class TextTest {
      */
     @Test
     public void test_left() {
-        Assert.assertEquals("Happy Path", "abc", text.left("abcdef", 3));
-        Assert.assertEquals("full string", "abcdef", text.left("abcdef", 6));
-        Assert.assertEquals("overflow", "abcdef", text.left("abcdef", 7));
-        Assert.assertEquals("empty", "", text.left("abcdef", 0));
-        Assert.assertEquals("negative size", "abcd", text.left("abcdef", -2));
+        assertEquals("abc", text.left("abcdef", 3), "Happy Path");
+        assertEquals("abcdef", text.left("abcdef", 6), "full string");
+        assertEquals("abcdef", text.left("abcdef", 7), "overflow");
+        assertEquals("", text.left("abcdef", 0), "empty");
+        assertEquals("abcd", text.left("abcdef", -2), "negative size");
     }
 
     /**
@@ -30,11 +34,11 @@ public class TextTest {
      */
     @Test
     public void test_right() {
-        Assert.assertEquals("Happy Path", "def", text.right("abcdef", 3));
-        Assert.assertEquals("full string", "abcdef", text.right("abcdef", 6));
-        Assert.assertEquals("overflow", "abcdef", text.right("abcdef", 7));
-        Assert.assertEquals("empty", "", text.right("abcdef", 0));
-        Assert.assertEquals("negative size", "cdef", text.right("abcdef", -2));
+        assertEquals("def", text.right("abcdef", 3), "Happy Path");
+        assertEquals("abcdef", text.right("abcdef", 6), "full string");
+        assertEquals("abcdef", text.right("abcdef", 7), "overflow");
+        assertEquals("", text.right("abcdef", 0), "empty");
+        assertEquals("cdef", text.right("abcdef", -2), "negative size");
     }
 
     /**
@@ -42,12 +46,12 @@ public class TextTest {
      */
     @Test
     public void test_mid() {
-        Assert.assertEquals("Happy Path", "bc", text.mid("abcdef", 1, 2));
-        Assert.assertEquals("no chars", "", text.mid("abcdef", 0, 0));
-        Assert.assertEquals("single char", "a", text.mid("abcdef", 0, 1));
-        Assert.assertEquals("full string", "abcdef", text.mid("abcdef", 0, 6));
-        Assert.assertEquals("overflow", "f", text.mid("abcdef", -1, 6));
-        Assert.assertEquals("negative length", "", text.mid("abcdef", 4, -2));
+        assertEquals("bc", text.mid("abcdef", 1, 2), "Happy Path");
+        assertEquals("", text.mid("abcdef", 0, 0), "no chars");
+        assertEquals("a", text.mid("abcdef", 0, 1), "single char");
+        assertEquals("abcdef", text.mid("abcdef", 0, 6), "full string");
+        assertEquals("f", text.mid("abcdef", -1, 6), "overflow");
+        assertEquals("", text.mid("abcdef", 4, -2), "negative length");
     }
 
 
@@ -56,17 +60,17 @@ public class TextTest {
      */
     @Test
     public void test_beforeFirst() {
-        Assert.assertEquals("Empty Text", "", text.beforeFirst("", "~"));
-        Assert.assertEquals("Empty delimiter", "", text.beforeFirst("abcdef", ""));
-        Assert.assertEquals("No delimiter", "abcdef", text.beforeFirst("abcdef", "~"));
-        Assert.assertEquals("One delimiter", "abc", text.beforeFirst("abc~def", "~"));
-        Assert.assertEquals("Two delimiters", "ab", text.beforeFirst("ab~cd~ef", "~"));
-        Assert.assertEquals("Delimiter at start", "", text.beforeFirst("~abcdef", "~"));
-        Assert.assertEquals("Two Delimiters at start", "", text.beforeFirst("~~abcdef", "~"));
-        Assert.assertEquals("Delimiter at end", "abcdef", text.beforeFirst("abcdef~", "~"));
+        assertEquals("", text.beforeFirst("", "~"), "Empty Text");
+        assertEquals("", text.beforeFirst("abcdef", ""), "Empty delimiter");
+        assertEquals("abcdef", text.beforeFirst("abcdef", "~"), "No delimiter");
+        assertEquals("abc", text.beforeFirst("abc~def", "~"), "One delimiter");
+        assertEquals("ab", text.beforeFirst("ab~cd~ef", "~"), "Two delimiters");
+        assertEquals("", text.beforeFirst("~abcdef", "~"), "Delimiter at start");
+        assertEquals("", text.beforeFirst("~~abcdef", "~"), "Two Delimiters at start");
+        assertEquals("abcdef", text.beforeFirst("abcdef~", "~"), "Delimiter at end");
 
-        Assert.assertEquals("Long delimiter", "ab", text.beforeFirst("ab<=>cd<=>ef", "<=>"));
-        Assert.assertEquals("Empty delimiter", "", text.beforeFirst("ab~cd~ef", ""));
+        assertEquals("ab", text.beforeFirst("ab<=>cd<=>ef", "<=>"), "Long delimiter");
+        assertEquals("", text.beforeFirst("ab~cd~ef", ""), "Empty delimiter");
     }
 
     /**
@@ -74,17 +78,17 @@ public class TextTest {
      */
     @Test
     public void test_beforeLast() {
-        Assert.assertEquals("Empty Text", "", text.beforeLast("", "~"));
-        Assert.assertEquals("Empty delimiter", "abcdef", text.beforeLast("abcdef", ""));
-        Assert.assertEquals("No delimiter", "abcdef", text.beforeLast("abcdef", "~"));
-        Assert.assertEquals("One delimiter", "abc", text.beforeLast("abc~def", "~"));
-        Assert.assertEquals("Two delimiters", "ab~cd", text.beforeLast("ab~cd~ef", "~"));
-        Assert.assertEquals("Delimiter at start", "", text.beforeLast("~abcdef", "~"));
-        Assert.assertEquals("Two Delimiters at start", "~", text.beforeLast("~~abcdef", "~"));
-        Assert.assertEquals("Delimiter at end", "abcdef", text.beforeLast("abcdef~", "~"));
+        assertEquals("", text.beforeLast("", "~"), "Empty Text");
+        assertEquals("abcdef", text.beforeLast("abcdef", ""), "Empty delimiter");
+        assertEquals("abcdef", text.beforeLast("abcdef", "~"), "No delimiter");
+        assertEquals("abc", text.beforeLast("abc~def", "~"), "One delimiter");
+        assertEquals("ab~cd", text.beforeLast("ab~cd~ef", "~"), "Two delimiters");
+        assertEquals("", text.beforeLast("~abcdef", "~"), "Delimiter at start");
+        assertEquals("~", text.beforeLast("~~abcdef", "~"), "Two Delimiters at start");
+        assertEquals("abcdef", text.beforeLast("abcdef~", "~"), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "ab<=>cd", text.beforeLast("ab<=>cd<=>ef", "<=>"));
-        Assert.assertEquals("Empty delimiter", "ab~cd~ef", text.beforeLast("ab~cd~ef", ""));
+        assertEquals("ab<=>cd", text.beforeLast("ab<=>cd<=>ef", "<=>"), "Long Delimiter");
+        assertEquals("ab~cd~ef", text.beforeLast("ab~cd~ef", ""), "Empty delimiter");
     }
 
     /**
@@ -92,17 +96,17 @@ public class TextTest {
      */
     @Test
     public void test_afterFirst() {
-        Assert.assertEquals("Empty Text", "", text.afterFirst("", "~"));
-        Assert.assertEquals("Empty delimiter", "abcdef", text.afterFirst("abcdef", ""));
-        Assert.assertEquals("No delimiter", "", text.afterFirst("abcdef", "~"));
-        Assert.assertEquals("One delimiter", "def", text.afterFirst("abc~def", "~"));
-        Assert.assertEquals("Two delimiters", "cd~ef", text.afterFirst("ab~cd~ef", "~"));
-        Assert.assertEquals("Delimiter at start", "abcdef", text.afterFirst("~abcdef", "~"));
-        Assert.assertEquals("Two Delimiters at start", "~abcdef", text.afterFirst("~~abcdef", "~"));
-        Assert.assertEquals("Delimiter at end", "", text.afterFirst("abcdef~", "~"));
+        assertEquals("", text.afterFirst("", "~"), "Empty Text");
+        assertEquals("abcdef", text.afterFirst("abcdef", ""), "Empty delimiter");
+        assertEquals("", text.afterFirst("abcdef", "~"), "No delimiter");
+        assertEquals("def", text.afterFirst("abc~def", "~"), "One delimiter");
+        assertEquals("cd~ef", text.afterFirst("ab~cd~ef", "~"), "Two delimiters");
+        assertEquals("abcdef", text.afterFirst("~abcdef", "~"), "Delimiter at start");
+        assertEquals("~abcdef", text.afterFirst("~~abcdef", "~"), "Two Delimiters at start");
+        assertEquals("", text.afterFirst("abcdef~", "~"), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "cd<=>ef", text.afterFirst("ab<=>cd<=>ef", "<=>"));
-        Assert.assertEquals("Empty delimiter", "ab~cd~ef", text.afterFirst("ab~cd~ef", ""));
+        assertEquals("cd<=>ef", text.afterFirst("ab<=>cd<=>ef", "<=>"), "Long Delimiter");
+        assertEquals("ab~cd~ef", text.afterFirst("ab~cd~ef", ""), "Empty delimiter");
     }
 
     /**
@@ -110,17 +114,17 @@ public class TextTest {
      */
     @Test
     public void test_afterLast() {
-        Assert.assertEquals("Empty Text", "", text.afterLast("", "~"));
-        Assert.assertEquals("Empty delimiter", "", text.afterLast("abcdef", ""));
-        Assert.assertEquals("No delimiter", "", text.afterLast("abcdef", "~"));
-        Assert.assertEquals("One delimiter", "def", text.afterLast("abc~def", "~"));
-        Assert.assertEquals("Two delimiters", "ef", text.afterLast("ab~cd~ef", "~"));
-        Assert.assertEquals("Two Delimiters at start", "abcdef", text.afterLast("~~abcdef", "~"));
-        Assert.assertEquals("Delimiter at start", "abcdef", text.afterLast("~abcdef", "~"));
-        Assert.assertEquals("Delimiter at end", "", text.afterLast("abcdef~", "~"));
+        assertEquals("", text.afterLast("", "~"), "Empty Text");
+        assertEquals("", text.afterLast("abcdef", ""), "Empty delimiter");
+        assertEquals("", text.afterLast("abcdef", "~"), "No delimiter");
+        assertEquals("def", text.afterLast("abc~def", "~"), "One delimiter");
+        assertEquals("ef", text.afterLast("ab~cd~ef", "~"), "Two delimiters");
+        assertEquals("abcdef", text.afterLast("~~abcdef", "~"), "Two Delimiters at start");
+        assertEquals("abcdef", text.afterLast("~abcdef", "~"), "Delimiter at start");
+        assertEquals("", text.afterLast("abcdef~", "~"), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "ef", text.afterLast("ab<=>cd<=>ef", "<=>"));
-        Assert.assertEquals("Empty delimiter", "", text.afterLast("ab~cd~ef", ""));
+        assertEquals("ef", text.afterLast("ab<=>cd<=>ef", "<=>"), "Long Delimiter");
+        assertEquals("", text.afterLast("ab~cd~ef", ""), "Empty delimiter");
     }
 
     /**
@@ -128,28 +132,29 @@ public class TextTest {
      */
     @Test
     public void test_before() {
-        Assert.assertEquals("Empty Text", "", text.before("", "~", 1));
-        Assert.assertEquals("Empty delimiter", "", text.before("abcdef", "", 1));
-        Assert.assertEquals("No delimiter", "abcdef", text.before("abcdef", "~", 1));
-        Assert.assertEquals("One delimiter", "abc", text.before("abc~def", "~", 1));
-        Assert.assertEquals("Two delimiters", "ab", text.before("ab~cd~ef", "~", 1));
-        Assert.assertEquals("Delimiter at start", "", text.before("~abcdef", "~", 1));
-        Assert.assertEquals("Two Delimiters at start", "", text.before("~~abcdef", "~", 1));
-        Assert.assertEquals("Delimiter at end", "abcdef", text.before("abcdef~", "~", 1));
+        assertEquals("", text.before("", "~", 1), "Empty Text");
+        assertEquals("", text.before("abcdef", "", 1), "Empty delimiter");
+        assertEquals("abcdef", text.before("abcdef", "~", 1), "No delimiter");
+        assertEquals("abc", text.before("abc~def", "~", 1), "One delimiter");
+        assertEquals("ab", text.before("ab~cd~ef", "~", 1), "Two delimiters");
+        assertEquals("", text.before("~abcdef", "~", 1), "Delimiter at start");
+        assertEquals("", text.before("~~abcdef", "~", 1), "Two Delimiters at start");
+        assertEquals("abcdef", text.before("abcdef~", "~", 1), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "ab<=><=>cd", text.before("ab<=><=>cd<=>ef<=>gh", "<=>", 3));
-        Assert.assertEquals("Repeating Delimiter", "ab@@@@cd", text.before("ab@@@@cd@@ef@@gh", "@@", 3));
+        assertEquals("ab<=><=>cd", text.before("ab<=><=>cd<=>ef<=>gh", "<=>", 3), "Long Delimiter");
+        assertEquals("ab@@@@cd", text.before("ab@@@@cd@@ef@@gh", "@@", 3), "Repeating Delimiter");
 
-        Assert.assertEquals("count = 0", "", text.before("~~ab~~cd~~ef", "~~", 0));
-        Assert.assertEquals("count = 1", "", text.before("~~ab~~cd~~ef", "~~", 1));
-        Assert.assertEquals("count = 2", "~~ab", text.before("~~ab~~cd~~ef", "~~", 2));
-        Assert.assertEquals("count = 3", "~~ab~~cd", text.before("~~ab~~cd~~ef", "~~", 3));
-        Assert.assertEquals("count = 4", "~~ab~~cd~~ef", text.before("~~ab~~cd~~ef", "~~", 4));
-        Assert.assertEquals("count = 5", "~~ab~~cd~~ef", text.before("~~ab~~cd~~ef", "~~", 5));
+        assertEquals("", text.before("~~ab~~cd~~ef", "~~", 0), "count = 0");
+        assertEquals("", text.before("~~ab~~cd~~ef", "~~", 1), "count = 1");
+        assertEquals("~~ab", text.before("~~ab~~cd~~ef", "~~", 2), "count = 2");
+        assertEquals("~~ab~~cd", text.before("~~ab~~cd~~ef", "~~", 3), "count = 3");
+        assertEquals("~~ab~~cd~~ef", text.before("~~ab~~cd~~ef", "~~", 4), "count = 4");
+        assertEquals("~~ab~~cd~~ef", text.before("~~ab~~cd~~ef", "~~", 5), "count = 5");
 
-        IllegalArgumentException actual =
-            Assert.assertThrows("Negative Count", IllegalArgumentException.class, () -> text.before("~~ab~~cd~~ef", "~~", -1));
-        Assert.assertEquals("Unexpected error", "Invalid index: -1", actual.getMessage());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+            () -> text.before("~~ab~~cd~~ef", "~~", -1),
+            "Negative Count");
+        assertEquals("Invalid index: -1", actual.getMessage(), "Unexpected error");
     }
 
     /**
@@ -157,28 +162,29 @@ public class TextTest {
      */
     @Test
     public void test_after() {
-        Assert.assertEquals("Empty Text", "", text.after("", "~", 1));
-        Assert.assertEquals("Empty delimiter", "abcdef", text.after("abcdef", "", 1));
-        Assert.assertEquals("No delimiter", "", text.after("abcdef", "~", 1));
-        Assert.assertEquals("One delimiter", "def", text.after("abc~def", "~", 1));
-        Assert.assertEquals("Two delimiters", "cd~ef", text.after("ab~cd~ef", "~", 1));
-        Assert.assertEquals("Delimiter at start", "abcdef", text.after("~abcdef", "~", 1));
-        Assert.assertEquals("Two Delimiters at start", "~abcdef", text.after("~~abcdef", "~", 1));
-        Assert.assertEquals("Delimiter at end", "", text.after("abcdef~", "~", 1));
+        assertEquals("", text.after("", "~", 1), "Empty Text");
+        assertEquals("abcdef", text.after("abcdef", "", 1), "Empty delimiter");
+        assertEquals("", text.after("abcdef", "~", 1), "No delimiter");
+        assertEquals("def", text.after("abc~def", "~", 1), "One delimiter");
+        assertEquals("cd~ef", text.after("ab~cd~ef", "~", 1), "Two delimiters");
+        assertEquals("abcdef", text.after("~abcdef", "~", 1), "Delimiter at start");
+        assertEquals("~abcdef", text.after("~~abcdef", "~", 1), "Two Delimiters at start");
+        assertEquals("", text.after("abcdef~", "~", 1), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "ef<=>gh", text.after("ab<=><=>cd<=>ef<=>gh", "<=>", 3));
-        Assert.assertEquals("Repeating Delimiter", "ef@@gh", text.after("ab@@@@cd@@ef@@gh", "@@", 3));
+        assertEquals("ef<=>gh", text.after("ab<=><=>cd<=>ef<=>gh", "<=>", 3), "Long Delimiter");
+        assertEquals("ef@@gh", text.after("ab@@@@cd@@ef@@gh", "@@", 3), "Repeating Delimiter");
 
-        Assert.assertEquals("count = 0", "~~ab~~cd~~ef", text.after("~~ab~~cd~~ef", "~~", 0));
-        Assert.assertEquals("count = 1", "ab~~cd~~ef", text.after("~~ab~~cd~~ef", "~~", 1));
-        Assert.assertEquals("count = 2", "cd~~ef", text.after("~~ab~~cd~~ef", "~~", 2));
-        Assert.assertEquals("count = 3", "ef", text.after("~~ab~~cd~~ef", "~~", 3));
-        Assert.assertEquals("count = 4", "", text.after("~~ab~~cd~~ef", "~~", 4));
-        Assert.assertEquals("count = 5", "", text.after("~~ab~~cd~~ef", "~~", 5));
+        assertEquals("~~ab~~cd~~ef", text.after("~~ab~~cd~~ef", "~~", 0), "count = 0");
+        assertEquals("ab~~cd~~ef", text.after("~~ab~~cd~~ef", "~~", 1), "count = 1");
+        assertEquals("cd~~ef", text.after("~~ab~~cd~~ef", "~~", 2), "count = 2");
+        assertEquals("ef", text.after("~~ab~~cd~~ef", "~~", 3), "count = 3");
+        assertEquals("", text.after("~~ab~~cd~~ef", "~~", 4), "count = 4");
+        assertEquals("", text.after("~~ab~~cd~~ef", "~~", 5), "count = 5");
 
-        IllegalArgumentException actual =
-            Assert.assertThrows("Negative Count", IllegalArgumentException.class, () -> text.after("~~ab~~cd~~ef", "~~", -1));
-        Assert.assertEquals("Unexpected error", "Invalid index: -1", actual.getMessage());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+            () -> text.after("~~ab~~cd~~ef", "~~", -1),
+            "Negative Count");
+        assertEquals("Invalid index: -1", actual.getMessage(), "Unexpected error");
     }
 
     /**
@@ -186,26 +192,27 @@ public class TextTest {
      */
     @Test
     public void test_between() {
-        Assert.assertEquals("Empty Text", "", text.between("", "~", 1, 2));
-        Assert.assertEquals("Empty delimiter", "", text.between("abcdef", "", 1, 2));
-        Assert.assertEquals("One delimiter", "def", text.between("abc~def", "~", 1, 2));
-        Assert.assertEquals("Two delimiters", "cd", text.between("ab~cd~ef", "~", 1, 2));
-        Assert.assertEquals("Delimiter at start", "abcdef", text.between("~abcdef", "~", 1, 2));
-        Assert.assertEquals("Two Delimiters at start", "", text.between("~~abcdef", "~", 1, 2));
-        Assert.assertEquals("Delimiter at end", "", text.between("abcdef~", "~", 1, 2));
+        assertEquals("", text.between("", "~", 1, 2), "Empty Text");
+        assertEquals("", text.between("abcdef", "", 1, 2), "Empty delimiter");
+        assertEquals("def", text.between("abc~def", "~", 1, 2), "One delimiter");
+        assertEquals("cd", text.between("ab~cd~ef", "~", 1, 2), "Two delimiters");
+        assertEquals("abcdef", text.between("~abcdef", "~", 1, 2), "Delimiter at start");
+        assertEquals("", text.between("~~abcdef", "~", 1, 2), "Two Delimiters at start");
+        assertEquals("", text.between("abcdef~", "~", 1, 2), "Delimiter at end");
 
-        Assert.assertEquals("Long Delimiter", "ef<=>gh", text.between("ab<=><=>cd<=>ef<=>gh", "<=>", 3, 5));
-        Assert.assertEquals("Repeating Delimiter", "ef@@gh", text.between("ab@@@@cd@@ef@@gh", "@@", 3, 5));
+        assertEquals("ef<=>gh", text.between("ab<=><=>cd<=>ef<=>gh", "<=>", 3, 5), "Long Delimiter");
+        assertEquals("ef@@gh", text.between("ab@@@@cd@@ef@@gh", "@@", 3, 5), "Repeating Delimiter");
 
-        Assert.assertEquals("0 to 1", "", text.between("~~ab~~cd~~ef", "~~", 0, 1));
-        Assert.assertEquals("1 to 2", "ab", text.between("~~ab~~cd~~ef", "~~", 1, 2));
-        Assert.assertEquals("2 to 3", "cd", text.between("~~ab~~cd~~ef", "~~", 2, 3));
-        Assert.assertEquals("3 to 4", "ef", text.between("~~ab~~cd~~ef", "~~", 3, 4));
-        Assert.assertEquals("4 to 5", "", text.between("~~ab~~cd~~ef", "~~", 4, 5));
+        assertEquals("", text.between("~~ab~~cd~~ef", "~~", 0, 1), "0 to 1");
+        assertEquals("ab", text.between("~~ab~~cd~~ef", "~~", 1, 2), "1 to 2");
+        assertEquals("cd", text.between("~~ab~~cd~~ef", "~~", 2, 3), "2 to 3");
+        assertEquals("ef", text.between("~~ab~~cd~~ef", "~~", 3, 4), "3 to 4");
+        assertEquals("", text.between("~~ab~~cd~~ef", "~~", 4, 5), "4 to 5");
 
-        IllegalArgumentException actual =
-            Assert.assertThrows("Negative Index", IllegalArgumentException.class, () -> text.between("~~ab~~cd~~ef", "~~", -1, 2));
-        Assert.assertEquals("Unexpected error", "Invalid index: -1", actual.getMessage());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+            () -> text.between("~~ab~~cd~~ef", "~~", -1, 2),
+            "Negative Index");
+        assertEquals("Invalid index: -1", actual.getMessage(), "Unexpected error");
     }
 
     /**
@@ -213,11 +220,11 @@ public class TextTest {
      */
     @Test
     public void contains() {
-        Assert.assertEquals("Empty Text and and Empty delimiter", 0, text.contains("", ""));
-        Assert.assertEquals("With Text and and Empty delimiter", 12, text.contains("ab~~cd~ef~gh", ""));
-        Assert.assertEquals("Short Delimiter", 4, text.contains("ab~~cd~ef~gh", "~"));
-        Assert.assertEquals("Long Delimiter", 4, text.contains("ab<=><=>cd<=>ef<=>gh", "<=>"));
-        Assert.assertEquals("Repeating Delimiter", 4, text.contains("ab@@@@cd@@ef@@gh", "@@"));
+        assertEquals(0, text.contains("", ""), "Empty Text and and Empty delimiter");
+        assertEquals(12, text.contains("ab~~cd~ef~gh", ""), "With Text and and Empty delimiter");
+        assertEquals(4, text.contains("ab~~cd~ef~gh", "~"), "Short Delimiter");
+        assertEquals(4, text.contains("ab<=><=>cd<=>ef<=>gh", "<=>"), "Long Delimiter");
+        assertEquals(4, text.contains("ab@@@@cd@@ef@@gh", "@@"), "Repeating Delimiter");
     }
 
 
@@ -227,11 +234,9 @@ public class TextTest {
      */
     @Test
     public void test_extract() {
-        Assert.assertEquals("Not Found", "", text.extract("Hello World", ".*~(.*)~.*"));
-        Assert.assertEquals("Found", "capture", text.extract("Hello ~capture~ World", ".*~(.*)~.*"));
-        Assert.assertEquals("multiple groups",
-            "FirstSecondThird",
-            text.extract("prefix /First/Second/Third/ postfix", ".*/(.*)/(.*)/(.*)/.*"));
+        assertEquals("", text.extract("Hello World", ".*~(.*)~.*"), "Not Found");
+        assertEquals("capture", text.extract("Hello ~capture~ World", ".*~(.*)~.*"), "Found");
+        assertEquals("FirstSecondThird", text.extract("prefix /First/Second/Third/ postfix", ".*/(.*)/(.*)/(.*)/.*"), "multiple groups");
     }
 
 
@@ -240,8 +245,8 @@ public class TextTest {
      */
     @Test
     public void test_matches() {
-        Assert.assertFalse("Not Found", text.matches("Hello World", ".*~(.*)~.*"));
-        Assert.assertTrue("Found", text.matches("Hello ~find me~ World", ".*~(.*)~.*"));
+        assertFalse(text.matches("Hello World", ".*~(.*)~.*"), "Not Found");
+        assertTrue(text.matches("Hello ~find me~ World", ".*~(.*)~.*"), "Found");
     }
 
     /**
@@ -249,10 +254,10 @@ public class TextTest {
      */
     @Test
     public void test_replace() {
-        Assert.assertEquals("Empty String", "", text.replace("", " ", "#"));
-        Assert.assertEquals("single char replacement", "Hello#World#!", text.replace("Hello World !", " ", "#"));
-        Assert.assertEquals("two char replacement", "Hello__World__!", text.replace("Hello World !", " ", "__"));
-        Assert.assertEquals("Word removal", " World !", text.replace("Hello World !", "Hello", ""));
+        assertEquals("", text.replace("", " ", "#"), "Empty String");
+        assertEquals("Hello#World#!", text.replace("Hello World !", " ", "#"), "single char replacement");
+        assertEquals("Hello__World__!", text.replace("Hello World !", " ", "__"), "two char replacement");
+        assertEquals(" World !", text.replace("Hello World !", "Hello", ""), "Word removal");
     }
 
     /**
@@ -260,11 +265,11 @@ public class TextTest {
      */
     @Test
     public void test_replaceEx() {
-        Assert.assertEquals("Empty String", "", text.replaceEx("", " ", "#"));
-        Assert.assertEquals("single char replacement", "Hello#World#!", text.replaceEx("Hello World !", " ", "#"));
-        Assert.assertEquals("two char replacement", "Hello__World__!", text.replaceEx("Hello World !", " ", "__"));
-        Assert.assertEquals("Word removal", " World !", text.replaceEx("Hello World !", "Hello", ""));
-        Assert.assertEquals("replace uppers", "ello orld !", text.replaceEx("Hello World !", "[A-Z]", ""));
+        assertEquals("", text.replaceEx("", " ", "#"), "Empty String");
+        assertEquals("Hello#World#!", text.replaceEx("Hello World !", " ", "#"), "single char replacement");
+        assertEquals("Hello__World__!", text.replaceEx("Hello World !", " ", "__"), "two char replacement");
+        assertEquals(" World !", text.replaceEx("Hello World !", "Hello", ""), "Word removal");
+        assertEquals("ello orld !", text.replaceEx("Hello World !", "[A-Z]", ""), "replace uppers");
     }
 
     /**
@@ -272,15 +277,15 @@ public class TextTest {
      */
     @Test
     public void test_trim() {
-        Assert.assertEquals("Empty String", "", text.trim(""));
-        Assert.assertEquals("No White Space", "abc", text.trim("abc"));
-        Assert.assertEquals("Internal Space", "ab cd", text.trim("ab cd"));
-        Assert.assertEquals("Internal Tab", "ab\tcd", text.trim("ab\tcd"));
-        Assert.assertEquals("Leading Space", "a", text.trim(" a"));
-        Assert.assertEquals("Trailing Space", "a", text.trim("a "));
-        Assert.assertEquals("Leading Tab", "a", text.trim("\ta"));
-        Assert.assertEquals("Trailing Tab", "a", text.trim("a\t"));
-        Assert.assertEquals("Trailing and trailing spaces", "ab \tcd", text.trim(" \t ab \tcd\t \t"));
+        assertEquals("", text.trim(""), "Empty String");
+        assertEquals("abc", text.trim("abc"), "No White Space");
+        assertEquals("ab cd", text.trim("ab cd"), "Internal Space");
+        assertEquals("ab\tcd", text.trim("ab\tcd"), "Internal Tab");
+        assertEquals("a", text.trim(" a"), "Leading Space");
+        assertEquals("a", text.trim("a "), "Trailing Space");
+        assertEquals("a", text.trim("\ta"), "Leading Tab");
+        assertEquals("a", text.trim("a\t"), "Trailing Tab");
+        assertEquals("ab \tcd", text.trim(" \t ab \tcd\t \t"), "Trailing and trailing spaces");
     }
 
     /**
@@ -288,9 +293,9 @@ public class TextTest {
      */
     @Test
     public void test_isEmpty() {
-        Assert.assertTrue("Empty String", text.isEmpty(""));
-        Assert.assertFalse("Whitespace String", text.isEmpty(" \t "));
-        Assert.assertFalse("Non-empty String", text.isEmpty("x"));
+        assertTrue(text.isEmpty(""), "Empty String");
+        assertFalse(text.isEmpty(" \t "), "Whitespace String");
+        assertFalse(text.isEmpty("x"), "Non-empty String");
     }
 
     /**
@@ -298,9 +303,9 @@ public class TextTest {
      */
     @Test
     public void test_isBlank() {
-        Assert.assertTrue("Empty String", text.isBlank(""));
-        Assert.assertTrue("Whitespace String", text.isBlank(" \t "));
-        Assert.assertFalse("Non-empty String", text.isBlank("x"));
+        assertTrue(text.isBlank(""), "Empty String");
+        assertTrue(text.isBlank(" \t "), "Whitespace String");
+        assertFalse(text.isBlank("x"), "Non-empty String");
     }
 
 
@@ -309,10 +314,10 @@ public class TextTest {
      */
     @Test
     public void test_len() {
-        Assert.assertEquals("Empty String", 0, text.len(""));
-        Assert.assertEquals("Single character", 1, text.len("a"));
-        Assert.assertEquals("Whitespace", 3, text.len(" \t "));
-        Assert.assertEquals("Multiple characters", 4, text.len("abcd"));
+        assertEquals(0, text.len(""), "Empty String");
+        assertEquals(1, text.len("a"), "Single character");
+        assertEquals(3, text.len(" \t "), "Whitespace");
+        assertEquals(4, text.len("abcd"), "Multiple characters");
     }
 
     /**
@@ -320,11 +325,11 @@ public class TextTest {
      */
     @Test
     public void test_indexOf() {
-        Assert.assertEquals("Empty String", -1, text.indexOf("", "cd", minus1));
-        Assert.assertEquals("Empty search", 0, text.indexOf("abcdefabcdef", "", minus1));
-        Assert.assertEquals("Found", 2, text.indexOf("abcdefabcdef", "cd", minus1));
-        Assert.assertEquals("#1 Not found", -1, text.indexOf("abcdefabcdef", "dc", minus1));
-        Assert.assertEquals("#2 Not found", 0, text.indexOf("abcdefabcdef", "dc", zero));
+        assertEquals(-1, text.indexOf("", "cd", minus1), "Empty String");
+        assertEquals(0, text.indexOf("abcdefabcdef", "", minus1), "Empty search");
+        assertEquals(2, text.indexOf("abcdefabcdef", "cd", minus1), "Found");
+        assertEquals(-1, text.indexOf("abcdefabcdef", "dc", minus1), "#1 Not found");
+        assertEquals(0, text.indexOf("abcdefabcdef", "dc", zero), "#2 Not found");
     }
 
     /**
@@ -332,11 +337,11 @@ public class TextTest {
      */
     @Test
     public void test_lastIndexOf() {
-        Assert.assertEquals("Empty String", -1, text.lastIndexOf("", "cd", minus1));
-        Assert.assertEquals("Empty search", 12, text.lastIndexOf("abcdefabcdef", "", minus1));
-        Assert.assertEquals("Found", 8, text.lastIndexOf("abcdefabcdef", "cd", minus1));
-        Assert.assertEquals("#1 Not found", -1, text.lastIndexOf("abcdefabcdef", "dc", minus1));
-        Assert.assertEquals("#2 Not found", 0, text.lastIndexOf("abcdefabcdef", "dc", zero));
+        assertEquals(-1, text.lastIndexOf("", "cd", minus1), "Empty String");
+        assertEquals(12, text.lastIndexOf("abcdefabcdef", "", minus1), "Empty search");
+        assertEquals(8, text.lastIndexOf("abcdefabcdef", "cd", minus1), "Found");
+        assertEquals(-1, text.lastIndexOf("abcdefabcdef", "dc", minus1), "#1 Not found");
+        assertEquals(0, text.lastIndexOf("abcdefabcdef", "dc", zero), "#2 Not found");
     }
 
 
@@ -345,19 +350,19 @@ public class TextTest {
      */
     @Test
     public void test_nthIndexOf_after() {
-        Assert.assertEquals("empty text", 0, text.nthIndexOf("", "~", 1, Text.Direction.AFTER));
-        Assert.assertEquals("empty delimiter", 0, text.nthIndexOf("ab~cd~ef~gh", "", 1, Text.Direction.AFTER));
+        assertEquals(0, text.nthIndexOf("", "~", 1, Text.Direction.AFTER), "empty text");
+        assertEquals(0, text.nthIndexOf("ab~cd~ef~gh", "", 1, Text.Direction.AFTER), "empty delimiter");
 
-        Assert.assertEquals("0th element", 0, text.nthIndexOf("ab~cd~ef~gh", "~", 0, Text.Direction.AFTER));
-        Assert.assertEquals("1st element", 3, text.nthIndexOf("ab~cd~ef~gh", "~", 1, Text.Direction.AFTER));
-        Assert.assertEquals("2nd element", 6, text.nthIndexOf("ab~cd~ef~gh", "~", 2, Text.Direction.AFTER));
-        Assert.assertEquals("3rd element", 9, text.nthIndexOf("ab~cd~ef~gh", "~", 3, Text.Direction.AFTER));
-        Assert.assertEquals("4th element", 11, text.nthIndexOf("ab~cd~ef~gh", "~", 4, Text.Direction.AFTER));
-        Assert.assertEquals("5th element", 11, text.nthIndexOf("ab~cd~ef~gh", "~", 5, Text.Direction.AFTER));
+        assertEquals(0, text.nthIndexOf("ab~cd~ef~gh", "~", 0, Text.Direction.AFTER), "0th element");
+        assertEquals(3, text.nthIndexOf("ab~cd~ef~gh", "~", 1, Text.Direction.AFTER), "1st element");
+        assertEquals(6, text.nthIndexOf("ab~cd~ef~gh", "~", 2, Text.Direction.AFTER), "2nd element");
+        assertEquals(9, text.nthIndexOf("ab~cd~ef~gh", "~", 3, Text.Direction.AFTER), "3rd element");
+        assertEquals(11, text.nthIndexOf("ab~cd~ef~gh", "~", 4, Text.Direction.AFTER), "4th element");
+        assertEquals(11, text.nthIndexOf("ab~cd~ef~gh", "~", 5, Text.Direction.AFTER), "5th element");
 
-        Assert.assertEquals("Long delimiter", 8, text.nthIndexOf("ab~.cd~.ef~.gh", "~.", 2, Text.Direction.AFTER));
-        Assert.assertEquals("Same char delimiter", 8, text.nthIndexOf("ab@@cd@@ef@@gh", "@@", 2, Text.Direction.AFTER));
-        Assert.assertEquals("extended delimiter", 9, text.nthIndexOf("ab@@@cd@@@ef@@@gh", "@@", 2, Text.Direction.AFTER));
+        assertEquals(8, text.nthIndexOf("ab~.cd~.ef~.gh", "~.", 2, Text.Direction.AFTER), "Long delimiter");
+        assertEquals(8, text.nthIndexOf("ab@@cd@@ef@@gh", "@@", 2, Text.Direction.AFTER), "Same char delimiter");
+        assertEquals(9, text.nthIndexOf("ab@@@cd@@@ef@@@gh", "@@", 2, Text.Direction.AFTER), "extended delimiter");
     }
 
     /**
@@ -365,17 +370,17 @@ public class TextTest {
      */
     @Test
     public void test_nthIndexOf_before() {
-        Assert.assertEquals("empty text", 0, text.nthIndexOf("", "~", 1, Text.Direction.BEFORE));
-        Assert.assertEquals("empty delimiter", 0, text.nthIndexOf("ab~cd~ef~gh", "", 1, Text.Direction.BEFORE));
-        Assert.assertEquals("0th element", 0, text.nthIndexOf("ab~cd~ef~gh", "~", 0, Text.Direction.BEFORE));
-        Assert.assertEquals("1st element", 2, text.nthIndexOf("ab~cd~ef~gh", "~", 1, Text.Direction.BEFORE));
-        Assert.assertEquals("2nd element", 5, text.nthIndexOf("ab~cd~ef~gh", "~", 2, Text.Direction.BEFORE));
-        Assert.assertEquals("3rd element", 8, text.nthIndexOf("ab~cd~ef~gh", "~", 3, Text.Direction.BEFORE));
-        Assert.assertEquals("4th element", 11, text.nthIndexOf("ab~cd~ef~gh", "~", 4, Text.Direction.BEFORE));
-        Assert.assertEquals("5th element", 11, text.nthIndexOf("ab~cd~ef~gh", "~", 5, Text.Direction.BEFORE));
+        assertEquals(0, text.nthIndexOf("", "~", 1, Text.Direction.BEFORE), "empty text");
+        assertEquals(0, text.nthIndexOf("ab~cd~ef~gh", "", 1, Text.Direction.BEFORE), "empty delimiter");
+        assertEquals(0, text.nthIndexOf("ab~cd~ef~gh", "~", 0, Text.Direction.BEFORE), "0th element");
+        assertEquals(2, text.nthIndexOf("ab~cd~ef~gh", "~", 1, Text.Direction.BEFORE), "1st element");
+        assertEquals(5, text.nthIndexOf("ab~cd~ef~gh", "~", 2, Text.Direction.BEFORE), "2nd element");
+        assertEquals(8, text.nthIndexOf("ab~cd~ef~gh", "~", 3, Text.Direction.BEFORE), "3rd element");
+        assertEquals(11, text.nthIndexOf("ab~cd~ef~gh", "~", 4, Text.Direction.BEFORE), "4th element");
+        assertEquals(11, text.nthIndexOf("ab~cd~ef~gh", "~", 5, Text.Direction.BEFORE), "5th element");
 
-        Assert.assertEquals("Long delimiter", 6, text.nthIndexOf("ab~.cd~.ef~.gh", "~.", 2, Text.Direction.BEFORE));
-        Assert.assertEquals("Same char delimiter", 6, text.nthIndexOf("ab@@cd@@ef@@gh", "@@", 2, Text.Direction.BEFORE));
-        Assert.assertEquals("extended delimiter", 7, text.nthIndexOf("ab@@@cd@@@ef@@@gh", "@@", 2, Text.Direction.BEFORE));
+        assertEquals(6, text.nthIndexOf("ab~.cd~.ef~.gh", "~.", 2, Text.Direction.BEFORE), "Long delimiter");
+        assertEquals(6, text.nthIndexOf("ab@@cd@@ef@@gh", "@@", 2, Text.Direction.BEFORE), "Same char delimiter");
+        assertEquals(7, text.nthIndexOf("ab@@@cd@@@ef@@@gh", "@@", 2, Text.Direction.BEFORE), "extended delimiter");
     }
 }

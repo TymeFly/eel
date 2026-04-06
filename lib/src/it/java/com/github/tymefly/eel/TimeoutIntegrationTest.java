@@ -1,30 +1,32 @@
 package com.github.tymefly.eel;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+import java.time.Instant;
 
 import com.github.tymefly.eel.exception.EelTimeoutException;
 import func.Delay;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Stopwatch;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
  * Integration Test for expression timeouts
  */
+@ExtendWith(SystemStubsExtension.class)
 public class TimeoutIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
-
-    @Rule
-    public Stopwatch stopwatch = new Stopwatch();
+    @SystemStub
+    private SystemErr stdErr;
 
 
     private static final long DURATION_TOLERANCE = 500;
@@ -35,17 +37,18 @@ public class TimeoutIntegrationTest {
      */
     @Test
     public void test_delay() {
-        EelTimeoutException actual = Assert.assertThrows(EelTimeoutException.class, () -> Eel.factory()
+        Instant start = Instant.now();
+        EelTimeoutException actual = assertThrows(EelTimeoutException.class, () -> Eel.factory()
             .withUdfClass(Delay.class)
             .withTimeout(Duration.ofSeconds(5))
             .compile("$( test.delay( 30 ) )")
             .evaluate()
             .asText());
 
-        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
+        long duration = Duration.between(start, Instant.now()).toMillis();
 
-        Assert.assertEquals("Unexpected message", "EEL Timeout after 5 second(s)", actual.getMessage());
-        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 5_000));
+        assertEquals("EEL Timeout after 5 second(s)", actual.getMessage(), "Unexpected message");
+        assertTrue(validateDuration(duration, 5_000), "Unexpected duration of " + duration + "ms");
     }
 
     /**
@@ -53,17 +56,18 @@ public class TimeoutIntegrationTest {
      */
     @Test
     public void test_sleep_expectTimeout() {
-        EelTimeoutException actual = Assert.assertThrows(EelTimeoutException.class, () -> Eel.factory()
+        Instant start = Instant.now();
+        EelTimeoutException actual = assertThrows(EelTimeoutException.class, () -> Eel.factory()
             .withUdfClass(Delay.class)
             .withTimeout(Duration.ofSeconds(5))
             .compile("$( test.sleep( 30 ) )")
             .evaluate()
             .asText());
 
-        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
+        long duration = Duration.between(start, Instant.now()).toMillis();
 
-        Assert.assertEquals("Unexpected message", "EEL Timeout after 5 second(s)", actual.getMessage());
-        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 5_000));
+        assertEquals("EEL Timeout after 5 second(s)", actual.getMessage(), "Unexpected message");
+        assertTrue(validateDuration(duration, 5_000), "Unexpected duration of " + duration + "ms");
     }
 
     /**
@@ -71,6 +75,7 @@ public class TimeoutIntegrationTest {
      */
     @Test
     public void test_sleep_shouldNotTimeOut() {
+        Instant start = Instant.now();
         String actual = Eel.factory()
             .withUdfClass(Delay.class)
             .withTimeout(Duration.ofSeconds(15))
@@ -78,10 +83,10 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText();
 
-        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
+        long duration = Duration.between(start, Instant.now()).toMillis();
 
-        Assert.assertEquals("Unexpected message", "Slept for 3 seconds", actual);
-        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 3_000));
+        assertEquals("Slept for 3 seconds", actual, "Unexpected message");
+        assertTrue(validateDuration(duration, 3_000), "Unexpected duration of " + duration + "ms");
     }
 
 
@@ -90,6 +95,7 @@ public class TimeoutIntegrationTest {
      */
     @Test
     public void test_sleep_disableTimeout() {
+        Instant start = Instant.now();
         String actual = Eel.factory()
             .withUdfClass(Delay.class)
             .withTimeout(Duration.ofSeconds(0))
@@ -97,10 +103,10 @@ public class TimeoutIntegrationTest {
             .evaluate()
             .asText();
 
-        long duration = stopwatch.runtime(TimeUnit.MILLISECONDS);
+        long duration = Duration.between(start, Instant.now()).toMillis();
 
-        Assert.assertEquals("Unexpected message", "Slept for 3 seconds", actual);
-        Assert.assertTrue("Unexpected duration of " + duration + "ms", validateDuration(duration, 3_000));
+        assertEquals("Slept for 3 seconds", actual, "Unexpected message");
+        assertTrue(validateDuration(duration, 3_000), "Unexpected duration of " + duration + "ms");
     }
 
 

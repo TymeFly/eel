@@ -2,10 +2,10 @@ package com.github.tymefly.eel.function.eel;
 
 import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.Metadata;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 public class EelMetadataTest {
     private EelContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Metadata info = mock();
 
@@ -36,7 +36,7 @@ public class EelMetadataTest {
      */
     @Test
     public void test_version() {
-        Assert.assertEquals("Unexpected version", "mockedVersion", new EelMetadata().version(context));
+        assertEquals("mockedVersion", new EelMetadata().version(context), "Unexpected version");
     }
 
     /**
@@ -44,6 +44,6 @@ public class EelMetadataTest {
      */
     @Test
     public void test_buildDate() {
-        Assert.assertEquals("Unexpected buildDate", EelContext.FALSE_DATE, new EelMetadata().buildDate(context));
+        assertEquals(EelContext.FALSE_DATE, new EelMetadata().buildDate(context), "Unexpected buildDate");
     }
 }

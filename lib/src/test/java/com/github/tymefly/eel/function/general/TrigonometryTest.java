@@ -3,9 +3,11 @@ package com.github.tymefly.eel.function.general;
 import java.math.BigDecimal;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link Trigonometry}
@@ -13,7 +15,7 @@ import org.junit.Test;
 public class TrigonometryTest {
     private EelContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withPrecision(5)
@@ -25,7 +27,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_Sin() {
-        Assert.assertEquals("sin", new BigDecimal("-0.21891"), new Trigonometry().sin(context, new BigDecimal("12.345678")));
+        assertEquals(new BigDecimal("-0.21891"), new Trigonometry().sin(context, new BigDecimal("12.345678")), "sin");
     }
 
 
@@ -34,7 +36,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_cos() {
-        Assert.assertEquals("cos", new BigDecimal("0.32993"), new Trigonometry().cos(context, new BigDecimal("1.2345678")));
+        assertEquals(new BigDecimal("0.32993"), new Trigonometry().cos(context, new BigDecimal("1.2345678")), "cos");
     }
 
 
@@ -43,7 +45,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_tan() {
-        Assert.assertEquals("tan", new BigDecimal("-0.22435"), new Trigonometry().tan(context, new BigDecimal("12.345678")));
+        assertEquals(new BigDecimal("-0.22435"), new Trigonometry().tan(context, new BigDecimal("12.345678")), "tan");
     }
 
 
@@ -52,7 +54,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_asin() {
-        Assert.assertEquals("asin", new BigDecimal("0.12377"), new Trigonometry().asin(context, new BigDecimal("0.12345678")));
+        assertEquals(new BigDecimal("0.12377"), new Trigonometry().asin(context, new BigDecimal("0.12345678")), "asin");
     }
 
     /**
@@ -60,7 +62,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_asin_rangeError() {
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> new Trigonometry().asin(context, new BigDecimal("12345.678")));
     }
 
@@ -70,7 +72,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_acos() {
-        Assert.assertEquals("acos", new BigDecimal("1.4470"), new Trigonometry().acos(context, new BigDecimal("0.12345678")));
+        assertEquals(new BigDecimal("1.4470"), new Trigonometry().acos(context, new BigDecimal("0.12345678")), "acos");
     }
 
     /**
@@ -78,7 +80,7 @@ public class TrigonometryTest {
      */
     @Test
     public void test_acos_rangeError() {
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> new Trigonometry().acos(context, new BigDecimal("12345.678")));
     }
 
@@ -88,6 +90,6 @@ public class TrigonometryTest {
      */
     @Test
     public void test_Atan() {
-        Assert.assertEquals("atan", new BigDecimal("1.5627"), new Trigonometry().atan(context, new BigDecimal("123.45678")));
+        assertEquals(new BigDecimal("1.5627"), new Trigonometry().atan(context, new BigDecimal("123.45678")), "atan");
     }
 }

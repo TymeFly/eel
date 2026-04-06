@@ -89,7 +89,7 @@ class NumberParser {
 
     private final Input input;
     private final StringBuilder raw;                // All characters read from input to parse the number
-    private final StringBuilder text;               // chars used to parse value. No base modifiers or groupings
+    private final StringBuilder text;               // Chars used to parse value. No base modifiers or groupings
     private BigDecimal value;
     private boolean isDecimal;
 

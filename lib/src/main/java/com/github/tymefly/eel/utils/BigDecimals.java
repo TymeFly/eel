@@ -99,4 +99,14 @@ public class BigDecimals {
 
         return result;
     }
+
+
+    /**
+     * Returns {@literal true} only if the {@code value} does not have a fractional part.
+     * @param value     value to test
+     * @return {@literal true} only if the {@code value} does not have a fractional part.
+     */
+    public static boolean isIntegral(@Nonnull BigDecimal value) {
+        return value.stripTrailingZeros().scale() <= 0;
+    }
 }

@@ -6,7 +6,7 @@ The source code contains the following modules:
 * **integration** - helper classes that can be used to integrate EEL with JVM applications
 * **evaluate** - EEL Command Line Interface 
 * **parent** - Common definitions used by the previous modules 
-* **doclet** - A Java Doclet that generates the user documentation for EEL functions. 
+* **doclet** - A Java Doclet that generates HTML user documentation for EEL functions. 
   Its usage is described in [User Defined Functions](User%20Defined%20Functions.md#eeldoc) manual 
 * **docs** - The user documentation for the standard EEL functions
 
@@ -55,7 +55,7 @@ EelContext objects are built using a fluent API; the entry point is `EelContext.
 
 This is where the source expression is compiled. Like any other program, a compiled expression can be executed multiple
 times. This could be useful if an expression makes use of functions that return different values each time 
-the expression is evaluated, for example, reading the current date/time, examining the file system, generating random 
+the expression is evaluated. For example, reading the current date/time, examining the file system, generating random 
 numbers/text or reading a counter. 
 Alternatively, the expression could be evaluated with a different SymbolsTable (see below) which could also cause 
 EEL to return a different [Result](#result)
@@ -237,7 +237,7 @@ For example:
 In this example the type of the data in the Result object is checked and then read using an appropriate getter
 method. 
 
-If the data does not match the type expected by the getter method the Result object will try to convert the
+If the data does not match the type expected by the getter method, the Result object will try to convert the
 data to the required type. As all data can be represented as text, it will always be possible to read the result using
 `asText()`. The rules for converting values are described in the [Data types](The%20EEL%20Language.md#data-types)
 section of this document.
@@ -309,6 +309,7 @@ The dependant libraries are:
 * **org.slf4j:slf4j-api** - the logging facade
 * **com.google.code.findbugs:jsr305** - used internally for tracking null/non-null object references
 * **com.github.spotbugs:spotbugs-annotations** - used internally for bug checking annotations
+* Several build-time libraries used for testing purposes
 
 Evaluate has one additional dependency:
 * **args4j:args4j** - Command line argument parsing

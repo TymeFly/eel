@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -65,11 +65,20 @@
                                 </tr>
                                 <tr class="col-types">
                                     <td>
-                                        <code class="section-link"><a href="#text.random">text.random(width, validCharacters)</a></code>
+                                        <code class="section-link"><a href="#text.index">text.index(find, values...)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the 1-based index of the first <code>Value</code> whose text representation matches the <code>find</code> text.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#text.random">text.random(length, validCharacters)</a></code>
                                     </td>
                                     <td>Text</td>
                                     <td>
-                                        Generates random text of the specified length, using a set of valid characters which may be customised.
+                                        Generates random text of the specified length from a set of characters, which may be customised.
                                     </td>
                                 </tr>
                             </tbody>
@@ -92,28 +101,86 @@
                 <hr>
             </span>
             <section class="function-description">
-                <h2 class="block-name" id="text.random">text.random(width, validCharacters)</h2>
+                <h2 class="block-name" id="text.index">text.index(find, values...)</h2>
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Generates random text of the specified length, using a set of valid characters which may be customised. This function does not guarantee that a character is chosen from each of the ranges within <code>validCharacters</code> or that all characters in the generated text are unique.
+                            Returns the 1-based index of the first <code>Value</code> whose text representation matches the <code>find</code> text. This function can be used with a compound statement to determine the index of a lookback, for example: <br><code>$( exp1; exp2; exp3; $[text.index(&#x27;search&#x27;, value1, value2, value3)-NotFound] )</code>
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
-                            <div><code>text.random()</code></div>
-                            <div><code>text.random(width)</code></div>
-                            <div><code>text.random(width, validCharacters)</code></div>
+                            <div><code>text.index(find, values...)</code></div>
                         </div>
                         <section>
                             <div class="block-detail-section">
                                 <h3>Parameters:</h3>
                                 <div class="parameter-block">
                                     <div>
-                                        <code>width</code>
+                                        <code>find</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The value to search for</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>values...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">One or more values to test, in the order they should be evaluated</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The 1-based index of the first matching value, or <code>-1</code> if no match is found</span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">3.2</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
+            <section class="function-description">
+                <h2 class="block-name" id="text.random">text.random(length, validCharacters)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Generates random text of the specified length from a set of characters, which may be customised. This function does not guarantee that a character is chosen from each range within <code>validCharacters</code> or that all characters in the generated text are unique.
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>text.random()</code></div>
+                            <div><code>text.random(length)</code></div>
+                            <div><code>text.random(length, validCharacters)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>length</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">10</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The length of the returned text.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The length of the returned text; must be greater than 0</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +190,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Text</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">A-Za-z0-9</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The characters that may appear in the returned text. Ranges can be specified using a dash (<code> -</code>), for example <code>a-z</code> or <code>0-9</code>. A literal dash (<code> -</code>) can be included if it is the first or last character.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The characters that may appear in the returned text. Ranges can be specified using a dash (<code> -</code>), for example <code>a-z</code> or <code>0-9</code>. A literal dash (<code> -</code>) can be included in the set of valid characters so long as it is either the first or last character specified</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -137,7 +204,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">Random text of the specified length.</span>
+                                    <span class="description">Random text of the specified length</span>
                                 </div>
                             </span>
                         </div>
@@ -145,7 +212,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">3.0.0</span>
+                                    <span class="description">3.0</span>
                                 </div>
                             </span>
                         </div>
@@ -156,7 +223,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

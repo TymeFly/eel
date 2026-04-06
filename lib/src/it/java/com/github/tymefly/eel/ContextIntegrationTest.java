@@ -1,24 +1,35 @@
 package com.github.tymefly.eel;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
+import com.github.tymefly.eel.exception.EelRuntimeException;
 import func.functions.Plus1;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Integration Tests on the EEL Context
  */
+@ExtendWith(SystemStubsExtension.class)
 public class ContextIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
 
     /**
@@ -31,13 +42,13 @@ public class ContextIntegrationTest {
             .withTimeout(Duration.ofSeconds(0))
             .build();
 
-        Assert.assertEquals("Exp1",
-            12,
-            Eel.compile(context, "$( test.plus1(11))").evaluate().asNumber().intValue());
+        assertEquals(12,
+            Eel.compile(context, "$( test.plus1(11))").evaluate().asNumber().intValue(),
+            "Exp1");
 
-        Assert.assertEquals("Exp2",
-            37,
-            Eel.compile(context, "$( test.plus1(test.sum(11, 12, 13)) )").evaluate().asInt());
+        assertEquals(37,
+            Eel.compile(context, "$( test.plus1(test.sum(11, 12, 13)) )").evaluate().asInt(),
+            "Exp2");
     }
 
 
@@ -46,15 +57,15 @@ public class ContextIntegrationTest {
      */
     @Test
     public void test_maxExpressionSize() {
-        EelSourceException actual = Assert.assertThrows(EelSourceException.class,
+        EelSourceException actual = assertThrows(EelSourceException.class,
             () -> Eel.factory()
                 .withMaxExpressionSize(10)
                 .withTimeout(Duration.ofSeconds(0))
                 .compile("1234567890a"));
 
-        Assert.assertEquals("Unexpected error",
-            "Attempt to read beyond maximum expression length of 10 bytes",
-            actual.getMessage());
+        assertEquals("Attempt to read beyond maximum expression length of 10 bytes",
+            actual.getMessage(),
+            "Unexpected error");
     }
 
     /**
@@ -68,7 +79,7 @@ public class ContextIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected value", "Result is 0.3333333333333333", actual);
+        assertEquals("Result is 0.3333333333333333", actual, "Unexpected value");
     }
 
     /**
@@ -83,7 +94,7 @@ public class ContextIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected value", "Result is 0.3", actual);
+        assertEquals("Result is 0.3", actual, "Unexpected value");
     }
 
     /**
@@ -98,7 +109,7 @@ public class ContextIntegrationTest {
             .evaluate()
             .asText();
 
-        Assert.assertEquals("Unexpected value", "Result is 0.333333", actual);
+        assertEquals("Result is 0.333333", actual, "Unexpected value");
     }
 
 
@@ -113,7 +124,7 @@ public class ContextIntegrationTest {
         int first = expression.evaluate().asInt();
         int second = expression.evaluate().asInt();
 
-        Assert.assertEquals("Default Context was not reused", (first + 1), second);
+        assertEquals((first + 1), second, "Default Context was not reused");
     }
 
     /**
@@ -132,6 +143,63 @@ public class ContextIntegrationTest {
         ZonedDateTime second = expression.evaluate()
             .asDate();
 
-        Assert.assertEquals("Default Context was not reused", first, second);
+        assertEquals(first, second, "Default Context was not reused");
+    }
+
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_FileFactory_Allowed() {
+        Eel expression = Eel.factory()
+            .withFileFactory(File::new)
+            .compile("$io.head('pom.xml', 1)");
+
+        assertDoesNotThrow(() -> expression.evaluate());
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_FileFactory_NormalRules() {
+        boolean isWindows = '\\' == File.separatorChar;
+        String blackDir = (isWindows ? System.getenv("ProgramFiles") : "/bin");
+        String fileName = (blackDir + "/file.txt").replace('\\', '/');
+        Eel expression = Eel.factory()
+            .withFileFactory(File::new)                             // Don't replace the inbuilt restrictions
+            .compile("$io.head('" + fileName + "', 1)");
+
+        Exception actual = assertThrows(EelRuntimeException.class, expression::evaluate);
+
+        assertEquals(actual.getMessage(), "File Factory for '" + fileName + "' failed", "Unexpected message");
+
+        Throwable cause = actual.getCause();
+
+        assertInstanceOf(IOException.class, cause, "Unexpected cause type");
+        assertTrue(cause.getMessage().matches("Path '[^']+' is in a sensitive part of the local file system"),
+            "Unexpected cause message");
+    }
+
+    /**
+     * Integration test {@link Eel}
+     */
+    @Test
+    public void test_FileFactory_BlockAll() {
+        Eel expression = Eel.factory()
+            .withFileFactory(f -> {
+                throw new IOException("Don't read file: " + f);
+            })
+            .compile("$io.head('pom.xml', 1)");
+
+        Exception actual = assertThrows(EelRuntimeException.class, expression::evaluate);
+
+        assertEquals(actual.getMessage(), "File Factory for 'pom.xml' failed", "Unexpected message");
+
+        Throwable cause = actual.getCause();
+
+        assertInstanceOf(IOException.class, cause, "Unexpected cause type");
+        assertEquals("Don't read file: pom.xml", cause.getMessage(), "Unexpected cause message");
     }
 }

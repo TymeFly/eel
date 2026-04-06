@@ -1,7 +1,6 @@
 package com.github.tymefly.eel;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
@@ -32,6 +31,7 @@ import com.github.tymefly.eel.function.format.FormatDate;
 import com.github.tymefly.eel.function.general.Text;
 import com.github.tymefly.eel.function.io.FileIo;
 import com.github.tymefly.eel.function.log.EelLogger;
+import com.github.tymefly.eel.function.logic.LogicIndex;
 import com.github.tymefly.eel.function.number.Constants;
 import com.github.tymefly.eel.function.system.FileSystem;
 import com.github.tymefly.eel.function.text.RandomText;
@@ -91,6 +91,7 @@ class FunctionManager {
             FileIo.class.getPackage(),                          // Io functions
             RandomText.class.getPackage(),                      // Text functions
             Constants.class.getPackage(),                       // Number functions
+            LogicIndex.class.getPackage(),                      // Logic functions
             DateFactory.class.getPackage(),                     // Date functions
             EelLogger.class.getPackage(),                       // Log functions
             FormatDate.class.getPackage()                       // Formatting
@@ -242,28 +243,28 @@ class FunctionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final Map<Class<?>, Object> INSTANCE_CACHE = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, Function<Value, Object>> ARGUMENT_CONVERSIONS = Map.ofEntries(
-        entry(Value.class, v -> v),
-        entry(String.class, Value::asText),
-        entry(Boolean.class, Value::asLogic),
-        entry(boolean.class, Value::asLogic),
-        entry(Byte.class, v -> v.asNumber().byteValue()),
-        entry(byte.class, v -> v.asNumber().byteValue()),
-        entry(Short.class, v -> v.asNumber().shortValue()),
-        entry(short.class, v -> v.asNumber().shortValue()),
-        entry(Integer.class, Value::asInt),
-        entry(int.class, Value::asInt),
-        entry(Long.class, Value::asLong),
-        entry(long.class, Value::asLong),
-        entry(Float.class, v -> v.asNumber().floatValue()),
-        entry(float.class, v -> v.asNumber().floatValue()),
-        entry(Double.class, Value::asDouble),
-        entry(double.class, Value::asDouble),
-        entry(BigInteger.class, Value::asBigInteger),
-        entry(BigDecimal.class, Value::asNumber),
-        entry(ZonedDateTime.class, Value::asDate),
-        entry(Character.class, Value::asChar),
-        entry(char.class, Value::asChar),
+    private static final Map<Class<?>, BiFunction<EelContextImpl, Value, Object>> ARGUMENT_CONVERSIONS = Map.ofEntries(
+        entry(Value.class, (c, v) -> v),
+        entry(String.class, (c, v) -> v.asText()),
+        entry(Boolean.class, (c, v) -> v.asLogic()),
+        entry(boolean.class, (c, v) -> v.asLogic()),
+        entry(Byte.class, (c, v) -> v.asNumber().byteValue()),
+        entry(byte.class, (c, v) -> v.asNumber().byteValue()),
+        entry(Short.class, (c, v) -> v.asNumber().shortValue()),
+        entry(short.class, (c, v) -> v.asNumber().shortValue()),
+        entry(Integer.class, (c, v) -> v.asInt()),
+        entry(int.class, (c, v) -> v.asInt()),
+        entry(Long.class, (c, v) -> v.asLong()),
+        entry(long.class, (c, v) -> v.asLong()),
+        entry(Float.class, (c, v) ->  v.asNumber().floatValue()),
+        entry(float.class, (c, v) -> v.asNumber().floatValue()),
+        entry(Double.class, (c, v) -> v.asDouble()),
+        entry(double.class, (c, v) -> v.asDouble()),
+        entry(BigInteger.class, (c, v) -> v.asBigInteger()),
+        entry(BigDecimal.class, (c, v) -> v.asNumber()),
+        entry(ZonedDateTime.class, (c, v) -> v.asDate()),
+        entry(Character.class, (c, v) -> v.asChar()),
+        entry(char.class, (c, v) -> v.asChar()),
         entry(File.class, FunctionManager::asFile)
     );
 
@@ -277,8 +278,8 @@ class FunctionManager {
 
 
     @Nonnull
-    Term compileCall(@Nonnull String functionName,
-                     @Nonnull EelContext context,
+    Term compileCall(@Nonnull EelContextImpl context,
+                     @Nonnull String functionName,
                      @Nonnull List<Term> argumentList) {
         Description description = descriptions.get(functionName);
 
@@ -290,7 +291,7 @@ class FunctionManager {
         Class<?> implementation = entryPoint.getDeclaringClass();
         Object instance = INSTANCE_CACHE.computeIfAbsent(implementation, this::createInstance);
 
-        return s -> invokeFunction(functionName, instance, entryPoint, s, context, argumentList);
+        return s -> invokeFunction(context, functionName, instance, entryPoint, s, argumentList);
     }
 
 
@@ -311,13 +312,13 @@ class FunctionManager {
 
 
     @Nonnull
-    private Value invokeFunction(@Nonnull String name,
+    private Value invokeFunction(@Nonnull EelContextImpl context,
+                                 @Nonnull String name,
                                  @Nonnull Object instance,
                                  @Nonnull Method entryPoint,
                                  @Nonnull SymbolsTable symbols,
-                                 @Nonnull EelContext context,
                                  @Nonnull List<Term> argumentList) {
-        Object[] arguments = buildArguments(name, entryPoint, symbols, context, argumentList);
+        Object[] arguments = buildArguments(context, name, entryPoint, symbols, argumentList);
         Object returned;
 
         try {
@@ -341,10 +342,10 @@ class FunctionManager {
 
 
     @Nonnull
-    private Object[] buildArguments(@Nonnull String name,
+    private Object[] buildArguments(@Nonnull EelContextImpl context,
+                                    @Nonnull String name,
                                     @Nonnull Method entryPoint,
                                     @Nonnull SymbolsTable symbols,
-                                    @Nonnull EelContext context,
                                     @Nonnull List<Term> argumentList) {
         Parameter[] params = entryPoint.getParameters();
         int actualSize = entryPoint.getParameterCount();
@@ -364,13 +365,14 @@ class FunctionManager {
             } else if (parameter.getType() == FunctionalResource.class) {
                 actual[paramIndex] = new FunctionalResourceImpl(context, entryPoint.getDeclaringClass());
             } else if (isVarArgs) {
-                actual[paramIndex] = varArgs(name, symbols, argumentList, argumentIndex, paramType.getComponentType());
+                actual[paramIndex] =
+                    varArgs(context, name, symbols, argumentList, argumentIndex, paramType.getComponentType());
                 argumentIndex++;
             } else if (argumentIndex < argumentList.size()) {
-                actual[paramIndex] = convertArgument(name, symbols, argumentList, argumentIndex, paramType);
+                actual[paramIndex] = convertArgument(context, name, symbols, argumentList, argumentIndex, paramType);
                 argumentIndex++;
             } else {
-                actual[paramIndex] = defaultArgument(name, parameter, paramIndex, paramType);
+                actual[paramIndex] = defaultArgument(context, name, parameter, paramIndex, paramType);
             }
         }
 
@@ -383,7 +385,8 @@ class FunctionManager {
     }
 
     @Nonnull
-    private Object convertArgument(@Nonnull String name,
+    private Object convertArgument(@Nonnull EelContextImpl context,
+                                   @Nonnull String name,
                                    @Nonnull SymbolsTable symbols,
                                    @Nonnull List<Term> argumentList,
                                    int index,
@@ -396,32 +399,29 @@ class FunctionManager {
         } else {
             Value value = argument.evaluate(symbols);
 
-            converted = convert(name, index, targetType, value);
+            converted = convert(context, name, index, targetType, value);
         }
 
         return converted;
     }
 
     @Nonnull
-    private Object convert(@Nonnull String name, int index, @Nonnull Class<?> targetType, @Nonnull Value value) {
-        return ARGUMENT_CONVERSIONS.getOrDefault(targetType, (k) -> {
+    private Object convert(@Nonnull EelContextImpl context,
+                           @Nonnull String name, int index,
+                           @Nonnull Class<?> targetType,
+                           @Nonnull Value value) {
+        return ARGUMENT_CONVERSIONS.getOrDefault(targetType, (c, k) -> {
                 throw new EelFunctionException("Argument %d for function '%s' is of unsupported type %s",
                     index, name, targetType.getName());
             }
-        ).apply(value);
+        ).apply(context, value);
     }
 
 
     @Nonnull
-    private static File asFile(@Nonnull Value fileName) {
+    private static File asFile(@Nonnull EelContextImpl context, @Nonnull Value fileName) {
         String path = fileName.asText();
-        File result;
-
-        try {
-            result = FileFactory.from(path);
-        } catch (IOException e) {
-            throw new EelFunctionException("File '" + path + "' accesses a sensitive part of the filesystem", e);
-        }
+        File result = context.getFile(path);
 
         return result;
     }
@@ -429,7 +429,8 @@ class FunctionManager {
 
 
     @Nonnull
-    private Object defaultArgument(@Nonnull String name,
+    private Object defaultArgument(@Nonnull EelContextImpl context,
+                                   @Nonnull String name,
                                    @Nonnull Parameter parameter,
                                    int index,
                                    @Nonnull Class<?> targetType) {
@@ -442,14 +443,15 @@ class FunctionManager {
 
         String to = annotation.value();
         Value value = Value.of(to);
-        Object argument = convert(name, index, targetType, value);
+        Object argument = convert(context, name, index, targetType, value);
 
         return argument;
     }
 
 
     @Nonnull
-    private Object varArgs(@Nonnull String name,
+    private Object varArgs(@Nonnull EelContextImpl context,
+                           @Nonnull String name,
                            @Nonnull SymbolsTable symbols,
                            @Nonnull List<Term> argumentList,
                            int passedIndex,
@@ -459,7 +461,7 @@ class FunctionManager {
         int varArgIndex = 0;
 
         while (passedIndex != argumentList.size()) {
-            Object converted = convertArgument(name, symbols, argumentList, passedIndex, targetType);
+            Object converted = convertArgument(context, name, symbols, argumentList, passedIndex, targetType);
 
             Array.set(varArgs, varArgIndex++, converted);
             passedIndex++;

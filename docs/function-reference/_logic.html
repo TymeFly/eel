@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -60,7 +60,16 @@
                                         </code>
                                     </td>
                                     <td>
-                                        <i>Reserved for future functions that manipulate or generate logic values.</i>
+                                        Functions that manipulate or generate logical values.
+                                    </td>
+                                </tr>
+                                <tr class="col-types">
+                                    <td>
+                                        <code class="section-link"><a href="#logic.index">logic.index(values...)</a></code>
+                                    </td>
+                                    <td>Number</td>
+                                    <td>
+                                        Returns the 1-based index of the first <span class="literal">true</span><code>value</code> in the given sequence.
                                     </td>
                                 </tr>
                             </tbody>
@@ -75,17 +84,66 @@
                     <section class="overview-description">
                         <div class="block-detail">
                             <div class="description">
-                                <i>Reserved for future functions that manipulate or generate logic values.</i>
+                                Functions that manipulate or generate logical values.
                             </div>
                         </div>
                     </section>
                 </section>
                 <hr>
             </span>
+            <section class="function-description">
+                <h2 class="block-name" id="logic.index">logic.index(values...)</h2>
+                <section class="block-description">
+                    <div class="block-detail">
+                        <div class="description">
+                            Returns the 1-based index of the first <span class="literal">true</span><code>value</code> in the given sequence. This function can be used with a compound statement to determine the index of a lookback, for example: <br><code>$( exp1; exp2; exp3; $[logic.index(value1, value2, value3)-NotFound] )</code>
+                        </div>
+                        <div class="block-detail-section">
+                            <h3>Called as:</h3>
+                            <div><code>logic.index(values...)</code></div>
+                        </div>
+                        <section>
+                            <div class="block-detail-section">
+                                <h3>Parameters:</h3>
+                                <div class="parameter-block">
+                                    <div>
+                                        <code>values...</code>
+                                        <div class="parameter-description">
+                                            <div><span class="description-title">Type : </span><code class="parameterType description">Value</code></div>
+                                            <div><span class="description-title">Description : </span><span class="description">One or more values to test, in the order they should be evaluated</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="block-detail-section">
+                            <h3>Return type:</h3>
+                            <div class="parameterType">Number</div>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Returns:</h3>
+                                <div>
+                                    <span class="description">The 1-based index of the first <span class="literal">true</span> value, or <code>-1</code> if all values are <span class="literal">false</span></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div>
+                            <span class="block-detail-section">
+                                <h3>Since:</h3>
+                                <div>
+                                    <span class="description">3.2</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                <hr>
+            </section>
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

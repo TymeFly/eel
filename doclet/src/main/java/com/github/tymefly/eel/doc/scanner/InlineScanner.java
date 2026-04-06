@@ -218,7 +218,7 @@ abstract class InlineScanner extends DocTreePathScanner<Void, Void> {
 
 
     // Custom inline tag (e.g., {@custom})
-    // Handles unrecognized or user-defined inline tags.
+    // Handles unrecognised or user-defined inline tags.
     @Override
     public Void visitUnknownInlineTag(@Nonnull UnknownInlineTagTree node, @Nullable Void unused) {
         current = current.withErrorHighlight();

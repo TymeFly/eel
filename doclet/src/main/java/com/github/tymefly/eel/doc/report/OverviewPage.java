@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.TagModel;
 import com.github.tymefly.eel.doc.utils.FileUtils;
 import com.github.tymefly.eel.doc.utils.TextUtils;
@@ -31,9 +31,9 @@ import static j2html.TagCreator.tr;
  * Generate the HTML page for the Overview (index.html) page
  */
 class OverviewPage extends AbstractPage {
-    private final Context context;
+    private final EelDocContext context;
 
-    OverviewPage(@Nonnull Context context, @Nonnull String pageName) {
+    OverviewPage(@Nonnull EelDocContext context, @Nonnull String pageName) {
         super(context, pageName);
 
         this.context = context;

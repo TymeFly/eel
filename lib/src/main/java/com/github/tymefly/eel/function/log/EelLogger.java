@@ -12,7 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * EEL Logging Functions
+ * Functions that write messages to the system logger.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class EelLogger {
@@ -24,10 +25,11 @@ public class EelLogger {
 
 
     /**
-     * Writes a message to the logger at the ERROR level.
-     * @param first     the value to be logged or the formatting string.
-     * @param others    additional arguments for logging.
-     * @return          the last {@code value} logged.
+     * Writes a message to the <i>{@value #EEL_LOGGER}</i> logger at the ERROR level.
+     * @param first     the message or format string to be logged
+     * @param others    additional arguments for the format string
+     * @return          the last value logged
+     * @since 1.0
      */
     @EelFunction("log.error")
     public Value error(@Nonnull Value first, @DefaultArgument("") Value... others) {
@@ -36,10 +38,11 @@ public class EelLogger {
 
 
     /**
-     * Writes a message to the logger at the WARN level.
-     * @param first     the value to be logged or the formatting string.
-     * @param others    additional arguments for logging.
-     * @return          the last {@code value} logged.
+     * Writes a message to the <i>{@value #EEL_LOGGER}</i> logger at the WARN level.
+     * @param first     the message or format string to be logged
+     * @param others    additional arguments for the format string
+     * @return          the last value logged
+     * @since 1.0
      */
     @EelFunction("log.warn")
     public Value warn(@Nonnull Value first, @DefaultArgument("") Value... others) {
@@ -48,10 +51,11 @@ public class EelLogger {
 
 
     /**
-     * Writes a message to the logger at the INFO level.
-     * @param first     the value to be logged or the formatting string.
-     * @param others    additional arguments for logging.
-     * @return          the last {@code value} logged.
+     * Writes a message to the <i>{@value #EEL_LOGGER}</i> logger at the INFO level.
+     * @param first     the message or format string to be logged
+     * @param others    additional arguments for the format string
+     * @return          the last value logged
+     * @since 1.0
      */
     @EelFunction("log.info")
     public Value info(@Nonnull Value first, @DefaultArgument("") Value... others) {
@@ -60,10 +64,11 @@ public class EelLogger {
 
 
     /**
-     * Writes a message to the logger at the DEBUG level.
-     * @param first     the value to be logged or the formatting string.
-     * @param others    additional arguments for logging.
-     * @return          the last {@code value} logged.
+     * Writes a message to the <i>{@value #EEL_LOGGER}</i> logger at the DEBUG level.
+     * @param first     the message or format string to be logged
+     * @param others    additional arguments for the format string
+     * @return          the last value logged
+     * @since 1.0
      */
     @EelFunction("log.debug")
     public Value debug(@Nonnull Value first, @DefaultArgument("") Value... others) {
@@ -72,10 +77,11 @@ public class EelLogger {
 
 
     /**
-     * Writes a message to the logger at the TRACE level.
-     * @param first     the value to be logged or the formatting string.
-     * @param others    additional arguments for logging.
-     * @return          the last {@code value} logged.
+     * Writes a message to the <i>{@value #EEL_LOGGER}</i> logger at the TRACE level.
+     * @param first     the message or format string to be logged
+     * @param others    additional arguments for the format string
+     * @return          the last value logged
+     * @since 1.0
      */
     @EelFunction("log.trace")
     public Value trace(@Nonnull Value first, @DefaultArgument("") Value... others) {

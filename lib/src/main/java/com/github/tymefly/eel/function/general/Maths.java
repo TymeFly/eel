@@ -11,17 +11,18 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * General purpose maths functions
+ * Functions for general-purpose mathematical operations.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Maths {
     /**
-     * Returns the absolute {@code value} of the specified number, with the precision specified by the {@code context}.
+     * Returns the absolute value of the specified number using the precision defined by the context.
      * @param context   the current EEL context
-     * @param value     the {@code value} for which to calculate the absolute value
-     * @return          the absolute {@code value} of the specified number with the precision specified
-     *                      by the {@code context}
+     * @param value     the number whose absolute value is to be calculated
+     * @return          the absolute value of the specified number, rounded according to the context
      * @see #sgn(BigDecimal)
+     * @since 1.0
      */
     @EelFunction("abs")
     @Nonnull
@@ -30,12 +31,13 @@ public class Maths {
     }
 
     /**
-     * Returns the sign of a numeric {@code value}.
-     * @param value     the {@code value} to calculate the sign for
-     * @return          {@literal -1} if {@code value} is less than {@literal 0};
-     *                  {@literal 0} if {@code value} is equal to {@literal 0};
-     *                  {@literal +1} if {@code value} is greater than {@literal 0}
+     * Returns the sign of the specified numeric value.
+     * @param value     the number whose sign is to be determined
+     * @return          {@literal -1} if the value is less than 0;
+     *                  {@literal 0} if the value is equal to 0;
+     *                  {@literal +1} if the value is greater than 0
      * @see #abs(EelContext, BigDecimal)
+     * @since 1.0
      */
     @EelFunction("sgn")
     public int sgn(@Nonnull BigDecimal value) {
@@ -44,12 +46,13 @@ public class Maths {
     
     
     /**
-     * Returns the natural exponent of {@code value} with the precision specified by the {@code context}.
-     * This is {@literal e} raised to {@code value}
+     * Returns the natural exponent of the specified value using the precision defined by the context.
+     * This is {@literal e} raised to {@code value}.
      * @param context   the current EEL context
-     * @param value     the value for which to calculate the exponent
-     * @return          {@literal e} raised to {@literal value}, with the precision specified by the {@code context}.
-     * @see #ln(EelContext, BigDecimal) 
+     * @param value     the number for which to calculate the exponent
+     * @return          {@literal e} raised to {@code value}, rounded according to the context
+     * @see #ln(EelContext, BigDecimal)
+     * @since 1.0
      */
     @EelFunction("exp")
     @Nonnull
@@ -58,11 +61,12 @@ public class Maths {
     }
 
     /**
-     * Computes the factorial of the specified {@code value} with the precision specified by the {@code context}.
-     * An exception is thrown if {@code value} is negative.
+     * Computes the factorial of the specified value using the precision defined by the context.
+     * Throws an exception if the value is negative.
      * @param context   the current EEL context
-     * @param value     the non-negative value whose factorial is to be computed
-     * @return          the factorial of {@code value} calculated with the precision specified by the {@code context}
+     * @param value     the non-negative number whose factorial is to be computed
+     * @return          the factorial of the specified value, calculated with the precision defined by the context
+     * @since 1.0
      */
     @EelFunction("factorial")
     @Nonnull
@@ -71,47 +75,57 @@ public class Maths {
     }
 
     /**
-     * Returns the natural logarithm (base e) of the specified {@code value} with the precision specified
-     * by the {@code context}.
-     * An exception is thrown if {@code value} is negative.
+     * Returns the natural logarithm (base {@literal e}) of the specified value using the precision defined
+     * by the context.
+     * Throws an exception if the value is not positive.
      * @param context   the current EEL context
-     * @param value     the value whose logarithm is to be calculated
-     * @return          the natural logarithm (base {@literal e}) of {@code value} with the precision specified by
-     *                      the {@code context}
+     * @param value     the number whose natural logarithm is to be calculated
+     * @return          the natural logarithm (base {@literal e}) of the specified value, calculated with the
+     *                  precision defined by the context
+     * @throws ArithmeticException if the value is not positive
      * @see #exp(EelContext, BigDecimal)
+     * @since 1.0
      */
     @EelFunction("ln")
     @Nonnull
-    public BigDecimal ln(@Nonnull EelContext context, @Nonnull BigDecimal value) {
+    public BigDecimal ln(@Nonnull EelContext context, @Nonnull BigDecimal value) throws ArithmeticException {
         return BigDecimalMath.log(value, context.getMathContext());
     }
 
 
     /**
-     * Returns the logarithm base 10 of the specified {@code value} with the precision specified by the {@code context}.
+     * Returns the base-10 logarithm of the specified value using the precision defined by the context.
+     * Throws an exception if the value is not positive.
      * @param context   the current EEL context
-     * @param value     the value whose logarithm is to be calculated
-     * @return          the base-10 logarithm of {@code value} with the precision specified by the {@code context}
+     * @param value     the number whose base-10 logarithm is to be calculated
+     * @return          the base-10 logarithm of the specified value, calculated with the precision defined
+     *                  by the context
+     * @throws ArithmeticException if the value is not positive
+     * @see #ln(EelContext, BigDecimal)
+     * @since 1.0
      */
     @EelFunction("log")
     @Nonnull
-    public BigDecimal log(@Nonnull EelContext context, @Nonnull BigDecimal value) {
+    public BigDecimal log(@Nonnull EelContext context, @Nonnull BigDecimal value) throws ArithmeticException {
         return BigDecimalMath.log10(value, context.getMathContext());
     }
 
     /**
-     * Calculates the {@code n}’th root of the specified {@code value}.
+     * Returns the n-th root of the specified value using the precision defined by the context.
      * @param context   the current EEL context
-     * @param value     the value to calculate the {@code n}’th root from
-     * @param base      the base for the root; defaults to 2 for square roots
-     * @return          the calculated {@code n}’th root of {@code value} with the precision specified by
-     *                      the {@code context}
+     * @param value     the number whose n-th root is to be calculated
+     * @param base      the degree of the root (e.g. 2 for square root)
+     * @return          the n-th root of the specified value, calculated with the precision defined by
+     *                  the context
+     * @throws ArithmeticException if the value is not positive
+     * @see #exp(EelContext, BigDecimal)
+     * @since 1.0
      */
     @EelFunction("root")
     @Nonnull
     public BigDecimal root(@Nonnull EelContext context,
                            @Nonnull BigDecimal value,
-                           @DefaultArgument("2") @Nonnull BigDecimal base) {
+                           @DefaultArgument("2") @Nonnull BigDecimal base) throws ArithmeticException {
         return BigDecimalMath.root(value, base, context.getMathContext());
     }
 }

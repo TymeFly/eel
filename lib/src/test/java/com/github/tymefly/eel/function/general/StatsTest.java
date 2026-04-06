@@ -3,9 +3,10 @@ package com.github.tymefly.eel.function.general;
 import java.math.BigDecimal;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for {@link Stats}
@@ -15,7 +16,7 @@ public class StatsTest {
 
     private EelContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withPrecision(5)
@@ -27,15 +28,15 @@ public class StatsTest {
      */
     @Test
     public void test_avg() {
-        Assert.assertEquals("Single Value",
-            new BigDecimal("123.46"),
-            new Stats().avg(context, new BigDecimal("123.45678")));
-        Assert.assertEquals("Two Values",
-            new BigDecimal("2"),
-            new Stats().avg(context, new BigDecimal("1"), new BigDecimal("3")));
-        Assert.assertEquals("Three Values",
-            new BigDecimal("1.5"),
-            new Stats().avg(context, new BigDecimal("0"), new BigDecimal("1.5"), new BigDecimal("3")));
+        assertEquals(new BigDecimal("123.46"),
+            new Stats().avg(context, new BigDecimal("123.45678")),
+            "Single Value");
+        assertEquals(new BigDecimal("2"),
+            new Stats().avg(context, new BigDecimal("1"), new BigDecimal("3")),
+            "Two Values");
+        assertEquals(new BigDecimal("1.5"),
+            new Stats().avg(context, new BigDecimal("0"), new BigDecimal("1.5"), new BigDecimal("3")),
+            "Three Values");
     }
 
     /**
@@ -45,9 +46,9 @@ public class StatsTest {
     public void test_max() {
         Stats stats = new Stats();
 
-        Assert.assertEquals("Single Number", BigDecimal.TEN, stats.max(BigDecimal.TEN));
-        Assert.assertEquals("Two Numbers", BigDecimal.TEN, stats.max(BigDecimal.ZERO, BigDecimal.TEN));
-        Assert.assertEquals("Three Numbers", BigDecimal.ONE, stats.max(BigDecimal.ZERO, BigDecimal.ONE, NEG_ONE));
+        assertEquals(BigDecimal.TEN, stats.max(BigDecimal.TEN), "Single Number");
+        assertEquals(BigDecimal.TEN, stats.max(BigDecimal.ZERO, BigDecimal.TEN), "Two Numbers");
+        assertEquals(BigDecimal.ONE, stats.max(BigDecimal.ZERO, BigDecimal.ONE, NEG_ONE), "Three Numbers");
     }
 
     /**
@@ -57,8 +58,8 @@ public class StatsTest {
     public void test_Min() {
         Stats stats = new Stats();
 
-        Assert.assertEquals("Single Number", BigDecimal.TEN, stats.min(BigDecimal.TEN));
-        Assert.assertEquals("Two Numbers", BigDecimal.ZERO, stats.min(BigDecimal.ZERO, BigDecimal.TEN));
-        Assert.assertEquals("Three Numbers", NEG_ONE, stats.min(BigDecimal.ZERO, BigDecimal.ONE, NEG_ONE));
+        assertEquals(BigDecimal.TEN, stats.min(BigDecimal.TEN), "Single Number");
+        assertEquals(BigDecimal.ZERO, stats.min(BigDecimal.ZERO, BigDecimal.TEN), "Two Numbers");
+        assertEquals(NEG_ONE, stats.min(BigDecimal.ZERO, BigDecimal.ONE, NEG_ONE), "Three Numbers");
     }
 }

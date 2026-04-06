@@ -17,16 +17,19 @@ import com.github.tymefly.eel.builder.EelBuilder;
 import com.github.tymefly.eel.builder.EelContextBuilder;
 import com.github.tymefly.eel.builder.SymbolsTableBuilder;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import test.functions1.Plus1;
 import test.functions2.Plus2;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -40,13 +43,13 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for {@link Evaluate}
  */
-public class EvaluateTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+@ExtendWith(SystemStubsExtension.class)
+class EvaluateTest {
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
-
+    @SystemStub
+    private SystemErr stdErr;
 
     private Config config;
     private EelBuilder eelBuilder;
@@ -62,9 +65,8 @@ public class EvaluateTest {
 
     private Package functions;
 
-
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Result result = mock();
 
         config = mock();
@@ -132,7 +134,7 @@ public class EvaluateTest {
         when(contextBuilder.build())
             .thenReturn(context);
 
-        // train the symbols table builder API
+        // train the SymbolsTable builder API
         when(symbolsTableBuilder.withProperties())
             .thenReturn(symbolsTableBuilder);
         when(symbolsTableBuilder.withEnvironment())
@@ -155,7 +157,7 @@ public class EvaluateTest {
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_HappyPath() throws Exception {
+    void test_HappyPath() {
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class);
             MockedStatic<Eel> staticEel = mockStatic(Eel.class);
@@ -173,17 +175,17 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 0, exitCode);
+            assertEquals(0, exitCode, "Unexpected return code");
         }
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
+        assertTrue(stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"), "Unexpected output");
     }
 
     /**
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_HappyPath_calls() {
+    void test_HappyPath_calls() {
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class);
             MockedStatic<Eel> staticEel = mockStatic(Eel.class);
@@ -223,14 +225,14 @@ public class EvaluateTest {
         verify(eelBuilder).compile(any(InputStream.class));
         verify(eel).evaluate(symbolTable);
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
+        assertTrue(stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"), "Unexpected output");
     }
 
     /**
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_Script() {
+    void test_Script() {
         when(config.getScriptFile())
             .thenReturn(new File(testScript));
         when(config.getExpression())
@@ -258,14 +260,14 @@ public class EvaluateTest {
             Evaluate.execute(new String[] { "Hello", "World" });
         }
 
-        Assert.assertTrue("Unexpected output", stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"));
+        assertTrue(stdOut.getLinesNormalized().startsWith("[Logic] Generated Text"), "Unexpected output");
     }
 
     /**
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_Script_NotFound() throws Exception {
+    void test_Script_NotFound() {
         when(config.getScriptFile())
             .thenReturn(new File("not Found"));
         when(config.getExpression())
@@ -283,7 +285,7 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 12, exitCode);
+            assertEquals(12, exitCode, "Unexpected return code");
         }
     }
 
@@ -291,7 +293,7 @@ public class EvaluateTest {
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_HelpPage() throws Exception {
+    void test_HelpPage() {
         when(config.requestHelp())
             .thenReturn(true);
 
@@ -303,7 +305,7 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 1, exitCode);
+            assertEquals(1, exitCode, "Unexpected return code");
         }
     }
 
@@ -311,7 +313,7 @@ public class EvaluateTest {
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_Version() throws Exception {
+    void test_Version() {
         when(config.requestVersion())
             .thenReturn(true);
 
@@ -323,18 +325,17 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "--version" });
 
-            Assert.assertEquals("Unexpected return code", 2, exitCode);
+            assertEquals(2, exitCode, "Unexpected return code");
         }
     }
-
 
     /**
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_BadExpression() throws Exception {
-        when(eel.evaluate(any(SymbolsTable.class))).
-            thenThrow(new EelUnknownSymbolException("expected"));
+    void test_BadExpression() {
+        when(eel.evaluate(any(SymbolsTable.class)))
+            .thenThrow(new EelUnknownSymbolException("expected"));
 
         try (
             MockedStatic<Config> staticConfig = mockStatic(Config.class);
@@ -353,16 +354,15 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 11, exitCode);
+            assertEquals(11, exitCode, "Unexpected return code");
         }
     }
-
 
     /**
      * Unit test {@link Evaluate}
      */
     @Test
-    public void test_BadCommandLine() throws Exception {
+    void test_BadCommandLine() {
         when(config.isValid())
             .thenReturn(false);
 
@@ -374,7 +374,7 @@ public class EvaluateTest {
 
             int exitCode = Evaluate.testEntry(new String[] { "Hello", "World" });
 
-            Assert.assertEquals("Unexpected return code", 10, exitCode);
+            assertEquals(10, exitCode, "Unexpected return code");
         }
     }
 }

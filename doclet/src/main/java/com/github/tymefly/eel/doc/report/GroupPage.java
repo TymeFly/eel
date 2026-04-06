@@ -9,7 +9,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.ElementModel;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
@@ -37,10 +37,10 @@ import static j2html.TagCreator.text;
  * Generate a page that describes a group of functions
  */
 class GroupPage extends AbstractPage {
-    private final Context context;
+    private final EelDocContext context;
     private final GroupModel group;
 
-    GroupPage(@Nonnull Context context, @Nonnull String name, @Nonnull GroupModel group) {
+    GroupPage(@Nonnull EelDocContext context, @Nonnull String name, @Nonnull GroupModel group) {
         super(context, name);
 
         this.context = context;

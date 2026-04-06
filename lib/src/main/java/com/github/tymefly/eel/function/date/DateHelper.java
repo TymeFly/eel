@@ -39,8 +39,8 @@ class DateHelper {
     private static final int MILLIS_IN_NANO = 1_000_000;
 
     // RegEx that accepts either
-    //   1. an '@' sign followed by some letters
-    //   2. a number followed by some letters. The number can have an optional sign and may contain '_' between digits
+    //   1. An '@' sign followed by some letters
+    //   2. A number followed by some letters. The number can have an optional sign and may contain '_' between digits
     private static final Pattern OFFSET_PATTERN = Pattern.compile("([+-]?\\d(?:\\d|_\\d)*|@) *([a-zA-Z]+)");
 
 

@@ -7,17 +7,17 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * Padding functions
+ * Functions that add padding to text.
+ * @since 1.1
  */
 @PackagedEelFunction
 public class Padding {
     /**
-     * Returns the specified {@code text} with {@code pad} characters added to the start
-     * so that it is at least {@code width} characters long.
-     * @param text      the text to pad
-     * @param width     the minimum length of the returned text; must be at least {@literal 1}
-     * @param pad       the padding character
-     * @return          the {@code text} padded to be at least {@code width} characters long
+     * Left-pads the specified text with the given character until it reaches the specified width.
+     * @param text      the text to be padded
+     * @param width     the minimum length of the resulting text; must be at least {@literal 0}
+     * @param pad       the character used for padding
+     * @return          the padded text with a length of at least the specified width
      * @since 1.1
      */
     @EelFunction("padLeft")
@@ -29,12 +29,11 @@ public class Padding {
     }
 
     /**
-     * Returns the specified {@code text} with {@code pad} characters added to the end
-     * so that it is at least {@code width} characters long.
-     * @param text      the text to pad
-     * @param width     the minimum length of the returned text; must be at least {@literal 1}
-     * @param pad       the padding character
-     * @return          the {@code text} padded to be at least {@code width} characters long
+     * Right-pads the specified text with the given character until it reaches the specified width.
+     * @param text      the text to be padded
+     * @param width     the minimum length of the resulting text; must be at least {@literal 0}
+     * @param pad       the character used for padding
+     * @return          the padded text with a length of at least the specified width
      * @since 1.1
      */
     @EelFunction("padRight")

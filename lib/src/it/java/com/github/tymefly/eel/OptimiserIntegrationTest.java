@@ -7,27 +7,34 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelConvertException;
 import com.github.tymefly.eel.exception.EelSyntaxException;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 /**
  * Basic set of integration Tests
  */
+@ExtendWith(SystemStubsExtension.class)
 public class OptimiserIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
+
 
     private EelContext context;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = EelContext.factory()
             .withTimeout(Duration.ofSeconds(30))
@@ -41,9 +48,9 @@ public class OptimiserIntegrationTest {
     public void test_failOptimisation() {
         Eel eel = Eel.compile(context, "$( 'illogical' ? 1 : 0 )");
 
-        EelConvertException actual = Assert.assertThrows(EelConvertException.class, eel::evaluate);
+        EelConvertException actual = assertThrows(EelConvertException.class, eel::evaluate);
 
-        Assert.assertEquals("Unexpected message", "Can not convert 'illogical' from String to Logic", actual.getMessage());
+        assertEquals("Can not convert 'illogical' from String to Logic", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -86,7 +93,7 @@ public class OptimiserIntegrationTest {
     }
 
     private void dont_optimise_compilation_errors_helper(@Nonnull String expression) {
-        Assert.assertThrows(expression, EelSyntaxException.class, () -> Eel.compile(context, expression));
+        assertThrows(EelSyntaxException.class, () -> Eel.compile(context, expression), expression);
     }
 
     /**
@@ -119,9 +126,9 @@ public class OptimiserIntegrationTest {
         Eel eel = Eel.compile(context, expression);                 // Don't fail at compile time
 
         EelUnknownSymbolException actual =
-            Assert.assertThrows(expression, EelUnknownSymbolException.class, eel::evaluate);
+            assertThrows(EelUnknownSymbolException.class, eel::evaluate, expression);
 
-        Assert.assertEquals(expression + ": Unexpected message", "Unknown variable 'unknown'", actual.getMessage());
+        assertEquals("Unknown variable 'unknown'", actual.getMessage(), expression + ": Unexpected message");
     }
 
 
@@ -138,6 +145,6 @@ public class OptimiserIntegrationTest {
         Eel eel = Eel.compile(context, expression);                 // Don't fail at compile time
         Result actual = eel.evaluate();                             // Don't fail at run time either
 
-        Assert.assertEquals(expression + ": Unexpected result", expected, actual.asLogic());
+        assertEquals(expected, actual.asLogic(), expression + ": Unexpected result");
     }
 }

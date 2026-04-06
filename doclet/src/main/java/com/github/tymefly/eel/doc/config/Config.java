@@ -9,10 +9,11 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.annotation.VisibleForTesting;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jdk.javadoc.doclet.Doclet;
 
 /**
- * A singleton class that manages all the JavaDoc options for configuring the generated documentation.
+ * A singleton class that manages all the Javadoc options for configuring the generated documentation.
  */
 public class Config {
     private static final Config INSTANCE = new Config();
@@ -86,7 +87,7 @@ public class Config {
 
 
 
-
+    @SuppressFBWarnings(value = "SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR", justification = "Required for testing")
     @VisibleForTesting
     Config() {
     }

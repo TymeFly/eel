@@ -18,9 +18,9 @@ public interface ParamModel extends ParagraphModel {
     String identifier();
 
     /**
-     * Returns {@literal true} only if the parameter was implemented by JavaDoc; {@literal false} implies that
-     * the parameter was defined by JavaDoc but was not implemented in the Java code
-     * @return {@literal true} only if the parameter was implemented by JavaDoc
+     * Returns {@literal true} only if Javadoc implemented the parameter; {@literal false} implies that
+     * the parameter was defined by Javadoc but was not implemented in the Java code
+     * @return {@literal true} only if Javadoc implemented the parameter
      */
     boolean isParameter();
 

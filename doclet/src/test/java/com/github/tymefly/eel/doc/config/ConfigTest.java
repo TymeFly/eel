@@ -7,61 +7,67 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Config}
  */
-public class ConfigTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+@ExtendWith(SystemStubsExtension.class)
+class ConfigTest {
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
-
+    @SystemStub
+    private SystemErr stdErr;
 
     /**
      * Unit test {@link Config#getInstance()}
      */
     @Test
-    public void test_isSingleton() {
-        Assert.assertSame("Not singleton", Config.getInstance(), Config.getInstance());
+    void test_isSingleton() {
+        assertSame(Config.getInstance(), Config.getInstance(), "Not singleton");
     }
 
     /**
      * Unit test {@link Config#options()}
      */
     @Test
-    public void test_options() {
-        Assert.assertEquals("Unexpected option count", 15, Config.getInstance().options().size());
+    void test_options() {
+        assertEquals(15, Config.getInstance().options().size(), "Unexpected option count");
     }
 
     /**
      * Unit test {@link Config} settings
      */
     @Test
-    public void test_Config_defaults() {
+    void test_Config_defaults() {
         Config config = new Config();
 
-        Assert.assertEquals("title", "EEL-Doc", config.title());
-        Assert.assertEquals("docTitle", "EEL Functions", config.docTitle());
-        Assert.assertEquals("charSet", "UTF-8", config.charSet());
-        Assert.assertEquals("docEncoding", "UTF-8", config.docEncoding());
-        Assert.assertFalse("author", config.author());
-        Assert.assertFalse("version", config.version());
-        Assert.assertFalse("ignoreErrors", config.ignoreErrors());
-        Assert.assertFalse("allReferences", config.allReferences());
+        assertEquals("EEL-Doc", config.title(), "title");
+        assertEquals("EEL Functions", config.docTitle(), "docTitle");
+        assertEquals("UTF-8", config.charSet(), "charSet");
+        assertEquals("UTF-8", config.docEncoding(), "docEncoding");
+        assertFalse(config.author(), "author");
+        assertFalse(config.version(), "version");
+        assertFalse(config.ignoreErrors(), "ignoreErrors");
+        assertFalse(config.allReferences(), "allReferences");
     }
 
     /**
      * Unit test {@link Config} settings
      */
     @Test
-    public void test_Config_allSet() {
+    void test_Config_allSet() {
         Config config = new Config();
 
         setFlag(config, "-version");
@@ -79,21 +85,19 @@ public class ConfigTest {
         setFlag(config, "-Ewarn");
         setFlag(config, "-allrefs");
 
-        Assert.assertTrue("targetDirectory",
-            config.targetDirectory().getAbsolutePath().replace("\\", "/").endsWith("/my/path"));
-        Assert.assertEquals("title", "Window: Abcdef", config.title());
-        Assert.assertEquals("docTitle", "Document: abcdef", config.docTitle());
-        Assert.assertEquals("top", Optional.of("Top message"), config.top());
-        Assert.assertEquals("bottom", Optional.of("Bottom message"), config.bottom());
-        Assert.assertEquals("charSet", "US-ASCII", config.charSet());
-        Assert.assertEquals("docEncoding", "ISO-8859-1", config.docEncoding());
-        Assert.assertTrue("author", config.author());
-        Assert.assertTrue("version", config.version());
-        Assert.assertTrue("ignoreErrors", config.ignoreErrors());
-        Assert.assertTrue("allReferences", config.allReferences());
-        Assert.assertEquals("overview", Optional.of(new File("/path/to/my.file")), config.overview());
+        assertTrue(config.targetDirectory().getAbsolutePath().replace("\\", "/").endsWith("/my/path"), "targetDirectory");
+        assertEquals("Window: Abcdef", config.title(), "title");
+        assertEquals("Document: abcdef", config.docTitle(), "docTitle");
+        assertEquals(Optional.of("Top message"), config.top(), "top");
+        assertEquals(Optional.of("Bottom message"), config.bottom(), "bottom");
+        assertEquals("US-ASCII", config.charSet(), "charSet");
+        assertEquals("ISO-8859-1", config.docEncoding(), "docEncoding");
+        assertTrue(config.author(), "author");
+        assertTrue(config.version(), "version");
+        assertTrue(config.ignoreErrors(), "ignoreErrors");
+        assertTrue(config.allReferences(), "allReferences");
+        assertEquals(Optional.of(new File("/path/to/my.file")), config.overview(), "overview");
     }
-
 
     private void setFlag(@Nonnull Config config, @Nonnull String name) {
         config.options()

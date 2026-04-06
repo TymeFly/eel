@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link BigDecimals}
@@ -22,13 +25,13 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_eq() {
-        Assert.assertTrue("Zero and 0", BigDecimals.eq(ZERO, new BigDecimal("0")));
-        Assert.assertTrue("Zero and Zero", BigDecimals.eq(ZERO, ZERO));
-        Assert.assertTrue("Zero and Zero_1", BigDecimals.eq(ZERO, ZERO_1));
-        Assert.assertTrue("Zero and Zero_2", BigDecimals.eq(ZERO, ZERO_2));
+        assertTrue(BigDecimals.eq(ZERO, new BigDecimal("0")), "Zero and 0");
+        assertTrue(BigDecimals.eq(ZERO, ZERO), "Zero and Zero");
+        assertTrue(BigDecimals.eq(ZERO, ZERO_1), "Zero and Zero_1");
+        assertTrue(BigDecimals.eq(ZERO, ZERO_2), "Zero and Zero_2");
 
-        Assert.assertFalse("Zero and ONE", BigDecimals.eq(ZERO, ONE));
-        Assert.assertFalse("Zero and NEG_ONE", BigDecimals.eq(ZERO, NEG_ONE));
+        assertFalse(BigDecimals.eq(ZERO, ONE), "Zero and ONE");
+        assertFalse(BigDecimals.eq(ZERO, NEG_ONE), "Zero and NEG_ONE");
     }
 
     /**
@@ -36,13 +39,13 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_gt() {
-        Assert.assertFalse("Zero and 0", BigDecimals.gt(ZERO, new BigDecimal("0")));
-        Assert.assertFalse("Zero and Zero", BigDecimals.gt(ZERO, ZERO));
-        Assert.assertFalse("Zero and Zero_1", BigDecimals.gt(ZERO, ZERO_1));
-        Assert.assertFalse("Zero and Zero_2", BigDecimals.gt(ZERO, ZERO_2));
+        assertFalse(BigDecimals.gt(ZERO, new BigDecimal("0")), "Zero and 0");
+        assertFalse(BigDecimals.gt(ZERO, ZERO), "Zero and Zero");
+        assertFalse(BigDecimals.gt(ZERO, ZERO_1), "Zero and Zero_1");
+        assertFalse(BigDecimals.gt(ZERO, ZERO_2), "Zero and Zero_2");
 
-        Assert.assertFalse("Zero and ONE", BigDecimals.gt(ZERO, ONE));
-        Assert.assertTrue("Zero and NEG_ONE", BigDecimals.gt(ZERO, NEG_ONE));
+        assertFalse(BigDecimals.gt(ZERO, ONE), "Zero and ONE");
+        assertTrue(BigDecimals.gt(ZERO, NEG_ONE), "Zero and NEG_ONE");
     }
 
     /**
@@ -50,13 +53,13 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_ge() {
-        Assert.assertTrue("Zero and 0", BigDecimals.ge(ZERO, new BigDecimal("0")));
-        Assert.assertTrue("Zero and Zero", BigDecimals.ge(ZERO, ZERO));
-        Assert.assertTrue("Zero and Zero_1", BigDecimals.ge(ZERO, ZERO_1));
-        Assert.assertTrue("Zero and Zero_2", BigDecimals.ge(ZERO, ZERO_2));
+        assertTrue(BigDecimals.ge(ZERO, new BigDecimal("0")), "Zero and 0");
+        assertTrue(BigDecimals.ge(ZERO, ZERO), "Zero and Zero");
+        assertTrue(BigDecimals.ge(ZERO, ZERO_1), "Zero and Zero_1");
+        assertTrue(BigDecimals.ge(ZERO, ZERO_2), "Zero and Zero_2");
 
-        Assert.assertFalse("Zero and ONE", BigDecimals.ge(ZERO, ONE));
-        Assert.assertTrue("Zero and NEG_ONE", BigDecimals.ge(ZERO, NEG_ONE));
+        assertFalse(BigDecimals.ge(ZERO, ONE), "Zero and ONE");
+        assertTrue(BigDecimals.ge(ZERO, NEG_ONE), "Zero and NEG_ONE");
     }
 
     /**
@@ -64,13 +67,13 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_lt() {
-        Assert.assertFalse("Zero and 0", BigDecimals.lt(ZERO, new BigDecimal("0")));
-        Assert.assertFalse("Zero and Zero", BigDecimals.lt(ZERO, ZERO));
-        Assert.assertFalse("Zero and Zero_1", BigDecimals.lt(ZERO, ZERO_1));
-        Assert.assertFalse("Zero and Zero_2", BigDecimals.lt(ZERO, ZERO_2));
+        assertFalse(BigDecimals.lt(ZERO, new BigDecimal("0")), "Zero and 0");
+        assertFalse(BigDecimals.lt(ZERO, ZERO), "Zero and Zero");
+        assertFalse(BigDecimals.lt(ZERO, ZERO_1), "Zero and Zero_1");
+        assertFalse(BigDecimals.lt(ZERO, ZERO_2), "Zero and Zero_2");
 
-        Assert.assertTrue("Zero and ONE", BigDecimals.lt(ZERO, ONE));
-        Assert.assertFalse("Zero and NEG_ONE", BigDecimals.lt(ZERO, NEG_ONE));
+        assertTrue(BigDecimals.lt(ZERO, ONE), "Zero and ONE");
+        assertFalse(BigDecimals.lt(ZERO, NEG_ONE), "Zero and NEG_ONE");
     }
 
     /**
@@ -78,13 +81,13 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_le() {
-        Assert.assertTrue("Zero and 0", BigDecimals.le(ZERO, new BigDecimal("0")));
-        Assert.assertTrue("Zero and Zero", BigDecimals.le(ZERO, ZERO));
-        Assert.assertTrue("Zero and Zero_1", BigDecimals.le(ZERO, ZERO_1));
-        Assert.assertTrue("Zero and Zero_2", BigDecimals.le(ZERO, ZERO_2));
+        assertTrue(BigDecimals.le(ZERO, new BigDecimal("0")), "Zero and 0");
+        assertTrue(BigDecimals.le(ZERO, ZERO), "Zero and Zero");
+        assertTrue(BigDecimals.le(ZERO, ZERO_1), "Zero and Zero_1");
+        assertTrue(BigDecimals.le(ZERO, ZERO_2), "Zero and Zero_2");
 
-        Assert.assertTrue("Zero and ONE", BigDecimals.le(ZERO, ONE));
-        Assert.assertFalse("Zero and NEG_ONE", BigDecimals.le(ZERO, NEG_ONE));
+        assertTrue(BigDecimals.le(ZERO, ONE), "Zero and ONE");
+        assertFalse(BigDecimals.le(ZERO, NEG_ONE), "Zero and NEG_ONE");
     }
 
     /**
@@ -92,16 +95,55 @@ public class BigDecimalsTest {
      */
     @Test
     public void test_toBigDecimal() {
-        Assert.assertEquals("Zero", BigDecimal.ZERO, BigDecimals.toBigDecimal(new BigDecimal("0")));
-        Assert.assertEquals("Ten", BigDecimal.TEN, BigDecimals.toBigDecimal(new BigDecimal("10")));
-        Assert.assertEquals("byte", new BigDecimal("1"), BigDecimals.toBigDecimal((byte) 1));
-        Assert.assertEquals("short", new BigDecimal("2"), BigDecimals.toBigDecimal((short) 2));
-        Assert.assertEquals("int", new BigDecimal("3"), BigDecimals.toBigDecimal(3));
-        Assert.assertEquals("long", new BigDecimal("4"), BigDecimals.toBigDecimal(4));
-        Assert.assertEquals("float", new BigDecimal("5.6"), BigDecimals.toBigDecimal(5.6f));
-        Assert.assertEquals("double", new BigDecimal("7.8"), BigDecimals.toBigDecimal(7.8));
-        Assert.assertEquals("decimal", new BigDecimal("99"), BigDecimals.toBigDecimal(new BigInteger("99")));
+        assertEquals(BigDecimal.ZERO, BigDecimals.toBigDecimal(new BigDecimal("0")), "Zero");
+        assertEquals(BigDecimal.TEN, BigDecimals.toBigDecimal(new BigDecimal("10")), "Ten");
+        assertEquals(new BigDecimal("1"), BigDecimals.toBigDecimal((byte) 1), "byte");
+        assertEquals(new BigDecimal("2"), BigDecimals.toBigDecimal((short) 2), "short");
+        assertEquals(new BigDecimal("3"), BigDecimals.toBigDecimal(3), "int");
+        assertEquals(new BigDecimal("4"), BigDecimals.toBigDecimal(4), "long");
+        assertEquals(new BigDecimal("5.6"), BigDecimals.toBigDecimal(5.6f), "float");
+        assertEquals(new BigDecimal("7.8"), BigDecimals.toBigDecimal(7.8), "double");
+        assertEquals(new BigDecimal("99"), BigDecimals.toBigDecimal(new BigInteger("99")), "decimal");
 
-        Assert.assertEquals("other Number", new BigDecimal("1234"), BigDecimals.toBigDecimal(new AtomicLong(1234)));
+        assertEquals(new BigDecimal("1234"), BigDecimals.toBigDecimal(new AtomicLong(1234)), "other Number");
+    }
+
+    /**
+     * Unit test {@link BigDecimals#isIntegral(BigDecimal)}
+     */
+    @Test
+    void isIntegral() {
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("0")), "0");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("0.0")), "0.0");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("0.00")), "0.00");
+
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("1")), "1");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("10")), "10");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("100")), "100");
+
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("-1")), "-1");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("-10")), "-10");
+        assertTrue(BigDecimals.isIntegral(new BigDecimal("-100")), "-100");
+
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("0.1")), "0.1");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("0.01")), "0.01");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("0.001")), "0.001");
+
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("1.1")), "1.1");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("1.01")), "1.01");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("1.001")), "1.001");
+
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-0.1")), "-0.1");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-0.01")), "-0.01");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-0.001")), "-0.001");
+
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-1.1")), "-0.1");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-1.01")), "-0.01");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-1.001")), "-0.001");
+
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("1e-8")), "small positive");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-1e-8")), "small negative");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("1e8").add(new BigDecimal("1e-8"))), "large positive");
+        assertFalse(BigDecimals.isIntegral(new BigDecimal("-1e8").add(new BigDecimal("1e-8"))), "large negative");
     }
 }

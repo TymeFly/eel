@@ -10,18 +10,20 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * General purpose date functions
+ * Functions for general-purpose time and date manipulation.
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Dates {
     /**
      * Returns the difference between two dates in a specific {@code period} of time.
      * If the duration cannot be exactly expressed in the specified unit, the fractional part is removed.
-     * @param from   the start time, inclusive
-     * @param to     the end time, inclusive
-     * @param period the unit of time in which the result is returned
-     * @return       the amount of time between {@code from} and {@code to} in terms of the {@code period}.
-     *               The value is positive only if {@code from} precedes {@code to}.
+     * @param from    the start time, inclusive
+     * @param to      the end time, inclusive
+     * @param period  the unit of time in which the result is returned
+     * @return        the amount of time between {@code from} and {@code to} in terms of the {@code period};
+     *                the value is positive only if {@code from} precedes {@code to}
+     * @since 1.0
      */
     @EelFunction("duration")
     public long duration(@Nonnull ZonedDateTime from,

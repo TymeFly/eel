@@ -3,8 +3,12 @@ package com.github.tymefly.eel.utils;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link CharSetBuilder}
@@ -17,9 +21,9 @@ public class CharSetBuilderTest {
     public void test_ConstructAndAdd() {
         Set<Character> source = Set.of('A', 'B');
 
-        Assert.assertEquals("Expected single char",
-            Set.of('A', 'B', 'C'),
-            new CharSetBuilder(source).with('C').immutable());
+        assertEquals(Set.of('A', 'B', 'C'),
+            new CharSetBuilder(source).with('C').immutable(),
+            "Expected single char");
     }
 
     /**
@@ -27,9 +31,9 @@ public class CharSetBuilderTest {
      */
     @Test
     public void test_empty() {
-        Assert.assertEquals("Expected empty set",
-            Collections.emptySet(),
-            new CharSetBuilder().immutable());
+        assertEquals(Collections.emptySet(),
+            new CharSetBuilder().immutable(),
+            "Expected empty set");
     }
 
     /**
@@ -37,9 +41,9 @@ public class CharSetBuilderTest {
      */
     @Test
     public void test_with() {
-        Assert.assertEquals("Expected single char",
-            Set.of('A'),
-            new CharSetBuilder().with('A').immutable());
+        assertEquals(Set.of('A'),
+            new CharSetBuilder().with('A').immutable(),
+            "Expected single char");
     }
 
     /**
@@ -47,9 +51,9 @@ public class CharSetBuilderTest {
      */
     @Test
     public void test_range() {
-        Assert.assertEquals("Expected all digits",
-            Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
-            new CharSetBuilder().range('0', '9').immutable());
+        assertEquals(Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
+            new CharSetBuilder().range('0', '9').immutable(),
+            "Expected all digits");
     }
 
     /**
@@ -57,9 +61,9 @@ public class CharSetBuilderTest {
      */
     @Test
     public void test_range_single() {
-        Assert.assertEquals("Expected all digits",
-            Set.of('0'),
-            new CharSetBuilder().range('0', '0').immutable());
+        assertEquals(Set.of('0'),
+            new CharSetBuilder().range('0', '0').immutable(),
+            "Expected single digit");
     }
 
     /**
@@ -67,7 +71,7 @@ public class CharSetBuilderTest {
      */
     @Test
     public void test_range_invalid() {
-        Assert.assertThrows(IllegalArgumentException.class,
+        assertThrows(IllegalArgumentException.class,
             () -> new CharSetBuilder().range('1', '0'));
     }
 
@@ -80,8 +84,8 @@ public class CharSetBuilderTest {
         Set<Character> subSet = Set.of('?', ':', '@');
         Set<Character> actual = new CharSetBuilder().withAll(subSet).mutable();
 
-        Assert.assertEquals("Expected test chars", subSet, actual);
-        Assert.assertNotSame("Invalid object returned", subSet, actual);
+        assertEquals(subSet, actual, "Expected test chars");
+        assertNotSame(subSet, actual, "Invalid object returned");
     }
 
 
@@ -100,12 +104,12 @@ public class CharSetBuilderTest {
             .withAll(Set.of('?', '@'))
             .immutable();
 
-        Assert.assertEquals("Expected all digits",
-            Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                   'A', 'B', 'C', 'D', 'E', 'F',
-                   'b', 'c',
-                   '?', ':', '@'),
-            actual);
+        assertEquals(Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+               'A', 'B', 'C', 'D', 'E', 'F',
+               'b', 'c',
+               '?', ':', '@'),
+            actual,
+            "Expected all digits");
     }
 
 
@@ -118,9 +122,7 @@ public class CharSetBuilderTest {
 
         actual.add('@');
 
-        Assert.assertEquals("Expected single char",
-            Set.of('@'),
-            actual);
+        assertEquals(Set.of('@'), actual, "Expected single char");
     }
 
     /**
@@ -130,7 +132,7 @@ public class CharSetBuilderTest {
     public void test_immutable() {
         Set<Character> actual = new CharSetBuilder().immutable();
 
-        Assert.assertThrows(UnsupportedOperationException.class, () -> actual.add('@'));
+        assertThrows(UnsupportedOperationException.class, () -> actual.add('@'));
     }
 
     /**
@@ -140,11 +142,10 @@ public class CharSetBuilderTest {
     public void test_asString() {
         String actual = new CharSetBuilder().range('A', 'Z').asString();
 
-        Assert.assertEquals("Unexpected Length: " + actual, 26, actual.length());
+        assertEquals(26, actual.length(), "Unexpected Length: " + actual);
 
-        for (char test = 'A'; test <= 'Z'; test++) {
-            Assert.assertTrue(actual + " is missing expected character '" + test + "'",
-                actual.indexOf(test) != -1);
+        for (var test = 'A'; test <= 'Z'; test++) {
+            assertTrue(actual.indexOf(test) != -1, actual + " is missing expected character '" + test + "'");
         }
     }
 }

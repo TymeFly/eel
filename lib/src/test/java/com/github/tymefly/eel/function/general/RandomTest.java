@@ -1,7 +1,8 @@
 package com.github.tymefly.eel.function.general;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Random}
@@ -38,7 +39,7 @@ public class RandomTest {
             max = Math.max(max, value);
         }
 
-        Assert.assertTrue("Max value returned is out of range: " + max + " > " + upper, (max <= upper));
-        Assert.assertTrue("Min value returned is out of range: " + min + " < " + lower, (min >= lower));
+        assertTrue((max <= upper), "Max value returned is out of range: " + max + " > " + upper);
+        assertTrue((min >= lower), "Min value returned is out of range: " + min + " < " + lower);
     }
 }

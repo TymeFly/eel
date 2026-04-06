@@ -4,13 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 import jdk.javadoc.doclet.Doclet;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Option}
  */
-public class OptionTest {
+class OptionTest {
     private final Option flag = Option.builder("-flag")
         .withDescription("my Flag")
         .asExtended()
@@ -36,55 +40,55 @@ public class OptionTest {
      * Unit test {@link Option#getArgumentCount()}
      */
     @Test
-    public void test_getArgumentCount() {
-        Assert.assertEquals("flag", 0, flag.getArgumentCount());
-        Assert.assertEquals("option", 1, option.getArgumentCount());
-        Assert.assertEquals("defaulted", 1, defaulted.getArgumentCount());
-        Assert.assertEquals("expression", 1, expression.getArgumentCount());
+    void test_getArgumentCount() {
+        assertEquals(0, flag.getArgumentCount(), "flag");
+        assertEquals(1, option.getArgumentCount(), "option");
+        assertEquals(1, defaulted.getArgumentCount(), "defaulted");
+        assertEquals(1, expression.getArgumentCount(), "expression");
     }
 
     /**
      * Unit test {@link Option#getDescription()}
      */
     @Test
-    public void test_getDescription() {
-        Assert.assertEquals("flag", "my Flag", flag.getDescription());
-        Assert.assertEquals("option", "an option", option.getDescription());
-        Assert.assertEquals("defaulted", "defaulted option", defaulted.getDescription());
-        Assert.assertEquals("expression", "eel expression", expression.getDescription());
+    void test_getDescription() {
+        assertEquals("my Flag", flag.getDescription(), "flag");
+        assertEquals("an option", option.getDescription(), "option");
+        assertEquals("defaulted option", defaulted.getDescription(), "defaulted");
+        assertEquals("eel expression", expression.getDescription(), "expression");
     }
 
     /**
      * Unit test {@link Option#getKind()}
      */
     @Test
-    public void test_getKind() {
-        Assert.assertEquals("flag", Doclet.Option.Kind.EXTENDED, flag.getKind());
-        Assert.assertEquals("option", Doclet.Option.Kind.EXTENDED, option.getKind());
-        Assert.assertEquals("defaulted", Doclet.Option.Kind.STANDARD, defaulted.getKind());
-        Assert.assertEquals("expression", Doclet.Option.Kind.STANDARD, expression.getKind());
+    void test_getKind() {
+        assertEquals(Doclet.Option.Kind.EXTENDED, flag.getKind(), "flag");
+        assertEquals(Doclet.Option.Kind.EXTENDED, option.getKind(), "option");
+        assertEquals(Doclet.Option.Kind.STANDARD, defaulted.getKind(), "defaulted");
+        assertEquals(Doclet.Option.Kind.STANDARD, expression.getKind(), "expression");
     }
 
     /**
      * Unit test {@link Option#getNames()}
      */
     @Test
-    public void test_getNames() {
-        Assert.assertEquals("flag", List.of("-flag"), flag.getNames());
-        Assert.assertEquals("option", List.of("-option"), option.getNames());
-        Assert.assertEquals("defaulted", List.of("-defaulted"), defaulted.getNames());
-        Assert.assertEquals("expression", List.of("-e" ,"-expression"), expression.getNames());
+    void test_getNames() {
+        assertEquals(List.of("-flag"), flag.getNames(), "flag");
+        assertEquals(List.of("-option"), option.getNames(), "option");
+        assertEquals(List.of("-defaulted"), defaulted.getNames(), "defaulted");
+        assertEquals(List.of("-e" ,"-expression"), expression.getNames(), "expression");
     }
 
     /**
      * Unit test {@link Option#getParameters()}
      */
     @Test
-    public void test_getParameters() {
-        Assert.assertEquals("flag", "", flag.getParameters());
-        Assert.assertEquals("option", "myParameter", option.getParameters());
-        Assert.assertEquals("defaulted", "anotherParameter", defaulted.getParameters());
-        Assert.assertEquals("expression", "myExpression", expression.getParameters());
+    void test_getParameters() {
+        assertEquals("", flag.getParameters(), "flag");
+        assertEquals("myParameter", option.getParameters(), "option");
+        assertEquals("anotherParameter", defaulted.getParameters(), "defaulted");
+        assertEquals("myExpression", expression.getParameters(), "expression");
     }
 
 
@@ -92,63 +96,63 @@ public class OptionTest {
      * Unit test {@link Option} for a flag
      */
     @Test
-    public void test_flag() {
-        Assert.assertFalse("Before: Flag", flag.isSet());
-        Assert.assertThrows("Before: Value", IllegalStateException.class, flag::value);
-        Assert.assertThrows("Before: Optional", IllegalStateException.class, flag::optionalValue);
+    void test_flag() {
+        assertFalse(flag.isSet(), "Before: Flag");
+        assertThrows(IllegalStateException.class, flag::value, "Before: Value");
+        assertThrows(IllegalStateException.class, flag::optionalValue, "Before: Optional");
 
         flag.process("", List.of());
 
-        Assert.assertTrue("After: Flag", flag.isSet());
-        Assert.assertThrows("After: Value", IllegalStateException.class, flag::value);
-        Assert.assertThrows("After: Optional", IllegalStateException.class, flag::optionalValue);
+        assertTrue(flag.isSet(), "After: Flag");
+        assertThrows(IllegalStateException.class, flag::value, "After: Value");
+        assertThrows(IllegalStateException.class, flag::optionalValue, "After: Optional");
     }
 
     /**
      * Unit test {@link Option} for an option without a default
      */
     @Test
-    public void test_option() {
-        Assert.assertFalse("Before: Flag", option.isSet());
-        Assert.assertThrows("Before: Value", IllegalStateException.class, option::value);
-        Assert.assertEquals("Before: Optional", Optional.empty(), option.optionalValue());
+    void test_option() {
+        assertFalse(option.isSet(), "Before: Flag");
+        assertThrows(IllegalStateException.class, option::value, "Before: Value");
+        assertEquals(Optional.empty(), option.optionalValue(), "Before: Optional");
 
         option.process("myParameter", List.of("setting"));
 
-        Assert.assertTrue("After: Flag", option.isSet());
-        Assert.assertEquals("After: Value", "setting", option.value());
-        Assert.assertEquals("After: Optional", Optional.of("setting"), option.optionalValue());
+        assertTrue(option.isSet(), "After: Flag");
+        assertEquals("setting", option.value(), "After: Value");
+        assertEquals(Optional.of("setting"), option.optionalValue(), "After: Optional");
     }
 
     /**
      * Unit test {@link Option} for an option with a default
      */
     @Test
-    public void test_defaulted() {
-        Assert.assertFalse("Before: Flag", defaulted.isSet());
-        Assert.assertEquals("Before: Value", "myDefault", defaulted.value());
-        Assert.assertEquals("Before: Optional", Optional.empty(), defaulted.optionalValue());
+    void test_defaulted() {
+        assertFalse(defaulted.isSet(), "Before: Flag");
+        assertEquals("myDefault", defaulted.value(), "Before: Value");
+        assertEquals(Optional.empty(), defaulted.optionalValue(), "Before: Optional");
 
         defaulted.process("anotherParameter", List.of("setting"));
 
-        Assert.assertTrue("After: Flag", defaulted.isSet());
-        Assert.assertEquals("After: Value", "setting", defaulted.value());
-        Assert.assertEquals("After: Optional", Optional.of("setting"), defaulted.optionalValue());
+        assertTrue(defaulted.isSet(), "After: Flag");
+        assertEquals("setting", defaulted.value(), "After: Value");
+        assertEquals(Optional.of("setting"), defaulted.optionalValue(), "After: Optional");
     }
 
     /**
      * Unit test {@link Option} for an option that can take an expression
      */
     @Test
-    public void test_expression() {
-        Assert.assertFalse("Before: Flag", expression.isSet());
-        Assert.assertThrows("Before: Value", IllegalStateException.class, expression::value);
-        Assert.assertEquals("Before: Optional", Optional.empty(), expression.optionalValue());
+    void test_expression() {
+        assertFalse(expression.isSet(), "Before: Flag");
+        assertThrows(IllegalStateException.class, expression::value, "Before: Value");
+        assertEquals(Optional.empty(), expression.optionalValue(), "Before: Optional");
 
         expression.process("anotherParameter", List.of("add: $( 1 + 2 )"));
 
-        Assert.assertTrue("After: Flag", expression.isSet());
-        Assert.assertEquals("After: Value", "add: 3", expression.value());
-        Assert.assertEquals("After: Optional", Optional.of("add: 3"), expression.optionalValue());
+        assertTrue(expression.isSet(), "After: Flag");
+        assertEquals("add: 3", expression.value(), "After: Value");
+        assertEquals(Optional.of("add: 3"), expression.optionalValue(), "After: Optional");
     }
 }

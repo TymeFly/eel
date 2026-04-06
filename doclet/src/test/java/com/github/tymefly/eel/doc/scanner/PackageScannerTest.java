@@ -3,7 +3,7 @@ package com.github.tymefly.eel.doc.scanner;
 import com.github.tymefly.eel.doc.model.GroupGenerator;
 import com.github.tymefly.eel.doc.source.Source;
 import com.sun.source.util.DocTreePath;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import static org.mockito.Mockito.mock;

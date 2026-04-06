@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.model.FunctionModel;
 import com.github.tymefly.eel.doc.model.GroupModel;
 import com.github.tymefly.eel.doc.model.TagModel;
@@ -32,16 +32,16 @@ class TextRender {
         TextStyle.LINK,
         TextStyle.PLAIN_LINK,
         TextStyle.ERROR);
-    private final Context context;
+    private final EelDocContext context;
     private final GroupModel group;
 
-    private TextRender(@Nonnull Context context, @Nonnull GroupModel group) {
+    private TextRender(@Nonnull EelDocContext context, @Nonnull GroupModel group) {
         this.context = context;
         this.group = group;
     }
 
     @Nonnull
-    static TextRender build(@Nonnull Context context, @Nonnull GroupModel group) {
+    static TextRender build(@Nonnull EelDocContext context, @Nonnull GroupModel group) {
         return new TextRender(context, group);
     }
 

@@ -6,63 +6,63 @@ import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-
 /**
- * Values accessor. Values use '<a href="https://en.wikipedia.org/wiki/Thunk">Thunk</a>' style semantics for
- * lazy evaluation. As a result calling methods in this interface may cause side effects such as writing to
- * the logs or throwing exceptions.
- * @since 3.0.0
+ * Accessor for EEL values. Values use
+ * '<a href="https://en.wikipedia.org/wiki/Thunk">Thunk</a>' style semantics for lazy evaluation.
+ * As a result, calling methods in this interface may produce side effects such as logging or throwing exceptions.
+ * @since 3.0
  */
 @Immutable
 public sealed interface Value extends ValueReader permits AbstractValue {
     /**
-     * The Eel Value for empty {@link Type#TEXT}
-     * @since 2.0.0
+     * The EEL Value representing an empty {@link Type#TEXT}.
+     * @since 2.0
      */
     Value BLANK = of("");
 
     /**
-     * The Eel Value for the {@link Type#LOGIC} value {@literal true}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#LOGIC} value {@literal true}.
+     * @since 2.0
      */
+
     Value TRUE = of(true);
 
     /**
-     * The Eel Value for the {@link Type#LOGIC} value {@literal false}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#LOGIC} value {@literal false}.
+     * @since 2.0
      */
     Value FALSE = of(false);
 
     /**
-     * The Eel Value for the {@link Type#NUMBER} {@literal 0}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#NUMBER} {@literal 0}.
+     * @since 2.0
      */
     Value ZERO = of(0);
 
     /**
-     * The Eel Value for the {@link Type#NUMBER} {@literal 1}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#NUMBER} {@literal 1}.
+     * @since 2.0
      */
     Value ONE = of(1);
 
     /**
-     * The Eel Value for the {@link Type#NUMBER} {@literal 10}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#NUMBER} {@literal 10}.
+     * @since 2.0
      */
     Value TEN = of(10);
 
     /**
-     * The Eel Value for the {@link Type#DATE} {@literal 1970-01-01 00:00:00}
-     * @since 2.0.0
+     * The EEL Value representing the {@link Type#DATE} {@literal 1970-01-01 00:00:00 UTC}.
+     * @since 2.0
      */
     Value EPOCH_START_UTC = of(EelContext.FALSE_DATE);
 
 
     /**
-     * Factory method that returns an immutable Value for the String {@code value}.
-     * For efficiency Values may be pooled and reused.
-     * @param value     backing string
-     * @return          A Value backed by a string
+     * Creates an immutable Value from a String.
+     * Values may be pooled for efficiency.
+     * @param value  the backing string
+     * @return       a Value backed by the given string
      */
     @Nonnull
     static Value of(@Nonnull String value) {
@@ -70,10 +70,10 @@ public sealed interface Value extends ValueReader permits AbstractValue {
     }
 
     /**
-     * Factory method that returns an immutable Value for the Number {@code value}.
-     * For efficiency Values may be pooled and reused.
-     * @param value     backing number
-     * @return          A Value backed by a number
+     * Creates an immutable Value from a Number.
+     * Values may be pooled for efficiency.
+     * @param value  the backing number
+     * @return       a Value backed by the given number
      */
     @Nonnull
     static Value of(@Nonnull Number value) {
@@ -81,10 +81,10 @@ public sealed interface Value extends ValueReader permits AbstractValue {
     }
 
     /**
-     * Factory method that returns an immutable Value for the boolean {@code value}.
-     * For efficiency Values may be pooled and reused.
-     * @param value     backing boolean
-     * @return          A Value backed by a boolean
+     * Creates an immutable Value from a boolean.
+     * Values may be pooled for efficiency.
+     * @param value  the backing boolean
+     * @return       a Value backed by the given boolean
      */
     @Nonnull
     static Value of(boolean value) {
@@ -92,10 +92,10 @@ public sealed interface Value extends ValueReader permits AbstractValue {
     }
 
     /**
-     * Factory method that returns an immutable Value for the ZonedDateTime {@code value}.
-     * For efficiency Values may be pooled and reused.
-     * @param value     backing ZonedDateTime
-     * @return          A Value backed by a ZonedDateTime
+     * Creates an immutable Value from a ZonedDateTime.
+     * Values may be pooled for efficiency.
+     * @param value  the backing ZonedDateTime
+     * @return       a Value backed by the given ZonedDateTime
      */
     @Nonnull
     static Value of(@Nonnull ZonedDateTime value) {
@@ -104,10 +104,14 @@ public sealed interface Value extends ValueReader permits AbstractValue {
 
 
     /**
-     * Return the EEL Value as a {@code File}.
-     * @return the EEL Value as a File
+     * Returns the EEL Value as a {@link File}.
+     * @return          the EEL Value as a File
      * @throws IOException if the value represents a sensitive location on the local file system
+     * @deprecated       Does not respect custom factory functions set via
+     *                   {@link com.github.tymefly.eel.builder.EelContextBuilder#withFileFactory(FileFactory)}
+     * @see EelContext#getFile(Value)
      */
+    @Deprecated
     @Nonnull
     File asFile() throws IOException;
 }

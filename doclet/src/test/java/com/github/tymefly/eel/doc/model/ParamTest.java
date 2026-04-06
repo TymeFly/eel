@@ -4,17 +4,20 @@ import java.util.Optional;
 
 import com.github.tymefly.eel.doc.source.Parameter;
 import com.github.tymefly.eel.doc.utils.EelType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Param}
  */
 public class ParamTest {
-    private Param nullParam = new Param("nullParam", null);
-    private Param first = new Param("first", new Parameter("first", EelType.TEXT, 0, null, false));
-    private Param second = new Param("second", new Parameter("second", EelType.NUMBER, 1, "my description", false));
-    private Param third = new Param("third", new Parameter("third", EelType.LOGIC, 2, "other description", true));
+    private final Param nullParam = new Param("nullParam", null);
+    private final Param first = new Param("first", new Parameter("first", EelType.TEXT, 0, null, false));
+    private final Param second = new Param("second", new Parameter("second", EelType.NUMBER, 1, "my description", false));
+    private final Param third = new Param("third", new Parameter("third", EelType.LOGIC, 2, "other description", true));
 
 
     /**
@@ -22,10 +25,10 @@ public class ParamTest {
      */
     @Test
     public void test_identifier() {
-        Assert.assertEquals("nullParam", "nullParam", nullParam.identifier());
-        Assert.assertEquals("first", "first", first.identifier());
-        Assert.assertEquals("second", "second", second.identifier());
-        Assert.assertEquals("third", "third", third.identifier());
+        assertEquals("nullParam", nullParam.identifier(), "nullParam");
+        assertEquals("first", first.identifier(), "first");
+        assertEquals("second", second.identifier(), "second");
+        assertEquals("third", third.identifier(), "third");
     }
 
     /**
@@ -33,10 +36,10 @@ public class ParamTest {
      */
     @Test
     public void test_isParameter() {
-        Assert.assertFalse("nullParam", nullParam.isParameter());
-        Assert.assertTrue("first", first.isParameter());
-        Assert.assertTrue("second", second.isParameter());
-        Assert.assertTrue("third", third.isParameter());
+        assertFalse(nullParam.isParameter(), "nullParam");
+        assertTrue(first.isParameter(), "first");
+        assertTrue(second.isParameter(), "second");
+        assertTrue(third.isParameter(), "third");
     }
 
     /**
@@ -44,10 +47,10 @@ public class ParamTest {
      */
     @Test
     public void test_isVarArgs() {
-        Assert.assertFalse("nullParam", nullParam.isVarArgs());
-        Assert.assertFalse("first", first.isVarArgs());
-        Assert.assertFalse("second", second.isVarArgs());
-        Assert.assertTrue("third", third.isVarArgs());
+        assertFalse(nullParam.isVarArgs(), "nullParam");
+        assertFalse(first.isVarArgs(), "first");
+        assertFalse(second.isVarArgs(), "second");
+        assertTrue(third.isVarArgs(), "third");
     }
 
     /**
@@ -55,10 +58,10 @@ public class ParamTest {
      */
     @Test
     public void test_type() {
-        Assert.assertEquals("nullParam", Optional.empty(), nullParam.type());
-        Assert.assertEquals("first", Optional.of(EelType.TEXT), first.type());
-        Assert.assertEquals("second", Optional.of(EelType.NUMBER), second.type());
-        Assert.assertEquals("third", Optional.of(EelType.LOGIC), third.type());
+        assertEquals(Optional.empty(), nullParam.type(), "nullParam");
+        assertEquals(Optional.of(EelType.TEXT), first.type(), "first");
+        assertEquals(Optional.of(EelType.NUMBER), second.type(), "second");
+        assertEquals(Optional.of(EelType.LOGIC), third.type(), "third");
     }
 
     /**
@@ -66,10 +69,10 @@ public class ParamTest {
      */
     @Test
     public void test_order() {
-        Assert.assertEquals("nullParam", -1, nullParam.order());
-        Assert.assertEquals("first", 0, first.order());
-        Assert.assertEquals("second", 1, second.order());
-        Assert.assertEquals("third", 2, third.order());
+        assertEquals(-1, nullParam.order(), "nullParam");
+        assertEquals(0, first.order(), "first");
+        assertEquals(1, second.order(), "second");
+        assertEquals(2, third.order(), "third");
     }
 
     /**
@@ -77,10 +80,10 @@ public class ParamTest {
      */
     @Test
     public void test_isDefaulted() {
-        Assert.assertFalse("nullParam", nullParam.isDefaulted());
-        Assert.assertFalse("first", first.isDefaulted());
-        Assert.assertTrue("second", second.isDefaulted());
-        Assert.assertTrue("third", third.isDefaulted());
+        assertFalse(nullParam.isDefaulted(), "nullParam");
+        assertFalse(first.isDefaulted(), "first");
+        assertTrue(second.isDefaulted(), "second");
+        assertTrue(third.isDefaulted(), "third");
     }
 
     /**
@@ -88,9 +91,9 @@ public class ParamTest {
      */
     @Test
     public void test_defaultDescription() {
-        Assert.assertEquals("nullParam", Optional.empty(), nullParam.defaultDescription());
-        Assert.assertEquals("first", Optional.empty(), first.defaultDescription());
-        Assert.assertEquals("second", Optional.of("my description"), second.defaultDescription());
-        Assert.assertEquals("third", Optional.of("other description"), third.defaultDescription());
+        assertEquals(Optional.empty(), nullParam.defaultDescription(), "nullParam");
+        assertEquals(Optional.empty(), first.defaultDescription(), "first");
+        assertEquals(Optional.of("my description"), second.defaultDescription(), "second");
+        assertEquals(Optional.of("other description"), third.defaultDescription(), "third");
     }
 }

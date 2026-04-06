@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link NumberParser}
@@ -16,10 +19,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_empty() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse(""));
 
-        Assert.assertEquals("Unexpected message", "For input \"\"", actual.getMessage());
+        assertEquals("For input \"\"", actual.getMessage(), "Unexpected message");
     }
 
                 //*** Decimal ***//
@@ -66,10 +69,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_decimal_unexpectedChars() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("123a"));
 
-        Assert.assertEquals("Unexpected message", "For input string: \"123a\"", actual.getMessage());
+        assertEquals("For input string: \"123a\"", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -86,10 +89,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_number_missingExponent() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("1.2e "));
 
-        Assert.assertEquals("Unexpected message", "Expected exponent", actual.getMessage());
+        assertEquals("Expected exponent", actual.getMessage(), "Unexpected message");
     }
 
                 //*** Binary ***//
@@ -122,10 +125,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_binary_unexpectedChars() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0b012"));
 
-        Assert.assertEquals("Unexpected message", "For input string: \"0b012\"", actual.getMessage());
+        assertEquals("For input string: \"0b012\"", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -133,10 +136,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_binary_missingDigits() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0b"));
 
-        Assert.assertEquals("Unexpected message", "Expected digits", actual.getMessage());
+        assertEquals("Expected digits", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -178,10 +181,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_octal_unexpectedChars() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0c6789"));
 
-        Assert.assertEquals("Unexpected message", "For input string: \"0c6789\"", actual.getMessage());
+        assertEquals("For input string: \"0c6789\"", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -189,10 +192,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_octal_missingDigits() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0C"));
 
-        Assert.assertEquals("Unexpected message", "Expected digits", actual.getMessage());
+        assertEquals("Expected digits", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -233,10 +236,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_hex_unexpectedChars() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0X89abcdefg"));
 
-        Assert.assertEquals("Unexpected message", "For input string: \"0X89abcdefg\"", actual.getMessage());
+        assertEquals("For input string: \"0X89abcdefg\"", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -244,10 +247,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_hex_missingDigits() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("0x"));
 
-        Assert.assertEquals("Unexpected message", "Expected digits", actual.getMessage());
+        assertEquals("Expected digits", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -266,10 +269,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_double() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("1__2"));
 
-        Assert.assertEquals("Unexpected message", "Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -278,10 +281,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_lastChar() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse(".1_"));
 
-        Assert.assertEquals("Unexpected message", "Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -289,10 +292,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_beforePoint() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("1_."));
 
-        Assert.assertEquals("Unexpected message", "Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -300,10 +303,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_afterPoint() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("1._2"));
 
-        Assert.assertEquals("Unexpected message", "Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -311,10 +314,10 @@ public class NumberParserTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_beforeExponent() {
-        NumberFormatException actual = Assert.assertThrows(NumberFormatException.class,
+        NumberFormatException actual = assertThrows(NumberFormatException.class,
             () -> NumberParser.parse("1_e3"));
 
-        Assert.assertEquals("Unexpected message", "Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -324,11 +327,10 @@ public class NumberParserTest {
         BigDecimal value = parser.getValue();
         String text = parser.getText();
 
-        Assert.assertTrue("Unexpected value for " + literal + ": expected " + expectedValue +
-                " but was " + value.toPlainString(),
-            expectedValue.compareTo(value) == 0);
-        Assert.assertEquals("Unexpected text for " + literal, text, literal);
-        Assert.assertEquals("Unexpected decimal flag for " + literal, expectedDecimal, parser.isDecimal());
+        assertTrue(expectedValue.compareTo(value) == 0,
+            "Unexpected value for " + literal + ": expected " + expectedValue + " but was " + value.toPlainString());
+        assertEquals(text, literal, "Unexpected text for " + literal);
+        assertEquals(expectedDecimal, parser.isDecimal(), "Unexpected decimal flag for " + literal);
     }
 
     private void validate(@Nonnull String literal,
@@ -340,19 +342,18 @@ public class NumberParserTest {
         BigDecimal value = parser.getValue();
         String text = parser.getText();
 
-        Assert.assertTrue("Unexpected value for " + literal + ": expected " + expectedValue +
-                " but was " + value.toPlainString(),
-            expectedValue.compareTo(value) == 0);
+        assertTrue(expectedValue.compareTo(value) == 0,
+            "Unexpected value for " + literal + ": expected " + expectedValue + " but was " + value.toPlainString());
 
-        Assert.assertEquals("Unexpected text for " + literal, text, expectedText);
+        assertEquals(text, expectedText, "Unexpected text for " + literal);
 
         int index = 0;
         for (var next : trailing.toCharArray()) {
-            Assert.assertEquals(index + ") unexpected trailing character", next, source.current());
+            assertEquals(next, source.current(), index + ") unexpected trailing character");
             source.read();
             index++;
         }
 
-        Assert.assertEquals("Extra trailing character" + source.current(), source.current(), Input.END);
+        assertEquals(source.current(), Input.END, "Extra trailing character" + source.current());
     }
 }

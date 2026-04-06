@@ -6,8 +6,10 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link Source}
@@ -110,11 +112,11 @@ public class SourceTest {
         source.read();
         assertSource(++index, source, 3, '3', '4');
 
-        EelSourceException actual = Assert.assertThrows(EelSourceException.class, source::read);
+        EelSourceException actual = assertThrows(EelSourceException.class, source::read);
 
-        Assert.assertEquals("Unexpected message",
-            "Attempt to read beyond maximum expression length of 3 bytes",
-            actual.getMessage());
+        assertEquals("Attempt to read beyond maximum expression length of 3 bytes",
+            actual.getMessage(),
+            "Unexpected message");
     }
 
 
@@ -133,9 +135,13 @@ public class SourceTest {
 
 
 
-    private void assertSource(int index, @Nonnull Source source, int expectedPosition, char expectedCurrent, char expectedNext) {
-        Assert.assertEquals(index + ". Unexpected position", expectedPosition, source.position());
-        Assert.assertEquals(index + ". Unexpected current", expectedCurrent, source.current());
-        Assert.assertEquals(index + ". Unexpected next", expectedNext, source.next());
+    private void assertSource(int index,
+                              @Nonnull Source source,
+                              int expectedPosition,
+                              char expectedCurrent,
+                              char expectedNext) {
+        assertEquals(expectedPosition, source.position(), index + ". Unexpected position");
+        assertEquals(expectedCurrent, source.current(), index + ". Unexpected current");
+        assertEquals(expectedNext, source.next(), index + ". Unexpected next");
     }
 }

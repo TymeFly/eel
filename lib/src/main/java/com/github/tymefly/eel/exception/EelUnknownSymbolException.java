@@ -5,7 +5,8 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Exception thrown if the parser cannot read a value from the Symbols Table and there is no default
+ * Exception thrown if EEL cannot read a value from the {@link com.github.tymefly.eel.SymbolsTable} and
+ * no default has been specified.
  */
 public class EelUnknownSymbolException extends EelRuntimeException {
     @Serial
@@ -13,29 +14,27 @@ public class EelUnknownSymbolException extends EelRuntimeException {
 
 
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructor for a simple message.
+     * @param message  human-readable message
      */
     public EelUnknownSymbolException(@Nonnull String message) {
         super(message);
     }
 
-
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructor for a formatted message.
+     * @param message  formatted message string
+     * @param args     formatting arguments; the final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     public EelUnknownSymbolException(@Nonnull String message, @Nonnull Object... args) {
         super(message, args);
     }
 
-
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructor for a wrapped exception.
+     * @param message  human-readable message
+     * @param cause    wrapped exception
      */
     public EelUnknownSymbolException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

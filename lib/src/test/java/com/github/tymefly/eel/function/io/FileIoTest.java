@@ -5,10 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +22,7 @@ public class FileIoTest {
     private File emptyFile;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         context = spy(EelContext.factory().build());
 
@@ -42,7 +43,7 @@ public class FileIoTest {
      */
     @Test
     public void test_head_missingFile() {
-        Assert.assertThrows(FileNotFoundException.class, () -> new FileIo().head(context, new File("unknown.???"), 1));
+        assertThrows(FileNotFoundException.class, () -> new FileIo().head(context, new File("unknown.???"), 1));
     }
 
     /**
@@ -50,8 +51,8 @@ public class FileIoTest {
      */
     @Test
     public void test_head_readNothing() throws Exception {
-        Assert.assertEquals("0 lines", "", new FileIo().head(context, shortFile, 0));
-        Assert.assertEquals("negative lines", "", new FileIo().head(context, shortFile, -1));
+        assertEquals("", new FileIo().head(context, shortFile, 0), "0 lines");
+        assertEquals("", new FileIo().head(context, shortFile, -1), "negative lines");
     }
 
     /**
@@ -59,7 +60,7 @@ public class FileIoTest {
      */
     @Test
     public void test_head_empty() throws Exception {
-        Assert.assertEquals("read empty file", "", new FileIo().head(context, emptyFile, 5));
+        assertEquals("", new FileIo().head(context, emptyFile, 5), "read empty file");
     }
 
     /**
@@ -67,13 +68,13 @@ public class FileIoTest {
      */
     @Test
     public void test_head() throws Exception {
-        Assert.assertEquals("1 line", "One", new FileIo().head(context, shortFile, 1));
-        Assert.assertEquals("2 lines", "One\nTwo", new FileIo().head(context, shortFile, 2));
-        Assert.assertEquals("3 lines", "One\nTwo\nThree", new FileIo().head(context, shortFile, 3));
-        Assert.assertEquals("4 lines", "One\nTwo\nThree\n", new FileIo().head(context, shortFile, 4));
-        Assert.assertEquals("5 lines", "One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 5));
-        Assert.assertEquals("6 lines", "One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 6));
-        Assert.assertEquals("7 lines", "One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 7));
+        assertEquals("One", new FileIo().head(context, shortFile, 1), "1 line");
+        assertEquals("One\nTwo", new FileIo().head(context, shortFile, 2), "2 lines");
+        assertEquals("One\nTwo\nThree", new FileIo().head(context, shortFile, 3), "3 lines");
+        assertEquals("One\nTwo\nThree\n", new FileIo().head(context, shortFile, 4), "4 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 5), "5 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 6), "6 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().head(context, shortFile, 7), "7 lines");
     }
 
     /**
@@ -84,7 +85,7 @@ public class FileIoTest {
         when(context.getIoLimit())
             .thenReturn(2);
 
-        Assert.assertThrows(IOException.class, () -> new FileIo().head(context, shortFile, 1));
+        assertThrows(IOException.class, () -> new FileIo().head(context, shortFile, 1));
     }
 
 
@@ -94,7 +95,7 @@ public class FileIoTest {
      */
     @Test
     public void test_fail_missingFile() {
-        Assert.assertThrows(FileNotFoundException.class, () -> new FileIo().tail(context, new File("unknown.???"), 1));
+        assertThrows(FileNotFoundException.class, () -> new FileIo().tail(context, new File("unknown.???"), 1));
     }
 
     /**
@@ -102,8 +103,8 @@ public class FileIoTest {
      */
     @Test
     public void test_tail_readNothing() throws Exception {
-        Assert.assertEquals("0 lines", "", new FileIo().tail(context, shortFile, 0));
-        Assert.assertEquals("negative lines", "", new FileIo().tail(context, shortFile, -1));
+        assertEquals("", new FileIo().tail(context, shortFile, 0), "0 lines");
+        assertEquals("", new FileIo().tail(context, shortFile, -1), "negative lines");
     }
 
     /**
@@ -111,7 +112,7 @@ public class FileIoTest {
      */
     @Test
     public void test_tail_empty() throws Exception {
-        Assert.assertEquals("read empty file", "", new FileIo().tail(context, emptyFile, 5));
+        assertEquals("", new FileIo().tail(context, emptyFile, 5), "read empty file");
     }
 
     /**
@@ -119,13 +120,13 @@ public class FileIoTest {
      */
     @Test
     public void test_tail() throws Exception {
-        Assert.assertEquals("1 line", "Five", new FileIo().tail(context, shortFile, 1));
-        Assert.assertEquals("2 lines", "\nFive", new FileIo().tail(context, shortFile, 2));
-        Assert.assertEquals("3 lines", "Three\n\nFive", new FileIo().tail(context, shortFile, 3));
-        Assert.assertEquals("4 lines", "Two\nThree\n\nFive", new FileIo().tail(context, shortFile, 4));
-        Assert.assertEquals("5 lines", "One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 5));
-        Assert.assertEquals("6 lines", "One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 6));
-        Assert.assertEquals("7 lines", "One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 7));
+        assertEquals("Five", new FileIo().tail(context, shortFile, 1), "1 line");
+        assertEquals("\nFive", new FileIo().tail(context, shortFile, 2), "2 lines");
+        assertEquals("Three\n\nFive", new FileIo().tail(context, shortFile, 3), "3 lines");
+        assertEquals("Two\nThree\n\nFive", new FileIo().tail(context, shortFile, 4), "4 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 5), "5 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 6), "6 lines");
+        assertEquals("One\nTwo\nThree\n\nFive", new FileIo().tail(context, shortFile, 7), "7 lines");
     }
 
     /**
@@ -136,7 +137,6 @@ public class FileIoTest {
         when(context.getIoLimit())
             .thenReturn(20);
 
-        Assert.assertThrows(IOException.class, () -> new FileIo().tail(context, shortFile, 1));
+        assertThrows(IOException.class, () -> new FileIo().tail(context, shortFile, 1));
     }
-
 }

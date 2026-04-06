@@ -22,7 +22,7 @@ import com.sun.source.doctree.UnknownBlockTagTree;
 import com.sun.source.doctree.VersionTree;
 
 /**
- * JavaDoc scanner that handles all the text elements from a {@link InlineScanner} plus additional elements that only
+ * Javadoc scanner that handles all the text elements from a {@link InlineScanner} plus additional elements that only
  * apply to Java program elements
  */
 abstract class BlockScanner extends InlineScanner {

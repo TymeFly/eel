@@ -8,10 +8,10 @@ import java.time.temporal.WeekFields;
 
 import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.function.date.DateFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,7 +29,7 @@ public class FormatDateTest {
 
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         DateFactory dateFactory = mock();
 
@@ -56,9 +56,9 @@ public class FormatDateTest {
      */
     @Test
     public void test_FormatStart() {
-        Assert.assertEquals("UTC Format",
-            "12/03/2007 17:15 +0000",
-            formatDate.formatStart(context, "MM/dd/yyy HH:mm Z", "UTC"));
+        assertEquals("12/03/2007 17:15 +0000",
+            formatDate.formatStart(context, "MM/dd/yyy HH:mm Z", "UTC"),
+            "UTC Format");
     }
 
     /**
@@ -68,9 +68,9 @@ public class FormatDateTest {
     public void test_FormatDate() {
         ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(1196702100), ZoneId.of("America/New_York"));
 
-        Assert.assertEquals("US Format",
-            "12/03/2007 12:15 -0500",
-            formatDate.formatDate(context, "MM/dd/yyy HH:mm Z", date));
+        assertEquals("12/03/2007 12:15 -0500",
+            formatDate.formatDate(context, "MM/dd/yyy HH:mm Z", date),
+            "US Format");
     }
 
     /**
@@ -78,9 +78,9 @@ public class FormatDateTest {
      */
     @Test
     public void test_FormatUtc() {
-        Assert.assertEquals("UTC Format",
-            "12/03/2007 17:15 +0000",
-            formatDate.formatUtc(context, "MM/dd/yyy HH:mm Z"));
+        assertEquals("12/03/2007 17:15 +0000",
+            formatDate.formatUtc(context, "MM/dd/yyy HH:mm Z"),
+            "UTC Format");
     }
 
     /**
@@ -88,9 +88,9 @@ public class FormatDateTest {
      */
     @Test
     public void test_FormatLocal() {
-        Assert.assertEquals("Local Format",
-            "12/03/2007 18:15 +0100",
-            formatDate.formatLocal(context, "MM/dd/yyy HH:mm Z"));
+        assertEquals("12/03/2007 18:15 +0100",
+            formatDate.formatLocal(context, "MM/dd/yyy HH:mm Z"),
+            "Local Format");
     }
 
     /**
@@ -98,8 +98,8 @@ public class FormatDateTest {
      */
     @Test
     public void test_FormatAt() {
-        Assert.assertEquals("Custom TimeZone Format",
-            "12/03/2007 12:15 -0500",
-            formatDate.formatAt(context, "America/New_York", "MM/dd/yyy HH:mm Z"));
+        assertEquals("12/03/2007 12:15 -0500",
+            formatDate.formatAt(context, "America/New_York", "MM/dd/yyy HH:mm Z"),
+            "Custom TimeZone Format");
     }
 }

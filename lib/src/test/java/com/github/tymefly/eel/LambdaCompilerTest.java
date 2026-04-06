@@ -13,16 +13,17 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.exception.EelConvertException;
+import com.github.tymefly.eel.exception.EelSemanticException;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import com.github.tymefly.eel.utils.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.verification.VerificationMode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -43,7 +44,7 @@ public class LambdaCompilerTest {
 
     private LambdaCompiler compile;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         EelContextImpl context = mock();
 
@@ -75,39 +76,39 @@ public class LambdaCompilerTest {
     }
 
 
-                //*** Cached terms ***//
+                //*** Constants Term terms ***//
 
     /**
-     * Unit test {@link LambdaCompiler#cached(Term)}
+     * Unit test {@link LambdaCompiler#constTerm(Term)}
      */
     @Test
-    public void test_Cached_constant() {
+    public void test_constTerm_constant() {
         Term backing = spy(Constant.of("abc"));
-        Term actual = compile.cached(backing);
+        Term actual = compile.constTerm(backing);
 
         Value value = actual.evaluate(symbols);
-        Assert.assertEquals("#1 evaluate()", "abc", value.asText());
+        assertEquals("abc", value.asText(), "#1 evaluate()");
         verify(backing, times(1)).evaluate(any(SymbolsTable.class));
 
         value = actual.evaluate(symbols);
-        Assert.assertEquals("#2 evaluate()", "abc", value.asText());
+        assertEquals("abc", value.asText(), "#2 evaluate()");
         verify(backing, times(2)).evaluate(any(SymbolsTable.class));
     }
 
     /**
-     * Unit test {@link LambdaCompiler#cached(Term)}
+     * Unit test {@link Compiler#constTerm(Term)}
      */
     @Test
-    public void test_Cached_variable() {
+    public void test_constTerm_variable() {
         Term backing = mockValue(Constant.of("abc"));
-        Term actual = compile.cached(backing);
+        Term actual = compile.constTerm(backing);
 
         Value value = actual.evaluate(symbols);
-        Assert.assertEquals("#1 evaluate()", "abc", value.asText());
+        assertEquals("abc", value.asText(), "#1 evaluate()");
         verify(backing, times(1)).evaluate(any(SymbolsTable.class));
 
         value = actual.evaluate(symbols);
-        Assert.assertEquals("#2 evaluate()", "abc", value.asText());
+        assertEquals("abc", value.asText(), "#2 evaluate()");
         verify(backing, times(1)).evaluate(any(SymbolsTable.class));
     }
 
@@ -247,8 +248,8 @@ public class LambdaCompilerTest {
             .build();
         Value value = actual.evaluate(symbols);
 
-        Assert.assertEquals("Unexpected type", Type.TEXT, value.getType());
-        Assert.assertEquals("Unexpected value", 11, value.asInt());
+        assertEquals(Type.TEXT, value.getType(), "Unexpected type");
+        assertEquals(11, value.asInt(), "Unexpected value");
     }
 
     /**
@@ -271,13 +272,144 @@ public class LambdaCompilerTest {
      */
     @Test
     public void test_variable_Unknown() {
-        EelUnknownSymbolException actual = Assert.assertThrows(EelUnknownSymbolException.class,
+        EelUnknownSymbolException actual = assertThrows(EelUnknownSymbolException.class,
             () -> compile.read("other").build().evaluate(symbols));
 
-        Assert.assertEquals("Unexpected message",
-            "Unknown variable 'other'",
-            actual.getMessage());
+        assertEquals("Unknown variable 'other'", actual.getMessage(), "Unexpected message");
     }
+
+                //*** lookbacks ***//
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_simple() {
+        Term first = Constant.of(100);
+        Term index = Constant.of(1);
+        Value actual = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build()
+            .evaluate(symbols);
+
+        assertEquals("100", actual.asText(), "Unexpected value");
+    }
+
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_withDefaultUnused() {
+        Term first = Constant.of(100);
+        Term defaultValue = Constant.of(99);
+        Term index = Constant.of(1);
+        Value actual = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .withDefault(defaultValue)
+            .build()
+            .evaluate(symbols);
+
+        assertEquals("100", actual.asText(), "Unexpected value");
+    }
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_withDefaultUsed() {
+        Term first = Constant.of(100);
+        Term defaultValue = Constant.of("defaultValue");
+        Term index = Constant.of(5);
+        Value actual = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .withDefault(defaultValue)
+            .build()
+            .evaluate(symbols);
+
+        assertEquals("defaultValue", actual.asText(), "Unexpected value");
+    }
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_overRangeIndex() {
+        Term first = Constant.of(100);
+        Term index = Constant.of(2);
+        Term expression = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build();
+
+        Exception actual = assertThrows(EelSemanticException.class, () -> expression.evaluate(symbols));
+
+        assertEquals("Error at position 123: Undefined lookback $[2]", actual.getMessage(), "Unexpected message");
+    }
+
+      /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_zeroIndex() {
+        Term first = Constant.of(100);
+        Term index = Constant.of(0);
+        Term expression = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build();
+
+        Exception actual = assertThrows(EelSemanticException.class, () -> expression.evaluate(symbols));
+
+        assertEquals("Error at position 123: Undefined lookback $[0]", actual.getMessage(), "Unexpected message");
+    }
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_underRangeIndex() {
+        Term first = Constant.of(100);
+        Term index = Constant.of(-1);
+        Term expression = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build();
+
+        Exception actual = assertThrows(EelSemanticException.class, () -> expression.evaluate(symbols));
+
+        assertEquals("Error at position 123: Undefined lookback $[-1]", actual.getMessage(), "Unexpected message");
+    }
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_nonIntegralIndex() {
+        Term first = Constant.of(100);
+        Term index = Constant.of(1.1);
+        Term expression = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build();
+
+        Value actual = expression.evaluate(symbols);
+
+        assertEquals("100", actual.asText(), "Unexpected value");
+    }
+
+
+    /**
+     * Unit test {@link LambdaCompiler#read(String)}
+     */
+    @Test
+    public void test_lookback_variable() {
+        Term first = Constant.of(100);
+        Term index = mockValue(Constant.of("1"));
+        Value actual = compile.lookback(List.of(first))
+            .withIndex(123, index)
+            .build()
+            .evaluate(symbols);
+
+        assertEquals("100", actual.asText(), "Unexpected value");
+    }
+
 
                 //*** Constants ***//
 
@@ -921,7 +1053,7 @@ public class LambdaCompilerTest {
         Term actual = compile.add(leftTerm, rightTerm);
 
         assertNumber(message, BigDecimal.valueOf(left + right), actual.evaluate(symbols));
-        assertTrue(message + ": Unexpected term returned", (rightTerm == actual) || (leftTerm == actual));
+        assertTrue((rightTerm == actual) || (leftTerm == actual), message + ": Unexpected term returned");
     }
 
     /**
@@ -971,7 +1103,7 @@ public class LambdaCompilerTest {
         Term actual = compile.subtract(left, right);
 
         assertNumber((16 - 0), actual.evaluate(symbols));
-        assertSame("Unexpected term returned", left, actual);
+        assertSame(left, actual, "Unexpected term returned");
     }
 
     /**
@@ -1026,7 +1158,7 @@ public class LambdaCompilerTest {
         Term actual = compile.multiply(leftTerm, rightTerm);
 
         assertNumber(message, BigDecimal.valueOf(left * right), actual.evaluate(symbols));
-        assertTrue(message + ": Unexpected term returned", (rightTerm == actual) || (leftTerm == actual));
+        assertTrue((rightTerm == actual) || (leftTerm == actual), message + ": Unexpected term returned");
     }
 
     /**
@@ -1037,7 +1169,7 @@ public class LambdaCompilerTest {
         Term left = Constant.of(15);
         Term right = Constant.of(0);
 
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> compile.divide(left, right).evaluate(symbols));
     }
 
@@ -1088,7 +1220,7 @@ public class LambdaCompilerTest {
         Term actual = compile.divide(left, right);
 
         assertNumber(15, actual.evaluate(symbols));
-        assertSame("Unexpected term returned", left, actual);
+        assertSame(left, actual, "Unexpected term returned");
     }
 
     /**
@@ -1099,7 +1231,7 @@ public class LambdaCompilerTest {
         Term left = Constant.of(15);
         Term right = Constant.of(0);
 
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> compile.divideFloor(left, right).evaluate(symbols));
     }
 
@@ -1144,7 +1276,7 @@ public class LambdaCompilerTest {
         Term left = Constant.of(15);
         Term right = Constant.of(0);
 
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> compile.divideTruncate(left, right).evaluate(symbols));
     }
 
@@ -1190,7 +1322,7 @@ public class LambdaCompilerTest {
         Term left = Constant.of(15);
         Term right = Constant.of(0);
 
-        Assert.assertThrows(ArithmeticException.class,
+        assertThrows(ArithmeticException.class,
             () -> compile.modulus(left, right).evaluate(symbols));
     }
 
@@ -1277,7 +1409,7 @@ public class LambdaCompilerTest {
         Term actual = compile.power(left, right);
 
         assertNumber(3, actual.evaluate(symbols));
-        assertSame("Unexpected term returned", left, actual);
+        assertSame(left, actual, "Unexpected term returned");
     }
 
                 //*** Logic Ops ***//
@@ -1372,7 +1504,7 @@ public class LambdaCompilerTest {
         assertLogic(message, (left && right), actual.evaluate(symbols));
         boolean sameTerm = (rightTerm == actual) || (leftTerm == actual);
 
-        assertEquals(message + ": optimised failed", optimised, sameTerm);
+        assertEquals(optimised, sameTerm, message + ": optimised failed");
     }
 
 
@@ -1433,7 +1565,7 @@ public class LambdaCompilerTest {
         assertLogic(message, (left || right), actual.evaluate(symbols));
         boolean sameTerm = (rightTerm == actual) || (leftTerm == actual);
 
-       assertEquals(message + ": optimised failed", optimised, sameTerm);
+       assertEquals(optimised, sameTerm, message + ": optimised failed");
     }
 
     /**
@@ -1668,7 +1800,7 @@ public class LambdaCompilerTest {
         Term actual = compile.leftShift(left, right);
 
         assertNumber((14 << 0), actual.evaluate(symbols));
-        assertSame("Unexpected term returned", left, actual);
+        assertSame(left, actual, "Unexpected term returned");
     }
 
     /**
@@ -1718,7 +1850,7 @@ public class LambdaCompilerTest {
         Term actual = compile.rightShift(left, right);
 
         assertNumber((14 >> 0), actual.evaluate(symbols));
-        assertSame("Unexpected term returned", left, actual);
+        assertSame(left, actual, "Unexpected term returned");
     }
 
                 //*** Text Ops ***//
@@ -1775,7 +1907,7 @@ public class LambdaCompilerTest {
         Term actual = compile.concatenate(leftTerm, rightTerm);
 
         assertText(message, (left + right), actual.evaluate(symbols));
-        assertTrue(message + ": Unexpected term returned", (rightTerm == actual) || (leftTerm == actual));
+        assertTrue((rightTerm == actual) || (leftTerm == actual), message + ": Unexpected term returned");
     }
 
 
@@ -1855,7 +1987,7 @@ public class LambdaCompilerTest {
 
         verify(operand).evaluate(any(SymbolsTable.class));
 
-        Assert.assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
+        assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
     }
 
 
@@ -1902,7 +2034,7 @@ public class LambdaCompilerTest {
 
         verify(operand).evaluate(any(SymbolsTable.class));
 
-        Assert.assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
+        assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
     }
 
 
@@ -1949,54 +2081,54 @@ public class LambdaCompilerTest {
 
         verify(operand).evaluate(any(SymbolsTable.class));
 
-        Assert.assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
+        assertThrows(EelConvertException.class, () -> actual.evaluate(symbols));
     }
 
 
                 //*** Helper methods ***//
 
     private void assertText(@Nonnull String expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.TEXT, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asText());
+        assertEquals(Type.TEXT, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asText(), "Unexpected value");
     }
 
     private void assertText(@Nonnull String message, @Nonnull String expected, @Nonnull Value value) {
-        Assert.assertEquals(message + "Unexpected type", Type.TEXT, value.getType());
-        Assert.assertEquals(message + "Unexpected value", expected, value.asText());
+        assertEquals(Type.TEXT, value.getType(), message + "Unexpected type");
+        assertEquals(expected, value.asText(), message + "Unexpected value");
     }
 
     private void assertNumber(byte expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asNumber().byteValue());
+        assertEquals(Type.NUMBER, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asNumber().byteValue(), "Unexpected value");
     }
 
     private void assertNumber(int expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asInt());
+        assertEquals(Type.NUMBER, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asInt(), "Unexpected value");
     }
 
     private void assertNumber(@Nonnull BigDecimal expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asNumber());
+        assertEquals(Type.NUMBER, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asNumber(), "Unexpected value");
     }
 
     private void assertNumber(@Nonnull String message, @Nonnull BigDecimal expected, @Nonnull Value value) {
-        Assert.assertEquals(message + ": Unexpected type", Type.NUMBER, value.getType());
-        Assert.assertEquals(message + ": Unexpected value", expected, value.asNumber());
+        assertEquals(Type.NUMBER, value.getType(), message + ": Unexpected type");
+        assertEquals(expected, value.asNumber(), message + ": Unexpected value");
     }
 
     private void assertLogic(boolean expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.LOGIC, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asLogic());
+        assertEquals(Type.LOGIC, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asLogic(), "Unexpected value");
     }
 
     private void assertLogic(@Nonnull String message, boolean expected, @Nonnull Value value) {
-        Assert.assertEquals(message + ": Unexpected type", Type.LOGIC, value.getType());
-        Assert.assertEquals(message + ": Unexpected value", expected, value.asLogic());
+        assertEquals(Type.LOGIC, value.getType(), message + ": Unexpected type");
+        assertEquals(expected, value.asLogic(), message + ": Unexpected value");
     }
 
     private void assertDate(@Nonnull ZonedDateTime expected, @Nonnull Value value) {
-        Assert.assertEquals("Unexpected type", Type.DATE, value.getType());
-        Assert.assertEquals("Unexpected value", expected, value.asDate());
+        assertEquals(Type.DATE, value.getType(), "Unexpected type");
+        assertEquals(expected, value.asDate(), "Unexpected value");
     }
 }

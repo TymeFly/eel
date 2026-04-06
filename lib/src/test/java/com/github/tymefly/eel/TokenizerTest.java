@@ -7,8 +7,11 @@ import javax.annotation.Nullable;
 
 import com.github.tymefly.eel.Tokenizer.Terminal;
 import com.github.tymefly.eel.exception.EelSyntaxException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link Tokenizer}
@@ -139,23 +142,20 @@ public class TokenizerTest {
     public void test_strings_escaped_BadUnicode() {
         EelSyntaxException actual;
 
-        actual = Assert.assertThrows(
-            "Not hex chars",
-            EelSyntaxException.class,
-            () -> buildTokenizer("\\uxxxx").text(Token.END_OF_PROGRAM));
-        Assert.assertEquals("Unexpected message", "Error at position 3: Unexpected char 'x' (0x78)", actual.getMessage());
+        actual = assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("\\uxxxx").text(Token.END_OF_PROGRAM),
+            "Not hex chars");
+        assertEquals("Error at position 3: Unexpected char 'x' (0x78)", actual.getMessage(), "Unexpected message");
 
-        actual = Assert.assertThrows(
-            "Missing Digits",
-            EelSyntaxException.class,
-            () -> buildTokenizer("\\u41 hello").text(Token.END_OF_PROGRAM));
-        Assert.assertEquals("Unexpected message", "Error at position 5: Unexpected char ' ' (0x20)", actual.getMessage());
+        actual = assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("\\u41 hello").text(Token.END_OF_PROGRAM),
+            "Missing Digits");
+        assertEquals("Error at position 5: Unexpected char ' ' (0x20)", actual.getMessage(), "Unexpected message");
 
-        actual = Assert.assertThrows(
-            "Truncated Input",
-            EelSyntaxException.class,
-            () -> buildTokenizer("\\u").text(Token.END_OF_PROGRAM));
-        Assert.assertEquals("Unexpected message", "Error at position 3: Unexpected char (0x00)", actual.getMessage());
+        actual = assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer("\\u").text(Token.END_OF_PROGRAM),
+            "Truncated Input");
+        assertEquals("Error at position 3: Unexpected char (0x00)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -165,17 +165,15 @@ public class TokenizerTest {
     public void test_strings_ControlCharacters() {
         EelSyntaxException actual;
 
-        actual = Assert.assertThrows(
-            "Embedded Control characters",
-            EelSyntaxException.class,
-            () -> buildTokenizer(" \u0004    ").text(Token.END_OF_PROGRAM));
-        Assert.assertEquals("Error at position 2: Unexpected char (0x04)", actual.getMessage());
+        actual = assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer(" \u0004    ").text(Token.END_OF_PROGRAM),
+            "Embedded Control characters");
+        assertEquals("Error at position 2: Unexpected char (0x04)", actual.getMessage());
 
-        actual = Assert.assertThrows(
-            "Unicode Specials Block (Interlinear Annotation Anchor)",
-            EelSyntaxException.class,
-            () -> buildTokenizer(" \uFFF9    ").text(Token.END_OF_PROGRAM));
-        Assert.assertEquals("Error at position 2: Unexpected char (0xfff9)", actual.getMessage());
+        actual = assertThrows(EelSyntaxException.class,
+            () -> buildTokenizer(" \uFFF9    ").text(Token.END_OF_PROGRAM),
+            "Unicode Specials Block (Interlinear Annotation Anchor)");
+        assertEquals("Error at position 2: Unexpected char (0xfff9)", actual.getMessage());
     }
 
     /**
@@ -314,12 +312,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_double() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("1__2").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message",
-            "Error at position 2: Unexpected char '_' (0x5f)",
-            actual.getMessage());
+        assertEquals("Error at position 2: Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -327,12 +323,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_lastChar() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer(".1_").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message",
-            "Error at position 3: Unexpected char '_' (0x5f)",
-            actual.getMessage());
+        assertEquals("Error at position 3: Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -340,12 +334,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_beforePoint() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("1_.").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message",
-            "Error at position 2: Unexpected char '_' (0x5f)",
-            actual.getMessage());
+        assertEquals("Error at position 2: Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -353,12 +345,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_afterPoint() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("1._2").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message",
-            "Error at position 3: Unexpected char '_' (0x5f)",
-            actual.getMessage());
+        assertEquals("Error at position 3: Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
 
     }
 
@@ -367,10 +357,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_numbers_withUnderscores_invalid_beforeExponent() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("1_e3").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 2: Unexpected char '_' (0x5f)", actual.getMessage());
+        assertEquals("Error at position 2: Unexpected char '_' (0x5f)", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -379,10 +369,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_missingBinaryDigits() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("0b").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
+        assertEquals("Error at position 3: Expected digits", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -391,10 +381,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_missingOctalDigits() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("0C").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
+        assertEquals("Error at position 3: Expected digits", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -403,10 +393,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_missingHexDigits() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("0x").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 3: Expected digits", actual.getMessage());
+        assertEquals("Error at position 3: Expected digits", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -428,10 +418,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_number_missingExponent() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("1.2e ").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 5: Expected exponent", actual.getMessage());
+        assertEquals("Error at position 5: Expected exponent", actual.getMessage(), "Unexpected message");
     }
 
 
@@ -645,10 +635,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_unexpectedPrintable() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("@").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 1: Unexpected char '@' (0x40)", actual.getMessage());
+        assertEquals("Error at position 1: Unexpected char '@' (0x40)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -656,10 +646,10 @@ public class TokenizerTest {
      */
     @Test
     public void test_unexpectedUnprintable() {
-        EelSyntaxException actual = Assert.assertThrows(EelSyntaxException.class,
+        EelSyntaxException actual = assertThrows(EelSyntaxException.class,
             () -> buildTokenizer("\u0002").interpolate(Token.END_OF_PROGRAM));
 
-        Assert.assertEquals("Unexpected message", "Error at position 1: Unexpected char (0x02)", actual.getMessage());
+        assertEquals("Error at position 1: Unexpected char (0x02)", actual.getMessage(), "Unexpected message");
     }
 
     /**
@@ -716,25 +706,21 @@ public class TokenizerTest {
                              @Nullable BigDecimal expectedValue,
                              boolean expectedDecimal,
                              int expectedPosition) {
-        Assert.assertEquals("Token " + index + ". Unexpected token", expectedToken, actual.token());
-        Assert.assertEquals("Token " + index + ". Unexpected lexeme", expectedLiteral, actual.lexeme());
+        assertEquals(expectedToken, actual.token(), "Token " + index + ". Unexpected token");
+        assertEquals(expectedLiteral, actual.lexeme(), "Token " + index + ". Unexpected lexeme");
 
         if (expectedValue != null) {
-            Assert.assertTrue(
-                "Token " + index + ". Unexpected value: " + actual.value() + ", expected " + expectedValue,
-                expectedValue.compareTo(actual.value()) == 0);
+            assertTrue(expectedValue.compareTo(actual.value()) == 0,
+                "Token " + index + ". Unexpected value: " + actual.value() + ", expected " + expectedValue);
 
-            Assert.assertEquals(
-                "Token " + index + ". Unexpected decimal flag: ",
-                expectedDecimal,
-                actual.isDecimal());
+            assertEquals(expectedDecimal, actual.isDecimal(), "Token " + index + ". Unexpected decimal flag: ");
 
             if (expectedDecimal) {
-                Assert.assertEquals("Token " + index + " unexpected decimal", expectedValue.intValue(), actual.decimal());
+                assertEquals(expectedValue.intValue(), actual.decimal(), "Token " + index + " unexpected decimal");
             }
         }
 
-        Assert.assertEquals("Token " + index + ". unexpected position", expectedPosition, actual.position());
+        assertEquals(expectedPosition, actual.position(), "Token " + index + ". unexpected position");
     }
 
 

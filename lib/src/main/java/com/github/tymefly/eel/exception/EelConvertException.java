@@ -5,36 +5,34 @@ import java.io.Serial;
 import javax.annotation.Nonnull;
 
 /**
- * Thrown by the EEL to indicate that data cannot be converted as required
+ * Thrown by EEL to indicate that a {@link com.github.tymefly.eel.Value} cannot be converted.
  */
 public class EelConvertException extends EelRuntimeException {
     @Serial
     private static final long serialVersionUID = 0x1L;
 
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructor for a simple message.
+     * @param message  human-readable message
      */
     public EelConvertException(@Nonnull String message) {
         super(message);
     }
 
-
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructor for a formatted message.
+     * @param message  formatted message string
+     * @param args     formatting arguments; the final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     public EelConvertException(@Nonnull String message, @Nonnull Object... args) {
         super(message, args);
     }
 
-
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructor for a wrapped exception.
+     * @param message  human-readable message
+     * @param cause    wrapped exception
      */
     public EelConvertException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

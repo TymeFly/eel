@@ -8,14 +8,16 @@ import com.github.tymefly.eel.udf.EelFunction;
 import com.github.tymefly.eel.udf.PackagedEelFunction;
 
 /**
- * An EEL functions for universally unique identifiers (UUIDs)
+ * EEL functions for generating and handling universally unique identifiers (UUIDs).
+ * @since 1.0
  */
 @PackagedEelFunction
 public class Uuid {
     /**
-     * Returns a new pseudo-randomly generated UUID, created using a cryptographically strong
+     * Returns a new pseudo-randomly generated UUID using a cryptographically strong
      * pseudo-random number generator.
-     * @return  a new pseudo-randomly generated UUID
+     * @return  a newly generated pseudo-random UUID
+     * @since 1.0
      */
     @EelFunction("uuid")
     @Nonnull

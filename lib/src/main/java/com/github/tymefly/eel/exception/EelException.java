@@ -4,35 +4,33 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Base class for all EEL exceptions.
+ * Base class for all exceptions thrown by EEL.
  */
 public abstract sealed class EelException
         extends RuntimeException
         permits EelRuntimeException, EelCompileException, EelInternalException {
     /**
-     * Constructor for a raw message
-     * @param message       Human readable (raw) message
+     * Constructor for a simple message.
+     * @param message  human-readable message
      */
     EelException(@Nonnull String message) {
         super(message);
     }
 
-
     /**
-     * Constructor for a formatted message
-     * @param message       formatted message string
-     * @param args          formatting arguments
+     * Constructor for a formatted message.
+     * @param message  formatted message string
+     * @param args     formatting arguments; the final argument may be a {@link Throwable} cause
      * @see java.util.Formatter
      */
     EelException(@Nonnull String message, Object... args) {
         super(message.formatted(args), optionalCause(args));
     }
 
-
     /**
-     * Constructor for a wrapped exception
-     * @param message       Human readable (raw) message
-     * @param cause         Wrapped exception
+     * Constructor for a wrapped exception.
+     * @param message  human-readable message
+     * @param cause    wrapped exception
      */
     EelException(@Nonnull String message, @Nonnull Throwable cause) {
         super(message, cause);

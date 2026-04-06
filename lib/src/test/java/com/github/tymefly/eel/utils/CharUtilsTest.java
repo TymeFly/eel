@@ -1,7 +1,10 @@
 package com.github.tymefly.eel.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for {@link CharUtils}
@@ -13,20 +16,20 @@ public class CharUtilsTest {
      */
     @Test
     public void test_IsAsciiPrintable() {
-        Assert.assertFalse("Null", CharUtils.isAsciiPrintable((char) 0x00));
-        Assert.assertFalse("ESC", CharUtils.isAsciiPrintable((char) 0x1b));
-        Assert.assertFalse("Unit Separator", CharUtils.isAsciiPrintable((char) 0x1f));
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x00), "Null");
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x1b), "ESC");
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x1f), "Unit Separator");
 
-        Assert.assertTrue("Space", CharUtils.isAsciiPrintable(' '));
-        Assert.assertTrue("'0'", CharUtils.isAsciiPrintable('0'));
-        Assert.assertTrue("'A'", CharUtils.isAsciiPrintable('A'));
-        Assert.assertTrue("'a'", CharUtils.isAsciiPrintable('a'));
-        Assert.assertTrue("'|'", CharUtils.isAsciiPrintable('|'));
-        Assert.assertTrue("'~'", CharUtils.isAsciiPrintable('~'));
+        assertTrue(CharUtils.isAsciiPrintable(' '), "Space");
+        assertTrue(CharUtils.isAsciiPrintable('0'), "'0'");
+        assertTrue(CharUtils.isAsciiPrintable('A'), "'A'");
+        assertTrue(CharUtils.isAsciiPrintable('a'), "'a'");
+        assertTrue(CharUtils.isAsciiPrintable('|'), "'|'");
+        assertTrue(CharUtils.isAsciiPrintable('~'), "'~'");
 
-        Assert.assertFalse("Delete", CharUtils.isAsciiPrintable((char) 0x7f));
-        Assert.assertFalse("0x80", CharUtils.isAsciiPrintable((char) 0x80));
-        Assert.assertFalse("0x100", CharUtils.isAsciiPrintable((char) 0x100));
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x7f), "Delete");
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x80), "0x80");
+        assertFalse(CharUtils.isAsciiPrintable((char) 0x100), "0x100");
     }
 
     /**
@@ -34,30 +37,30 @@ public class CharUtilsTest {
      */
     @Test
     public void test_hexValue_HappyPath() {
-        Assert.assertEquals("Test 0", 0, CharUtils.hexValue('0'));
-        Assert.assertEquals("Test 1", 1, CharUtils.hexValue('1'));
-        Assert.assertEquals("Test 2", 2, CharUtils.hexValue('2'));
-        Assert.assertEquals("Test 3", 3, CharUtils.hexValue('3'));
-        Assert.assertEquals("Test 4", 4, CharUtils.hexValue('4'));
-        Assert.assertEquals("Test 5", 5, CharUtils.hexValue('5'));
-        Assert.assertEquals("Test 6", 6, CharUtils.hexValue('6'));
-        Assert.assertEquals("Test 7", 7, CharUtils.hexValue('7'));
-        Assert.assertEquals("Test 8", 8, CharUtils.hexValue('8'));
-        Assert.assertEquals("Test 9", 9, CharUtils.hexValue('9'));
+        assertEquals(0, CharUtils.hexValue('0'), "Test 0");
+        assertEquals(1, CharUtils.hexValue('1'), "Test 1");
+        assertEquals(2, CharUtils.hexValue('2'), "Test 2");
+        assertEquals(3, CharUtils.hexValue('3'), "Test 3");
+        assertEquals(4, CharUtils.hexValue('4'), "Test 4");
+        assertEquals(5, CharUtils.hexValue('5'), "Test 5");
+        assertEquals(6, CharUtils.hexValue('6'), "Test 6");
+        assertEquals(7, CharUtils.hexValue('7'), "Test 7");
+        assertEquals(8, CharUtils.hexValue('8'), "Test 8");
+        assertEquals(9, CharUtils.hexValue('9'), "Test 9");
 
-        Assert.assertEquals("Test a", 10, CharUtils.hexValue('a'));
-        Assert.assertEquals("Test b", 11, CharUtils.hexValue('b'));
-        Assert.assertEquals("Test c", 12, CharUtils.hexValue('c'));
-        Assert.assertEquals("Test d", 13, CharUtils.hexValue('d'));
-        Assert.assertEquals("Test e", 14, CharUtils.hexValue('e'));
-        Assert.assertEquals("Test f", 15, CharUtils.hexValue('f'));
+        assertEquals(10, CharUtils.hexValue('a'), "Test a");
+        assertEquals(11, CharUtils.hexValue('b'), "Test b");
+        assertEquals(12, CharUtils.hexValue('c'), "Test c");
+        assertEquals(13, CharUtils.hexValue('d'), "Test d");
+        assertEquals(14, CharUtils.hexValue('e'), "Test e");
+        assertEquals(15, CharUtils.hexValue('f'), "Test f");
 
-        Assert.assertEquals("Test A", 10, CharUtils.hexValue('A'));
-        Assert.assertEquals("Test B", 11, CharUtils.hexValue('B'));
-        Assert.assertEquals("Test C", 12, CharUtils.hexValue('C'));
-        Assert.assertEquals("Test D", 13, CharUtils.hexValue('D'));
-        Assert.assertEquals("Test E", 14, CharUtils.hexValue('E'));
-        Assert.assertEquals("Test F", 15, CharUtils.hexValue('F'));
+        assertEquals(10, CharUtils.hexValue('A'), "Test A");
+        assertEquals(11, CharUtils.hexValue('B'), "Test B");
+        assertEquals(12, CharUtils.hexValue('C'), "Test C");
+        assertEquals(13, CharUtils.hexValue('D'), "Test D");
+        assertEquals(14, CharUtils.hexValue('E'), "Test E");
+        assertEquals(15, CharUtils.hexValue('F'), "Test F");
     }
 
     /**
@@ -79,7 +82,7 @@ public class CharUtilsTest {
             }
         } while (++test !=0);
 
-        Assert.assertEquals("Unexpected valid count", 21, valid);
-        Assert.assertEquals("Unexpected invalid count", 65515, invalid);
+        assertEquals(21, valid, "Unexpected valid count");
+        assertEquals(65515, invalid, "Unexpected invalid count");
     }
 }

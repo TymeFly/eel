@@ -1,7 +1,8 @@
 package com.github.tymefly.eel.doc.report;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit test for {@link MenuItem}
@@ -12,9 +13,9 @@ public class MenuItemTest {
      */
     @Test
     public void test_getHref() {
-        Assert.assertEquals("OVERVIEW", "index.html", MenuItem.OVERVIEW.getHref());
-        Assert.assertEquals("INDEX", "_index.html", MenuItem.INDEX.getHref());
-        Assert.assertEquals("EEL", "https://github.com/TymeFly/eel?tab=readme-ov-file#eel", MenuItem.EEL.getHref());
+        assertEquals("index.html", MenuItem.OVERVIEW.getHref(), "OVERVIEW");
+        assertEquals("_index.html", MenuItem.INDEX.getHref(), "INDEX");
+        assertEquals("https://github.com/TymeFly/eel?tab=readme-ov-file#eel", MenuItem.EEL.getHref(), "EEL");
     }
 
     /**
@@ -22,8 +23,8 @@ public class MenuItemTest {
      */
     @Test
     public void test_toString() {
-        Assert.assertEquals("OVERVIEW", "Overview", MenuItem.OVERVIEW.toString());
-        Assert.assertEquals("INDEX", "Index", MenuItem.INDEX.toString());
-        Assert.assertEquals("EEL", "EEL", MenuItem.EEL.toString());
+        assertEquals("Overview", MenuItem.OVERVIEW.toString(), "OVERVIEW");
+        assertEquals("Index", MenuItem.INDEX.toString(), "INDEX");
+        assertEquals("EEL", MenuItem.EEL.toString(), "EEL");
     }
 }

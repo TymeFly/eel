@@ -7,28 +7,32 @@ import java.io.Reader;
 import java.util.Properties;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit test for {@link EelProperties}
  */
-public class EelPropertiesTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+@ExtendWith(SystemStubsExtension.class)
+class EelPropertiesTest {
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
-
+    @SystemStub
+    private SystemErr stdErr;
 
     /**
      * Unit test {@link EelProperties#load(InputStream)}
      */
     @Test
-    public void test_load_stream() throws IOException {
+    void test_load_stream() throws IOException {
         InputStream stream = getClass().getResourceAsStream("/sample.properties");
         Properties expected = new Properties();
 
@@ -43,14 +47,14 @@ public class EelPropertiesTest {
 
         Properties actual = new EelProperties().load(stream);
 
-        Assert.assertEquals("Unexpected properties loaded", expected, actual);
+        assertEquals(expected, actual, "Unexpected properties loaded");
     }
 
     /**
-     * Unit test {@link EelProperties#load(InputStream)}
+     * Unit test {@link EelProperties#load(Reader)}
      */
     @Test
-    public void test_load_reader() throws IOException {
+    void test_load_reader() throws IOException {
         InputStream stream = getClass().getResourceAsStream("/sample.properties");
         Reader reader = new InputStreamReader(stream);
         Properties expected = new Properties();
@@ -66,15 +70,14 @@ public class EelPropertiesTest {
 
         Properties actual = new EelProperties().load(reader);
 
-        Assert.assertEquals("Unexpected properties loaded", expected, actual);
+        assertEquals(expected, actual, "Unexpected properties loaded");
     }
 
-
     /**
-     * Unit test {@link EelProperties#load(InputStream)}
+     * Unit test {@link EelProperties#load(Reader)} with custom EelContext
      */
     @Test
-    public void test_load_reader_customContext() throws IOException {
+    void test_load_reader_customContext() throws IOException {
         EelContext context = EelContext.factory()
             .withPrecision(7)
             .build();
@@ -93,17 +96,18 @@ public class EelPropertiesTest {
 
         Properties actual = new EelProperties(context).load(reader);
 
-        Assert.assertEquals("Unexpected properties loaded", expected, actual);
+        assertEquals(expected, actual, "Unexpected properties loaded");
     }
 
-
     /**
-     * Unit test {@link EelProperties#load(InputStream)}
+     * Unit test {@link EelProperties#load(InputStream)} forward reference
      */
     @Test
-    public void test_load_forwardReference() {
-        InputStream stream = getClass().getResourceAsStream("/forwards.properties");
-
-        Assert.assertThrows(UnknownEelPropertyException.class, () -> new EelProperties().load(stream));
+    void test_load_forwardReference() throws Exception {
+        try (
+            InputStream stream = getClass().getResourceAsStream("/forwards.properties")
+        ) {
+            assertThrows(UnknownEelPropertyException.class, () -> new EelProperties().load(stream));
+        }
     }
 }

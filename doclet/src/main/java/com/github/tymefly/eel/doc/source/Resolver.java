@@ -18,22 +18,22 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 
 /**
- * Helper class used to map a JavaDoc signature into an element.
+ * Helper class used to map a Javadoc signature into an element.
  */
 class Resolver {
     private static final String VAR_ARG_SUFFIX = "...";
     private static final String ARRAY_SUFFIX = "[]";
 
-    private final Context context;
+    private final EelDocContext context;
     private final Element element;
     private final Map<String, Element> elementCache;
     private final Map<ExecutableElement, String> methodCache;
 
 
-    Resolver(@Nonnull Context context, @Nonnull Element element) {
+    Resolver(@Nonnull EelDocContext context, @Nonnull Element element) {
         this.context = context;
         this.element = element;
         this.elementCache = new WeakHashMap<>();
@@ -43,7 +43,7 @@ class Resolver {
 
     /**
      * Resolve the signature into a Java element. Return {@literal null} if the signature doesn't map to an element
-     * @param signature     signature of an element as seen in a JavaDoc. 
+     * @param signature     signature of an element as seen in a Javadoc.
      * @return the element associated with the {@code signature}, or {@literal null} if there is no such element
      */
     @Nullable

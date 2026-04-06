@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 import com.github.tymefly.eel.annotation.VisibleForTesting;
 import com.github.tymefly.eel.doc.config.Config;
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import com.github.tymefly.eel.doc.utils.FileUtils;
 
 /**
@@ -22,21 +22,21 @@ public class Report {
         "up-hover.png",
         "icon.png");
 
-    private final Context context;
+    private final EelDocContext context;
 
 
     /**
      * Constructor
      * @param context       The documentation context
      */
-    public Report(@Nonnull Context context) {
+    public Report(@Nonnull EelDocContext context) {
         this.context = context;
     }
 
 
     /**
      * Write all the required files to the file system. This includes the index page, the overview page,
-     * pages for each group of functions and any additional "resources" (such and CSS, images or Javascript)
+     * pages for each group of functions and any additional "resources" (such and CSS, images or JavaScript)
      * that are required.
      */
     public void writeReport() {

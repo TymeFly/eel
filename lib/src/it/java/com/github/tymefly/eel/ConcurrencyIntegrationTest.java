@@ -9,21 +9,26 @@ import java.util.stream.IntStream;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test EEL can evaluate expressions concurrently
  */
+@ExtendWith(SystemStubsExtension.class)
 public class ConcurrencyIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
     // Extend timeout because the scheduler might starve one of the threads
     private static final Duration TIMEOUT = Duration.ofSeconds(60);
@@ -93,7 +98,7 @@ public class ConcurrencyIntegrationTest {
             .evaluate(symbols)
             .asLogic();
 
-        Assert.assertTrue("Unexpected result", result);
+        assertTrue(result, "Unexpected result");
     }
 
     // Numeric expression
@@ -104,7 +109,7 @@ public class ConcurrencyIntegrationTest {
             .evaluate(symbols)
             .asLong();
 
-        Assert.assertEquals("Unexpected result", 92, result);
+        assertEquals(92, result, "Unexpected result");
     }
 
     // String manipulation
@@ -115,7 +120,7 @@ public class ConcurrencyIntegrationTest {
             .evaluate(symbols)
             .asText();
 
-        Assert.assertEquals("Unexpected result", "Hello: World!", result);
+        assertEquals("Hello: World!", result, "Unexpected result");
     }
 
     // create lots of different values
@@ -128,7 +133,7 @@ public class ConcurrencyIntegrationTest {
             .evaluate(symbols)
             .asInt();
 
-        Assert.assertEquals("Unexpected result", index, result);
+        assertEquals(index, result, "Unexpected result");
     }
 
     // Invoke many different functions
@@ -142,6 +147,6 @@ public class ConcurrencyIntegrationTest {
             .evaluate(symbols)
             .asText();
 
-        Assert.assertEquals("Unexpected result for " + expression, expected, result);
+        assertEquals(expected, result, "Unexpected result for " + expression);
     }
 }

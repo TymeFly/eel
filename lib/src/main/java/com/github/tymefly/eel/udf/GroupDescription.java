@@ -7,16 +7,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is an annotation used by the EelDoc Doclet to help generate end-user documentation for EEL functions.
- * A {@literal package-info.java} file annotated with GroupDescription will be used to generate an overview
- * for all the functions in a particular group. This is analogous to a package description in Java
+ * Annotation used by the EelDoc doclet to generate end-user documentation for EEL functions.
+ * A {@literal package-info.java} file annotated with {@link GroupDescription} is used to generate an
+ * overview for all functions in a particular group. This is analogous to a package description in Java.
  * @since 3.1
  */
 @Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GroupDescription {
     /**
-     * Returns the EEL group name
+     * Returns the EEL group name.
      * @return the EEL group name
      */
     String value();

@@ -8,15 +8,16 @@ import java.lang.annotation.Target;
 
 
 /**
- * Used to indicate that a method has been given default access instead of private access so that
- * it can be unit tested. It is not expected that client code call the annotated method.
- * <br>
- * This annotation is a more limited version of the Guava annotation of the same name.
- * We are not using Guava because it's a huge library when all we need is one annotation
+ * Indicates that a method, constructor, class, or field has been given more permissive access
+ * than necessary (default/package-private instead of private) so that it can be unit tested.
+ * <p>
+ * <b>Clients should NOT reference the annotated element.</b>
+ * <p>
+ * This annotation is a more limited alternative to the Guava {@code @VisibleForTesting} annotation.
+ * Guava is not used here to avoid including a large dependency for a single annotation.
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE, ElementType.FIELD})
 @Documented
 public @interface VisibleForTesting {
 }
-

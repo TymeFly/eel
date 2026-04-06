@@ -8,10 +8,12 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -23,7 +25,7 @@ public class LimitedInputStreamTest {
     private LimitedInputStream underflow;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ByteArrayInputStream raw1 = new ByteArrayInputStream("Hello".getBytes(StandardCharsets.UTF_8));
         ByteArrayInputStream raw2 = new ByteArrayInputStream("Hello".getBytes(StandardCharsets.UTF_8));
@@ -37,19 +39,19 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_read_byte_underflow() throws Exception {
-        Assert.assertEquals("#0 available()", 5, underflow.available());
-        Assert.assertEquals("Unexpected Char 1", (byte) 'H', underflow.read());
-        Assert.assertEquals("#1 available()", 4, underflow.available());
-        Assert.assertEquals("Unexpected Char 2", (byte) 'e', underflow.read());
-        Assert.assertEquals("#2 available()", 3, underflow.available());
-        Assert.assertEquals("Unexpected Char 3", (byte) 'l', underflow.read());
-        Assert.assertEquals("#3 available()", 2, underflow.available());
-        Assert.assertEquals("Unexpected Char 4", (byte) 'l', underflow.read());
-        Assert.assertEquals("#4 available()", 1, underflow.available());
-        Assert.assertEquals("Unexpected Char 5", (byte) 'o', underflow.read());
-        Assert.assertEquals("#5 available()", 0, underflow.available());
-        Assert.assertEquals("Unexpected Char 5", -1, underflow.read());
-        Assert.assertEquals("#6 available()", 0, underflow.available());
+        assertEquals(5, underflow.available(), "#0 available()");
+        assertEquals((byte) 'H', underflow.read(), "Unexpected Char 1");
+        assertEquals(4, underflow.available(), "#1 available()");
+        assertEquals((byte) 'e', underflow.read(), "Unexpected Char 2");
+        assertEquals(3, underflow.available(), "#2 available()");
+        assertEquals((byte) 'l', underflow.read(), "Unexpected Char 3");
+        assertEquals(2, underflow.available(), "#3 available()");
+        assertEquals((byte) 'l', underflow.read(), "Unexpected Char 4");
+        assertEquals(1, underflow.available(), "#4 available()");
+        assertEquals((byte) 'o', underflow.read(), "Unexpected Char 5");
+        assertEquals(0, underflow.available(), "#5 available()");
+        assertEquals(-1, underflow.read(), "Unexpected Char 5");
+        assertEquals(0, underflow.available(), "#6 available()");
     }
 
     /**
@@ -57,14 +59,14 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_read_byte_overflow() throws Exception {
-        Assert.assertEquals("#0 available()", 3, overflow.available());
-        Assert.assertEquals("Unexpected Char 1", (byte) 'H', overflow.read());
-        Assert.assertEquals("#1 available()", 2, overflow.available());
-        Assert.assertEquals("Unexpected Char 2", (byte) 'e', overflow.read());
-        Assert.assertEquals("#2 available()", 1, overflow.available());
-        Assert.assertEquals("Unexpected Char 3", (byte) 'l', overflow.read());
-        Assert.assertEquals("#3 available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read());
+        assertEquals(3, overflow.available(), "#0 available()");
+        assertEquals((byte) 'H', overflow.read(), "Unexpected Char 1");
+        assertEquals(2, overflow.available(), "#1 available()");
+        assertEquals((byte) 'e', overflow.read(), "Unexpected Char 2");
+        assertEquals(1, overflow.available(), "#2 available()");
+        assertEquals((byte) 'l', overflow.read(), "Unexpected Char 3");
+        assertEquals(0, overflow.available(), "#3 available()");
+        assertThrows(IOException.class, () -> overflow.read());
     }
 
 
@@ -75,12 +77,12 @@ public class LimitedInputStreamTest {
     public void test_read_array() throws Exception {
         byte[] buffer = new byte[3];
 
-        Assert.assertEquals("#0 available()", 3, overflow.available());
-        Assert.assertEquals("Unexpected Size", 3, overflow.read(buffer));
-        Assert.assertArrayEquals("Unexpected Data", "Hel".getBytes(StandardCharsets.UTF_8), buffer);
+        assertEquals(3, overflow.available(), "#0 available()");
+        assertEquals(3, overflow.read(buffer), "Unexpected Size");
+        assertArrayEquals("Hel".getBytes(StandardCharsets.UTF_8), buffer, "Unexpected Data");
 
-        Assert.assertEquals("#1 available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read(buffer));
+        assertEquals(0, overflow.available(), "#1 available()");
+        assertThrows(IOException.class, () -> overflow.read(buffer));
     }
 
 
@@ -91,13 +93,13 @@ public class LimitedInputStreamTest {
     public void test_read_arrayWithOffset() throws Exception {
         byte[] buffer = new byte[3];
 
-        Assert.assertEquals("#0 available()", 3, overflow.available());
-        Assert.assertEquals("Unexpected Size#1", 1, overflow.read(buffer, 0, 1));
-        Assert.assertEquals("#1 available()", 2, overflow.available());
-        Assert.assertEquals("Unexpected Size#2", 2, overflow.read(buffer, 1, 2));
-        Assert.assertArrayEquals("Unexpected Data", "Hel".getBytes(StandardCharsets.UTF_8), buffer);
-        Assert.assertEquals("#3 available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read(buffer, 0, 1));
+        assertEquals(3, overflow.available(), "#0 available()");
+        assertEquals(1, overflow.read(buffer, 0, 1), "Unexpected Size#1");
+        assertEquals(2, overflow.available(), "#1 available()");
+        assertEquals(2, overflow.read(buffer, 1, 2), "Unexpected Size#2");
+        assertArrayEquals("Hel".getBytes(StandardCharsets.UTF_8), buffer, "Unexpected Data");
+        assertEquals(0, overflow.available(), "#3 available()");
+        assertThrows(IOException.class, () -> overflow.read(buffer, 0, 1));
     }
 
 
@@ -108,9 +110,9 @@ public class LimitedInputStreamTest {
     public void test_readNBytes() throws Exception {
         byte[] buffer = overflow.readNBytes(2);
 
-        Assert.assertEquals("#0 available()", 1, overflow.available());
-        Assert.assertArrayEquals("Unexpected Data", "He".getBytes(StandardCharsets.UTF_8), buffer);
-        Assert.assertThrows(IOException.class, () -> overflow.readNBytes(2));
+        assertEquals(1, overflow.available(), "#0 available()");
+        assertArrayEquals("He".getBytes(StandardCharsets.UTF_8), buffer, "Unexpected Data");
+        assertThrows(IOException.class, () -> overflow.readNBytes(2));
     }
 
 
@@ -121,10 +123,10 @@ public class LimitedInputStreamTest {
     public void test_readNBytes_withOffset() throws Exception {
         byte[] buffer = new byte[3];
 
-        Assert.assertEquals("Unexpected Size#1", 1, overflow.readNBytes(buffer, 0, 1));
-        Assert.assertEquals("Unexpected Size#2", 2, overflow.readNBytes(buffer, 1, 2));
-        Assert.assertArrayEquals("Unexpected Data", "Hel".getBytes(StandardCharsets.UTF_8), buffer);
-        Assert.assertThrows(IOException.class, () -> overflow.readNBytes(buffer, 0, 1));
+        assertEquals(1, overflow.readNBytes(buffer, 0, 1), "Unexpected Size#1");
+        assertEquals(2, overflow.readNBytes(buffer, 1, 2), "Unexpected Size#2");
+        assertArrayEquals("Hel".getBytes(StandardCharsets.UTF_8), buffer, "Unexpected Data");
+        assertThrows(IOException.class, () -> overflow.readNBytes(buffer, 0, 1));
     }
 
 
@@ -135,7 +137,7 @@ public class LimitedInputStreamTest {
     public void test_readAllBytes_underflow() throws Exception {
         byte[] actual = underflow.readAllBytes();
 
-        Assert.assertArrayEquals("Unexpected Data", "Hello".getBytes(StandardCharsets.UTF_8), actual);
+        assertArrayEquals("Hello".getBytes(StandardCharsets.UTF_8), actual, "Unexpected Data");
     }
 
 
@@ -144,7 +146,7 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_readAllBytes_overflow() {
-        Assert.assertThrows(IOException.class, () -> overflow.readAllBytes());
+        assertThrows(IOException.class, () -> overflow.readAllBytes());
     }
 
 
@@ -153,13 +155,13 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_skip() throws Exception {
-        Assert.assertEquals("Unexpected skip", 2, overflow.skip(2));
+        assertEquals(2, overflow.skip(2), "Unexpected skip");
 
-        Assert.assertEquals("#1 available()", 1, overflow.available());
-        Assert.assertEquals("Unexpected Char", (byte) 'l', overflow.read());
+        assertEquals(1, overflow.available(), "#1 available()");
+        assertEquals((byte) 'l', overflow.read(), "Unexpected Char");
 
-        Assert.assertEquals("#2 available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read());
+        assertEquals(0, overflow.available(), "#2 available()");
+        assertThrows(IOException.class, () -> overflow.read());
     }
 
     /**
@@ -167,10 +169,10 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_skip_beyondLimit() throws Exception {
-        Assert.assertEquals("Unexpected skip", 3, overflow.skip(4));
+        assertEquals(3, overflow.skip(4), "Unexpected skip");
 
-        Assert.assertEquals("available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read());
+        assertEquals(0, overflow.available(), "available()");
+        assertThrows(IOException.class, () -> overflow.read());
     }
 
     /**
@@ -180,11 +182,11 @@ public class LimitedInputStreamTest {
     public void test_skipNBytes() throws Exception {
         overflow.skipNBytes(2);
 
-        Assert.assertEquals("#1 available()", 1, overflow.available());
-        Assert.assertEquals("Unexpected Char", (byte) 'l', overflow.read());
+        assertEquals(1, overflow.available(), "#1 available()");
+        assertEquals((byte) 'l', overflow.read(), "Unexpected Char");
 
-        Assert.assertEquals("#2 available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read());
+        assertEquals(0, overflow.available(), "#2 available()");
+        assertThrows(IOException.class, () -> overflow.read());
     }
 
     /**
@@ -194,8 +196,8 @@ public class LimitedInputStreamTest {
     public void test_skipNBytes_beyondLimit() throws Exception {
         overflow.skipNBytes(4);
 
-        Assert.assertEquals("available()", 0, overflow.available());
-        Assert.assertThrows(IOException.class, () -> overflow.read());
+        assertEquals(0, overflow.available(), "available()");
+        assertThrows(IOException.class, () -> overflow.read());
     }
 
 
@@ -208,7 +210,7 @@ public class LimitedInputStreamTest {
 
         underflow.transferTo(out);
 
-        Assert.assertEquals("Unexpected data", "Hello", out.toString(StandardCharsets.UTF_8));
+        assertEquals("Hello", out.toString(StandardCharsets.UTF_8), "Unexpected data");
     }
 
     /**
@@ -216,8 +218,7 @@ public class LimitedInputStreamTest {
      */
     @Test
     public void test_transferTo_overflow() {
-        Assert.assertThrows(IOException.class,
-                () -> overflow.transferTo(new ByteArrayOutputStream()));
+        assertThrows(IOException.class, () -> overflow.transferTo(new ByteArrayOutputStream()));
     }
 
     /**

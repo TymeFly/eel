@@ -5,17 +5,16 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.EelContext;
 
 /**
- * Fluent interface for building expressions
+ * Fluent interface for building expressions.
  */
-public interface EelBuilder extends EelBuilderComplete, EelContextSettingBuilder<EelBuilder> {
+public interface EelBuilder extends FluentEelBuilder {
     /**
-     * Add an EEL Context to this Expression.
-     * After this method had been called no further changes to the EelContext can be made.
-     * @param context   pre-generated EEL Context
-     * @return          A fluent interface
+     * Adds an {@link EelContext} to this expression.
+     * After this method has been called, no further modifications to the {@link EelContext} are permitted.
+     * @param context   the pre-generated {@link EelContext} to associate with this expression
+     * @return          a fluent interface for completing the builder configuration
      * @see EelContext#factory()
      */
     @Nonnull
     EelBuilderComplete withContext(@Nonnull EelContext context);
-
 }

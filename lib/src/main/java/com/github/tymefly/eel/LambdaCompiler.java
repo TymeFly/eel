@@ -8,8 +8,10 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import ch.obermuhlner.math.big.BigDecimalMath;
+import com.github.tymefly.eel.exception.EelSemanticException;
 import com.github.tymefly.eel.exception.EelUnknownSymbolException;
 import com.github.tymefly.eel.utils.BigDecimals;
 
@@ -17,7 +19,7 @@ import com.github.tymefly.eel.utils.BigDecimals;
  * Class that creates code {@link Term} objects for the Parser.
  * The generated terms are optimised where ever possible.
  * @implNote Notes on optimisation:
- * 1. Constants are Terms in their own right.These can be returned directly from this class without needing
+ * 1. Constants are Terms in their own right. These can be returned directly from this class without needing
  *      an intermediate lambda function.
  * 2. Operations that act only on constants can be evaluated at compile time rather than run time.
  * 3. Some operations have special cases (such as adding 0 to a number) that can be optimised away
@@ -92,11 +94,79 @@ class LambdaCompiler implements Compiler {
         }
     }
 
-    private static class CachedTerm implements Term {
+    private static class LambdaLookbackBuilder implements LookbackBuilder {
+        private final List<Term> lookbacks;
+        private final int size;
+        private int position;
+        private Term index;
+        private Term defaultValue;
+
+        private LambdaLookbackBuilder(@Nullable List<Term> lookbacks) {
+            this.lookbacks = lookbacks;
+            this.size = (lookbacks == null ? 0 : lookbacks.size());
+        }
+
+        @Override
+        @Nonnull
+        public LookbackBuilder withIndex(int position, @Nonnull Term index) {
+            this.position = position;
+            this.index = index;
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public LookbackBuilder withDefault(@Nonnull Term defaultValue) {
+            this.defaultValue = defaultValue;
+
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Term build() {
+            Term result = null;
+
+            if (index.isConstant()) {
+                try {
+                    result = lookback(SymbolsTable.EMPTY);
+                } catch (RuntimeException e) {
+                    // do nothing - be consistent with unoptimised code, generate a term that will fail when evaluated
+                }
+            }
+
+            if (result == null) {
+                result = s -> lookback(s).evaluate(s);
+            }
+
+            return result;
+        }
+
+        @Nonnull
+        private Term lookback(@Nonnull SymbolsTable symbols) {
+            Term result;
+            BigDecimal value = this.index.evaluate(symbols).asNumber();
+            int index = value.intValue();
+
+            if ((index > 0) && (index <= size)) {
+                result = lookbacks.get(index - 1);
+            } else if (defaultValue != null) {
+                result = defaultValue;
+            } else {
+                throw new EelSemanticException(position, "Undefined lookback $[%d]", index);
+            }
+
+            return result;
+        }
+    }
+
+    // wrapper for a term that will only be evaluated once
+    private static class ConstTerm implements Term {
         private final Term term;
         private Value value;
 
-        private CachedTerm(@Nonnull Term term) {
+        private ConstTerm(@Nonnull Term term) {
             this.term = term;
             this.value = null;
         }
@@ -128,12 +198,19 @@ class LambdaCompiler implements Compiler {
 
                 //*** Cached terms ***//
 
+    @Nonnull
+    @Override
+    public Term constTerm(@Nonnull Term term) {
+        // values from the Constants pool are already constants
+        return (term.isConstant() ? term : new ConstTerm(term));
+    }
+
+                //*** Lookbacks ***//
 
     @Nonnull
     @Override
-    public Term cached(@Nonnull Term term) {
-        // values from the Constants pool do not need to be cached
-        return (term.isConstant() ? term : new CachedTerm(term));
+    public LookbackBuilder lookback(@Nullable List<Term> lookBacks) {
+        return new LambdaLookbackBuilder(lookBacks);
     }
 
 

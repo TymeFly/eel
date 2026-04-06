@@ -11,7 +11,7 @@ import com.github.tymefly.eel.doc.utils.EelType;
  * @param name               Name of the parameter as given in the Java code
  * @param type               The EEL type for the parameter, or {@literal null} if the parameter isn't
  *                           an EEL type.
- * @param index              0-based index of the parameter in the <b>Java</b> function
+ * @param index              0-based index of the parameter in the **Java** function
  * @param defaultDescription The optional description given in the {@link com.github.tymefly.eel.udf.DefaultArgument}
  *                           annotation
  * @param isVarArgs          {@literal true} only if this is a VarAgs parameter

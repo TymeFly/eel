@@ -7,25 +7,30 @@ import javax.annotation.Nonnull;
 import com.github.tymefly.eel.exception.EelUnknownFunctionException;
 import func.functions2.Half;
 import func.functions2.Times2;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import uk.org.webcompere.systemstubs.rules.SystemErrRule;
-import uk.org.webcompere.systemstubs.rules.SystemOutRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.stream.SystemErr;
+import uk.org.webcompere.systemstubs.stream.SystemOut;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Integration Test to demonstrate UDFs don't leak across contexts
  */
+@ExtendWith(SystemStubsExtension.class)
 public class UdfIsolationIntegrationTest {
-    @Rule
-    public SystemOutRule stdOut = new SystemOutRule();
+    @SystemStub
+    private SystemOut stdOut;
 
-    @Rule
-    public SystemErrRule stdErr = new SystemErrRule();
+    @SystemStub
+    private SystemErr stdErr;
 
 
     /**
-     * Integration test for {@link com.github.tymefly.eel.builder.EelBuilder#withUdfPackage(Package)}
+     * Integration test for {@link com.github.tymefly.eel.builder.EelBuilder#withUdfClass(Class)} 
      */
     @Test
     public void test_class() {
@@ -59,18 +64,18 @@ public class UdfIsolationIntegrationTest {
 
 
     private void helper(@Nonnull EelContext withUdf, @Nonnull EelContext withoutUdf) {
-        Assert.assertEquals("Unexpected result for 30",
-            "15",
-            Eel.compile(withUdf, "$( test.half(30) )").evaluate().asText());
+        assertEquals("15",
+            Eel.compile(withUdf, "$( test.half(30) )").evaluate().asText(),
+            "Unexpected result for 30");
 
-        EelUnknownFunctionException failure = Assert.assertThrows(EelUnknownFunctionException.class,
+        EelUnknownFunctionException failure = assertThrows(EelUnknownFunctionException.class,
             () -> Eel.compile(withoutUdf, "$( test.half(40) )").evaluate().asText());
-        Assert.assertEquals("Unexpected exception",
-            "Undefined function 'test.half'",
-            failure.getMessage());
+        assertEquals("Undefined function 'test.half'",
+            failure.getMessage(),
+            "Unexpected exception");
 
-        Assert.assertEquals("Unexpected result for 100",
-            "50",
-            Eel.compile(withUdf, "$( test.half(100) )").evaluate().asText());
+        assertEquals("50",
+            Eel.compile(withUdf, "$( test.half(100) )").evaluate().asText(),
+            "Unexpected result for 100");
     }
 }

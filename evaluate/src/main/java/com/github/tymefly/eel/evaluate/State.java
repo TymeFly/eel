@@ -3,7 +3,7 @@ package com.github.tymefly.eel.evaluate;
 import javax.annotation.Nonnull;
 
 /**
- * Possible states the evaluation application be in
+ * Termination states for the evaluation application
  */
 public enum State {
     EVALUATED("Successfully evaluated EEL expression", 0),              // 0 => success

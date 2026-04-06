@@ -2,15 +2,17 @@ package com.github.tymefly.eel.doc.model;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit test for {@link Tag}
  */
 public class TagTest {
-    private Tag noReference = new Tag(TagType.SUMMARY);
-    private Tag withReference = (Tag) new Tag(TagType.THROWS)
+    private final Tag noReference = new Tag(TagType.SUMMARY);
+    private final Tag withReference = (Tag) new Tag(TagType.THROWS)
         .withReference("MyException", "myPackage.MyException");
 
 
@@ -20,8 +22,8 @@ public class TagTest {
      */
     @Test
     public void test_tagType() {
-        Assert.assertEquals("noReference", TagType.SUMMARY, noReference.tagType());
-        Assert.assertEquals("withReference", TagType.THROWS, withReference.tagType());
+        assertEquals(TagType.SUMMARY, noReference.tagType(), "noReference");
+        assertEquals(TagType.THROWS, withReference.tagType(), "withReference");
     }
 
     /**
@@ -29,8 +31,8 @@ public class TagTest {
      */
     @Test
     public void test_reference() {
-        Assert.assertEquals("noReference", Optional.empty(), noReference.reference());
-        Assert.assertEquals("withReference", Optional.of("MyException"), withReference.reference());
+        assertEquals(Optional.empty(), noReference.reference(), "noReference");
+        assertEquals(Optional.of("MyException"), withReference.reference(), "withReference");
     }
 
     /**
@@ -38,7 +40,7 @@ public class TagTest {
      */
     @Test
     public void test_target() {
-        Assert.assertNull("noReference",noReference.target());
-        Assert.assertEquals("withReference", "myPackage.MyException", withReference.target());
+        assertNull(noReference.target(), "noReference");
+        assertEquals("myPackage.MyException", withReference.target(), "withReference");
     }
 }

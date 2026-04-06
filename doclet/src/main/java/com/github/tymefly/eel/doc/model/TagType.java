@@ -77,7 +77,7 @@ public enum TagType {
      */
     @Nonnull
     public static List<TagType> sections() {
-        return SECTIONS;
+        return List.copyOf(SECTIONS);
     }
 
     /**

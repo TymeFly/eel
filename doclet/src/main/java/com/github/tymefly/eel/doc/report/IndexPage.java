@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 
-import com.github.tymefly.eel.doc.context.Context;
+import com.github.tymefly.eel.doc.context.EelDocContext;
 import j2html.tags.DomContent;
 
 import static j2html.TagCreator.div;
@@ -15,9 +15,9 @@ import static j2html.TagCreator.iff;
  * Generate the page for the function index
  */
 class IndexPage extends AbstractPage {
-    private final Context context;
+    private final EelDocContext context;
 
-    IndexPage(@Nonnull Context context, @Nonnull String pageName) {
+    IndexPage(@Nonnull EelDocContext context, @Nonnull String pageName) {
         super(context, pageName);
 
         this.context = context;

@@ -7,10 +7,10 @@ import java.time.ZonedDateTime;
 import java.time.temporal.WeekFields;
 
 import com.github.tymefly.eel.EelContext;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +21,7 @@ public class OffsetTest {
     private ZonedDateTime date;
     private EelContext context;    
 
-    @Before
+    @BeforeEach
     public void setUp() {
         context = spy(EelContext.factory().build());
 
@@ -39,9 +39,7 @@ public class OffsetTest {
      */
     @Test
     public void test_plus_noOffsets() {
-        Assert.assertEquals("no offsets",
-            date,
-            new Offset().plus(context, date));
+        assertEquals(date, new Offset().plus(context, date), "no offsets");
     }
 
     /**
@@ -49,9 +47,7 @@ public class OffsetTest {
      */
     @Test
     public void test_plus_snap() {
-        Assert.assertEquals("snap",
-            date.withMinute(0).withSecond(0).withNano(0),
-            new Offset().plus(context, date, "@h"));
+        assertEquals(date.withMinute(0).withSecond(0).withNano(0), new Offset().plus(context, date, "@h"), "snap");
     }
 
     /**
@@ -59,9 +55,7 @@ public class OffsetTest {
      */
     @Test
     public void test_offset_singleOffset() {
-        Assert.assertEquals("single offset",
-            date.plusHours(1),
-            new Offset().plus(context, date, "1h"));
+        assertEquals(date.plusHours(1), new Offset().plus(context, date, "1h"), "single offset");
     }
 
     /**
@@ -69,9 +63,7 @@ public class OffsetTest {
      */
     @Test
     public void test_plus_multipleOffsets() {
-        Assert.assertEquals("multiple offsets",
-            date.plusMinutes(57),
-            new Offset().plus(context, date, "1h", "-3m"));
+        assertEquals(date.plusMinutes(57), new Offset().plus(context, date, "1h", "-3m"), "multiple offsets");
     }
 
 
@@ -82,9 +74,7 @@ public class OffsetTest {
      */
     @Test
     public void test_minus_noOffsets() {
-        Assert.assertEquals("no offsets",
-            date,
-            new Offset().minus(context, date));
+        assertEquals(date, new Offset().minus(context, date), "no offsets");
     }
 
     /**
@@ -92,9 +82,7 @@ public class OffsetTest {
      */
     @Test
     public void test_minus_snap() {
-        Assert.assertEquals("snap",
-            date.withMinute(0).withSecond(0).withNano(0),
-            new Offset().minus(context, date, "@h"));
+        assertEquals(date.withMinute(0).withSecond(0).withNano(0), new Offset().minus(context, date, "@h"), "snap");
     }
 
     /**
@@ -102,9 +90,7 @@ public class OffsetTest {
      */
     @Test
     public void test_minus_singleOffset() {
-        Assert.assertEquals("single offsets",
-            date.minusHours(1),
-            new Offset().minus(context, date, "1h"));
+        assertEquals(date.minusHours(1), new Offset().minus(context, date, "1h"), "single offsets");
     }
 
     /**
@@ -112,8 +98,6 @@ public class OffsetTest {
      */
     @Test
     public void test_minus_multipleOffsets() {
-        Assert.assertEquals("multiple offsets",
-            date.minusMinutes(57),
-            new Offset().minus(context, date, "1h", "-3m"));
+        assertEquals(date.minusMinutes(57), new Offset().minus(context, date, "1h", "-3m"), "multiple offsets");
     }
 }

@@ -12,7 +12,7 @@
     <body>
         <a name="_top"></a>
         <div class="page-top">
-            EEL 3.1 Function Reference Manual
+            EEL 3.2 Function Reference Manual
         </div>
         <header id="header" class="title">
             <span class="header-title">
@@ -87,7 +87,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the value of <code>e</code> to the precision specified by the <code>context</code>.
+                                        Returns the value of <code>e</code> calculated to the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -105,7 +105,7 @@
                                     </td>
                                     <td>Number</td>
                                     <td>
-                                        Returns the value of <code>pi</code> to the precision specified by the <code>context</code>.
+                                        Returns the value of <code>pi</code> calculated to the precision defined by the context.
                                     </td>
                                 </tr>
                                 <tr class="col-types">
@@ -138,7 +138,7 @@
                     <section class="overview-description">
                         <div class="block-detail">
                             <div class="description">
-                                Functions that manipulate or generate numbers. The precision of the numeric functions is set in the Eel Context
+                                Functions that manipulate or generate numbers. The precision of the numeric functions is set in the EEL context.
                             </div>
                         </div>
                     </section>
@@ -166,7 +166,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The value of <code>c</code>.</span>
+                                    <span class="description">The constant value of <code>c</code> in metres per second</span>
                                 </div>
                             </span>
                         </div>
@@ -174,7 +174,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -201,7 +201,7 @@
                                         <code>number</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number to ceil.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to round up</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -215,7 +215,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The smallest integer value greater than or equal to <code>number</code>.</span>
+                                    <span class="description">The smallest integer greater than or equal to <code>number</code></span>
                                 </div>
                             </span>
                         </div>
@@ -250,7 +250,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the value of <code>e</code> to the precision specified by the <code>context</code>.
+                            Returns the value of <code>e</code> calculated to the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -266,7 +266,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The value of <code>e</code>.</span>
+                                    <span class="description">The value of <code>e</code> at the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -274,7 +274,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -301,7 +301,7 @@
                                         <code>number</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number to floor.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to round down</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -315,7 +315,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The largest integer value less than or equal to <code>number</code>.</span>
+                                    <span class="description">The largest integer less than or equal to <code>number</code></span>
                                 </div>
                             </span>
                         </div>
@@ -350,7 +350,7 @@
                 <section class="block-description">
                     <div class="block-detail">
                         <div class="description">
-                            Returns the value of <code>pi</code> to the precision specified by the <code>context</code>.
+                            Returns the value of <code>pi</code> calculated to the precision defined by the context.
                         </div>
                         <div class="block-detail-section">
                             <h3>Called as:</h3>
@@ -366,7 +366,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The value of <code>pi</code>.</span>
+                                    <span class="description">The value of <code>pi</code> at the precision defined by the context</span>
                                 </div>
                             </span>
                         </div>
@@ -374,7 +374,7 @@
                             <span class="block-detail-section">
                                 <h3>Since:</h3>
                                 <div>
-                                    <span class="description">2.0.0</span>
+                                    <span class="description">2.0</span>
                                 </div>
                             </span>
                         </div>
@@ -402,7 +402,7 @@
                                         <code>number</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number to round.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to round</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -412,7 +412,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">round to an integral value</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to round to.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to round to</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -426,7 +426,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The <code>number</code> rounded to the specified precision.</span>
+                                    <span class="description">The <code>number</code> rounded to the specified precision</span>
                                 </div>
                             </span>
                         </div>
@@ -434,7 +434,7 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is less than 0.</span>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is negative</span>
                                 </div>
                             </span>
                         </div>
@@ -484,7 +484,7 @@
                                         <code>number</code>
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number to truncate.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number to truncate</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -494,7 +494,7 @@
                                         <div class="parameter-description">
                                             <div><span class="description-title">Type : </span><code class="parameterType description">Number</code></div>
                                             <div><span class="description-title">Default Value : </span><span class="description">round to an integral value</span></div>
-                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to retain.</span></div>
+                                            <div><span class="description-title">Description : </span><span class="description">The number of decimal places to retain</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -508,7 +508,7 @@
                             <span class="block-detail-section">
                                 <h3>Returns:</h3>
                                 <div>
-                                    <span class="description">The <code>number</code> with fractional digits discarded.</span>
+                                    <span class="description">The <code>number</code> with digits beyond the specified precision discarded</span>
                                 </div>
                             </span>
                         </div>
@@ -516,7 +516,7 @@
                             <span class="block-detail-section">
                                 <h3>Throws:</h3>
                                 <div>
-                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is less than 0.</span>
+                                    <span><code>IllegalArgumentException</code> </span> <span class="description">If <code>precision</code> is negative</span>
                                 </div>
                             </span>
                         </div>
@@ -549,7 +549,7 @@
         </div>
         <a href="#_top" id="scroll-up"></a>
         <div class="page-bottom">
-            (c) 2025
+            (c) 2026
         </div>
     </body>
 </html>

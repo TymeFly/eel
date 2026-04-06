@@ -17,15 +17,19 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
+import com.github.tymefly.eel.EelContext;
 import com.github.tymefly.eel.Value;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -37,14 +41,14 @@ import static org.mockito.Mockito.when;
  * Unit test for {@link LocalFiles}
  */
 public class LocalFilesTest {
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    @TempDir
+    private Path tempFolder;
 
     private static final ZonedDateTime DEFAULT_DATE = ZonedDateTime.parse("2000-01-01T12:13:14Z");
 
     private final Map<String, BasicFileAttributes> mockAttributes = new HashMap<>();
     private BasicFileAttributes attributes;
-    private File tempFolderPath;
+    private File dir;
 
     private Value defaultEmptyString;
     private Value defaultNumber;
@@ -52,7 +56,7 @@ public class LocalFilesTest {
     private Value defaultFileName;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         attributes = mock();
 
@@ -70,13 +74,16 @@ public class LocalFilesTest {
         defaultDate = Value.of("1970");
         defaultFileName = Value.of("myFile.txt");
 
-        tempFolderPath = tempFolder.getRoot();
+        dir = tempFolder.toFile();
 
-        tempFolder.newFolder("sub");
-        tempFolder.newFolder("sub/dir");
-        tempFolder.newFile("sub/file.txt");           // these should be ignored
-        tempFolder.newFile("sub/file1.txt");
-        tempFolder.newFile("sub/file3.dat");
+        Files.createDirectory(tempFolder.resolve("sub"));
+        Files.createDirectory(tempFolder.resolve("sub/dir"));
+
+        new File(dir, "sub").mkdir();
+        new File(dir, "sub/dir").mkdir();
+        new File(dir, "sub/file.txt").createNewFile();          // these should be ignored
+        new File(dir, "sub/file1.txt").createNewFile();
+        new File(dir, "sub/file3.dat").createNewFile();
     }
 
 
@@ -92,7 +99,7 @@ public class LocalFilesTest {
 
     @Nonnull
     private Path mockFile(@Nonnull MockedStatic<Files> files, @Nonnull String fileName, @Nonnull FileTime time) {
-        Path path = Paths.get(tempFolderPath.getAbsolutePath() + "/" + fileName);
+        Path path = Paths.get(dir.getAbsolutePath() + "/" + fileName);
         BasicFileAttributes attributes = mock();
 
         when(attributes.creationTime())
@@ -106,7 +113,7 @@ public class LocalFilesTest {
             .thenReturn(attributes);
 
         try {
-            tempFolder.newFile(fileName);
+            new File(tempFolder.toFile(), fileName).createNewFile();
         } catch (Exception e) {
             // No need to do anything - the test will fail if we can't create the backing files
         }
@@ -117,13 +124,26 @@ public class LocalFilesTest {
     }
 
     /**
-     * Unit test {@link LocalFiles#exists(String)} 
+     * Unit test {@link LocalFiles#exists(EelContext, String)}
      */
     @Test
     public void test_exists() {
-        Assert.assertTrue("Expected pom.xml to exist", new LocalFiles().exists("pom.xml"));
-        Assert.assertTrue("Expected pom.?ml to exist", new LocalFiles().exists("pom.?ml"));
-        Assert.assertFalse("Expected unknown not to exist", new LocalFiles().exists("unknown.file"));
+        EelContext context = EelContext.factory().build();
+
+        assertTrue(new LocalFiles().exists(context, "pom.xml"), "Expected pom.xml to exist");
+        assertTrue(new LocalFiles().exists(context, "pom.?ml"), "Expected pom.?ml to exist");
+        assertFalse(new LocalFiles().exists(context, "unknown.file"), "Expected unknown not to exist");
+        assertTrue(new LocalFiles().exists(context, dir.getAbsolutePath()), "directory");
+    }
+
+    /**
+     * Unit test {@link LocalFiles#exists(EelContext, String)}
+     */
+    @Test
+    public void test_exists_root() {
+        EelContext context = EelContext.factory().build();
+
+        assertTrue(new LocalFiles().exists(context, "/*"), "Expected files to exist in the root of file system/drive");
     }
 
     /**
@@ -131,15 +151,16 @@ public class LocalFilesTest {
      */
     @Test
     public void test_fileCount() {
-        File sub = new File(tempFolderPath, "sub");
-        File subDir = new File(tempFolderPath, "sub/dir");
+        File sub = new File(dir, "sub");
+        File subDir = new File(dir, "sub/dir");
         LocalFiles localFiles = new LocalFiles();
 
-        Assert.assertEquals("All Files", 3, localFiles.fileCount(sub, "*"));
-        Assert.assertEquals("Text File", 2, localFiles.fileCount(sub, "*.txt"));
-        Assert.assertEquals("Dat File", 1, localFiles.fileCount(sub, "*.dat"));
-        Assert.assertEquals("No Match", 0, localFiles.fileCount(sub, "*.unknown"));
-        Assert.assertEquals("Empty Dir", 0, localFiles.fileCount(subDir, "*"));
+        assertEquals(3, localFiles.fileCount(sub, "*"), "All Files");
+        assertEquals(3, localFiles.fileCount(sub, ""), "All Files - empty glob");
+        assertEquals(2, localFiles.fileCount(sub, "*.txt"), "Text File");
+        assertEquals(1, localFiles.fileCount(sub, "*.dat"), "Dat File");
+        assertEquals(0, localFiles.fileCount(sub, "*.unknown"), "No Match");
+        assertEquals(0, localFiles.fileCount(subDir, "*"), "Empty Dir");
     }
 
     /**
@@ -147,11 +168,10 @@ public class LocalFilesTest {
      */
     @Test
     public void test_fileCount_noDirectory() {
-        Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().fileCount(new File(tempFolderPath + "unknown/dir"), "*"));
+        Exception actual = assertThrows(IOException.class,
+                () -> new LocalFiles().fileCount(new File(dir + "unknown/dir"), "*"));
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().startsWith("Can not read directory "));
+        assertTrue(actual.getMessage().startsWith("Can not read directory "), "Unexpected message: " + actual.getMessage());
     }
 
     /**
@@ -159,11 +179,10 @@ public class LocalFilesTest {
      */
     @Test
     public void test_fileCount_notDirectory() {
-        Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().fileCount(new File(tempFolderPath + "sub/file.txt"), "*"));
+        Exception actual = assertThrows(IOException.class,
+                () -> new LocalFiles().fileCount(new File(dir + "sub/file.txt"), "*"));
 
-        Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-            actual.getMessage().startsWith("Can not read directory "));
+        assertTrue(actual.getMessage().startsWith("Can not read directory "), "Unexpected message: " + actual.getMessage());
     }
 
 
@@ -183,7 +202,7 @@ public class LocalFilesTest {
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
-            Assert.assertEquals("Unexpected create time", Instant.parse("2000-01-01T00:00:00Z"), actual);
+            assertEquals(Instant.parse("2000-01-01T00:00:00Z"), actual, "Unexpected create time");
         }
     }
 
@@ -195,7 +214,7 @@ public class LocalFilesTest {
         ZonedDateTime actual = new LocalFiles()
             .createAt(new File("unknown.file"), Value.of(DEFAULT_DATE));
 
-        Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
+        assertEquals(DEFAULT_DATE, actual, "Unexpected create time");
     }
 
     /**
@@ -203,8 +222,8 @@ public class LocalFilesTest {
      */
     @Test
     public void test_createAt_directory() {
-        Assert.assertThrows(IOException.class,
-            () -> new LocalFiles().createAt(new File(tempFolderPath, "sub"), defaultDate));
+        assertThrows(IOException.class,
+            () -> new LocalFiles().createAt(new File(dir, "sub"), defaultDate));
     }
 
 
@@ -224,7 +243,7 @@ public class LocalFilesTest {
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
-            Assert.assertEquals("Unexpected accessed time", Instant.parse("2001-02-02T01:01:01Z"), actual);
+            assertEquals(Instant.parse("2001-02-02T01:01:01Z"), actual, "Unexpected accessed time");
         }
     }
 
@@ -236,7 +255,7 @@ public class LocalFilesTest {
         ZonedDateTime actual = new LocalFiles()
             .accessedAt(new File("unknown.file"), Value.of(DEFAULT_DATE));
 
-        Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
+        assertEquals(DEFAULT_DATE, actual, "Unexpected create time");
     }
 
 
@@ -256,7 +275,7 @@ public class LocalFilesTest {
                 .withZoneSameInstant(ZoneOffset.UTC)
                 .toInstant();
 
-            Assert.assertEquals("Unexpected modified time", Instant.parse("2002-03-03T02:02:02Z"), actual);
+            assertEquals(Instant.parse("2002-03-03T02:02:02Z"), actual, "Unexpected modified time");
         }
     }
 
@@ -268,7 +287,7 @@ public class LocalFilesTest {
         ZonedDateTime actual = new LocalFiles()
             .modifiedAt(new File("unknown.file"), Value.of(DEFAULT_DATE));
 
-        Assert.assertEquals("Unexpected create time", DEFAULT_DATE, actual);
+        assertEquals(DEFAULT_DATE, actual, "Unexpected create time");
     }
 
 
@@ -286,7 +305,7 @@ public class LocalFilesTest {
             long actual = new LocalFiles()
                 .fileSize(new File("pom.xml"), defaultNumber);
 
-            Assert.assertEquals("Unexpected modified time", 74565, actual);
+            assertEquals(74565, actual, "Unexpected modified time");
         }
     }
 
@@ -298,7 +317,7 @@ public class LocalFilesTest {
         long actual = new LocalFiles()
             .fileSize(new File("unknown.file"), Value.of(-999));
 
-        Assert.assertEquals("Unexpected create time", -999, actual);
+        assertEquals(-999, actual, "Unexpected create time");
     }
 
     /**
@@ -314,13 +333,13 @@ public class LocalFilesTest {
             files.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
                 .thenThrow(cause);
 
-            IOException actual = Assert.assertThrows(IOException.class,
+            IOException actual = assertThrows(IOException.class,
                 () -> new LocalFiles().fileSize(new File("pom.xml"), defaultNumber));
 
             String message = actual.getMessage();
 
-            Assert.assertTrue("Unexpected message: " + message, message.startsWith("Can not read attributes for:"));
-            Assert.assertSame("Unexpected cause", cause, actual.getCause());
+            assertTrue(message.startsWith("Can not read attributes for:"), "Unexpected message: " + message);
+            assertSame(cause, actual.getCause(), "Unexpected cause");
         }
     }
 
@@ -336,10 +355,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().firstCreated(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("1.txt"));
+            assertTrue(actual.endsWith("1.txt"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("1.txt")).creationTime();
         }
@@ -356,10 +374,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*", 1, defaultEmptyString);
+            String actual = new LocalFiles().firstCreated(dir, "*", 1, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.txt"));
+            assertTrue(actual.endsWith("2.txt"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.txt"), times(2)).creationTime();
         }
@@ -376,10 +393,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "2.*", 0, defaultEmptyString);
+            String actual = new LocalFiles().firstCreated(dir, "2.*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.txt"));
+            assertTrue(actual.endsWith("2.txt"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.txt")).creationTime();
         }
@@ -396,10 +412,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "2.*", 1, defaultEmptyString);
+            String actual = new LocalFiles().firstCreated(dir, "2.*", 1, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.jpg"));
+            assertTrue(actual.endsWith("2.jpg"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.jpg")).creationTime();
         }
@@ -416,10 +431,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*.jpg", 0, defaultEmptyString);
+            String actual = new LocalFiles().firstCreated(dir, "*.jpg", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.jpg"));
+            assertTrue(actual.endsWith("2.jpg"), "Unexpected File found: " + actual);
         }
     }
 
@@ -434,11 +448,10 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*.unknown", 0, defaultEmptyString));
+            Exception actual = assertThrows(IOException.class,
+                () -> new LocalFiles().firstCreated(dir, "*.unknown", 0, defaultEmptyString));
 
-            Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-                actual.getMessage().matches("^No file in .* found with index 0 that matches '\\*.unknown'$"));
+            assertTrue(actual.getMessage().matches("^No file in .* found with index 0 that matches '\\*.unknown'$"), "Unexpected message: " + actual.getMessage());
         }
     }
 
@@ -453,10 +466,10 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-           Exception actual = Assert.assertThrows(IllegalArgumentException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*", -1, defaultFileName));
+           Exception actual = assertThrows(IllegalArgumentException.class,
+                () -> new LocalFiles().firstCreated(dir, "*", -1, defaultFileName));
 
-            Assert.assertEquals("Unexpected File found: ", "-1 is an invalid index", actual.getMessage());
+            assertEquals("-1 is an invalid index", actual.getMessage(), "Unexpected File found: ");
         }
     }
 
@@ -471,11 +484,10 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*", 999, defaultEmptyString));
+            Exception actual = assertThrows(IOException.class,
+                () -> new LocalFiles().firstCreated(dir, "*", 999, defaultEmptyString));
 
-            Assert.assertTrue("Unexpected message: " + actual.getMessage(),
-                actual.getMessage().matches("^No file in .* found with index 999 that matches '\\*'$"));
+            assertTrue(actual.getMessage().matches("^No file in .* found with index 999 that matches '\\*'$"), "Unexpected message: " + actual.getMessage());
         }
     }
 
@@ -490,9 +502,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstCreated(tempFolderPath, "*.unknown", 0, defaultFileName);
+            String actual = new LocalFiles().firstCreated(dir, "*.unknown", 0, defaultFileName);
 
-            Assert.assertEquals("Unexpected File found: ", "myFile.txt", actual);
+            assertEquals("myFile.txt", actual, "Unexpected File found: ");
         }
     }
 
@@ -507,11 +519,10 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenThrow(new IOException("Expected"));
 
-            Exception actual = Assert.assertThrows(IOException.class,
-                () -> new LocalFiles().firstCreated(tempFolderPath, "*", 0, defaultEmptyString));
+            Exception actual = assertThrows(IOException.class,
+                () -> new LocalFiles().firstCreated(dir, "*", 0, defaultEmptyString));
 
-            Assert.assertTrue("Unexpected message:" + actual.getMessage(),
-                actual.getMessage().startsWith("Can not read directory"));
+            assertTrue(actual.getMessage().startsWith("Can not read directory"), "Unexpected message:" + actual.getMessage());
         }
     }
 
@@ -527,10 +538,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastCreated(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().lastCreated(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.jpg"));
+            assertTrue(actual.endsWith("2.jpg"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.jpg")).creationTime();
         }
@@ -548,10 +558,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstAccessed(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().firstAccessed(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("1.txt"));
+            assertTrue(actual.endsWith("1.txt"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("1.txt")).lastAccessTime();
         }
@@ -568,10 +577,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastAccessed(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().lastAccessed(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.jpg"));
+            assertTrue(actual.endsWith("2.jpg"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.jpg")).lastAccessTime();
         }
@@ -588,10 +596,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().firstModified(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().firstModified(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("1.txt"));
+            assertTrue(actual.endsWith("1.txt"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("1.txt")).lastModifiedTime();
         }
@@ -608,10 +615,9 @@ public class LocalFilesTest {
             files.when(() -> Files.list(any(Path.class)))
                 .thenAnswer(i -> mockDirectory(files));
 
-            String actual = new LocalFiles().lastModified(tempFolderPath, "*", 0, defaultEmptyString);
+            String actual = new LocalFiles().lastModified(dir, "*", 0, defaultEmptyString);
 
-            Assert.assertTrue("Unexpected File found: " + actual,
-                actual.endsWith("2.jpg"));
+            assertTrue(actual.endsWith("2.jpg"), "Unexpected File found: " + actual);
 
             verify(mockAttributes.get("2.jpg")).lastModifiedTime();
         }

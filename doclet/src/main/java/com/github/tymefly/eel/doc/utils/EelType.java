@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Enumeration of all possible types that can be passed to an EEL functions.
- * This includes the 4 basic types and the "{@literal value}" for Thunking
+ * This includes the four basic types and the "{@literal value}" for Thunking
  */
 public enum EelType {
     TEXT("Text"),

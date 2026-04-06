@@ -16,7 +16,7 @@ public class UnknownEelPropertyException extends EelRuntimeException {
 
     /**
      * Constructor
-     * @param key       Key that was not found in the Symbols Table
+     * @param key       Key that was not found in the SymbolsTable
      */
     UnknownEelPropertyException(@Nonnull String key) {
         super("Unknown key '%s'. This could be the result of an illegal forward reference", key);

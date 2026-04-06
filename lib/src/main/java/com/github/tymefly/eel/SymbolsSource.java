@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import com.github.tymefly.eel.exception.EelSymbolsTableException;
 
 /**
- * A source of values in the symbols table.
+ * A source of values in the SymbolsTable.
  */
 class SymbolsSource {
     private static final Predicate<String> NOT_SCOPED = s -> true;
