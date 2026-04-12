@@ -500,19 +500,18 @@ public class ReadmeIntegrationTest {
      */
     @Test
     public void test_ConvertingPaths() {
-        SymbolsTable symbols = SymbolsTable.from(Map.of("root", "\\my\\path"));
+        SymbolsTable symbols = SymbolsTable.from(Map.of("root", "/my/path"));
+        String path;
 
-        assertEquals("/my/path",
-            Eel.compile("$replace( ${root-}, '\\\\', '/')").evaluate(symbols).asText(),
-            "$replace( ${root-}, '\\\\', '/')");
+        path = Eel.compile("$replace( ${root-}, '\\\\', '/')").evaluate(symbols).asText();
+        assertEquals("/my/path", path, "$replace( ${root-}, '\\\\', '/')");
 
-        assertTrue(Eel.compile("$realPath( ${root-} )").evaluate(symbols).asText()
-                .matches("(.:)?[/\\\\]my[/\\\\]path"),
-            "$realPath( ${root-} )");
+        path = Eel.compile("$realPath( ${root-} )").evaluate(symbols).asText();
+        assertTrue(path.matches("(.:)?[/\\\\]my[/\\\\]path"), "$realPath( ${root-} ) = " + path);
 
-        assertTrue(Eel.compile("$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )").evaluate(symbols).asText()
-                .matches("(.:)?[/\\\\]my[/\\\\]path[/\\\\]\\d{4}[/\\\\]\\d{2}[/\\\\]\\d{2}[/\\\\]\\d{2}"),
-            "$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )");
+        path = Eel.compile("$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") )").evaluate(symbols).asText();
+        assertTrue(path.matches("(.:)?[/\\\\]my[/\\\\]path[/\\\\]\\d{4}[/\\\\]\\d{2}[/\\\\]\\d{2}[/\\\\]\\d{2}"),
+            "$realPath( ${root-} ~> \"/\" ~> format.local(\"yyyy/MM/dd/HH/\") ) = " + path);
     }
 
     /**

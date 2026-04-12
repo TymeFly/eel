@@ -1,6 +1,6 @@
 # EEL Language
 Probably the easiest way to imagine an EEL expression is as a text literal that can contain:
-1. [Escaped characters](#escaped-characters) which are prefixed with a backslash character (`\`) 
+1. [Escaped characters](#escaped-characters) which are prefixed with a backslash character (`\\`) 
 2. [Interpolation sequence](#interpolation-sequences) which are prefixed with a dollar character (`$`)
 
 If the source expression contains doesn't contain any of these sequences then the data consumed by the EEL compiler 
@@ -18,16 +18,16 @@ EEL supports the following 'C' style character escape sequences
 
 | Escape sequence | Character represented                                           |
 |-----------------|-----------------------------------------------------------------|
-| `\uxxxx`        | Unicode character, where `xxxx` is a character codepoint in hex |
+| `\\`            | Backslash                                                       |
 | `\f`            | Form Feed                                                       |
 | `\t`            | Tab                                                             |
 | `\n`            | New Line                                                        |
 | `\r`            | Carriage Return                                                 |
 | `\b`            | Backspace                                                       |
-| `\\`            | Backslash                                                       |
 | `\$`            | Dollar character                                                |  
 | `\'`            | Single quotation mark                                           |
 | `\"`            | Double quotation mark                                           |
+| `\uxxxx`        | Unicode character, where `xxxx` is a character codepoint in hex |
 
 ## Interpolation Sequences
 EEL Supports the following types of interpolation sequences:

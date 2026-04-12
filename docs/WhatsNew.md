@@ -1,6 +1,8 @@
 # What's New
 
+* [3.2.1](#321)
 * [3.2.0](#320)
+* [3.1.1](#311)
 * [3.1.0](#310)
 * [3.0.0](#300)
 * [2.1.0](#210)
@@ -9,132 +11,128 @@
 * [1.0.0](#100)
 
 
+# 3.2.1
+- Updated the documentation
+- Fix a failing Integration Test
+
 # 3.2.0
 ## Lib
-* **Deprecate `Value.asFile()`.** This function will be removed in the next major release.
-* Add the functions `Context.getFile(String)` and `Context.getFile(Value)`, which return files guaranteed not to reside
-  in sensitive parts of the file system. These functions replace `Value.asFile()`.
-* Add `EelContextBuilder.withFileFactory()`, which clients could use to apply additional checks when creating files.
-* Lookback indices are now full expressions. Previously, only positive numeric literals were supported.
-* Add support for default values in lookbacks when the index is out of range.
-* Add the function `text.index()`, which returns the 1-based index of a value within a list of values. 
-  This can be used to dynamically generate a lookback index.
-* Add the function `logic.index()`, which returns the 1-based index of the first true expression in a list of values. 
-  This can be used to dynamically generate a lookback index.
-* Add the function `date.parse()` to parse text values in a specified format into Dates.
-* Bug fix: `realPath()`, `dirName()`, and `baseName()` now correctly handle paths that end with slashes and empty paths.
-* Bug fix: `exists()` can now check for file system objects that are not files.
-* Bug fix: file system functions no longer fail when the file system path is an empty string.
-* Bug fix: file system functions now work with objects in the root directory.
+- **Deprecate `Value.asFile()`**  
+  This function will be removed in the next major release.
+- Added `Context.getFile(String)` and `Context.getFile(Value)`  
+  These functions return files that are guaranteed not to reside in sensitive parts of the file system. They replace `Value.asFile()`.
+- Added `EelContextBuilder.withFileFactory()`  
+  Allows clients to apply additional checks when creating files.
+- Lookback indices are now full expressions  
+  Previously, only positive numeric literals were supported.
+- Added support for default values in lookbacks  
+  Applies when the index is out of range.
+- Added `text.index()`  
+  Returns the 1-based index of a value within a list. This can be used to dynamically generate a lookback index.
+- Added `logic.index()`  
+  Returns the 1-based index of the first `true` expression in a list. This can be used to dynamically generate a lookback index.
+- Added `date.parse()`  
+  Parses text values in a specified format into `Date` values.
+- **Bug fixes**
+  - `realPath()`, `dirName()`, and `baseName()` now correctly handle empty paths and paths that end with slashes.
+  - `exists()` can now check for file system objects that are not files.
+  - File system functions fail when the file system path is an empty string.
+  - File system functions now work with objects in the root directory.
 
 
 # 3.1.1
 ## General
-* Add a ZIP file containing the HTML documentation for the standard EEL functions which is suitable for downloads
+- Added a ZIP file containing HTML documentation for the standard EEL functions, suitable for download.
 
 
 # 3.1.0
 ## General
-* Add Doclet module. This is used to generate HTML documentation for EEL functions.
-* Generate HTML documentation for the standard EEL functions
+- Added the Doclet module  
+  Used to generate HTML documentation for EEL functions.
+- Generated HTML documentation for the standard EEL functions.
 
 
 # 3.0.0
 ## General
-* Split the Documentation into multiple documents
+- Split the documentation into multiple documents.
 
 ## Lib
-* **Breaking Change: Remove interfaces EelValue and EelLambda from UDFs** - these have been replaced by the interface 
-  `Value` which extends `ValueReader`. Value objects pass data using '[Thunk](https://en.wikipedia.org/wiki/Thunk)' 
-  semantics so that parameters can be processed lazily.
-* **Breaking Change: the EelFunction annotation defines the function name in the value parameter** 
-* **Breaking Change: the FunctionalResource interface has been moved to package com.github.tymefly.eel.udf**
-* **Breaking Change: In addition to `\"` and `\'`, expressions and Text literals can contain Form Feed (`\f`),  
-  Carriage Return (`\n`) and Backspace (`\b`) characters. Unicode characters in the form (`\uxxxx`) as also supported. 
-  Tab (`\t`), New Line (`\r`), `\$` can be used to include a dollar character without invoking an interpolation sequence. 
-  Unexpected escape sequences will generate an error**
-* **Breaking Change: `io` is a reserved function prefix.** Add functions `io.head()` and `io.tail()` to read text files. 
-  These functions only read a limited number of characters before failing. This is to guard against DOS attacks. 
-  The default limit is 32,768 characters, but this can be changed via the EelContext
-* **Breaking Change: Changes to operator priority**. 
-* **Breaking Change: Remove function `date.offset()`**. This has been replaced with `date.plus()` and `date.minus()`
-* **Breaking Change: Remove function `date.truncate()`**. This is no longer required as `date.set()`, `date.plus()` and
-  `date.minus()` support snapping date modifiers. Snaps are written in the form `@<period>`. 
-  For example `date.set(<date>, '@h'`), `date.plus(<date>, '@day'`), `date.minus(<date>, '@month'`) will truncate 
-  _<date>_ to the start of the hour, day and month respectively.
-* Added support for compound expressions. This allows Expression interpolations to evaluate a term once and reuse the
-  generated value without evaluating it. 
-  This can be used to simplify expressions by reducing DRY code in the expression, or ensure side effects only 
-  happen once
-* Increased range of Date values to include the BCE (aka BC) era. This is represented in text form by a negative year.
-* Increased accuracy of Date values to nanoseconds. New time periods milliseconds (`milli`,`millis` or `I`),
-  microseconds (`micro`,`micros` or `U`) and nanoseconds (`nano`,`nanos` or `N`), manipulate the fractions of a second
-  **_independently_**. Periods milliOfSecond (`milliOfSecond`, `millisOfSecond`, `i`),
-  microOfSecond ( `microOfSecond`, `microsOfSecond` or `u`) and nanoOfSecond (`nanoOfSecond`,`nanosofsecond` or `n`) 
-  can be used to set all fractional digits in a second at once.
-* The standard date functions allow for an underscore (`_`) character between the digits of a period specifier
-* `date.set()` supports weeks as a time period - the day and month are changed but the day of the week is maintained
-* The EelContext can be used to set the minimum number of days in a week. This is used determine the first week of the
-  year when setting the week number. If unset this defaults to 4, as defined in ISO-8601
-* The EelContext can be used to set the first day of the week. This is used to snap dates to the start of a week.
-  If unset this defaults to Monday, as defined in ISO-8601
-* Add function `text.random()` to generate random text
-* Add convenience functions `asChar()`, `asBigInteger()`, `asDouble()`, `asLong()` and `asInt` to the 
- `Value` and `Result` objects
-* `number.round()` and `number.truncate()` accept an extra optional argument - the precision. This defaults to 0 to
-  return integral values
-* The third argument to `before()` and `after()` is now optional and defaults to 1
-* Add the logical operator `xor` 
-* Add the relational operator `in`
-* Add the `:-` modifier to Value Interpolation
-* Text substring as part of Value Interpolation no longer require a count; If a count is not provided then 
-  the remaining part of the text is returned
-* Text substring as part of Value Interpolation support a negative start position and length. A negative values count
-  from the end of the text instead of the start
-* `mid()` also supports a negative start position and lengths consistently with Text substrings in Value Interpolation
-* The third argument for `mid()` is now optional, and defaults to the remaining characters in the text 
-* `left()` and `right()` support negative lengths. They are used as a 1-based count from the other end of the text
-* Optimise generated expressions
-* Reserved words can also be Symbols Table keys.
-* UDF's can accept java.io.File parameters. For security reasons, EEL will throw a `EelFunctionException` if the file
-  is in a sensitive part of the local file system.
-* Text literals can contain look backs, Value interpolations, Function interpolations and Expression interpolations
-* Expressions can contain line-feed and form-feed characters 
-* Expression and function interpolations can contain comments. 
-* Overload `Eel.compile` to allow InputStreams to be compiled
-* Bugfix: Fix EelSyntaxException messages for unexpected numeric literals 
-* Bugfix: Allow function interpolation and expression interpolation to be nested inside expression interpolation
-* Bugfix: Fix a ConcurrentModificationException that was occasionally thrown when evaluating expressions in
-  multithreaded environments
-
+- **Breaking change: Removed interfaces EelValue and EelLambda from UDFs** - replaced by the
+  `Value` interface, which extends `ValueReader`. Value objects use
+  '[Thunk](https://en.wikipedia.org/wiki/Thunk)' semantics so parameters can be processed lazily.
+- **Breaking change: The EelFunction annotation now defines the function name as its'value' parameter.**
+- **Breaking change: Moved the FunctionalResource interface to package com.github.tymefly.eel.udf**
+- **Breaking change: Expanded supported escape sequences in expressions and text literals** -
+  includes `\f`, `\n`, `\b`, and Unicode (`\uxxxx`). Also supports `\t`, `\r`, and `\$`. Invalid escape sequences
+  now result in an error.
+- **Breaking change: `io` is now a reserved function prefix** - added `io.head()` and `io.tail()`
+  to read text from files. The file size is limited to guard against DOS attacks. The default limit is 32,768
+  characters and can be configured via EelContext.
+- **Breaking change: Updated operator precedence.**
+- **Breaking change: Removed `date.offset()`** - replaced by `date.plus()` and `date.minus()`.
+- **Breaking change: Removed `date.truncate()`** - functionality replaced bysnap modifiers (`@<period>`) in the
+  `date.set()`, `date.plus()`, and `date.minus()` functions.
+- Added support for compound expressions, allowing values to be evaluated once and reused. This reduces
+  duplication and ensures side effects only happen once.
+- Extended Date range to include BCE (BC), represented by negative years.
+- Increased Date precision to nanoseconds and added new time periods (`milli`, `micro`, `nano`) and
+  corresponding setters (`milliOfSecond`, `microOfSecond`, `nanoOfSecond`).
+- Allowed underscores (`_`) in date period specifiers.
+- `date.set()` now supports weeks while preserving the day of the week.
+- EelContext can define the minimum days in the first week (default: 4 as defined by ISO-8601).
+- EelContext can define the first day of the week (default: Monday as defined by ISO-8601).
+- Added `text.random()` to generate random text.
+-* Added convenience methods `asChar()`, `asBigInteger()`, `asDouble()`, `asLong()`, and `asInt()`
+  to `Value` and `Result`.
+- `number.round()` and `number.truncate()` now accept an optional precision argument (default: 0).
+- The third argument to `before()` and `after()` is now optional (default: 1).
+- Added logical operator `xor`.
+- Added relational operator `in`.
+- Added the `:-` modifier to value interpolation.
+- Text substring in value interpolation no longer requires a count; defaults to the remaining text.
+- Text substring in value interpolation supports negative start positions and lengths.
+- `mid()` supports negative start positions and lengths, consistent with interpolation behavior.
+- The third argument to `mid()` is now optional and defaults to the remaining text.
+- `left()` and `right()` support negative lengths, counting from the opposite end of the text.
+- Optimised generated expressions.
+- Reserved words can now be used as symbol table keys.
+- UDFs can accept `java.io.File` parameters; For security reasons, EEL will throw a `EelFunctionException` if the 
+  file references a sensitive part of the local file system.
+- Text literals support lookbacks, value, function, and expression interpolations.
+- Expressions can include line-feed and form-feed characters.
+- Expression and function interpolations can include comments.
+- Overloaded `Eel.compile` to support expressions from InputStreams.
+- **Bug fixes**
+  - Improved `EelSyntaxException` messages for unexpected numeric literals.
+  - Allowed function and expression interpolations be be nested inside expression interpolations
+  - Fixed potential ConcurrentModificationException in multithreaded evaluation.
+  
 ## Evaluate
-* Add `--script` option to evaluate expressions from a file
-* Add `--io-limit` option to set the maximum number of bytes that an EEL IO function can read.
-* Add `--start-of-week` option to set the first days of the first week which is used by some EEL functions.
-* Add `--days-in-first-week` option to set the minimal number of days in the first week which is used by some EEL functions.
-
+- Added `--script` option to evaluate expressions from a file.
+- Added `--io-limit` option to set the maximum bytes readable by IO functions.
+- Added `--start-of-week` option to define the first day of the first week.
+- Added `--days-in-first-week` option to define the minimum days in the first week.
 
 # 2.1.0
 ## Lib
-* Support for binary and octal numeric literals 
-* The index and count values used in Value Interpolation substrings are EEL expressions. Previously only integer 
-  literals were supported
-* Text to Number conversions can contain the `_` character between digits
-* Added functions:
-  * `format.binary()` to format a number in binary
-  * `format.start()` to format the EEL context date
-  * `toDegrees()` to convert a radian value to degrees 
-  * `toRadians()` to convert a degree value to radians 
-* Add optional offsets to `date.start()`
-* Added convenience factory methods to SymbolsTable to create a SymbolsTable from a single data source 
-* Overloaded Eel.execute() to create in-line scoped SymbolsTable from a single data source 
-* Updated the Javadocs to describe how values are converted in EEL 2.x.x 
-* Some refactoring of the EEL core to improve efficiency
-
+- Support for binary and octal numeric literals.
+- Index and count values in Value Interpolation substrings are now EEL expressions; previously only integer
+  literals were supported.
+- Text-to-number conversions can include the `_` character between digits.
+- Added functions:
+  - `format.binary()` to format a number in binary.
+  - `format.start()` to format the EEL context date.
+  - `toDegrees()` to convert a radian value to degrees.
+  - `toRadians()` to convert a degree value to radians.
+- Added optional offsets to `date.start()`.
+- Added convenience factory methods in `SymbolsTable` to create a SymbolsTable from a single data source.
+- Overloaded `Eel.execute()` to create an in-line scoped SymbolsTable from a single data source.
+- Updated Javadocs to describe how values are converted
+- Refactored parts of the EEL core to improve efficiency.
 
 # 2.0.0
 ## Lib
-* **Breaking Change: Some operator symbols have been changed to match Python**
+- **Breaking change: Some operator symbols have been changed to match Python**
 
   | Operator       |      Ver 1.x.x      |     Ver 2.0.0+      |
   |----------------|:-------------------:|:-------------------:|
@@ -147,87 +145,78 @@
   | bitwise-xor    |        `XOR`        |         `^`         |
   | exponentiation |         `^`         |        `**`         | 
 
-* **Breaking Change: Remove non-short-circuited logical operators** - They are not required as EEL functions do not have
-  external side effects 
-* **Breaking Change: Type conversion functions are now in lower case** 
-* **Breaking Change: `DefaultArgument` annotation for UDFs no longer has an _"of"_ attribute - _"value"_ is used instead**
-* **Breaking Change: Remove _pi_, _e_ and _c_ as a predefined constants, replacing them with the functions
-  `number.pi()`, `number.e()` and `number.c()` respectively**
-* **Breaking Change: By default `count()` is now a zero-based; previously it was 1 based.** 
-* Support for named counters 
-* EelContext can be used to read build time information including the current version of the language
-* Add functions `eel.version()` and `eel.buildDate()`
-* Added Function interpolation to simplify expressions that only contain a single function call
-* Added support for Functional expressions; EEL functions and UDFs can accept `EelLambda` objects as parameters 
-* Functions `indexOf()`, `lastIndexOf()`, `fileSize()`, `createAt()` and `accessedAt()` have an extra optional argument;
-  a function that returns the default value.
-* Functions `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()` and 
- `lastModified()` have two extra optional arguments. The first is a zero-based index in the directory listing of the
- required file. The second additional optional argument is a function to determine the default value if no file is found
-* UDFs can accept a `FunctionalResource` object as a parameter to manage stateful resources
-* SymbolsTable support for 'scopes' to disambiguate keys from different sources that have the same name
-* Numeric literals can contain the `_` character
-* Empty text is converted to logic false 
-* Value interpolation supports multiple case change operators
-* Value interpolation supports substrings
-* Added the `isBefore` and `isAfter` operators
-* Added the "divide-floor" (`//`) and "divide-truncate" (`-/`) operators
-* Add functions `number.ceil()` and `number.floor()`
-* Add functions `before()`, `after()`, `between()` to extract text based on a text delimiter
-* Add function `contains()` to count the number of occurrences of some text 
-* Functions `afterFirst()` and `afterLast()` will return an empty text if the delimiter is empty
-* The value returned by the logging functions is the last parameter passed. Previously it was converted to Text
-* Added constants in `EelValue` for commonly used values
-* Bug Fix: All value interpolations evaluate to text. Previously Text length operator would evaluate to a Number
-  which caused inconsistencies. 
-* Bug Fix: Previously `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()` and 
-  `lastModified()` did not always return absolute paths.  
+- **Breaking change: Removed non-short-circuited logical operators** - EEL functions do not have external side effects.
+- **Breaking change: Type conversion functions are now lowercase.**
+- **Breaking change: `DefaultArgument` annotation for UDFs no longer has an _"of"_ attribute; _"value"_ is used instead.**
+- **Breaking change: Removed predefined constants _pi_, _e_, and _c_; replaced by `number.pi()`, `number.e()`, and `number.c()`.**
+- **Breaking change: `count()` is now zero-based; previously it was 1-based.**
+- Support for named counters.
+- EelContext can provide build-time information, including the current language version.
+- Added functions `eel.version()` and `eel.buildDate()`.
+- Added function interpolation for expressions containing a single function call.
+- Added support for functional expressions; EEL functions and UDFs can accept `EelLambda` objects.
+- Functions `indexOf()`, `lastIndexOf()`, `fileSize()`, `createAt()`, and `accessedAt()` now accept an optional function
+  for default values.
+- Functions `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()`, and `lastModified()` 
+  accept two optional arguments: a zero-based index of the file in the listing and a function to determine the default
+  value if no such file exists
+- UDFs can accept a `FunctionalResource` object to manage stateful resources.
+- SymbolsTable supports 'scopes' to disambiguate keys from different sources with the same name.
+- Numeric literals can include the `_` character.
+- Empty text is converted to logical false.
+- Value interpolation supports multiple case change operators.
+- Value interpolation supports substrings.
+- Added `isBefore` and `isAfter` operators.
+- Added "divide-floor" (`//`) and "divide-truncate" (`-/`) operators.
+- Added functions `number.ceil()` and `number.floor()`.
+- Added functions `before()`, `after()`, and `between()` to extract text by text delimiter.
+- Added `contains()` to count occurrences of text strings.
+- `afterFirst()` and `afterLast()` return empty text if the delimiter is empty.
+- Logging functions now return the last parameter passed instead of converting it to Text.
+- Added constants in `EelValue` for commonly used values.
+- **Bug fixes**
+  - Value interpolations now consistently evaluate to Text; previously Text length operator could 
+  return a Number.
+  - Bug fix:** `firstCreated()`, `lastCreated()`, `firstAccessed()`, `lastAccessed()`, `firstModified()`, and 
+  `lastModified()` now always return absolute paths.
 
 ## Evaluate
-* **Breaking Change: Change return codes**
-* Display return codes on the help page
-* Add `--version` option.
+- **Breaking change: Changed return codes.**
+- Display return codes on the help page.
+- Added `--version` option.
 
 
 # 1.1.0
 ## Lib
-* Reduced default execution timeout from 10 seconds to 2 seconds.
-* Fully define the type conversions used by the `=` and `!=` operators, in a way that is consistent with the inequality
-  operators for dates  
-* Characters `[` and `]` can be part of an identifier. This is so that SymbolsTables can use these characters to read
-  structured data types.  
-* All positive numbers can be converted to logic value `true` while zero and negative numbers values can be converted to 
-  logic `false`. Previously only numbers `0` and `1` could be converted to logic values. This change means functions 
-  that return `-1` to indicate a non-value can also be considered as returning `false`. 
-* Dates can be converted to Logic values and vice versa. 
-  * Dates before or at `1970-01-01 00:00Z` are converted to logic `false`, all other dates are converted to logic `true`.
-  * Logic `false` can be converted to date `1970-01-01 00:00:00Z` and logic `true` to `1970-01-01 00:00:01Z`  
-  These are the same values that would be returned if an explicit conversion to NUMBER is used as an intermediate step. 
-  This change means that functions that return `1970-01-01 00:00:00Z` to indicate a non-value can also be considered as 
-  returning `false`
-* Cleanup exceptions 
-* Add _c_, the speed of light, as a constant 
-* Add interface `com.github.tymefly.eel.EelValue` to create and read immutable EEL values.
-* UDFs can accept and return `EelValue`'s and `chars`'s  
-* Function prefixes _'text'_, _'logic'_, _'number'_ and _'date'_ are now reserved.
-* Add functions to search for files in a directory. These are `fileCount()`, `firstCreated()`, `lastCreated()`, 
- `firstAccessed()`, `lastAccessed()`, `firstModified()` and `lastModified()`
-* Add function `isBlank()` to check is text is blank
-* Add function `printf()` to format text
-* Add function `title()` to give text in title case
-* Add functions `padLeft()` and `padRight()` to pad text
-* Add functions `char()` and `codepoint()` to convert between characters and unicode codepoints  
-* Add functions `number.round()` and `number.truncate()` to convert fractional numbers to non-fraction numbers
-* `format.date()` now accepts offsets as optional arguments
-* `dirName()` will no longer canonicalise the path
-* `extension()` returns the extensions without a leading `.`
-* `exists()` can now accept a glob pattern as part of the file name 
+- Reduced default execution timeout from 10 seconds to 2 seconds.
+- Fully defined type conversions used by `=` and `!=` operators to be consistent with date inequality operators.
+- Characters `[` and `]` can now be part of an identifier to allow SymbolsTables to read structured data types.
+- Positive numbers convert to logic `true`; zero and negative numbers convert to logic `false`. 
+  Previously only 0 and 1 could be converted. Functions returning -1 as a non-value are now considered `false`.
+- Dates can be converted to logic values and vice versa:
+  - Dates before or at `1970-01-01 00:00Z` are `false`; all others are `true`.
+  - Logic `false` converts to `1970-01-01 00:00:00Z`; logic `true` converts to `1970-01-01 00:00:01Z`.
+- Cleaned up exceptions.
+- Added constant `_c_` for the speed of light.
+- Added interface `com.github.tymefly.eel.EelValue` to create and read immutable EEL values.
+- UDFs can accept and return `EelValue` and `char` types.
+- Function prefixes `'text'`, `'logic'`, `'number'`, and `'date'` are now reserved.
+- Added functions to search for files: `fileCount()`, `firstCreated()`, `lastCreated()`, `firstAccessed()`, 
+ `lastAccessed()`, `firstModified()`, and `lastModified()`.
+- Added `isBlank()` to check if text is blank.
+- Added `printf()` to format text.
+- Added `title()` to convert text to title case.
+- Added `padLeft()` and `padRight()` to pad text.
+- Added `char()` and `codepoint()` to convert between characters and Unicode code points.
+- Added `number.round()` and `number.truncate()` to remove fractional parts of numbers.
+- `format.date()` now accepts optional offsets.
+- `dirName()` no longer canonicalizes the path.
+- `extension()` returns extensions without a leading `.`.
+- `exists()` can accept a glob pattern in the file name.
 
 ## Evaluate
-* Added the `--defs` option to read multiple definitions from a properties file. The values in this properties file 
-  are EEL expressions in their own right, and will be evaluated as the file is loaded.
-* Added the `--timeout` option to set the EEL execution timeout
-
+- Added `--defs` option to read multiple definitions from a properties file; expressions are evaluated as the file is loaded.
+- Added `--timeout` option to set the EEL execution timeout.
 
 # 1.0.0
-* Everything
+- Everything.
